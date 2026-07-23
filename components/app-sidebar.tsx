@@ -29,6 +29,7 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
 
   const [searchQuery, setSearchQuery] = React.useState("");
+
   const [openGroup, setOpenGroup] = React.useState<string | null>(() => {
     const active = navigationItems.find(
       (item) => item.items?.length && item.items.some((sub) => pathname?.startsWith(sub.url)),
