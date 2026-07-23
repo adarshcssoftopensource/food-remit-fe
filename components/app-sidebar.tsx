@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -11,46 +12,36 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarInput,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { navigationItems } from "@/config/nav";
 import { cn } from "@/lib/utils";
-import { useMemo, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const [searchQuery, setSearchQuery] = useState("");
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
-  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [openGroup, setOpenGroup] = React.useState<string | null>(() => {
+    const active = navigationItems.find(
+      (item) => item.items?.length && item.items.some((sub) => pathname?.startsWith(sub.url)),
+    );
+    return active?.title ?? null;
+  });
 
-  const activeGroup = useMemo(() => {
-    const activeNav = navigationItems.find((item) => {
-      if (item.url === "/dashboard" && pathname === "/") return true;
-      return pathname?.startsWith(item.url);
-    });
-
-    return activeNav?.items?.length ? activeNav.title : null;
-  }, [pathname]);
-
-  const filteredNavItems = useMemo(() => {
+  const filteredNavItems = React.useMemo(() => {
     if (!searchQuery) return navigationItems;
-
     const lowerQuery = searchQuery.toLowerCase();
     return navigationItems.filter((item) => {
       if (item.title.toLowerCase().includes(lowerQuery)) return true;
-      if (item.items) {
-        const matchesSub = item.items.some((subItem) =>
-          subItem.title.toLowerCase().includes(lowerQuery),
-        );
-        if (matchesSub) return true;
-      }
+      if (item.items?.some((sub) => sub.title.toLowerCase().includes(lowerQuery))) return true;
       return false;
     });
   }, [searchQuery]);
@@ -60,87 +51,138 @@ export function AppSidebar() {
     return pathname?.startsWith(url);
   };
 
+  const handleGroupToggle = (title: string, open: boolean) => {
+    setOpenGroup(open ? title : null);
+  };
+
   return (
-    <Sidebar collapsible="icon" className="bg-sidebar border-r">
-      <SidebarHeader className="border-b px-3 py-4">
-        <div className="flex w-full justify-center px-2 pb-2">
-          <div className="flex flex-col items-center justify-center">
-            <Image
-              src="/food_remid_logo.png"
-              alt="Food Remit Logo"
-              width={140}
-              height={50}
-              className="object-contain drop-shadow-sm"
-              priority
-            />
-          </div>
+    <Sidebar variant="inset" collapsible="icon" className="border-r-0">
+      <SidebarHeader className="border-border/40 border-b px-0 py-0">
+        <div
+          className={cn(
+            "flex items-center justify-center transition-all duration-200",
+            isCollapsed ? "h-14 px-1" : "h-18 px-4",
+          )}
+        >
+          {isCollapsed ? (
+            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg shadow-sm">
+              <span className="text-primary-foreground text-xs font-bold">FR</span>
+            </div>
+          ) : (
+            <div className="flex w-full items-center justify-center px-3 py-2.5">
+              <Image
+                src="/food_remid_logo.png"
+                alt="Food Remit"
+                width={130}
+                height={44}
+                className="h-auto max-h-20 w-auto object-contain"
+                priority
+              />
+            </div>
+          )}
         </div>
 
-        <div className="mt-4">
-          <div className="bg-muted flex h-11 items-center rounded-xl px-3">
-            <Search className="text-muted-foreground h-4 w-4" />
-
-            <SidebarInput
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-none bg-transparent shadow-none focus-visible:ring-0"
-            />
+        {!isCollapsed && (
+          <div className="mt-2 px-3 pb-3">
+            <div className="border-border/60 bg-muted/50 focus-within:border-primary/40 focus-within:bg-background flex h-9 items-center gap-2 rounded-lg border px-3 transition-colors">
+              <Search className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
+              <Input
+                placeholder="Search menu…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="placeholder:text-muted-foreground/60 h-full border-none bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </SidebarHeader>
 
-      <SidebarContent className="px-3 py-4">
-        <SidebarGroup>
+      <SidebarContent className="px-2 py-2">
+        <SidebarGroup className="p-0">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
+            <SidebarMenu className="gap-0.5">
+              {!filteredNavItems.length && !isCollapsed && (
+                <div className="text-muted-foreground py-5 text-center text-sm">No data found</div>
+              )}
               {filteredNavItems.map((item) => {
                 const active = isActive(item.url);
 
                 if (item.items?.length) {
-                  const isOpen = (openGroup ?? activeGroup) === item.title || !!searchQuery;
+                  const hasActiveChild = item.items.some((sub) => pathname?.startsWith(sub.url));
+                  const isOpen =
+                    openGroup === item.title ||
+                    (!!searchQuery &&
+                      item.items.some((sub) =>
+                        sub.title.toLowerCase().includes(searchQuery.toLowerCase()),
+                      ));
 
                   return (
                     <Collapsible
                       key={item.title}
                       open={isOpen}
-                      onOpenChange={(open) => setOpenGroup(open ? item.title : null)}
-                      className="group"
+                      onOpenChange={(open) => handleGroupToggle(item.title, open)}
+                      className="group/collapsible"
                     >
                       <SidebarMenuItem>
                         <CollapsibleTrigger>
-                          <SidebarMenuButton
+                          <button
                             className={cn(
-                              "h-10 rounded-lg px-3 transition-all duration-200",
-                              "hover:bg-primary/10 hover:text-primary",
-                              active
-                                ? "bg-primary/80! text-primary-foreground! font-medium shadow-sm"
-                                : "",
+                              "flex h-12 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium transition-all duration-150",
+                              "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
+                              hasActiveChild
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "text-foreground/70 hover:bg-accent hover:text-foreground",
                             )}
-                            isActive={active && !item.items.some((sub) => pathname === sub.url)}
-                            tooltip={item.title}
+                            title={isCollapsed ? item.title : undefined}
                           >
-                            <item.icon className="h-5 w-5" />
-
-                            <span className="flex-1">{item.title}</span>
-
-                            <ChevronRight className="text-muted-foreground group-data-[active=true]:text-primary-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
-                          </SidebarMenuButton>
+                            <item.icon
+                              className={cn(
+                                "h-4 w-4 shrink-0",
+                                hasActiveChild ? "text-primary-foreground" : "text-foreground/60",
+                              )}
+                            />
+                            {!isCollapsed && (
+                              <>
+                                <span className="flex-1 truncate text-left">{item.title}</span>
+                                <ChevronRight
+                                  className={cn(
+                                    "h-3.5 w-3.5 shrink-0 transition-transform duration-200",
+                                    hasActiveChild
+                                      ? "text-primary-foreground/70"
+                                      : "text-muted-foreground",
+                                    isOpen && "rotate-90",
+                                  )}
+                                />
+                              </>
+                            )}
+                          </button>
                         </CollapsibleTrigger>
 
-                        <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up overflow-hidden text-sm">
-                          <SidebarMenuSub className="border-border/50 mt-1.5 ml-4 border-l px-0">
+                        <CollapsibleContent className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
+                          <SidebarMenuSub className="border-border/50 mt-0.5 ml-3.5 border-l py-0.5 pr-0 pl-3">
                             {item.items.map((sub) => {
-                              const isSubActive = pathname === sub.url;
+                              const isSubActive =
+                                pathname === sub.url || pathname?.startsWith(sub.url);
                               return (
                                 <SidebarMenuSubItem key={sub.title}>
-                                  <SidebarMenuSubButton
-                                    render={<Link href={sub.url} />}
-                                    isActive={isSubActive}
-                                    className="hover:bg-primary/10 hover:text-primary data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:before:bg-primary relative h-9 rounded-md px-3 transition-colors before:absolute before:top-1/2 before:left-0 before:h-4 before:w-[2px] before:-translate-y-1/2 before:rounded-r-full before:bg-transparent data-[active=true]:font-medium"
+                                  <Link
+                                    href={sub.url}
+                                    className={cn(
+                                      "flex h-10 items-center rounded-md px-2.5 text-sm transition-colors duration-150",
+                                      "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
+                                      isSubActive
+                                        ? "bg-primary/10 text-primary font-medium"
+                                        : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                                    )}
                                   >
-                                    {sub.title}
-                                  </SidebarMenuSubButton>
+                                    <span
+                                      className={cn(
+                                        "mr-2.5 h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
+                                        isSubActive ? "bg-primary" : "bg-muted-foreground/30",
+                                      )}
+                                    />
+                                    <span className="truncate">{sub.title}</span>
+                                  </Link>
                                 </SidebarMenuSubItem>
                               );
                             })}
@@ -153,21 +195,25 @@ export function AppSidebar() {
 
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      render={<Link href={item.url} />}
-                      isActive={active}
+                    <Link
+                      href={item.url}
+                      title={isCollapsed ? item.title : undefined}
                       className={cn(
-                        "h-10 rounded-lg px-3 transition-all duration-200",
-                        "hover:bg-primary/10 hover:text-primary",
+                        "flex h-12 w-full items-center gap-3 rounded-lg px-2.5 text-sm font-medium transition-all duration-150",
+                        "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
                         active
-                          ? "bg-primary/80! text-primary-foreground! font-medium shadow-sm"
-                          : "",
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-foreground/70 hover:bg-accent hover:text-foreground",
                       )}
-                      tooltip={item.title}
                     >
-                      <item.icon className="h-5 w-5" />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
+                      <item.icon
+                        className={cn(
+                          "h-4 w-4 shrink-0",
+                          active ? "text-primary-foreground" : "text-foreground/60",
+                        )}
+                      />
+                      {!isCollapsed && <span className="truncate">{item.title}</span>}
+                    </Link>
                   </SidebarMenuItem>
                 );
               })}
