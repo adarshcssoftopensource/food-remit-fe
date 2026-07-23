@@ -16,6 +16,7 @@ import { ROUTES } from "@/config/routes";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
+  // const { mutateAsync } = useApiMutation("post", AUTH_ENDPOINTS.LOGIN);
 
   const {
     control,
@@ -29,6 +30,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true);
+    // await mutateAsync(data);
     // TODO: Wire up auth API call
     console.log(data);
     await new Promise((r) => setTimeout(r, 1500));
