@@ -1,5 +1,4 @@
 import {
-  ChevronRight,
   Monitor,
   User,
   Building,
