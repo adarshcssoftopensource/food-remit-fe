@@ -13,15 +13,22 @@ import { Button } from "@/components/ui/button";
 import OrDivider from "@/components/ui/or-divider";
 import { FieldLabel } from "@/components/ui/field";
 import { ROUTES } from "@/config/routes";
+import { useApiMutation } from "@/hooks/useApi";
+import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
+import { successToast } from "@/components/toaster";
 
 export function ForgotPasswordForm({ className, ...props }: React.ComponentProps<"div">) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
+
+  const { mutateAsync, isPending, isSuccess, reset } = useApiMutation<
+    AuthTokenResponse,
+    ForgotPasswordFormValues
+  >("post", AUTH_ENDPOINTS.FORGOT_PASSWORD);
 
   const {
     control,
     handleSubmit,
+    reset: resetForm,
     formState: { errors },
   } = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -30,13 +37,14 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
   });
 
   async function onSubmit(data: ForgotPasswordFormValues) {
-    setIsLoading(true);
-    // TODO: Wire up password reset API call
-    console.log(data);
-    await new Promise((r) => setTimeout(r, 1500));
-    setSubmittedEmail(data.email);
-    setIsLoading(false);
-    setIsSuccess(true);
+    try {
+      await mutateAsync({ email: data?.email });
+      setSubmittedEmail(data.email);
+      successToast({
+        title: "",
+        description: "You have been logged in successfully.",
+      });
+    } catch {}
   }
 
   return (
@@ -57,7 +65,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
               <h1 className="text-3xl font-extrabold tracking-tight text-[#131b4d]">
                 Forgot Password?
               </h1>
-              <p className="mx-auto mt-3 max-w-[280px] text-[15px] leading-relaxed font-medium text-gray-500/90">
+              <p className="mx-auto mt-3 max-w-70 text-[15px] leading-relaxed font-medium text-gray-500/90">
                 No worries! Enter your email and we&apos;ll send you reset instructions.
               </p>
             </div>
@@ -99,7 +107,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
 
                 <Button
                   type="submit"
-                  isLoading={isLoading}
+                  isLoading={isPending}
                   className="mt-4 h-14 w-full rounded-xl bg-gradient-to-b from-[#1B3A8C] to-[#131b4d] text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
                 >
                   Send Reset Link
@@ -123,7 +131,12 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
             <div className="mt-8 flex flex-col gap-3">
               <Button
                 type="button"
-                onClick={() => setIsSuccess(false)}
+                onClick={() => {
+                  reset();
+                  resetForm({
+                    email: submittedEmail,
+                  });
+                }}
                 className="h-12 w-full rounded-xl text-[15px] font-semibold"
               >
                 Resend Email

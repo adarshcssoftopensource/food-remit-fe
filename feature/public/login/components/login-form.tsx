@@ -19,12 +19,12 @@ import { setAuthSession } from "@/lib/authClient";
 import { useRouter } from "next/navigation";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+  const router = useRouter();
+
   const { mutateAsync, isPending } = useApiMutation<AuthTokenResponse, LoginFormValues>(
     "post",
     AUTH_ENDPOINTS.LOGIN,
   );
-
-  const router = useRouter();
 
   const {
     control,

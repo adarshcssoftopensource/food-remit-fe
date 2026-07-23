@@ -34,3 +34,8 @@ export function setAuthSession({
     buildCookieOptions(DEFAULT_REFRESH_MAX_AGE_DAYS),
   );
 }
+
+export function clearAuthSession() {
+  Cookies.remove(AUTH_TOKEN_COOKIE, { path: "/" });
+  Cookies.remove(AUTH_REFRESH_TOKEN_COOKIE, { path: "/" });
+}

@@ -60,7 +60,7 @@ export function AppSidebar() {
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="border-border/50 bg-background/95 supports-[backdrop-filter]:bg-background/60 border-r shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] backdrop-blur-xl"
+      className="border-border/50 bg-background/95 supports-backdrop-filter:bg-background/60 border-r shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] backdrop-blur-xl"
     >
       <SidebarHeader className="border-border/40 border-b px-0 py-0">
         <div
@@ -206,7 +206,7 @@ export function AppSidebar() {
                       href={item.url}
                       title={isCollapsed ? item.title : undefined}
                       className={cn(
-                        "flex h-12 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-300",
+                        "flex h-12 w-full items-center gap-3 rounded-xl px-2.5 text-sm font-medium transition-all duration-300",
                         "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
                         active
                           ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-gradient-to-r shadow-md ring-1"
