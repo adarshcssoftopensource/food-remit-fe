@@ -1,0 +1,33 @@
+
+# Dependency directories
+/node_modules/
+/.next/
+
+
+pnpm-debug.log*
+.pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+
+# dotenv environment variables files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env.local
+
+# Vercel deployment folder
+.vercel
+
+# Serverless Webpack service states
+.webpack
+
+
+# IDEs and Editors
+.vscode/*
+
+
+# Husky auto-generated directory (only ignore the internal subdirectory, keep custom hooks)
+.husky/_
