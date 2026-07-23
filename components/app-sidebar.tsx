@@ -64,7 +64,7 @@ export function AppSidebar() {
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="border-border/50 bg-background/95 supports-backdrop-filter:bg-background/60 border-r shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] backdrop-blur-xl"
+      className="border-border/50 bg-background/95 supports-backdrop-filter:bg-background/70 border-r shadow-[4px_0_24px_-12px_rgba(0,0,0,0.15)] backdrop-blur-2xl"
     >
       <SidebarHeader className="border-border/40 border-b px-0 py-0">
         <div
@@ -74,7 +74,7 @@ export function AppSidebar() {
           )}
         >
           {isCollapsed ? (
-            <div className="from-primary to-primary/80 ring-primary/20 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg ring-1 transition-all hover:scale-105">
+            <div className="from-primary to-primary/80 ring-primary/20 flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br shadow-lg ring-1 transition-all hover:scale-105">
               <span className="text-primary-foreground text-sm font-bold tracking-wider">FR</span>
             </div>
           ) : (
@@ -136,11 +136,11 @@ export function AppSidebar() {
                         <CollapsibleTrigger>
                           <button
                             className={cn(
-                              "flex h-12 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-300",
+                              "flex h-12 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium",
                               "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
                               hasActiveChild
-                                ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-gradient-to-r shadow-md ring-1"
-                                : "text-foreground/70 hover:bg-muted/80 hover:text-foreground hover:shadow-sm",
+                                ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-linear-to-r"
+                                : "text-foreground/70 hover:bg-primary/5 hover:text-foreground",
                             )}
                             title={isCollapsed ? item.title : undefined}
                           >
@@ -182,7 +182,7 @@ export function AppSidebar() {
                                       "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
                                       isSubActive
                                         ? "bg-primary/15 text-primary ring-primary/10 font-semibold shadow-sm ring-1"
-                                        : "text-muted-foreground hover:bg-muted/80 hover:text-foreground",
+                                        : "text-muted-foreground hover:bg-primary/5 hover:text-foreground",
                                     )}
                                   >
                                     <span
@@ -212,11 +212,12 @@ export function AppSidebar() {
                       href={item.url}
                       title={isCollapsed ? item.title : undefined}
                       className={cn(
-                        "flex h-12 w-full items-center gap-3 rounded-xl px-2.5 text-sm font-medium transition-all duration-300",
+                        "flex h-12 w-full items-center gap-3 rounded-xl px-4 text-sm font-medium transition-all duration-300",
                         "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
                         active
-                          ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-gradient-to-r shadow-md ring-1"
-                          : "text-foreground/70 hover:bg-muted/80 hover:text-foreground hover:shadow-sm",
+                          ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-linear-to-r shadow-md ring-1"
+                          : "text-foreground/70 hover:bg-primary/5 hover:text-foreground",
+                        isCollapsed && "px-2",
                       )}
                     >
                       <item.icon
