@@ -42,7 +42,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
       setSubmittedEmail(data.email);
       successToast({
         title: "",
-        description: "You have been logged in successfully.",
+        description: "Password reset instructions have been sent to your email address.",
       });
     } catch {}
   }

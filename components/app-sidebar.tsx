@@ -25,7 +25,8 @@ import { Input } from "@/components/ui/input";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { state } = useSidebar();
+  const { state, isMobile, toggleSidebar } = useSidebar();
+
   const isCollapsed = state === "collapsed";
 
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -54,6 +55,9 @@ export function AppSidebar() {
 
   const handleGroupToggle = (title: string, open: boolean) => {
     setOpenGroup(open ? title : null);
+  };
+  const handleMobileClose = () => {
+    if (isMobile) toggleSidebar();
   };
 
   return (
@@ -172,6 +176,7 @@ export function AppSidebar() {
                                 <SidebarMenuSubItem key={sub.title}>
                                   <Link
                                     href={sub.url}
+                                    onClick={handleMobileClose}
                                     className={cn(
                                       "flex h-10 items-center rounded-lg px-3 text-sm transition-all duration-300",
                                       "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
@@ -203,6 +208,7 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <Link
+                      onClick={handleMobileClose}
                       href={item.url}
                       title={isCollapsed ? item.title : undefined}
                       className={cn(

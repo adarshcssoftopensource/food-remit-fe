@@ -12,8 +12,19 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { ChangePasswordFormValues, changePasswordSchema } from "../schema/change-password.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ROUTES } from "@/config/routes";
+import { useApiMutation } from "@/hooks/useApi";
+import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
+import { successToast } from "@/components/toaster";
+import { useRouter } from "next/navigation";
 
 export function ChangePasswordForm({ className, ...props }: React.ComponentProps<"div">) {
+  const router = useRouter();
+
+  const { mutateAsync, isPending } = useApiMutation<AuthTokenResponse, ChangePasswordFormValues>(
+    "post",
+    AUTH_ENDPOINTS.RESET_PASSWORD,
+  );
+
   const {
     control,
     handleSubmit,
@@ -28,7 +39,15 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
   });
 
   async function onSubmit(data: ChangePasswordFormValues) {
-    console.log(data);
+    try {
+      await mutateAsync(data);
+      router.refresh();
+      router.push(ROUTES.AUTH.LOGIN);
+      successToast({
+        title: "",
+        description: "Your password has been changed successfully. ",
+      });
+    } catch {}
   }
 
   return (
@@ -111,6 +130,7 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
 
               <Button
                 type="submit"
+                isLoading={isPending}
                 className="mt-4 h-14 w-full rounded-xl bg-linear-to-b from-[#1B3A8C] to-[#131b4d] text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
               >
                 Update Password
