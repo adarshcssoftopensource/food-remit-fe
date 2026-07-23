@@ -40,24 +40,30 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
   }
 
   return (
-    <div className={cn("w-full", className)} {...props}>
-      <div className="px-8 py-10">
+    <div
+      className={cn(
+        "relative z-10 mx-auto w-full overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-black/5 sm:p-12",
+        className,
+      )}
+      {...props}
+    >
+      <div>
         {!isSuccess ? (
           <>
-            <div className="mb-8 text-center">
-              <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EBF0FF]">
-                <Mail className="size-6 text-[#1B3A8C]" />
+            <div className="mb-10 text-center">
+              <div className="from-primary/10 to-primary/20 ring-primary/20 mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br shadow-inner ring-1">
+                <Mail className="size-7 text-[#1B3A8C]" />
               </div>
-              <h1 className="text-[1.75rem] leading-tight font-bold tracking-tight">
+              <h1 className="text-3xl font-extrabold tracking-tight text-[#131b4d]">
                 Forgot Password?
               </h1>
-              <p className="mx-auto mt-1.5 max-w-75 text-sm leading-relaxed text-gray-500">
+              <p className="mx-auto mt-3 max-w-[280px] text-[15px] leading-relaxed font-medium text-gray-500/90">
                 No worries! Enter your email and we&apos;ll send you reset instructions.
               </p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-6">
                 <Controller
                   name="email"
                   control={control}
@@ -76,10 +82,11 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                           autoComplete="email"
                           aria-invalid={!!errors.email}
                           className={cn(
-                            "h-11 rounded-xl border-gray-200 bg-gray-50 pl-10 transition-all duration-200 placeholder:text-gray-400",
-                            "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:ring-[#1B3A8C]/15",
+                            "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
+                            "hover:border-gray-300 hover:bg-gray-50",
+                            "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
                             errors.email &&
-                              "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:ring-red-400/15",
+                              "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
                           )}
                         />
                       </div>
@@ -93,7 +100,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                 <Button
                   type="submit"
                   isLoading={isLoading}
-                  className="w-full rounded-xl text-sm font-semibold"
+                  className="mt-4 h-14 w-full rounded-xl bg-gradient-to-b from-[#1B3A8C] to-[#131b4d] text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
                 >
                   Send Reset Link
                 </Button>
@@ -101,18 +108,24 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
             </form>
           </>
         ) : (
-          <div className="py-4 text-center">
-            <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[#E8F5E9]">
-              <CheckCircle2 className="size-8 text-[#2E7D32]" />
+          <div className="py-6 text-center">
+            <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-green-400/10 to-green-500/20 shadow-inner ring-1 ring-green-500/20">
+              <CheckCircle2 className="size-10 text-green-600" />
             </div>
-            <h2 className="mb-2 text-xl font-bold">Check your inbox!</h2>
-            <p className="mx-auto max-w-72.5 text-sm leading-relaxed text-gray-500">
+            <h2 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
+              Check your inbox!
+            </h2>
+            <p className="mx-auto max-w-[280px] text-[15px] leading-relaxed font-medium text-gray-500/90">
               We&apos;ve sent password reset instructions to{" "}
-              <span className="font-semibold">{submittedEmail}</span>
+              <span className="font-semibold text-gray-900 dark:text-white">{submittedEmail}</span>
             </p>
 
-            <div className="mt-5 flex flex-col gap-3">
-              <Button type="button" onClick={() => setIsSuccess(false)}>
+            <div className="mt-8 flex flex-col gap-3">
+              <Button
+                type="button"
+                onClick={() => setIsSuccess(false)}
+                className="h-12 w-full rounded-xl text-[15px] font-semibold"
+              >
                 Resend Email
               </Button>
             </div>
@@ -121,9 +134,13 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
 
         <OrDivider />
 
-        <Link href={ROUTES.AUTH.LOGIN} id="back-to-login-link">
-          <Button type="button" className="w-full" variant={"secondary"}>
-            <ArrowLeft className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+        <Link href={ROUTES.AUTH.LOGIN} id="back-to-login-link" className="group mt-4 block">
+          <Button
+            type="button"
+            className="h-12 w-full rounded-xl text-[15px] font-semibold transition-all duration-300 group-hover:bg-gray-100"
+            variant={"secondary"}
+          >
+            <ArrowLeft className="mr-2 size-4 transition-transform duration-200 group-hover:-translate-x-1" />
             Back to Sign In
           </Button>
         </Link>

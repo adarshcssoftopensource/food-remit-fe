@@ -57,7 +57,11 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar variant="inset" collapsible="icon" className="border-r-0">
+    <Sidebar
+      variant="inset"
+      collapsible="icon"
+      className="border-border/50 bg-background/95 supports-[backdrop-filter]:bg-background/60 border-r shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] backdrop-blur-xl"
+    >
       <SidebarHeader className="border-border/40 border-b px-0 py-0">
         <div
           className={cn(
@@ -66,8 +70,8 @@ export function AppSidebar() {
           )}
         >
           {isCollapsed ? (
-            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg shadow-sm">
-              <span className="text-primary-foreground text-xs font-bold">FR</span>
+            <div className="from-primary to-primary/80 ring-primary/20 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg ring-1 transition-all hover:scale-105">
+              <span className="text-primary-foreground text-sm font-bold tracking-wider">FR</span>
             </div>
           ) : (
             <div className="flex w-full items-center justify-center px-3 py-2.5">
@@ -84,14 +88,14 @@ export function AppSidebar() {
         </div>
 
         {!isCollapsed && (
-          <div className="mt-2 px-3 pb-3">
-            <div className="border-border/60 bg-muted/50 focus-within:border-primary/40 focus-within:bg-background flex h-9 items-center gap-2 rounded-lg border px-3 transition-colors">
-              <Search className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
+          <div className="mt-3 px-4 pb-4">
+            <div className="border-border/40 bg-background/50 focus-within:border-primary/50 focus-within:bg-background flex h-10 items-center gap-2 rounded-xl border px-3 backdrop-blur-md transition-all duration-300 focus-within:shadow-[0_0_0_4px_rgba(var(--primary),0.1)]">
+              <Search className="text-muted-foreground/70 h-4 w-4 shrink-0" />
               <Input
                 placeholder="Search menu…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="placeholder:text-muted-foreground/60 h-full border-none bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
+                className="placeholder:text-muted-foreground/50 h-full border-none bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
               />
             </div>
           </div>
@@ -128,11 +132,11 @@ export function AppSidebar() {
                         <CollapsibleTrigger>
                           <button
                             className={cn(
-                              "flex h-12 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium transition-all duration-150",
+                              "flex h-12 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-300",
                               "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
                               hasActiveChild
-                                ? "bg-primary text-primary-foreground shadow-sm"
-                                : "text-foreground/70 hover:bg-accent hover:text-foreground",
+                                ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-gradient-to-r shadow-md ring-1"
+                                : "text-foreground/70 hover:bg-muted/80 hover:text-foreground hover:shadow-sm",
                             )}
                             title={isCollapsed ? item.title : undefined}
                           >
@@ -169,17 +173,19 @@ export function AppSidebar() {
                                   <Link
                                     href={sub.url}
                                     className={cn(
-                                      "flex h-10 items-center rounded-md px-2.5 text-sm transition-colors duration-150",
+                                      "flex h-10 items-center rounded-lg px-3 text-sm transition-all duration-300",
                                       "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
                                       isSubActive
-                                        ? "bg-primary/10 text-primary font-medium"
-                                        : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                                        ? "bg-primary/15 text-primary ring-primary/10 font-semibold shadow-sm ring-1"
+                                        : "text-muted-foreground hover:bg-muted/80 hover:text-foreground",
                                     )}
                                   >
                                     <span
                                       className={cn(
-                                        "mr-2.5 h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
-                                        isSubActive ? "bg-primary" : "bg-muted-foreground/30",
+                                        "mr-3 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-300",
+                                        isSubActive
+                                          ? "bg-primary scale-125 shadow-sm"
+                                          : "bg-muted-foreground/30",
                                       )}
                                     />
                                     <span className="truncate">{sub.title}</span>
@@ -200,11 +206,11 @@ export function AppSidebar() {
                       href={item.url}
                       title={isCollapsed ? item.title : undefined}
                       className={cn(
-                        "flex h-12 w-full items-center gap-3 rounded-lg px-2.5 text-sm font-medium transition-all duration-150",
+                        "flex h-12 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-300",
                         "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
                         active
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-foreground/70 hover:bg-accent hover:text-foreground",
+                          ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-gradient-to-r shadow-md ring-1"
+                          : "text-foreground/70 hover:bg-muted/80 hover:text-foreground hover:shadow-sm",
                       )}
                     >
                       <item.icon

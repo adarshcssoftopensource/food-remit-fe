@@ -25,6 +25,8 @@ export const metadata: Metadata = {
 };
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryProvider } from "@/components/providers/query-provider";
+import { AppToaster } from "@/components/toaster/appToaster";
 
 export default function RootLayout({
   children,
@@ -34,7 +36,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+        <QueryProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+          <AppToaster />
+        </QueryProvider>
       </body>
     </html>
   );

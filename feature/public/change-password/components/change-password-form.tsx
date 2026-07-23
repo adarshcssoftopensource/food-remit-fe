@@ -32,23 +32,31 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
   }
 
   return (
-    <div className={cn("w-full", className)} {...props}>
-      <div className="px-8 py-10">
+    <div
+      className={cn(
+        "relative z-10 mx-auto w-full overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-black/5 sm:p-12",
+        className,
+      )}
+      {...props}
+    >
+      <div>
         <>
-          <div className="mb-8 text-center">
-            <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EBF0FF]">
-              <Lock size={22} />
+          <div className="mb-10 text-center">
+            <div className="from-primary/10 to-primary/20 ring-primary/20 mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br shadow-inner ring-1">
+              <Lock className="size-7 text-[#1B3A8C]" />
             </div>
 
-            <h1 className="text-[1.75rem] font-bold tracking-tight">Change Password</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight text-[#131b4d]">
+              Change Password
+            </h1>
 
-            <p className="mx-auto mt-2 max-w-80 text-sm leading-relaxed text-gray-500">
+            <p className="mx-auto mt-3 max-w-70 text-[15px] leading-relaxed font-medium text-gray-500/90">
               Create a strong new password to keep your account secure.
             </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-6">
               <Controller
                 name="newPassword"
                 control={control}
@@ -101,7 +109,10 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
                 )}
               />
 
-              <Button type="submit" className="h-11 rounded-xl">
+              <Button
+                type="submit"
+                className="mt-4 h-14 w-full rounded-xl bg-linear-to-b from-[#1B3A8C] to-[#131b4d] text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
+              >
                 Update Password
               </Button>
             </div>
@@ -110,9 +121,12 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
 
         <OrDivider />
 
-        <Link href={ROUTES.AUTH.LOGIN}>
-          <Button variant="secondary" className="w-full">
-            <ArrowLeft className="size-4" />
+        <Link href={ROUTES.AUTH.LOGIN} className="group mt-4 block">
+          <Button
+            variant="secondary"
+            className="h-12 w-full rounded-xl text-[15px] font-semibold transition-all duration-300 group-hover:bg-gray-100"
+          >
+            <ArrowLeft className="mr-2 size-4 transition-transform duration-200 group-hover:-translate-x-1" />
             Back to Sign In
           </Button>
         </Link>

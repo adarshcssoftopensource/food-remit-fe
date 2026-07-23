@@ -6,7 +6,7 @@ export const ROUTES = {
     CHANGE_PASSWORD: "/change-password",
   },
   ADMIN: {
-    DASHBOARD: "/admin",
+    DASHBOARD: "/dashboard",
   },
 } as const;
 
