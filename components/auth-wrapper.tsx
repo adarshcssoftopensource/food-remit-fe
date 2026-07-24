@@ -1,32 +1,8 @@
+import { AUTH_FEATURES } from "@/constants/auth.constants";
 import Image from "next/image";
 import React from "react";
-import { Globe, LucideIcon, ShieldCheck, Users, Zap } from "lucide-react";
-
-type Feature = {
-  icon: LucideIcon;
-  title: string;
-};
 
 export function AuthWrapper({ children }: { children: React.ReactNode }) {
-  const AUTH_FEATURES: Feature[] = [
-    {
-      icon: Globe,
-      title: "Global Remittance",
-    },
-    {
-      icon: ShieldCheck,
-      title: "Secure & Reliable",
-    },
-    {
-      icon: Zap,
-      title: "Fast & Efficient",
-    },
-    {
-      icon: Users,
-      title: "Connect & Support",
-    },
-  ];
-
   return (
     <main className="relative min-h-screen overflow-hidden bg-white lg:bg-linear-to-br lg:from-[#f4f9f7] lg:to-[#e6f4ea]">
       <div className="pointer-events-none absolute bottom-0 left-0 z-0 h-40 w-40 sm:h-52 sm:w-52 md:h-64 md:w-64 lg:h-[48vh] lg:w-[38vw]">

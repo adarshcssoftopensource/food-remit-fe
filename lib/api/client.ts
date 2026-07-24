@@ -38,10 +38,12 @@ axiosInstance.interceptors.response.use(
       error.response?.data?.error ||
       error.message ||
       "Something went wrong";
+
     errorToast({
       title: "",
       description: message,
     });
+
     return Promise.reject(new Error(message));
   },
 );
