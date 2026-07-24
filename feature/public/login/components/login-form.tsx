@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, User } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -57,13 +57,16 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       className={cn(
-        "relative z-10 w-full overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-black/40 sm:p-12",
+        "relative z-10 w-full overflow-hidden rounded-[2.5rem] p-8 shadow-2xl shadow-black/40 sm:p-12",
         className,
       )}
       {...props}
     >
       <div>
         <div className="mb-10 text-center">
+          <div className="from-primary/10 to-primary/20 ring-primary/20 mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br shadow-inner ring-1">
+            <User className="size-7" />
+          </div>
           <h1 className="text-3xl font-extrabold tracking-tight">Welcome Back</h1>
           <p className="mt-2 text-sm font-medium text-gray-500/80">
             Sign in to your Food Remit account

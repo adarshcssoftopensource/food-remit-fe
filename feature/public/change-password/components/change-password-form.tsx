@@ -16,11 +16,18 @@ import { useApiMutation } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
 import { successToast } from "@/components/toaster";
 import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
+
+type ResetPasswordPayload = {
+  token: string;
+  password: string;
+};
 
 export function ChangePasswordForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const [token] = useQueryState("token");
 
-  const { mutateAsync, isPending } = useApiMutation<AuthTokenResponse, ChangePasswordFormValues>(
+  const { mutateAsync, isPending } = useApiMutation<AuthTokenResponse, ResetPasswordPayload>(
     "post",
     AUTH_ENDPOINTS.RESET_PASSWORD,
   );
@@ -40,7 +47,10 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
 
   async function onSubmit(data: ChangePasswordFormValues) {
     try {
-      await mutateAsync(data);
+      await mutateAsync({
+        token: token ?? "",
+        password: data.newPassword,
+      });
       router.refresh();
       router.push(ROUTES.AUTH.LOGIN);
       successToast({
@@ -53,7 +63,7 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
   return (
     <div
       className={cn(
-        "relative z-10 mx-auto w-full overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-black/5 sm:p-12",
+        "relative z-10 w-full overflow-hidden rounded-[2.5rem] p-8 shadow-2xl shadow-black/40 sm:p-12",
         className,
       )}
       {...props}

@@ -50,7 +50,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
   return (
     <div
       className={cn(
-        "relative z-10 mx-auto w-full overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-black/5 sm:p-12",
+        "relative z-10 w-full overflow-hidden rounded-[2.5rem] p-8 shadow-2xl shadow-black/40 sm:p-12",
         className,
       )}
       {...props}
