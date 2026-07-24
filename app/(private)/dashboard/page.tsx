@@ -1,5 +1,11 @@
-function page() {
-  return <div>page</div>;
-}
+import { Dashboard } from "@/feature/private/dashboard";
+import { Metadata } from "next";
 
-export default page;
+export const metadata: Metadata = {
+  title: "Dashboard | Food Remit",
+  description: "Platform dashboard and overview.",
+};
+
+export default function DashboardPage() {
+  return <Dashboard />;
+}

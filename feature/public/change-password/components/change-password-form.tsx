@@ -20,7 +20,7 @@ import { useQueryState } from "nuqs";
 
 type ResetPasswordPayload = {
   token: string;
-  password: string;
+  newPassword: string;
 };
 
 export function ChangePasswordForm({ className, ...props }: React.ComponentProps<"div">) {
@@ -49,7 +49,7 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
     try {
       await mutateAsync({
         token: token ?? "",
-        password: data.newPassword,
+        newPassword: data.newPassword,
       });
       router.refresh();
       router.push(ROUTES.AUTH.LOGIN);

@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryProvider } from "@/components/providers/query-provider";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { AppToaster } from "@/components/toaster/app-toaster";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -23,11 +27,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryProvider } from "@/components/providers/query-provider";
-import { AppToaster } from "@/components/toaster/appToaster";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export default function RootLayout({
   children,

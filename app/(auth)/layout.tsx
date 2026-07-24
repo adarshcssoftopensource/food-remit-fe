@@ -2,10 +2,10 @@ import { AUTH_FEATURES } from "@/constants/auth.constants";
 import Image from "next/image";
 import React from "react";
 
-export function AuthWrapper({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="relative min-h-screen overflow-hidden bg-white lg:bg-linear-to-br lg:from-[#f4f9f7] lg:to-[#e6f4ea]">
-      <div className="pointer-events-none absolute bottom-0 left-0 z-0 h-40 w-40 sm:h-52 sm:w-52 md:h-64 md:w-64 lg:h-[48vh] lg:w-[38vw]">
+      <div className="pointer-events-none absolute bottom-0 left-0 z-0 h-100 w-100 sm:h-100 sm:w-100 md:h-100 md:w-100 lg:h-100 lg:w-100">
         <Image
           src="/login_background_image.png"
           alt="Food Decor"
@@ -19,7 +19,6 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
         <div className="relative z-10 hidden items-center justify-center px-12 lg:flex">
           <div className="flex max-w-md flex-col items-center">
             <Image src="/food_remid_logo.png" alt="Food Remit" width={250} height={250} priority />
-
             <div className="my-8 flex items-center">
               <div className="h-px w-12 bg-gray-300" />
               <span className="mx-3 text-green-700">🌿</span>

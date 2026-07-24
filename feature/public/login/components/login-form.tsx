@@ -42,7 +42,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       if (res?.access_token) {
         setAuthSession({
           accessToken: res.access_token,
-          refreshToken: res.refresh_token,
         });
         successToast({
           title: "",

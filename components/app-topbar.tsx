@@ -54,7 +54,7 @@ export function AppTopBar() {
             >
               <div
                 className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-xl",
+                  "flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl",
                   "from-primary to-primary/70 bg-linear-to-br",
                   "text-primary-foreground",
                   "text-xs font-bold",
