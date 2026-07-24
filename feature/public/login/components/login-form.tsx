@@ -15,7 +15,7 @@ import { ROUTES } from "@/config/routes";
 import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
 import { useApiMutation } from "@/hooks/useApi";
 import { successToast } from "@/components/toaster";
-import { setAuthSession } from "@/lib/authClient";
+import { setAuthSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {

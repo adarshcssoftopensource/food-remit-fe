@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
-import { clearAuthSession } from "@/lib/authClient";
+import { clearAuthSession } from "@/lib/auth-client";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
