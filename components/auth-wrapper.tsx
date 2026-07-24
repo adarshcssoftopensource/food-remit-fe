@@ -86,7 +86,7 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
 
         <div className="relative flex items-center justify-center overflow-hidden px-5 py-8 sm:px-8 lg:px-12">
           <div className="absolute inset-y-0 right-0 hidden w-full max-w-225 rounded-l-[60px] bg-white lg:block" />
-          <div className="relative z-10 flex w-full max-w-md justify-center">{children}</div>
+          <div className="relative z-10 flex w-full justify-center">{children}</div>
         </div>
       </div>
     </main>
