@@ -57,14 +57,14 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       className={cn(
-        "relative z-10 w-full overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-black/5 sm:p-12",
+        "relative z-10 w-full overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-black/40 sm:p-12",
         className,
       )}
       {...props}
     >
       <div>
         <div className="mb-10 text-center">
-          <h1 className="text-3xl font-extrabold tracking-tight text-[#131b4d]">Welcome Back</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">Welcome Back</h1>
           <p className="mt-2 text-sm font-medium text-gray-500/80">
             Sign in to your Food Remit account
           </p>
@@ -77,7 +77,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel htmlFor="email" className="text-sm font-semibold text-[#131b4d]">
+                  <FieldLabel htmlFor="email" className="text-sm font-semibold">
                     Email Address
                   </FieldLabel>
                   <div className="relative">
@@ -111,10 +111,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               render={({ field }) => (
                 <div className="mt-1 flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
-                    <FieldLabel
-                      htmlFor="login-password"
-                      className="text-sm font-semibold text-[#131b4d]"
-                    >
+                    <FieldLabel htmlFor="login-password" className="text-sm font-semibold">
                       Password
                     </FieldLabel>
                   </div>
@@ -134,7 +131,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               <Link
                 href={ROUTES.AUTH.FORGOT_PASSWORD}
                 id="forgot-password-link"
-                className="text-sm font-bold text-[#1B3A8C] transition-all hover:text-[#131b4d] hover:underline hover:underline-offset-2"
+                className="hover: text-sm font-bold text-[#1B3A8C] transition-all hover:underline hover:underline-offset-2"
               >
                 Forgot password?
               </Link>
