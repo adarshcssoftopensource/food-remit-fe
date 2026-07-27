@@ -1,5 +1,9 @@
-function page() {
-  return <div>page</div>;
-}
+import { UserManagement } from "@/feature/private/users-management";
 
-export default page;
+export default function UsersManagementPage() {
+  return (
+    <>
+      <UserManagement />
+    </>
+  );
+}
