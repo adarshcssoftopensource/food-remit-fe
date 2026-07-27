@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FilterChip } from "./components/filter-chip";
 
 export function UserManagement() {
   const [fromDate, setFromDate] = useState<Date>();
@@ -146,28 +145,6 @@ export function UserManagement() {
               Reset
             </Button>
           </div>
-
-          {hasFilters && (
-            <div className="mt-4 flex flex-wrap gap-2 border-t pt-4">
-              {status !== "All Users" && (
-                <FilterChip label={`Status: ${status}`} onRemove={() => setStatus("All Users")} />
-              )}
-
-              {fromDate && (
-                <FilterChip
-                  label={`From: ${fromDate.toLocaleDateString("en-GB")}`}
-                  onRemove={() => setFromDate(undefined)}
-                />
-              )}
-
-              {toDate && (
-                <FilterChip
-                  label={`To: ${toDate.toLocaleDateString("en-GB")}`}
-                  onRemove={() => setToDate(undefined)}
-                />
-              )}
-            </div>
-          )}
         </CardContent>
       </Card>
 

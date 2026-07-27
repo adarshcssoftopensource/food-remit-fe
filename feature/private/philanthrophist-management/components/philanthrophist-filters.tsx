@@ -5,17 +5,12 @@ import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   PHILANTHROPIST_CITIES,
   PHILANTHROPIST_COUNTRIES,
 } from "@/constants/philanthrophist-management";
+import { FilterSelect } from "./filter-select";
 
 interface PhilanthrophistFiltersProps {
   fromDate?: Date;
@@ -28,6 +23,17 @@ interface PhilanthrophistFiltersProps {
   onCountryChange: (value: string) => void;
   onCityChange: (value: string) => void;
   onClearFilters: () => void;
+}
+
+function FilterInput({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+        {label}
+      </Label>
+      {children}
+    </div>
+  );
 }
 
 export function PhilanthrophistFilters({
@@ -94,48 +100,6 @@ export function PhilanthrophistFilters({
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function FilterInput({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <Label className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-        {label}
-      </Label>
-      {children}
-    </div>
-  );
-}
-function FilterSelect({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-}) {
-  return (
-    <div className="space-y-2">
-      <Label className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-        {label}
-      </Label>
-      <Select value={value || undefined} onValueChange={(nextValue) => onChange(nextValue ?? "")}>
-        <SelectTrigger className="h-10! w-full rounded-lg border-gray-200">
-          <SelectValue placeholder={`Select ${label}`} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
     </div>
   );
 }
