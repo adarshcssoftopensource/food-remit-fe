@@ -17,6 +17,7 @@ import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endp
 import { successToast } from "@/components/toaster";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
+import { PasswordStrengthIndicator } from "@/components/common/password-strength-indicator";
 
 type ResetPasswordPayload = {
   token: string;
@@ -70,7 +71,7 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
     >
       <div>
         <>
-          <div className="mb-10 text-center">
+          <div className="mb-4 text-center">
             <div className="from-primary/10 to-primary/20 ring-primary/20 mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br shadow-inner ring-1">
               <Lock className="size-7 text-[#1B3A8C]" />
             </div>
@@ -108,6 +109,7 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
                         {errors.newPassword.message}
                       </p>
                     )}
+                    <PasswordStrengthIndicator password={field.value ?? ""} />
                   </div>
                 )}
               />
