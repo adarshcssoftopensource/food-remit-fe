@@ -129,7 +129,7 @@ export const MOCK_USERS_DATA: UserData[] = [
     id: "etQjGL7iuN490",
     firstName: "Rohit",
     lastName: "Dad",
-    userName: "Rohitdad",
+    userName: "Rohit dad",
     userType: "Normal",
     email: "rohit@yopmail.com",
     contactNumber: "9779318152",
