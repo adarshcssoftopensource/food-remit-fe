@@ -73,12 +73,10 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
         <>
           <div className="mb-4 text-center">
             <div className="from-primary/10 to-primary/20 ring-primary/20 mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br shadow-inner ring-1">
-              <Lock className="size-7 text-[#1B3A8C]" />
+              <Lock className="size-7" />
             </div>
 
-            <h1 className="text-3xl font-extrabold tracking-tight text-[#131b4d]">
-              Change Password
-            </h1>
+            <h1 className="text-3xl font-extrabold tracking-tight">Change Password</h1>
 
             <p className="mx-auto mt-3 max-w-70 text-[15px] leading-relaxed font-medium text-gray-500/90">
               Create a strong new password to keep your account secure.
@@ -143,7 +141,7 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
               <Button
                 type="submit"
                 isLoading={isPending}
-                className="mt-4 h-14 w-full rounded-xl bg-linear-to-b from-[#1B3A8C] to-[#131b4d] text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
+                className="mt-4 h-14 w-full rounded-xl text-base font-bold"
               >
                 Update Password
               </Button>

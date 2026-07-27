@@ -91,10 +91,10 @@ export function PhilanthrophistFilters({
         </div>
         <div className="flex justify-end">
           <Button
-            variant="outline"
+            variant="destructive"
             onClick={onClearFilters}
             disabled={!hasFilters}
-            className="text-primary hover:bg-primary hover:text-primary-foreground h-10 rounded-lg"
+            className="h-10 rounded-lg"
           >
             <RotateCcw size={18} /> Reset Filters
           </Button>

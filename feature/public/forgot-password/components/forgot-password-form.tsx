@@ -60,11 +60,9 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
           <>
             <div className="mb-10 text-center">
               <div className="from-primary/10 to-primary/20 ring-primary/20 mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br shadow-inner ring-1">
-                <Mail className="size-7 text-[#1B3A8C]" />
+                <Mail className="size-7" />
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-[#131b4d]">
-                Forgot Password?
-              </h1>
+              <h1 className="text-3xl font-extrabold tracking-tight">Forgot Password?</h1>
               <p className="mx-auto mt-3 max-w-70 text-[15px] leading-relaxed font-medium text-gray-500/90">
                 No worries! Enter your email and we&apos;ll send you reset instructions.
               </p>
@@ -92,7 +90,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                           className={cn(
                             "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
                             "hover:border-gray-300 hover:bg-gray-50",
-                            "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
+                            "focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)]",
                             errors.email &&
                               "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
                           )}
@@ -108,7 +106,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                 <Button
                   type="submit"
                   isLoading={isPending}
-                  className="mt-4 h-14 w-full rounded-xl bg-gradient-to-b from-[#1B3A8C] to-[#131b4d] text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
+                  className="mt-4 h-14 w-full rounded-xl text-base font-bold"
                 >
                   Send Reset Link
                 </Button>

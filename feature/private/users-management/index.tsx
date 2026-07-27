@@ -64,21 +64,36 @@ export function UserManagement() {
         description="Manage and monitor all registered users in the platform."
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {STAT_CONFIG.map(({ key, label, Icon, color, bg }) => (
-          <Card key={key} className="rounded-xl shadow-sm">
-            <CardContent className="flex items-center justify-between p-5">
-              <div>
-                <p className="text-muted-foreground text-sm">{label}</p>
-                <p className={`mt-1 text-3xl font-bold ${color}`}>{stats[key]}</p>
-              </div>
-              <div className={`rounded-xl p-3 ${bg}`}>
-                <Icon className={`size-6 ${color}`} />
+          <Card key={key} className="group overflow-hidden rounded-2xl">
+            <CardContent className="relative p-6">
+              <div className="bg-muted/30 absolute -top-8 -right-8 h-28 w-28 rounded-full transition-transform duration-300 group-hover:scale-110" />
+
+              <div className="relative flex items-center justify-between">
+                <div>
+                  <p className="text-muted-foreground text-sm font-medium tracking-wide">{label}</p>
+
+                  <h2 className={`mt-2 text-4xl font-bold ${color}`}>{stats[key]}</h2>
+
+                  <div className="mt-4 flex items-center gap-2">
+                    <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">
+                      +12%
+                    </span>
+
+                    <span className="text-muted-foreground text-xs">Compared to last month</span>
+                  </div>
+                </div>
+
+                <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ${bg} `}>
+                  <Icon className={`h-8 w-8 ${color}`} />
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
       <Card className="rounded-xl border bg-white shadow-sm">
         <CardHeader className="border-b py-4">
           <div className="flex items-center gap-3">
@@ -136,7 +151,7 @@ export function UserManagement() {
             </div>
 
             <Button
-              variant="outline"
+              variant="destructive"
               onClick={clearFilters}
               disabled={!hasFilters}
               className="h-10 shrink-0 px-5"

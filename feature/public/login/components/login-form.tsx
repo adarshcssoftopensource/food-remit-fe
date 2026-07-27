@@ -133,7 +133,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               <Link
                 href={ROUTES.AUTH.FORGOT_PASSWORD}
                 id="forgot-password-link"
-                className="hover: text-sm font-bold text-[#1B3A8C] transition-all hover:underline hover:underline-offset-2"
+                className="hover: text-sm font-bold hover:underline hover:underline-offset-2"
               >
                 Forgot password?
               </Link>
@@ -141,7 +141,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             <Button
               type="submit"
               isLoading={isPending}
-              className="mt-4 h-14 w-full rounded-xl bg-gradient-to-b from-[#1B3A8C] to-[#131b4d] text-base font-bold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]"
+              className="mt-4 h-14 w-full rounded-xl text-base font-bold shadow-sm transition-all"
             >
               Sign In
             </Button>

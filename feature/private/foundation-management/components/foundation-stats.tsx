@@ -13,19 +13,25 @@ interface FoundationStatsProps {
 
 export function FoundationStats({ stats }: FoundationStatsProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
       {FOUNDATION_STATS_CONFIG.map(({ key, label, Icon, color, bg }) => (
         <Card
           key={key}
-          className="rounded-xl border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-md"
+          className="group from-background to-muted/20 relative overflow-hidden rounded-2xl"
         >
-          <CardContent className="flex items-center justify-between p-6">
-            <div className="space-y-2">
-              <p className="text-muted-foreground text-sm font-medium">{label}</p>
-              <p className={`text-4xl font-bold ${color}`}>{stats[key]}</p>
+          <div className="bg-primary/5 absolute -top-8 -right-8 h-28 w-28 rounded-full transition-transform duration-300 group-hover:scale-125" />
+
+          <CardContent className="relative flex items-center justify-between p-6">
+            <div>
+              <p className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
+                {label}
+              </p>
+
+              <h2 className={`mt-2 text-4xl font-bold ${color}`}>{stats[key]}</h2>
             </div>
-            <div className={`rounded-lg p-4 ${bg}`}>
-              <Icon className={`size-7 ${color}`} />
+
+            <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${bg} `}>
+              <Icon className={`h-8 w-8 ${color}`} />
             </div>
           </CardContent>
         </Card>
