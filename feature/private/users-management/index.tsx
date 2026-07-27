@@ -174,7 +174,7 @@ export function UserManagement() {
       <Card className="rounded-xl shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between border-b">
           <div>
-            <CardTitle className="text-base">All Users</CardTitle>
+            <CardTitle className="text-xl font-semibold">All Users</CardTitle>
           </div>
         </CardHeader>
         <CardContent>

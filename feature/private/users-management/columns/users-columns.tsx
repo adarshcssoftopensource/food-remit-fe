@@ -25,7 +25,7 @@ function SortHeader({ column, label }: { column: Column<UserData, unknown>; labe
     <Button
       variant="ghost"
       size="sm"
-      className="-ml-3 h-8 gap-1 font-semibold hover:bg-transparent"
+      className="h-8 font-semibold hover:bg-transparent"
       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
     >
       {label}
@@ -38,7 +38,9 @@ export const usersColumns: ColumnDef<UserData>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => <SortHeader column={column} label="User ID" />,
-    cell: ({ row }) => <span className="font-mono text-xs text-slate-500">{row.original.id}</span>,
+    cell: ({ row }) => (
+      <span className="pl-3 font-mono text-xs text-slate-500">{row.original.id}</span>
+    ),
   },
   {
     accessorKey: "userName",
@@ -71,7 +73,7 @@ export const usersColumns: ColumnDef<UserData>[] = [
   {
     accessorKey: "email",
     header: ({ column }) => <SortHeader column={column} label="Email Address" />,
-    cell: ({ row }) => <span className="text-sm text-blue-600">{row.original.email}</span>,
+    cell: ({ row }) => <span className="pl-3 text-sm text-blue-600">{row.original.email}</span>,
   },
   {
     accessorKey: "contactNumber",
@@ -86,7 +88,9 @@ export const usersColumns: ColumnDef<UserData>[] = [
   {
     accessorKey: "registeredOn",
     header: ({ column }) => <SortHeader column={column} label="Registered On" />,
-    cell: ({ row }) => <span className="text-xs text-slate-500">{row.original.registeredOn}</span>,
+    cell: ({ row }) => (
+      <span className="pl-3 text-xs text-slate-500">{row.original.registeredOn}</span>
+    ),
   },
   {
     accessorKey: "status",

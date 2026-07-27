@@ -1,6 +1,8 @@
 import { Table } from "@tanstack/react-table";
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectContent,
@@ -9,91 +11,123 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
 
 export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
+  const pageIndex = table.getState().pagination.pageIndex;
+  const pageCount = table.getPageCount();
+
+  const getPages = () => {
+    const current = pageIndex + 1;
+    if (pageCount <= 5) {
+      return Array.from({ length: pageCount }, (_, i) => i + 1);
+    }
+    if (current <= 3) {
+      return [1, 2, 3, "ellipsis", pageCount];
+    }
+    if (current >= pageCount - 2) {
+      return [1, "ellipsis", pageCount - 2, pageCount - 1, pageCount];
+    }
+    return [1, "ellipsis", current - 1, current, current + 1, "ellipsis", pageCount];
+  };
+
   return (
-    <div className="flex items-center justify-between px-2 py-4">
-      {/* <div className="flex-1 text-sm text-slate-600">
-        Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
-        {Math.min(
-          (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-          table.getFilteredRowModel().rows.length
-        )}{" "}
-        of {table.getFilteredRowModel().rows.length} results
-      </div> */}
-      <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium text-slate-700">Rows per page</p>
-          <Select
-            value={`${table.getState().pagination.pageSize}`}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value));
-            }}
-          >
-            <SelectTrigger className="h-8 w-17.5">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
-            </SelectTrigger>
-            <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            className="h-8 px-2"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeft size={20} />
-            Previous
-          </Button>
+    <div className="flex flex-col gap-4 border-t px-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-2 whitespace-nowrap">
+        <span className="text-sm font-medium text-slate-700">Rows per page</span>
 
-          <div className="flex items-center space-x-1">
-            <Button
-              variant="default"
-              className="h-8 w-8 bg-blue-100 p-0 text-blue-700 shadow-none hover:bg-blue-200"
-            >
-              1
-            </Button>
-            <Button variant="ghost" className="h-8 w-8 p-0 font-medium text-slate-700">
-              2
-            </Button>
-            <MoreHorizontal className="mx-1 h-4 w-4 text-slate-400" />
-            <Button variant="ghost" className="h-8 w-8 p-0 font-medium text-slate-700">
-              4
-            </Button>
-          </div>
+        <Select
+          value={`${table.getState().pagination.pageSize}`}
+          onValueChange={(value) => table.setPageSize(Number(value))}
+        >
+          <SelectTrigger className="h-9 w-16">
+            <SelectValue />
+          </SelectTrigger>
 
-          <Button
-            variant="ghost"
-            className="h-8 px-2 font-medium"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-            <ChevronRight size={20} />
-          </Button>
-        </div>
+          <SelectContent>
+            {[10, 20, 30, 40, 50].map((size) => (
+              <SelectItem key={size} value={`${size}`}>
+                {size}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-        <div className="flex items-center space-x-2 border-l border-slate-200 pl-6">
-          <span className="text-sm text-slate-700">Jump to:</span>
-          <input
-            type="number"
-            placeholder="No."
-            className="focus-visible:ring-ring h-8 w-14 rounded-md border border-slate-300 bg-transparent px-2 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
-          />
-          <Button variant="outline" className="h-8 px-3">
-            Go
-          </Button>
-        </div>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                table.previousPage();
+              }}
+              className={!table.getCanPreviousPage() ? "pointer-events-none opacity-50" : ""}
+            />
+          </PaginationItem>
+
+          {getPages().map((page, index) =>
+            page === "ellipsis" ? (
+              <PaginationItem key={index}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            ) : (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  href="#"
+                  isActive={page === pageIndex + 1}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    table.setPageIndex(Number(page) - 1);
+                  }}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ),
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                table.nextPage();
+              }}
+              className={!table.getCanNextPage() ? "pointer-events-none opacity-50" : ""}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+
+      <div className="flex items-center gap-2 whitespace-nowrap">
+        <span className="text-sm text-slate-700">Jump to:</span>
+
+        <Input
+          type="number"
+          placeholder="No."
+          className="h-9 w-16"
+          onChange={(e) => {
+            const page = Number(e.target.value);
+
+            if (page >= 1 && page <= pageCount) {
+              table.setPageIndex(page - 1);
+            }
+          }}
+        />
       </div>
     </div>
   );
