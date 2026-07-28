@@ -16,8 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub-admin-management";
-import { Filter, Plus, RotateCcw } from "lucide-react";
+import { Filter, RotateCcw } from "lucide-react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
+import { AddSubAdminDialog } from "./components/add-sub-admin-dialog";
 import { useSubAdminManagement } from "./hooks/use-sub-admin-management";
 
 export function SubAdminManagement() {
@@ -39,12 +40,7 @@ export function SubAdminManagement() {
       <PageHeader
         title="Sub Admin Management"
         description="Manage sub administrators, their roles, and module permissions."
-        action={
-          <Button>
-            <Plus className="size-4" />
-            Add Sub Admin
-          </Button>
-        }
+        action={<AddSubAdminDialog />}
       />
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">

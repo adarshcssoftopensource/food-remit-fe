@@ -1,7 +1,6 @@
-import FoundationManagement from "@/feature/private/foundation-management";
-
 function page() {
-  return <FoundationManagement />;
+  // return <FoundationManagement />;
+  return <div>page</div>;
 }
 
 export default page;

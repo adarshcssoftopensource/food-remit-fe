@@ -1,17 +1,50 @@
 import { Shield, ShieldCheck, ShieldOff, UserCog } from "lucide-react";
 
 export type SubAdminPermission =
+  | "User Management"
   | "Country Management"
   | "Donation Logs"
+  | "Philanthropists Management"
+  | "City Management"
+  | "Store Management"
+  | "Ticket Management"
+  | "Feedbacks"
+  | "Send Notifications"
+  | "Credits Management"
   | "Philanthropist Management"
   | "Credit Management"
   | "Catalogue Management"
+  | "Payment Settings"
   | "Content Management"
-  | "Foundation Management"
-  | "Stories Management"
+  | "Report Management"
+  | "Coupon Management"
+  | "Amount Limits Management"
+  | "Organization Management"
   | "Users Management"
+  | "Stories Management"
+  | "Image Management"
   | "Sub Admin Management"
-  | "Payment Settings";
+  | "Foundation Management";
+
+export const PERMISSIONS_LIST: SubAdminPermission[] = [
+  "User Management",
+  "Country Management",
+  "Donation Logs",
+  "Philanthropists Management",
+  "City Management",
+  "Store Management",
+  "Ticket Management",
+  "Feedbacks",
+  "Send Notifications",
+  "Credits Management",
+  "Catalogue Management",
+  "Content Management",
+  "Report Management",
+  "Coupon Management",
+  "Amount Limits Management",
+  "Organization Management",
+  "Image Management",
+];
 
 export type SubAdminData = {
   id: string;
@@ -157,3 +190,11 @@ export const SUB_ADMIN_STATUS_OPTIONS = [
   { label: "Active", value: "Active" },
   { label: "Inactive", value: "Inactive" },
 ] as const;
+
+export const COUNTRY_CODES = [
+  { value: "91", label: "+91 (India)" },
+  { value: "1", label: "+1 (USA)" },
+  { value: "44", label: "+44 (UK)" },
+  { value: "61", label: "+61 (Australia)" },
+  { value: "93", label: "+93 (Afghanistan)" },
+];

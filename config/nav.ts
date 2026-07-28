@@ -1,25 +1,25 @@
 import {
-  Monitor,
-  User,
-  Building,
-  Users,
-  UserCog,
-  RefreshCcw,
-  List,
-  BookOpen,
-  Store,
-  Globe,
-  MapPin,
-  Box,
-  FileText,
-  Ticket,
-  ClipboardList,
-  MessageSquare,
   Bell,
-  Gift,
-  DollarSign,
+  BookOpen,
+  Box,
+  Building,
+  ClipboardList,
   CreditCard,
+  DollarSign,
+  FileText,
+  Gift,
+  Globe,
   GraduationCap,
+  List,
+  MapPin,
+  MessageSquare,
+  Monitor,
+  RefreshCcw,
+  Store,
+  Ticket,
+  User,
+  UserCog,
+  Users,
 } from "lucide-react";
 
 export const navigationItems = [
@@ -35,155 +35,155 @@ export const navigationItems = [
   },
   {
     title: "Foundation And Charitables Management",
-    url: "/foundation-management",
+    url: "#",
     icon: Building,
   },
   {
     title: "Philanthropist Management",
-    url: "/philanthropist-management",
+    url: "#",
     icon: Users,
   },
   {
     title: "Sub-admin Management",
-    url: "/sub-admin-management",
+    url: "#",
     icon: UserCog,
   },
   {
     title: "Stories",
-    url: "/stories",
+    url: "#",
     icon: RefreshCcw,
   },
   {
     title: "Donation Logs",
-    url: "/donation-logs",
+    url: "#",
     icon: List,
   },
   {
     title: "Catalogue Management",
-    url: "/catalogue-management",
+    url: "#",
     icon: BookOpen,
     items: [
       {
         title: "Store",
-        url: "/catalogue-management/store",
+        url: "#",
       },
       {
         title: "Assign City-Manager To Stores",
-        url: "/catalogue-management/assign-city-manager",
+        url: "#",
       },
     ],
   },
   {
     title: "Store Management",
-    url: "/store-management",
+    url: "#",
     icon: Store,
     items: [
       {
         title: "All Stores",
-        url: "/store-management/all",
+        url: "#",
       },
     ],
   },
   {
     title: "Country Management",
-    url: "/country-management",
+    url: "#",
     icon: Globe,
     items: [
       {
         title: "Countries",
-        url: "/country-management/list",
+        url: "#",
       },
     ],
   },
   {
     title: "City Management",
-    url: "/city-management",
+    url: "#",
     icon: MapPin,
     items: [
       {
         title: "Cities",
-        url: "/city-management/list",
+        url: "#",
       },
     ],
   },
   {
     title: "Order Management",
-    url: "/order-management",
+    url: "#",
     icon: Box,
     items: [
       {
         title: "Orders",
-        url: "/order-management/list",
+        url: "#",
       },
     ],
   },
   {
     title: "Content Management",
-    url: "/content-management",
+    url: "#",
     icon: FileText,
     items: [
       {
         title: "Pages",
-        url: "/content-management/pages",
+        url: "#",
       },
     ],
   },
   {
     title: "Ticket Management",
-    url: "/ticket-management",
+    url: "#",
     icon: Ticket,
     items: [
       {
         title: "Tickets",
-        url: "/ticket-management/list",
+        url: "#",
       },
     ],
   },
   {
     title: "Report Management",
-    url: "/report-management",
+    url: "#",
     icon: ClipboardList,
     items: [
       {
         title: "Reports",
-        url: "/report-management/list",
+        url: "#",
       },
     ],
   },
   {
     title: "Feedback Management",
-    url: "/feedback-management",
+    url: "#",
     icon: MessageSquare,
   },
   {
     title: "Send Notification",
-    url: "/send-notification",
+    url: "#",
     icon: Bell,
   },
   {
     title: "Coupons Management",
-    url: "/coupons-management",
+    url: "#",
     icon: Gift,
   },
   {
     title: "Amount Limit Management",
-    url: "/amount-limit-management",
+    url: "#",
     icon: DollarSign,
   },
   {
     title: "Credits Management",
-    url: "/credits-management",
+    url: "#",
     icon: CreditCard,
     items: [
       {
         title: "Credits",
-        url: "/credits-management/list",
+        url: "#",
       },
     ],
   },
   {
     title: "Tutorial Management",
-    url: "/tutorial-management",
+    url: "#",
     icon: GraduationCap,
   },
 ];

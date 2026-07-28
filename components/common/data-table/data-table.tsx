@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   Column,
   ColumnDef,
@@ -13,7 +12,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import * as React from "react";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -22,10 +24,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { DataTablePagination } from "./data-table-pagination";
 import { ArrowUpDown, Search } from "lucide-react";
+import { DataTablePagination } from "./data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -90,7 +90,7 @@ export function DataTable<TData, TValue>({
               placeholder={`Search...`}
               value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
               onChange={(event) => table.getColumn(searchKey)?.setFilterValue(event.target.value)}
-              className="pl-8"
+              className="pl-8 text-black"
             />
           </div>
         </div>
