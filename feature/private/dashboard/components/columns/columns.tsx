@@ -2,41 +2,19 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react";
 import { Order } from "@/constants/dashboard";
 
 export const orderColumns: ColumnDef<Order>[] = [
   {
     accessorKey: "id",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="p-0 font-semibold text-slate-700 hover:bg-transparent"
-        >
-          Order ID
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: "Order ID",
+    enableSorting: true,
     cell: ({ row }) => <div className="font-medium">{row.getValue("id")}</div>,
   },
   {
     accessorKey: "customerName",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="p-0 font-semibold text-slate-700 hover:bg-transparent"
-        >
-          Customer Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: "Customer Name",
+    enableSorting: true,
   },
   {
     accessorKey: "location",
@@ -74,18 +52,8 @@ export const orderColumns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: "price",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="p-0 font-semibold text-slate-700 hover:bg-transparent"
-        >
-          Price
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: "Price",
+    enableSorting: true,
     cell: ({ row }) => {
       return <div className="font-medium">{row.getValue("price")}</div>;
     },

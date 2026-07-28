@@ -1,22 +1,6 @@
-import { ColumnDef, Column } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
 import { type SubAdminData } from "@/constants/sub-admin-management";
 import { SubAdminActionsCell } from "../components/actions-cell";
-
-function SortHeader({ column, label }: { column: Column<SubAdminData, unknown>; label: string }) {
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-8 font-semibold hover:bg-transparent"
-      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    >
-      {label}
-      <ArrowUpDown className="size-3.5 text-slate-400" />
-    </Button>
-  );
-}
 
 function StatusBadge({ status }: { status: SubAdminData["status"] }) {
   const isActive = status === "Active";
@@ -37,7 +21,8 @@ function StatusBadge({ status }: { status: SubAdminData["status"] }) {
 export const subAdminColumns: ColumnDef<SubAdminData>[] = [
   {
     accessorKey: "userId",
-    header: ({ column }) => <SortHeader column={column} label="User ID" />,
+    header: "User ID",
+    enableSorting: true,
     cell: ({ row }) => (
       <span className="pl-3 font-mono text-xs font-medium text-slate-500">
         #{row.original.userId}
@@ -65,7 +50,8 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
   },
   {
     accessorKey: "email",
-    header: ({ column }) => <SortHeader column={column} label="Email Address" />,
+    header: "Email Address",
+    enableSorting: true,
     cell: ({ row }) => (
       <span className="pl-3 text-sm text-blue-600 hover:underline">{row.original.email}</span>
     ),

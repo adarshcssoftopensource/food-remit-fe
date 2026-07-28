@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  Column,
   ColumnDef,
   ColumnFiltersState,
   SortingState,
@@ -22,13 +23,38 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "./data-table-pagination";
-import { Search } from "lucide-react";
+import { ArrowUpDown, Search } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey?: string; // e.g., 'name' to filter by name
+}
+
+function renderHeader<TData, TValue>(
+  column: Column<TData, TValue>,
+  renderedHeader: React.ReactNode,
+) {
+  const headerLabel =
+    typeof column.columnDef.header === "string" ? column.columnDef.header : renderedHeader;
+
+  if (!column.getCanSort()) {
+    return renderedHeader;
+  }
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="h-8 px-0 font-semibold text-slate-700 hover:bg-transparent"
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    >
+      {headerLabel}
+      <ArrowUpDown className="ml-2 size-3.5 text-slate-400" />
+    </Button>
+  );
 }
 
 export function DataTable<TData, TValue>({
@@ -75,11 +101,13 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const renderedHeader = header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext());
+
                   return (
                     <TableHead key={header.id} className="font-semibold">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.isPlaceholder ? null : renderHeader(header.column, renderedHeader)}
                     </TableHead>
                   );
                 })}

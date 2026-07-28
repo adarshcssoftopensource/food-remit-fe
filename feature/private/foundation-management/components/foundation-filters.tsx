@@ -1,9 +1,9 @@
 "use client";
 
 import { Filter, RotateCcw } from "lucide-react";
+import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
-import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -51,28 +51,12 @@ export function FoundationFilters({
 
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-          <FilterInput
-            label="From Date"
-            renderInput={(className) => (
-              <DatePicker
-                date={fromDate}
-                setDate={onFromDateChange}
-                placeholder="dd/mm/yyyy"
-                className={className}
-              />
-            )}
-          />
-
-          <FilterInput
-            label="To Date"
-            renderInput={(className) => (
-              <DatePicker
-                date={toDate}
-                setDate={onToDateChange}
-                placeholder="dd/mm/yyyy"
-                className={className}
-              />
-            )}
+          <DateRangeFilter
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={onFromDateChange}
+            onToDateChange={onToDateChange}
+            wrapperClassName="contents"
           />
 
           <FilterSelect
@@ -97,22 +81,6 @@ export function FoundationFilters({
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
-
-interface FilterInputProps {
-  label: string;
-  renderInput: (className: string) => React.ReactNode;
-}
-
-function FilterInput({ label, renderInput }: FilterInputProps) {
-  return (
-    <div className="space-y-2">
-      <Label className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-        {label}
-      </Label>
-      {renderInput("h-10 w-full rounded-lg border-gray-200")}
     </div>
   );
 }

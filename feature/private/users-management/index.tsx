@@ -12,11 +12,10 @@ import {
 import { usersColumns } from "./columns/users-columns";
 
 import { DataTable } from "@/components/common/data-table/data-table";
+import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -25,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 export function UserManagement() {
   const [fromDate, setFromDate] = useState<Date>();
@@ -106,27 +106,16 @@ export function UserManagement() {
 
         <CardContent className="p-5">
           <div className="flex flex-wrap items-end gap-3 lg:flex-nowrap">
-            <div className="min-w-45 flex-1 space-y-1">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">
-                From Date
-              </Label>
-              <DatePicker
-                date={fromDate}
-                setDate={setFromDate}
-                placeholder="dd/mm/yyyy"
-                className="h-10 w-full"
-              />
-            </div>
-
-            <div className="min-w-45 flex-1 space-y-1">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">To Date</Label>
-              <DatePicker
-                date={toDate}
-                setDate={setToDate}
-                placeholder="dd/mm/yyyy"
-                className="h-10 w-full"
-              />
-            </div>
+            <DateRangeFilter
+              fromDate={fromDate}
+              toDate={toDate}
+              onFromDateChange={setFromDate}
+              onToDateChange={setToDate}
+              wrapperClassName="min-w-[22.5rem] flex flex-1 gap-3"
+              itemClassName="min-w-45 flex-1 space-y-1"
+              pickerClassName="h-10 w-full"
+              labelClassName="text-muted-foreground text-xs font-medium uppercase"
+            />
 
             <div className="min-w-45 flex-1">
               <Label className="text-muted-foreground text-xs font-medium uppercase">

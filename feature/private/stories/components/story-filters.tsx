@@ -1,10 +1,9 @@
 "use client";
 
 import { Filter, RotateCcw } from "lucide-react";
+import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Label } from "@/components/ui/label";
 
 interface StoryFiltersProps {
   fromDate?: Date;
@@ -33,22 +32,13 @@ export function StoryFilters({
       </div>
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-          <FilterInput label="From Date">
-            <DatePicker
-              date={fromDate}
-              setDate={onFromDateChange}
-              placeholder="dd/mm/yyyy"
-              className="h-10 w-full rounded-lg border-gray-200"
-            />
-          </FilterInput>
-          <FilterInput label="To Date">
-            <DatePicker
-              date={toDate}
-              setDate={onToDateChange}
-              placeholder="dd/mm/yyyy"
-              className="h-10 w-full rounded-lg border-gray-200"
-            />
-          </FilterInput>
+          <DateRangeFilter
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={onFromDateChange}
+            onToDateChange={onToDateChange}
+            wrapperClassName="contents"
+          />
           <Button
             variant="destructive"
             onClick={onClearFilters}
@@ -59,17 +49,6 @@ export function StoryFilters({
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function FilterInput({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <Label className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-        {label}
-      </Label>
-      {children}
     </div>
   );
 }

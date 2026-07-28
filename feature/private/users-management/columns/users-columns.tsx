@@ -1,7 +1,5 @@
-import { Column, ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { UserData } from "@/constants/users-management";
-import { ArrowUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ActionsCell } from "../components/actions-cell";
 
 function UserStatusBadge({ status }: { status: UserData["status"] }) {
@@ -20,24 +18,11 @@ function UserStatusBadge({ status }: { status: UserData["status"] }) {
   );
 }
 
-function SortHeader({ column, label }: { column: Column<UserData, unknown>; label: string }) {
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-8 font-semibold hover:bg-transparent"
-      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    >
-      {label}
-      <ArrowUpDown className="size-3.5 text-slate-400" />
-    </Button>
-  );
-}
-
 export const usersColumns: ColumnDef<UserData>[] = [
   {
     accessorKey: "id",
-    header: ({ column }) => <SortHeader column={column} label="User ID" />,
+    header: "User ID",
+    enableSorting: true,
     cell: ({ row }) => (
       <span className="pl-3 font-mono text-xs text-slate-500">{row.original.id}</span>
     ),
@@ -72,7 +57,8 @@ export const usersColumns: ColumnDef<UserData>[] = [
   },
   {
     accessorKey: "email",
-    header: ({ column }) => <SortHeader column={column} label="Email Address" />,
+    header: "Email Address",
+    enableSorting: true,
     cell: ({ row }) => <span className="pl-3 text-sm text-blue-600">{row.original.email}</span>,
   },
   {
@@ -87,7 +73,8 @@ export const usersColumns: ColumnDef<UserData>[] = [
   },
   {
     accessorKey: "registeredOn",
-    header: ({ column }) => <SortHeader column={column} label="Registered On" />,
+    header: "Registered On",
+    enableSorting: true,
     cell: ({ row }) => (
       <span className="pl-3 text-xs text-slate-500">{row.original.registeredOn}</span>
     ),
