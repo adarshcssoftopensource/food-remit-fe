@@ -44,12 +44,12 @@ export default function StoriesManagement() {
         onValueChange={(value) => value && filters.setActiveTab(value as StoryTab)}
         className="gap-6"
       >
-        <TabsList className="bg-muted grid h-11 w-full grid-cols-3 rounded-lg p-1">
+        <TabsList className="bg-muted grid h-10! w-full grid-cols-3 rounded-lg p-1">
           {STORY_TABS.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground rounded-md"
+              className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground h-8 rounded-md"
             >
               {tab.label}
             </TabsTrigger>
