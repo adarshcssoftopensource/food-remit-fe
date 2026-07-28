@@ -8,6 +8,10 @@ export const ROUTES = {
   ADMIN: {
     DASHBOARD: "/dashboard",
   },
+  STORIES: {
+    LIST: "/stories",
+    ADD: "/stories/add",
+  },
 } as const;
 
 export type AppRoutes = typeof ROUTES;

@@ -36,3 +36,6 @@ export const STORY_TABS = [
 ] as const;
 
 export type StoryTab = (typeof STORY_TABS)[number]["value"];
+
+export const inputClassName =
+  "h-11 rounded-lg border-gray-200 bg-gray-50/60 transition-colors focus-visible:border-primary focus-visible:bg-background";

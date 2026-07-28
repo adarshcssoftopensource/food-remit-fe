@@ -1,10 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ROUTES } from "@/config/routes";
 import { STORY_TABS, type StoryTab } from "@/constants/stories-management";
 import { StoryFilters } from "./components/story-filters";
 import { AllStoriesTable, DraftStoriesTable, MyStoriesTable } from "./components/story-tables";
@@ -22,18 +24,21 @@ function StoriesCard({ title, children }: { title: string; children: React.React
 }
 
 export default function StoriesManagement() {
+  const router = useRouter();
   const filters = useStoryFilters();
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Stories Management"
         description="Review, manage, and create platform stories."
         action={
-          <Button>
+          <Button onClick={() => router.push(ROUTES.STORIES.ADD)}>
             <Plus /> Add Story
           </Button>
         }
       />
+
       <Tabs
         value={filters.activeTab}
         onValueChange={(value) => value && filters.setActiveTab(value as StoryTab)}
