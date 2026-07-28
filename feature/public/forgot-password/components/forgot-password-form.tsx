@@ -158,7 +158,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
       </div>
 
       <p className="mt-6 text-center text-xs text-gray-400">
-        © 2024 Food Remit. All rights reserved.
+        © 2026 Food Remit. All rights reserved.
       </p>
     </div>
   );
