@@ -42,7 +42,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
       setSubmittedEmail(data.email);
       successToast({
         title: "",
-        description: "Password reset instructions have been sent to your email address.",
+        description: "A password reset link has been sent to your email.",
       });
     } catch {}
   }
@@ -121,7 +121,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
             <h2 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
               Check your inbox!
             </h2>
-            <p className="mx-auto max-w-[280px] text-[15px] leading-relaxed font-medium text-gray-500/90">
+            <p className="mx-auto text-[15px] leading-relaxed font-medium text-gray-500/90">
               We&apos;ve sent password reset instructions to{" "}
               <span className="font-semibold text-gray-900 dark:text-white">{submittedEmail}</span>
             </p>
