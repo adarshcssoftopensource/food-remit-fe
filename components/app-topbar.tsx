@@ -1,9 +1,9 @@
 "use client";
 import { Bell, ChevronDown, Settings, User } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "./logout-button";

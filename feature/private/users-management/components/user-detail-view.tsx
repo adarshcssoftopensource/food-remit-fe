@@ -1,25 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { ArrowLeft, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import {
-  UserData,
+  MOCK_RECEIVED_ORDERS,
   MOCK_REQUESTED_ORDERS,
   MOCK_SENT_ORDERS,
-  MOCK_RECEIVED_ORDERS,
   USER_MANAGEMENT_VIEW_TABS,
+  UserData,
 } from "@/constants/users-management";
 
 import {
+  RECEIVED_ORDER_COLUMNS,
   REQUESTED_ORDER_COLUMNS,
   SENT_ORDER_COLUMNS,
-  RECEIVED_ORDER_COLUMNS,
 } from "../columns/order-columns";
 
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
@@ -66,9 +66,9 @@ export function UserDetailView({ user }: { user: UserData }) {
     <div className="space-y-6">
       <div>
         <Button
-          variant="ghost"
+          variant="secondary"
           onClick={() => router.back()}
-          className="hover:text-primary mb-4 gap-2 px-0 text-slate-500 hover:bg-transparent"
+          className="text-primary mb-4 gap-2 hover:bg-transparent"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Users
@@ -78,15 +78,13 @@ export function UserDetailView({ user }: { user: UserData }) {
 
       <div className="rounded-2xl border p-4 shadow-sm sm:p-6">
         <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
-          <div className="mb-8 overflow-x-auto">
-            <TabsList className="flex h-auto w-full gap-1 rounded-xl bg-slate-100 p-1">
+          <div className="mb-8">
+            <TabsList className="flex h-8 w-full gap-1 rounded-xl bg-slate-100 p-1">
               {USER_MANAGEMENT_VIEW_TABS.map((item) => (
                 <TabsTrigger
                   key={item.value}
                   value={item.value}
-                  className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground rounded-md"
-
-                  // className="data-[state=active]:bg-primary rounded-lg px-5 py-2.5 text-sm font-medium whitespace-nowrap text-slate-600 transition data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground h-8! rounded-md"
                 >
                   {item.label}
                 </TabsTrigger>

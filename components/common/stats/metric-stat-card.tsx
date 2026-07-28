@@ -1,7 +1,7 @@
 "use client";
 
-import { type LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { type LucideIcon } from "lucide-react";
 
 interface MetricStatCardProps {
   label: string;

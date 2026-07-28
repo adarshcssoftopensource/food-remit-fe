@@ -10,7 +10,7 @@ export function InfoCard({
   value: string;
 }) {
   return (
-    <Card className="rounded-2xl border-0 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
+    <Card className="rounded-2xl border-0 shadow-sm">
       <CardContent className="flex items-start gap-4 p-5">
         <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-xl">
           {icon}
