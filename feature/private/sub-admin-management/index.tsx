@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Filter, Plus, RotateCcw } from "lucide-react";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { PageHeader } from "@/components/common/page-header";
+import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -15,46 +15,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  MOCK_SUB_ADMINS,
-  SUB_ADMIN_STAT_CONFIG,
-  SUB_ADMIN_STATUS_OPTIONS,
-  type SubAdminData,
-} from "@/constants/sub-admin-management";
+import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub-admin-management";
+import { Filter, Plus, RotateCcw } from "lucide-react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
-import { Label } from "@/components/ui/label";
+import { useSubAdminManagement } from "./hooks/use-sub-admin-management";
 
 export function SubAdminManagement() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [statusFilter, setStatusFilter] = useState("All");
-
-  const filteredData = useMemo<SubAdminData[]>(() => {
-    return MOCK_SUB_ADMINS.filter((admin) => {
-      if (statusFilter !== "All" && admin.status !== statusFilter) return false;
-      const date = new Date(admin.createdAt);
-      if (fromDate && date < fromDate) return false;
-      if (toDate && date > toDate) return false;
-      return true;
-    });
-  }, [statusFilter, fromDate, toDate]);
-
-  const stats = {
-    total: MOCK_SUB_ADMINS.length,
-    active: MOCK_SUB_ADMINS.filter((a) => a.status === "Active").length,
-    inactive: MOCK_SUB_ADMINS.filter((a) => a.status === "Inactive").length,
-    permissions: Math.round(
-      MOCK_SUB_ADMINS.reduce((sum, a) => sum + a.permissions.length, 0) / MOCK_SUB_ADMINS.length,
-    ),
-  };
-
-  const hasFilters = !!(fromDate || toDate || statusFilter !== "All");
-
-  const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatusFilter("All");
-  };
+  const {
+    clearFilters,
+    filteredData,
+    fromDate,
+    hasFilters,
+    setFromDate,
+    setStatusFilter,
+    setToDate,
+    stats,
+    statusFilter,
+    toDate,
+  } = useSubAdminManagement();
 
   return (
     <div className="space-y-6">
@@ -71,28 +49,16 @@ export function SubAdminManagement() {
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {SUB_ADMIN_STAT_CONFIG.map(({ key, label, Icon, color, bg }) => (
-          <Card key={key} className="group overflow-hidden rounded-2xl">
-            <CardContent className="relative p-6">
-              <div className="bg-muted/30 absolute -top-8 -right-8 h-28 w-28 rounded-full transition-transform duration-300 group-hover:scale-110" />
-
-              <div className="relative flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm font-medium tracking-wide">{label}</p>
-                  <h2 className={`mt-2 text-4xl font-bold ${color}`}>{stats[key]}</h2>
-                  <div className="mt-4 flex items-center gap-2">
-                    <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">
-                      +8%
-                    </span>
-                    <span className="text-muted-foreground text-xs">vs last month</span>
-                  </div>
-                </div>
-
-                <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ${bg}`}>
-                  <Icon className={`h-8 w-8 ${color}`} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <MetricStatCard
+            key={key}
+            label={label}
+            value={stats[key]}
+            trendLabel="vs last month"
+            trendValue="+8%"
+            icon={Icon}
+            iconClassName={color}
+            iconWrapperClassName={bg}
+          />
         ))}
       </div>
 

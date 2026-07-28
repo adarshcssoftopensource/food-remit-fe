@@ -14,6 +14,7 @@ import { usersColumns } from "./columns/users-columns";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { PageHeader } from "@/components/common/page-header";
+import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -66,31 +67,16 @@ export function UserManagement() {
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {STAT_CONFIG.map(({ key, label, Icon, color, bg }) => (
-          <Card key={key} className="group overflow-hidden rounded-2xl">
-            <CardContent className="relative p-6">
-              <div className="bg-muted/30 absolute -top-8 -right-8 h-28 w-28 rounded-full transition-transform duration-300 group-hover:scale-110" />
-
-              <div className="relative flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm font-medium tracking-wide">{label}</p>
-
-                  <h2 className={`mt-2 text-4xl font-bold ${color}`}>{stats[key]}</h2>
-
-                  <div className="mt-4 flex items-center gap-2">
-                    <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">
-                      +12%
-                    </span>
-
-                    <span className="text-muted-foreground text-xs">Compared to last month</span>
-                  </div>
-                </div>
-
-                <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ${bg} `}>
-                  <Icon className={`h-8 w-8 ${color}`} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <MetricStatCard
+            key={key}
+            label={label}
+            value={stats[key]}
+            trendLabel="Compared to last month"
+            trendValue="+12%"
+            icon={Icon}
+            iconClassName={color}
+            iconWrapperClassName={bg}
+          />
         ))}
       </div>
 
