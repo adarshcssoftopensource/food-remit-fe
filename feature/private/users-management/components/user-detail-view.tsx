@@ -76,7 +76,7 @@ export function UserDetailView({ user }: { user: UserData }) {
         <PageHeader title="User Management" description="Manage user details and order activity." />
       </div>
 
-      <div className="rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
+      <div className="rounded-2xl border p-4 shadow-sm sm:p-6">
         <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
           <div className="mb-8 overflow-x-auto">
             <TabsList className="flex h-auto w-full gap-1 rounded-xl bg-slate-100 p-1">
@@ -84,7 +84,9 @@ export function UserDetailView({ user }: { user: UserData }) {
                 <TabsTrigger
                   key={item.value}
                   value={item.value}
-                  className="data-[state=active]:bg-primary rounded-lg px-5 py-2.5 text-sm font-medium whitespace-nowrap text-slate-600 transition data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground rounded-md"
+
+                  // className="data-[state=active]:bg-primary rounded-lg px-5 py-2.5 text-sm font-medium whitespace-nowrap text-slate-600 transition data-[state=active]:text-white data-[state=active]:shadow-sm"
                 >
                   {item.label}
                 </TabsTrigger>
