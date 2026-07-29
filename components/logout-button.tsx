@@ -1,18 +1,22 @@
 "use client";
 
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
+import { useApiMutation } from "@/hooks/useApi";
+import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
 import { clearAuthSession } from "@/lib/auth-client";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useApiMutation } from "@/hooks/useApi";
-import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
+import { useState } from "react";
 
 export function LogoutButton() {
   const router = useRouter();
   const { mutateAsync, isPending } = useApiMutation("post", AUTH_ENDPOINTS.LOGOUT);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const handleLogout = async () => {
+    setIsConfirmOpen(false);
     try {
       await mutateAsync({});
     } catch {
@@ -24,14 +28,29 @@ export function LogoutButton() {
   };
 
   return (
-    <Button
-      onClick={handleLogout}
-      isLoading={isPending}
-      className="flex items-center gap-2"
-      variant={"destructive"}
-    >
-      <LogOut className="h-4 w-4" />
-      Logout
-    </Button>
+    <>
+      <Button
+        onClick={() => setIsConfirmOpen(true)}
+        isLoading={isPending}
+        className="flex items-center gap-2"
+        variant={"destructive"}
+      >
+        <LogOut className="h-4 w-4" />
+        Logout
+      </Button>
+
+      <ConfirmationDialog
+        open={isConfirmOpen}
+        onOpenChange={setIsConfirmOpen}
+        title="Confirm Logout"
+        description="Are you sure you want to logout from this device? You will need to sign in again to access your account."
+        confirmLabel="Yes, Logout"
+        cancelLabel="Stay Logged In"
+        onConfirm={handleLogout}
+        isLoading={isPending}
+        variant="destructive"
+        icon={<LogOut className="h-5 w-5" />}
+      />
+    </>
   );
 }

@@ -1,31 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, Lock, User } from "lucide-react";
+import { Lock, Mail, User } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
-import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
-import { cn } from "@/lib/utils";
-import { LoginFormValues, loginSchema } from "../schema/login.schema";
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { ROUTES } from "@/config/routes";
-import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
 import { useApiMutation } from "@/hooks/useApi";
-import { successToast } from "@/components/toaster";
+import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
 import { setAuthSession } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { LoginFormValues, loginSchema } from "../schema/login.schema";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
@@ -202,32 +195,18 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         © 2026 Food Remit. All rights reserved.
       </p>
 
-      <Dialog
+      <ConfirmationDialog
         open={!!forceLogoutUserId}
         onOpenChange={(open) => !open && setForceLogoutUserId(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Maximum Logins Reached</DialogTitle>
-            <DialogDescription>
-              You have reached the maximum number of active sessions (5). Would you like to force
-              logout of all other devices and log in here?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="mt-6">
-            <Button
-              variant="outline"
-              onClick={() => setForceLogoutUserId(null)}
-              disabled={isForceLoggingOut}
-            >
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleForceLogout} isLoading={isForceLoggingOut}>
-              Force Logout
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        title="Maximum Logins Reached"
+        description="You have reached the maximum number of active sessions (5). Do you want to force logout all other devices and continue here?"
+        confirmLabel="Force Logout"
+        cancelLabel="Cancel"
+        onConfirm={handleForceLogout}
+        onCancel={() => setForceLogoutUserId(null)}
+        isLoading={isForceLoggingOut}
+        variant="destructive"
+      />
     </div>
   );
 }
