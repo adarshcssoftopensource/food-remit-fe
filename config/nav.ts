@@ -35,155 +35,155 @@ export const navigationItems = [
   },
   {
     title: "Foundation And Charitables Management",
-    url: "#",
+    url: "/foundation-management",
     icon: Building,
   },
   {
     title: "Philanthropist Management",
-    url: "#",
+    url: "/philanthropist-management",
     icon: Users,
   },
   {
     title: "Sub-admin Management",
-    url: "#",
+    url: "/sub-admin-management",
     icon: UserCog,
   },
   {
     title: "Stories",
-    url: "#",
+    url: "/stories",
     icon: RefreshCcw,
   },
   {
     title: "Donation Logs",
-    url: "#",
+    url: "/donation-logs",
     icon: List,
   },
   {
     title: "Catalogue Management",
-    url: "#",
+    url: "/catalogue-management",
     icon: BookOpen,
     items: [
       {
         title: "Store",
-        url: "#",
+        url: "/catalogue-management/store",
       },
       {
         title: "Assign City-Manager To Stores",
-        url: "#",
+        url: "/catalogue-management/assign-city-manager",
       },
     ],
   },
   {
     title: "Store Management",
-    url: "#",
+    url: "/store-management",
     icon: Store,
     items: [
       {
         title: "All Stores",
-        url: "#",
+        url: "/store-management/all",
       },
     ],
   },
   {
     title: "Country Management",
-    url: "#",
+    url: "/country-management",
     icon: Globe,
     items: [
       {
         title: "Countries",
-        url: "#",
+        url: "/country-management/list",
       },
     ],
   },
   {
     title: "City Management",
-    url: "#",
+    url: "/city-management",
     icon: MapPin,
     items: [
       {
         title: "Cities",
-        url: "#",
+        url: "/city-management/list",
       },
     ],
   },
   {
     title: "Order Management",
-    url: "#",
+    url: "/order-management",
     icon: Box,
     items: [
       {
         title: "Orders",
-        url: "#",
+        url: "/order-management/list",
       },
     ],
   },
   {
     title: "Content Management",
-    url: "#",
+    url: "/content-management",
     icon: FileText,
     items: [
       {
         title: "Pages",
-        url: "#",
+        url: "/content-management/pages",
       },
     ],
   },
   {
     title: "Ticket Management",
-    url: "#",
+    url: "/ticket-management",
     icon: Ticket,
     items: [
       {
         title: "Tickets",
-        url: "#",
+        url: "/ticket-management/list",
       },
     ],
   },
   {
     title: "Report Management",
-    url: "#",
+    url: "/report-management",
     icon: ClipboardList,
     items: [
       {
         title: "Reports",
-        url: "#",
+        url: "/report-management/list",
       },
     ],
   },
   {
     title: "Feedback Management",
-    url: "#",
+    url: "/feedback-management",
     icon: MessageSquare,
   },
   {
     title: "Send Notification",
-    url: "#",
+    url: "/send-notification",
     icon: Bell,
   },
   {
     title: "Coupons Management",
-    url: "#",
+    url: "/coupons-management",
     icon: Gift,
   },
   {
     title: "Amount Limit Management",
-    url: "#",
+    url: "/amount-limit-management",
     icon: DollarSign,
   },
   {
     title: "Credits Management",
-    url: "#",
+    url: "/credits-management",
     icon: CreditCard,
     items: [
       {
         title: "Credits",
-        url: "#",
+        url: "/credits-management/list",
       },
     ],
   },
   {
     title: "Tutorial Management",
-    url: "#",
+    url: "/tutorial-management",
     icon: GraduationCap,
   },
 ];

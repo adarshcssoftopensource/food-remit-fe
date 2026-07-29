@@ -43,7 +43,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   };
 
   return (
-    <div className="flex flex-col gap-4 border-t px-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col border-t px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-2 whitespace-nowrap">
         <span className="text-sm font-medium text-slate-700">Rows per page</span>
 

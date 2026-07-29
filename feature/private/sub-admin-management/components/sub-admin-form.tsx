@@ -132,7 +132,6 @@ export function SubAdminForm({
           </div>
         </div>
 
-        {/* Permission */}
         <div className="rounded-2xl border bg-white shadow-sm">
           <div className="border-b px-6 py-5">
             <h3 className="text-xl font-semibold">Permissions</h3>
@@ -170,16 +169,15 @@ export function SubAdminForm({
                       </label>
                     );
                   })}
-
-                  {errors.permissions && (
-                    <p className="text-destructive col-span-full text-sm">
-                      {errors.permissions.message}
-                    </p>
-                  )}
                 </div>
               )}
             />
           </ScrollArea>
+          {errors.permissions && (
+            <p className="text-destructive col-span-full ml-2 p-2 text-sm">
+              {errors.permissions.message}
+            </p>
+          )}
         </div>
       </div>
 
