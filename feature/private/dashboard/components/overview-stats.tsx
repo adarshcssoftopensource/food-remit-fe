@@ -13,7 +13,7 @@ export function OverviewStats() {
             <div>
               <p className="text-sm font-medium text-slate-500">{title}</p>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-4xl font-black tracking-tight text-slate-900">
+                <span className="text-primary text-4xl font-black tracking-tight">
                   {stats[0].value}
                 </span>
                 <span className="text-sm font-medium text-slate-500">{stats[0].label}</span>

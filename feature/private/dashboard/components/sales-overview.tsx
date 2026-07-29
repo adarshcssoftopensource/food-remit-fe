@@ -17,9 +17,7 @@ export function SalesOverview() {
             <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
               {stat.title}
             </p>
-            <div className="mt-3 text-4xl font-black tracking-tight text-slate-900">
-              {stat.value}
-            </div>
+            <div className="text-primary mt-3 text-4xl font-black tracking-tight">{stat.value}</div>
           </div>
         ))}
       </div>
