@@ -6,8 +6,8 @@ export function ManagementStats() {
   return (
     <Card className="rounded-2xl border border-slate-200/60 shadow-sm">
       <div className="flex items-center gap-2 border-b border-slate-100 px-6 py-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-          <Users size={16} />
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+          <Users size={22} />
         </div>
         <h3 className="text-base font-bold text-slate-800">Management Statistics</h3>
       </div>
