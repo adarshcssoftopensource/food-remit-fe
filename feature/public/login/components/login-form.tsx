@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +18,14 @@ import { useApiMutation } from "@/hooks/useApi";
 import { successToast } from "@/components/toaster";
 import { setAuthSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
@@ -26,9 +35,17 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     AUTH_ENDPOINTS.LOGIN,
   );
 
+  const { mutateAsync: forceLogoutMutation, isPending: isForceLoggingOut } = useApiMutation<
+    any,
+    { userId: string }
+  >("post", AUTH_ENDPOINTS.FORCE_LOGOUT);
+
+  const [forceLogoutUserId, setForceLogoutUserId] = useState<string | null>(null);
+
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -50,7 +67,39 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         router.refresh();
         router.push(ROUTES.ADMIN.DASHBOARD);
       }
-    } catch {}
+    } catch (error: any) {
+      if (
+        error?.response?.data?.errorCode === "MAX_SESSIONS_REACHED" &&
+        error?.response?.data?.userId
+      ) {
+        setForceLogoutUserId(error.response.data.userId);
+      }
+    }
+  }
+
+  async function handleForceLogout() {
+    if (!forceLogoutUserId) return;
+    try {
+      await forceLogoutMutation({ userId: forceLogoutUserId });
+      setForceLogoutUserId(null);
+
+      const formData = getValues();
+      const res = await mutateAsync(formData);
+
+      if (res?.access_token) {
+        setAuthSession({
+          accessToken: res.access_token,
+        });
+        successToast({
+          title: "",
+          description: "All other sessions logged out. You are now logged in.",
+        });
+        router.refresh();
+        router.push(ROUTES.ADMIN.DASHBOARD);
+      }
+    } catch (error) {
+      // ignore
+    }
   }
 
   return (
@@ -152,6 +201,33 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       <p className="mt-6 text-center text-xs text-gray-400">
         © 2026 Food Remit. All rights reserved.
       </p>
+
+      <Dialog
+        open={!!forceLogoutUserId}
+        onOpenChange={(open) => !open && setForceLogoutUserId(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Maximum Logins Reached</DialogTitle>
+            <DialogDescription>
+              You have reached the maximum number of active sessions (5). Would you like to force
+              logout of all other devices and log in here?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setForceLogoutUserId(null)}
+              disabled={isForceLoggingOut}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleForceLogout} isLoading={isForceLoggingOut}>
+              Force Logout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
