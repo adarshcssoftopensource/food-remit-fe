@@ -1,31 +1,41 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { OVERVIEW_CARDS } from "@/constants/dashboard";
 
 export function OverviewStats() {
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       {OVERVIEW_CARDS.map(({ title, icon: Icon, color, stats }) => (
-        <Card key={title} className="rounded-xl border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base font-bold">{title}</CardTitle>
-            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${color}`}>
-              <Icon size={22} className="cursor-pointer" />
+        <Card
+          key={title}
+          className="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm transition-all hover:shadow-md"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-500">{title}</p>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-4xl font-black tracking-tight text-slate-900">
+                  {stats[0].value}
+                </span>
+                <span className="text-sm font-medium text-slate-500">{stats[0].label}</span>
+              </div>
             </div>
-          </CardHeader>
-
-          <CardContent className="pt-0">
-            <div className="grid grid-cols-2 gap-2.5">
-              {stats.map((item) => (
-                <div key={item.label} className="bg-muted/30 rounded-lg border px-3 py-2.5">
-                  <p className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
-                    {item.label}
-                  </p>
-
-                  <p className="mt-1 text-xl font-bold">{item.value}</p>
-                </div>
-              ))}
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-full bg-slate-50 ${color.split(" ")[1]}`}
+            >
+              <Icon size={24} />
             </div>
-          </CardContent>
+          </div>
+
+          <div className="mt-6 flex items-center gap-6 border-t border-slate-100 pt-4">
+            {stats.slice(1).map((stat) => (
+              <div key={stat.label} className="flex flex-col">
+                <span className="text-lg font-bold text-slate-800">{stat.value}</span>
+                <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                  {stat.label}
+                </span>
+              </div>
+            ))}
+          </div>
         </Card>
       ))}
     </div>

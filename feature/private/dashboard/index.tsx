@@ -1,43 +1,47 @@
-import { OverviewStats } from "./components/overview-stats";
-import { ManagementStats } from "./components/management-stats";
-import { FinancialStats } from "./components/financial-stats";
-import { SalesOverview } from "./components/sales-overview";
-import { DataTablesSection } from "./components/data-tables-section";
-import { TrendingOrders } from "./components/trending-orders";
-import { MonthlyRevenue } from "./components/monthly-revenue";
-import { StoreListings } from "./components/store-listings";
 import { DataTable } from "@/components/common/data-table/data-table";
-import { orderColumns } from "./components/columns/columns";
-import { RECENT_ORDERS } from "@/constants/dashboard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/common/page-header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { RECENT_ORDERS } from "@/constants/dashboard";
+import { orderColumns } from "./components/columns/columns";
+import { DataTablesSection } from "./components/data-tables-section";
+import { FinancialStats } from "./components/financial-stats";
+import { ManagementStats } from "./components/management-stats";
+import { MonthlyRevenue } from "./components/monthly-revenue";
+import { OverviewStats } from "./components/overview-stats";
+import { SalesOverview } from "./components/sales-overview";
+import { StoreListings } from "./components/store-listings";
+import { TrendingOrders } from "./components/trending-orders";
 
 export function Dashboard() {
   return (
-    <div>
+    <div className="space-y-4">
       <PageHeader
         title="Dashboard"
-        description="Welcome back! Here's an overview of your platform's performance, orders, revenue, and recent activities."
+        description="Overview of your platform's performance and recent activities."
       />
 
       <div className="space-y-6">
-        {/* Management Statistics */}
         <OverviewStats />
+
         <ManagementStats />
-        <FinancialStats />
-        <SalesOverview />
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <FinancialStats />
+          <SalesOverview />
+        </div>
 
         <DataTablesSection />
+
         <TrendingOrders />
 
         <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="col-span-2 overflow-hidden rounded-xl">
-            <CardHeader className="mb-4 border-b border-slate-100/50 px-6 pt-6 pb-5">
-              <CardTitle className="text-sm font-bold tracking-wider uppercase">
+          <Card className="col-span-2 overflow-hidden rounded-2xl border border-slate-200/60 shadow-sm">
+            <CardHeader className="border-b border-slate-100 bg-white px-6 py-4">
+              <CardTitle className="text-sm font-bold tracking-wider text-slate-800 uppercase">
                 Recently Placed Orders
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-6 pt-0 pb-6">
+            <CardContent className="bg-white p-4">
               <DataTable columns={orderColumns} data={RECENT_ORDERS} />
             </CardContent>
           </Card>

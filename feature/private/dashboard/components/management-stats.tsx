@@ -1,26 +1,28 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { MANAGEMENT_STATS } from "@/constants/dashboard";
+import { Users } from "lucide-react";
 
 export function ManagementStats() {
   return (
-    <div>
-      <h3 className="mt-8 mb-2 pb-2 text-xl font-extrabold tracking-tight">
-        Management Statistics
-      </h3>
-      <div className="grid gap-6 md:grid-cols-4">
+    <Card className="rounded-2xl border border-slate-200/60 shadow-sm">
+      <div className="flex items-center gap-2 border-b border-slate-100 px-6 py-4">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+          <Users size={16} />
+        </div>
+        <h3 className="text-base font-bold text-slate-800">Management Statistics</h3>
+      </div>
+      <div className="grid grid-cols-2 divide-y divide-slate-100 sm:grid-cols-4 sm:divide-x sm:divide-y-0">
         {MANAGEMENT_STATS.map((stat, i) => (
-          <Card key={i} className="overflow-hidden rounded-xl border-none">
-            <CardHeader>
-              <CardTitle className="text-sm font-bold tracking-wider uppercase">
-                {stat.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-6 pb-2">
-              <div className="text-3xl font-extrabold">{stat.value}</div>
-            </CardContent>
-          </Card>
+          <div key={i} className="flex flex-col justify-center px-6 py-4">
+            <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+              {stat.title}
+            </p>
+            <div className="mt-3 text-4xl font-black tracking-tight text-slate-900">
+              {stat.value}
+            </div>
+          </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
