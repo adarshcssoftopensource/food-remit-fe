@@ -37,17 +37,25 @@ export function DatePicker({
             <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
             {date ? format(date, "dd/MM/yyyy") : <span>{placeholder}</span>}
             {date && (
-              <button
-                type="button"
+              <span
+                role="button"
+                tabIndex={0}
                 className="ring-offset-background ml-auto rounded-sm opacity-70 transition-opacity hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation();
                   setDate?.(undefined);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setDate?.(undefined);
+                  }
+                }}
               >
                 <X className="h-3.5 w-3.5" />
                 <span className="sr-only">Clear date</span>
-              </button>
+              </span>
             )}
           </Button>
         }

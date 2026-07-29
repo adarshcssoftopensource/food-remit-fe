@@ -121,7 +121,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate suppressHydrationWarning>
           <div className="flex flex-col gap-2">
             <Controller
               name="email"
@@ -178,7 +178,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 </div>
               )}
             />
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end" suppressHydrationWarning>
               <Link
                 href={ROUTES.AUTH.FORGOT_PASSWORD}
                 id="forgot-password-link"

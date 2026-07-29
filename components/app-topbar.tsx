@@ -43,42 +43,40 @@ export function AppTopBar() {
 
       <div className="flex items-center gap-2">
         <Popover>
-          <PopoverTrigger>
-            <button
+          <PopoverTrigger
+            className={cn(
+              "group flex items-center gap-3 rounded-xl px-2 py-1.5",
+              "hover:bg-accent/60",
+              "transition-all duration-200",
+              "outline-none",
+            )}
+          >
+            <div
               className={cn(
-                "group flex items-center gap-3 rounded-xl px-2 py-1.5",
-                "hover:bg-accent/60",
-                "transition-all duration-200",
-                "outline-none",
+                "flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl",
+                "from-primary to-primary/70 bg-linear-to-br",
+                "text-primary-foreground",
+                "text-xs font-bold",
+                "shadow-sm",
               )}
             >
-              <div
-                className={cn(
-                  "flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl",
-                  "from-primary to-primary/70 bg-linear-to-br",
-                  "text-primary-foreground",
-                  "text-xs font-bold",
-                  "shadow-sm",
-                )}
-              >
-                {initials}
-              </div>
+              {initials}
+            </div>
 
-              <div className="hidden flex-col items-start sm:flex">
-                <span className="max-w-32 truncate text-sm leading-none font-semibold">
-                  Admin User
-                </span>
-                <span className="text-muted-foreground mt-1 text-[11px]">Super Admin</span>
-              </div>
+            <div className="hidden flex-col items-start sm:flex">
+              <span className="max-w-32 truncate text-sm leading-none font-semibold">
+                Admin User
+              </span>
+              <span className="text-muted-foreground mt-1 text-[11px]">Super Admin</span>
+            </div>
 
-              <ChevronDown
-                className={cn(
-                  "text-muted-foreground h-4 w-4",
-                  "transition-transform duration-200",
-                  "group-data-[state=open]:rotate-180",
-                )}
-              />
-            </button>
+            <ChevronDown
+              className={cn(
+                "text-muted-foreground h-4 w-4",
+                "transition-transform duration-200",
+                "group-data-[state=open]:rotate-180",
+              )}
+            />
           </PopoverTrigger>
 
           <PopoverContent
