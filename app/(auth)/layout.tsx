@@ -10,6 +10,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           src="/login_background_image.png"
           alt="Food Decor"
           fill
+          sizes="(max-width: 1024px) 0px, 400px"
           priority
           className="object-contain object-bottom-left"
         />
@@ -18,7 +19,15 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="grid min-h-screen lg:grid-cols-2">
         <div className="relative z-10 hidden items-center justify-center px-12 lg:flex">
           <div className="flex max-w-md flex-col items-center">
-            <Image src="/food_remid_logo.png" alt="Food Remit" width={250} height={250} priority />
+            <Image
+              src="/food_remid_logo.png"
+              alt="Food Remit"
+              width={250}
+              height={250}
+              priority
+              className="h-auto w-auto"
+              style={{ width: "auto", height: "auto" }}
+            />
             <div className="my-8 flex items-center">
               <div className="h-px w-12 bg-gray-300" />
               <span className="mx-3 text-green-700">🌿</span>

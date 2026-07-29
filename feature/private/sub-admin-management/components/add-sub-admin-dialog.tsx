@@ -34,11 +34,9 @@ export function AddSubAdminDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Sub-Admin
-        </Button>
+      <DialogTrigger render={<Button />}>
+        <Plus className="mr-2 h-4 w-4" />
+        Add Sub-Admin
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl">
         <DialogHeader className="border-b p-6 pb-4">

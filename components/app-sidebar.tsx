@@ -85,6 +85,7 @@ export function AppSidebar() {
                 width={130}
                 height={44}
                 className="h-auto max-h-20 w-auto object-contain"
+                style={{ width: "auto", height: "auto" }}
                 priority
               />
             </div>
@@ -133,38 +134,36 @@ export function AppSidebar() {
                       className="group/collapsible"
                     >
                       <SidebarMenuItem>
-                        <CollapsibleTrigger>
-                          <button
+                        <CollapsibleTrigger
+                          className={cn(
+                            "flex h-12 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium",
+                            "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
+                            hasActiveChild
+                              ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-linear-to-r"
+                              : "text-foreground/70 hover:bg-primary/5 hover:text-foreground",
+                          )}
+                          title={isCollapsed ? item.title : undefined}
+                        >
+                          <item.icon
                             className={cn(
-                              "flex h-12 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium",
-                              "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
-                              hasActiveChild
-                                ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-linear-to-r"
-                                : "text-foreground/70 hover:bg-primary/5 hover:text-foreground",
+                              "h-4 w-4 shrink-0",
+                              hasActiveChild ? "text-primary-foreground" : "text-foreground/60",
                             )}
-                            title={isCollapsed ? item.title : undefined}
-                          >
-                            <item.icon
-                              className={cn(
-                                "h-4 w-4 shrink-0",
-                                hasActiveChild ? "text-primary-foreground" : "text-foreground/60",
-                              )}
-                            />
-                            {!isCollapsed && (
-                              <>
-                                <span className="flex-1 truncate text-left">{item.title}</span>
-                                <ChevronRight
-                                  className={cn(
-                                    "h-3.5 w-3.5 shrink-0 transition-transform duration-200",
-                                    hasActiveChild
-                                      ? "text-primary-foreground/70"
-                                      : "text-muted-foreground",
-                                    isOpen && "rotate-90",
-                                  )}
-                                />
-                              </>
-                            )}
-                          </button>
+                          />
+                          {!isCollapsed && (
+                            <>
+                              <span className="flex-1 truncate text-left">{item.title}</span>
+                              <ChevronRight
+                                className={cn(
+                                  "h-3.5 w-3.5 shrink-0 transition-transform duration-200",
+                                  hasActiveChild
+                                    ? "text-primary-foreground/70"
+                                    : "text-muted-foreground",
+                                  isOpen && "rotate-90",
+                                )}
+                              />
+                            </>
+                          )}
                         </CollapsibleTrigger>
 
                         <CollapsibleContent className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
