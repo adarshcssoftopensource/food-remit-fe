@@ -1,0 +1,51 @@
+import Image from "next/image";
+import Link from "next/link";
+
+import { ROUTES } from "@/config/routes";
+import { VENDOR_NAV_LINKS } from "../../../../constants/landing.constants";
+
+export function SiteFooter() {
+  return (
+    <footer className="border-t border-slate-100 bg-white py-12">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 sm:px-8 md:flex-row md:items-center md:justify-between">
+        <div>
+          <Image
+            src="/food_remid_logo.png"
+            alt="Food Remit"
+            width={120}
+            height={36}
+            className="h-8 w-auto object-contain"
+          />
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-slate-500">
+            The world’s first global food remittance network—connecting local stores with families
+            abroad.
+          </p>
+        </div>
+
+        <nav className="flex flex-wrap gap-x-6 gap-y-2">
+          {VENDOR_NAV_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-slate-600 hover:text-slate-950"
+            >
+              {link.label}
+            </a>
+          ))}
+          <Link
+            href={ROUTES.AUTH.LOGIN}
+            className="text-sm font-medium text-slate-600 hover:text-slate-950"
+          >
+            Sign In
+          </Link>
+        </nav>
+      </div>
+
+      <div className="mx-auto mt-10 max-w-6xl border-t border-slate-100 px-5 pt-6 sm:px-8">
+        <p className="text-xs text-slate-400">
+          © {new Date().getFullYear()} Food Remit. All rights reserved.
+        </p>
+      </div>
+    </footer>
+  );
+}

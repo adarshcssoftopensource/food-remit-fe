@@ -130,3 +130,41 @@
     @apply font-sans;
   }
 }
+
+/* Vendor landing page motion */
+@keyframes vendor-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vendor-landing .vendor-fade-up {
+  animation: vendor-fade-up 0.7s ease-out both;
+}
+
+.vendor-landing .vendor-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.vendor-landing .vendor-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.vendor-landing .vendor-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.vendor-landing .vendor-delay-4 {
+  animation-delay: 0.45s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vendor-landing .vendor-fade-up {
+    animation: none;
+  }
+}

@@ -30,17 +30,6 @@ export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const authenticated = hasAuthToken(request);
 
-  if (pathname === ROUTES.ROOT) {
-    if (!authenticated) {
-      const response = NextResponse.redirect(new URL(ROUTES.AUTH.LOGIN, request.url));
-      response.headers.set("Cache-Control", "no-store, max-age=0");
-      return response;
-    }
-    const response = NextResponse.redirect(new URL(ROUTES.ADMIN.DASHBOARD, request.url));
-    response.headers.set("Cache-Control", "no-store, max-age=0");
-    return response;
-  }
-
   if (isPrivatePath(pathname)) {
     if (!authenticated) {
       const loginUrl = new URL(ROUTES.AUTH.LOGIN, request.url);
@@ -52,6 +41,7 @@ export default function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Auth screens are guests-only. `/` stays public as the vendor landing page.
   if (isPublicPath(pathname) && authenticated) {
     const response = NextResponse.redirect(new URL(ROUTES.ADMIN.DASHBOARD, request.url));
     response.headers.set("Cache-Control", "no-store, max-age=0");
