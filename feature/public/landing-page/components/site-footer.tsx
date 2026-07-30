@@ -41,7 +41,7 @@ export function SiteFooter() {
         </nav>
       </div>
 
-      <div className="mx-auto mt-10 max-w-6xl border-t border-slate-100 px-5 pt-6 sm:px-8">
+      <div className="mx-auto mt-10 max-w-6xl border-t border-slate-100 px-5 pt-6 text-center sm:px-8">
         <p className="text-xs text-slate-400">
           © {new Date().getFullYear()} Food Remit. All rights reserved.
         </p>

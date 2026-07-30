@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
@@ -27,7 +26,7 @@ export function JoinSection() {
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <Link
+          {/* <Link
             href={ROUTES.AUTH.LOGIN}
             className={cn(
               buttonVariants(),
@@ -36,12 +35,12 @@ export function JoinSection() {
           >
             Become a Vendor Partner
             <ArrowRight className="size-4" />
-          </Link>
+          </Link> */}
           <Link
             href={ROUTES.AUTH.LOGIN}
             className={cn(
               buttonVariants({ variant: "outline" }),
-              "h-12 rounded-full border-white/30 bg-transparent px-7 text-base text-white hover:bg-white/10 hover:text-white",
+              "h-12 rounded-full border-white/30 bg-gray-200 px-7 text-base text-black hover:bg-white/10 hover:text-white",
             )}
           >
             Sign In

@@ -37,8 +37,14 @@ export function SiteHeader() {
           : "bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:h-[4.5rem] sm:px-8">
-        <Link href={ROUTES.ROOT} className="relative z-10 flex items-center gap-2.5">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:h-18 sm:px-8">
+        <Link
+          href="#top"
+          className={cn(
+            "relative z-10 flex items-center gap-2.5",
+            !scrolled && "rounded-xl bg-white/90 p-2.5",
+          )}
+        >
           <Image
             src="/food_remid_logo.png"
             alt="Food Remit"
@@ -80,7 +86,7 @@ export function SiteHeader() {
             href="#join"
             className={cn(
               buttonVariants(),
-              "h-10 rounded-full bg-[#f97316] px-5 text-white hover:bg-[#ea580c]",
+              "bg-primary hover:bg-primary/80 h-10 rounded-full px-5 text-white",
             )}
           >
             Become a Partner

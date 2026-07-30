@@ -39,7 +39,7 @@ export function WhyJoinSection() {
           </ul>
         </div>
 
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] sm:aspect-[5/4] lg:aspect-[4/5]">
+        <div className="relative aspect-4/5 overflow-hidden rounded-[2rem] sm:aspect-5/4 lg:aspect-4/5">
           <Image
             src="/vendor/grocery.jpg"
             alt="Fresh groceries prepared for local pickup"
@@ -76,8 +76,14 @@ export function RevenueSection() {
 
         <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-6">
           {MARKETS.map((market) => (
-            <div key={market} className="border-b border-slate-200/80 pb-4">
-              <span className="text-sm font-semibold text-slate-800">{market}</span>
+            <div
+              key={market.name}
+              className="flex items-center gap-3 border-b border-slate-200/80 pb-4"
+            >
+              <span className="text-2xl" aria-hidden>
+                {market.flag}
+              </span>
+              <span className="text-sm font-semibold text-slate-800">{market.name}</span>
             </div>
           ))}
         </div>

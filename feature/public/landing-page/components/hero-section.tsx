@@ -1,8 +1,7 @@
-import { ArrowRight } from "lucide-react";
-import Image from "next/image";
-
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export function HeroSection() {
@@ -36,7 +35,7 @@ export function HeroSection() {
             href="#join"
             className={cn(
               buttonVariants(),
-              "h-12 rounded-full bg-[#f97316] px-6 text-base text-white hover:bg-[#ea580c]",
+              "bg-primary hover:bg-primary/80 h-12 rounded-full px-6 text-base text-white",
             )}
           >
             Register Your Store

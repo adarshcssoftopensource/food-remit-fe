@@ -15,7 +15,7 @@ import { RevenueSection, WhyJoinSection } from "./components/why-join-section";
 
 export function VendorLandingPage() {
   return (
-    <div className="vendor-landing bg-white text-slate-950 antialiased">
+    <div id="top" className="vendor-landing antialiased">
       <SiteHeader />
       <main>
         <HeroSection />

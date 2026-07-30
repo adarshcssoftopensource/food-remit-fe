@@ -15,14 +15,14 @@ export const WHY_JOIN_POINTS = [
 ] as const;
 
 export const MARKETS = [
-  "United States",
-  "Canada",
-  "United Kingdom",
-  "France",
-  "Germany",
-  "Australia",
-  "Middle East",
-  "Africa",
+  { flag: "🇺🇸", name: "United States" },
+  { flag: "🇨🇦", name: "Canada" },
+  { flag: "🇬🇧", name: "United Kingdom" },
+  { flag: "🇫🇷", name: "France" },
+  { flag: "🇩🇪", name: "Germany" },
+  { flag: "🇦🇺", name: "Australia" },
+  { flag: "🌍", name: "Middle East" },
+  { flag: "🌍", name: "Africa" },
 ] as const;
 
 export const HOW_IT_WORKS = [
