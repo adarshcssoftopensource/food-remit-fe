@@ -9,6 +9,7 @@ import { clearAuthSession } from "@/lib/auth-client";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { successToast } from "./toaster";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -19,6 +20,10 @@ export function LogoutButton() {
     setIsConfirmOpen(false);
     try {
       await mutateAsync({});
+      successToast({
+        title: "",
+        description: "Session logout successfully",
+      });
     } catch {
     } finally {
       clearAuthSession();
