@@ -1,4 +1,5 @@
+import StoriesManagement from "@/feature/private/stories";
+
 export default function Page() {
-  <div>page</div>;
-  // return <StoriesManagement />;
+  return <StoriesManagement />;
 }

@@ -84,7 +84,7 @@ export function DataTable<TData, TValue>({
     <div className="space-y-4">
       {searchKey && (
         <div className="flex items-center">
-          <div className="relative w-full max-w-sm">
+          <div className="relative w-full sm:max-w-sm">
             <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
             <Input
               placeholder={`Search...`}
@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       )}
-      <div className="overflow-hidden rounded-md border shadow-sm">
+      <div className="w-full overflow-x-auto rounded-md border shadow-sm">
         <Table>
           <TableHeader className="bg-slate-50">
             {table.getHeaderGroups().map((headerGroup) => (

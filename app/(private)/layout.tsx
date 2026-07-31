@@ -8,7 +8,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
       <AppSidebar />
       <SidebarInset>
         <AppTopBar />
-        <div className="flex flex-1 flex-col gap-4 p-5">{children}</div>
+        <div className="flex flex-1 flex-col gap-4 p-3 md:p-5">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

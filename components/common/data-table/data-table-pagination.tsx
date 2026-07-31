@@ -43,7 +43,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   };
 
   return (
-    <div className="flex flex-col border-t px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 border-t px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-2 whitespace-nowrap">
         <span className="text-sm font-medium text-slate-700">Rows per page</span>
 
@@ -65,8 +65,8 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
         </Select>
       </div>
 
-      <Pagination>
-        <PaginationContent>
+      <Pagination className="mx-0 w-auto justify-start sm:justify-center">
+        <PaginationContent className="flex-wrap">
           <PaginationItem>
             <PaginationPrevious
               href="#"
@@ -112,7 +112,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
         </PaginationContent>
       </Pagination>
 
-      <div className="flex items-center gap-2 whitespace-nowrap">
+      <div className="hidden items-center gap-2 whitespace-nowrap sm:flex">
         <span className="text-sm text-slate-700">Jump to:</span>
 
         <Input

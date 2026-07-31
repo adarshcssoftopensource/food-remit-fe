@@ -31,7 +31,7 @@ export function StoryFilters({
         <CardTitle className="text-foreground text-base font-semibold">Filter Stories</CardTitle>
       </div>
       <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <DateRangeFilter
             fromDate={fromDate}
             toDate={toDate}
@@ -39,11 +39,13 @@ export function StoryFilters({
             onToDateChange={onToDateChange}
             wrapperClassName="contents"
           />
+        </div>
+        <div className="flex justify-end">
           <Button
             variant="destructive"
             onClick={onClearFilters}
             disabled={!hasFilters}
-            className="mt-6 h-10 rounded-lg"
+            className="h-10 w-full rounded-lg sm:w-auto"
           >
             <RotateCcw size={18} /> Reset Filters
           </Button>

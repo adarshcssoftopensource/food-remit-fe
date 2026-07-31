@@ -1,6 +1,7 @@
+import { SubAdminManagement } from "@/feature/private/sub-admin-management";
+
 function page() {
-  <div>page</div>;
-  // return <SubAdminManagement />;
+  return <SubAdminManagement />;
 }
 
 export default page;

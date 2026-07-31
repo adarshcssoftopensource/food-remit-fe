@@ -1,4 +1,5 @@
+import PhilanthrophistManagement from "@/feature/private/philanthrophist-management";
+
 export default function Page() {
-  <div>page</div>;
-  // return <PhilanthrophistManagement />;
+  return <PhilanthrophistManagement />;
 }

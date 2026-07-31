@@ -73,7 +73,7 @@ export function PhilanthrophistFilters({
             variant="destructive"
             onClick={onClearFilters}
             disabled={!hasFilters}
-            className="h-10 rounded-lg"
+            className="h-10 w-full rounded-lg sm:w-auto"
           >
             <RotateCcw size={18} /> Reset Filters
           </Button>

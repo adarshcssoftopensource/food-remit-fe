@@ -74,7 +74,7 @@ export function FoundationFilters({
             variant="destructive"
             onClick={onClearFilters}
             disabled={!hasFilters}
-            className="h-10 rounded-lg"
+            className="h-10 w-full rounded-lg sm:w-auto"
           >
             <RotateCcw size={22} />
             Reset Filters
