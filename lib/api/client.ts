@@ -1,5 +1,6 @@
 import { errorToast } from "@/components/toaster";
-import { AUTH_TOKEN_COOKIE } from "@/config/cookie";
+import { ROUTES } from "@/config/routes";
+import { clearAuthSession } from "@/lib/auth-client";
 import type {
   AxiosError,
   AxiosInstance,
@@ -7,7 +8,6 @@ import type {
   InternalAxiosRequestConfig,
 } from "axios";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { AUTH_ENDPOINTS } from "./endpoints/auth.endpoints";
 interface ApiErrorResponse {
   statusCode: number;
@@ -36,7 +36,13 @@ const processQueue = (error: any, token: string | null = null) => {
 };
 
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = Cookies.get(AUTH_TOKEN_COOKIE);
+  const token =
+    typeof window !== "undefined"
+      ? document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("auth_token="))
+          ?.split("=")[1]
+      : null;
   if (!config.headers) config.headers = {} as AxiosRequestHeaders;
 
   if (token && !config.url?.includes(AUTH_ENDPOINTS.REFRESH_TOKEN)) {
@@ -75,16 +81,16 @@ axiosInstance.interceptors.response.use(
         );
 
         const { access_token } = response.data;
-        Cookies.set(AUTH_TOKEN_COOKIE, access_token, { path: "/" });
+        document.cookie = `auth_token=${access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
 
         processQueue(null, access_token);
         originalRequest.headers.Authorization = "Bearer " + access_token;
         return axiosInstance(originalRequest);
       } catch (err) {
         processQueue(err, null);
-        Cookies.remove(AUTH_TOKEN_COOKIE);
+        clearAuthSession();
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          window.location.href = ROUTES.AUTH.LOGIN;
         }
         return Promise.reject(err);
       } finally {
