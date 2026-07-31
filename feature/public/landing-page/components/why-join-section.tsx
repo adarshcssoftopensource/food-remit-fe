@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 import Image from "next/image";
 
+import { Badge } from "@/components/ui/badge";
 import { MARKETS, WHY_JOIN_POINTS } from "../../../../constants/landing.constants";
 
 export function WhyJoinSection() {
@@ -28,12 +29,13 @@ export function WhyJoinSection() {
             {WHY_JOIN_POINTS.map((point) => (
               <li
                 key={point}
-                className="flex items-start gap-2.5 text-sm font-medium text-slate-800"
+                className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
               >
-                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[#166534]/10 text-[#166534]">
-                  <Check className="size-3.5" strokeWidth={3} />
-                </span>
-                {point}
+                <Badge className="mt-0.5 h-7 w-7 shrink-0 rounded-full bg-green-600 p-0 hover:bg-green-600">
+                  <Check className="h-4 w-4 text-white" strokeWidth={3} />
+                </Badge>
+
+                <p className="text-sm leading-6 font-medium text-slate-700">{point}</p>
               </li>
             ))}
           </ul>
@@ -78,12 +80,18 @@ export function RevenueSection() {
           {MARKETS.map((market) => (
             <div
               key={market.name}
-              className="flex items-center gap-3 border-b border-slate-200/80 pb-4"
+              className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3"
             >
-              <span className="text-2xl" aria-hidden>
-                {market.flag}
-              </span>
-              <span className="text-sm font-semibold text-slate-800">{market.name}</span>
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-green-50 to-emerald-100 text-2xl shadow-sm">
+                <span aria-hidden>{market.flag}</span>
+              </div>
+
+              <div className="flex-1">
+                <h4 className="font-semibold text-slate-900 transition-colors group-hover:text-green-700">
+                  {market.name}
+                </h4>
+                <p className="text-xs text-slate-500">Available Market</p>
+              </div>
             </div>
           ))}
         </div>

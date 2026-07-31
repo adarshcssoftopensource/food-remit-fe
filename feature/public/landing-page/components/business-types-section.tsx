@@ -23,12 +23,15 @@ export function BusinessTypesSection() {
           {BUSINESS_TYPES.map((type) => (
             <li
               key={type}
-              className="mb-3 flex break-inside-avoid items-center gap-2.5 text-sm font-medium text-slate-800"
+              className="group mb-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3"
             >
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#166534]/10 text-[#166534]">
-                <Check className="size-3.5" strokeWidth={3} />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-green-500 to-emerald-600 text-white">
+                <Check className="h-4 w-4" strokeWidth={3} />
+              </div>
+
+              <span className="text-sm font-semibold text-slate-700 transition-colors group-hover:text-green-700">
+                {type}
               </span>
-              {type}
             </li>
           ))}
         </ul>
