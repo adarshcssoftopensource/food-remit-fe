@@ -35,7 +35,7 @@ export function Dashboard() {
         <TrendingOrders />
 
         <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="col-span-2 overflow-hidden rounded-2xl border border-slate-200/60 shadow-sm">
+          <Card className="col-span-full overflow-hidden rounded-2xl border border-slate-200/60 shadow-sm lg:col-span-2">
             <CardHeader className="border-b border-slate-100 bg-white px-6 py-4">
               <CardTitle className="text-sm font-bold tracking-wider text-slate-800 uppercase">
                 Recently Placed Orders
@@ -46,7 +46,7 @@ export function Dashboard() {
             </CardContent>
           </Card>
 
-          <div className="col-span-1">
+          <div className="col-span-full lg:col-span-1">
             <MonthlyRevenue />
           </div>
         </div>

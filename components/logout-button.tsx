@@ -37,10 +37,12 @@ export function LogoutButton() {
       <Button
         onClick={() => setIsConfirmOpen(true)}
         isLoading={isPending}
-        className="flex items-center gap-2"
-        variant={"destructive"}
+        className="flex justify-start text-start"
+        variant={"ghost"}
       >
-        <LogOut className="h-4 w-4" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
+          <LogOut className="h-4 w-4 text-red-500" />
+        </div>
         Logout
       </Button>
 

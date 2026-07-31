@@ -42,6 +42,36 @@ export function AppTopBar() {
       <div className="flex-1" />
 
       <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Notifications"
+          className={cn(
+            "relative h-10 w-10 rounded-xl",
+            "text-muted-foreground",
+            "hover:bg-accent hover:text-foreground",
+            "transition-all duration-200",
+          )}
+        >
+          <Bell className="h-5 w-5" />
+
+          <span
+            className={cn(
+              "absolute -top-0.5 -right-0.5",
+              "flex h-5 min-w-5 items-center justify-center",
+              "rounded-full",
+              "bg-primary",
+              "px-1",
+              "text-[11px] font-semibold text-white",
+              "shadow-sm",
+              "ring-background ring-2",
+            )}
+          >
+            0
+          </span>
+        </Button>
+
+        <div className="bg-border/70 mx-1 h-7 w-px" />
         <Popover>
           <PopoverTrigger
             className={cn(
@@ -97,45 +127,9 @@ export function AppTopBar() {
               </div>
               Settings
             </Button>
+            <LogoutButton />
           </PopoverContent>
         </Popover>
-
-        <div className="bg-border/70 mx-1 h-7 w-px" />
-
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Notifications"
-          className={cn(
-            "relative h-10 w-10 rounded-xl",
-            "text-muted-foreground",
-            "hover:bg-accent hover:text-foreground",
-            "transition-all duration-200",
-          )}
-        >
-          <Bell className="h-5 w-5" />
-
-          <span
-            className={cn(
-              "absolute -top-0.5 -right-0.5",
-              "flex h-5 min-w-5 items-center justify-center",
-              "rounded-full",
-              "bg-primary",
-              "px-1",
-              "text-[11px] font-semibold text-white",
-              "shadow-sm",
-              "ring-background ring-2",
-            )}
-          >
-            0
-          </span>
-        </Button>
-
-        <div className="bg-border/70 mx-1 h-7 w-px" />
-
-        <div className="hover:bg-accent/50 rounded-xl transition-colors">
-          <LogoutButton />
-        </div>
       </div>
     </header>
   );
