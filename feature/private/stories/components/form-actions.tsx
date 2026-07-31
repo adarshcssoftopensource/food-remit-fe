@@ -12,7 +12,11 @@ export function FormActions({ loading }: Props) {
 
   return (
     <div className="flex flex-wrap justify-end gap-3 border-t pt-4">
-      <Button type="button" variant="destructive" onClick={() => router.push(ROUTES.STORIES.LIST)}>
+      <Button
+        type="button"
+        variant="destructive"
+        onClick={() => router.push(ROUTES.ADMIN.STORIES.LIST)}
+      >
         <X /> Cancel
       </Button>
 

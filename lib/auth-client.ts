@@ -1,5 +1,5 @@
+import { AUTH_TOKEN_COOKIE } from "@/config/cookie";
 import Cookies from "js-cookie";
-import { AUTH_REFRESH_TOKEN_COOKIE, AUTH_TOKEN_COOKIE } from "@/config/cookie";
 
 export interface SetAuthSessionInput {
   accessToken: string;
@@ -25,5 +25,4 @@ export function setAuthSession({ accessToken, expiresInSeconds }: SetAuthSession
 
 export function clearAuthSession() {
   Cookies.remove(AUTH_TOKEN_COOKIE, { path: "/" });
-  Cookies.remove(AUTH_REFRESH_TOKEN_COOKIE, { path: "/" });
 }

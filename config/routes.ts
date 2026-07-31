@@ -7,10 +7,16 @@ export const ROUTES = {
   },
   ADMIN: {
     DASHBOARD: "/dashboard",
-  },
-  STORIES: {
-    LIST: "/stories",
-    ADD: "/stories/add",
+    DONATION_LOGS: "/donation-logs",
+    FOUNDATION_MANAGEMENT: "/foundation-management",
+    PHILANTHROPIST_MANAGEMENT: "/philanthropist-management",
+    PROFILE: "/profile",
+    STORIES: {
+      LIST: "/stories",
+      ADD: "/stories/add",
+    },
+    SUB_ADMIN_MANAGEMENT: "/sub-admin-management",
+    USERS_MANAGEMENT: "/users-management",
   },
 } as const;
 

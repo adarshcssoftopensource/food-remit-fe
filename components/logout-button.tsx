@@ -20,16 +20,14 @@ export function LogoutButton() {
     setIsConfirmOpen(false);
     try {
       await mutateAsync({});
+      clearAuthSession();
+      router.push(ROUTES.AUTH.LOGIN);
+      router.refresh();
       successToast({
         title: "",
         description: "Session logout successfully",
       });
-    } catch {
-    } finally {
-      clearAuthSession();
-      router.push(ROUTES.AUTH.LOGIN);
-      router.refresh();
-    }
+    } catch {}
   };
 
   return (

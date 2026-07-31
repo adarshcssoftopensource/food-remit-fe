@@ -16,7 +16,7 @@ export function AddStoryPage() {
         title="Add New Story"
         description="Fill in the details below to create and publish a new family support story."
         action={
-          <Button variant="outline" onClick={() => router.push(ROUTES.STORIES.LIST)}>
+          <Button variant="outline" onClick={() => router.push(ROUTES.ADMIN.STORIES.LIST)}>
             <ArrowLeft className="size-4" />
             Back to Stories
           </Button>

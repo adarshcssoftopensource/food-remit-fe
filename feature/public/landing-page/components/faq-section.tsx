@@ -1,5 +1,4 @@
 import { ChevronDown } from "lucide-react";
-
 import { FAQS } from "../../../../constants/landing.constants";
 
 export function FaqSection() {

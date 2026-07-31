@@ -1,10 +1,10 @@
 import { errorToast } from "@/components/toaster";
-import { AUTH_REFRESH_TOKEN_COOKIE, AUTH_TOKEN_COOKIE } from "@/config/cookie";
+import { AUTH_TOKEN_COOKIE } from "@/config/cookie";
 import type {
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-  AxiosRequestHeaders,
   AxiosError,
+  AxiosInstance,
+  AxiosRequestHeaders,
+  InternalAxiosRequestConfig,
 } from "axios";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -83,7 +83,6 @@ axiosInstance.interceptors.response.use(
       } catch (err) {
         processQueue(err, null);
         Cookies.remove(AUTH_TOKEN_COOKIE);
-        Cookies.remove(AUTH_REFRESH_TOKEN_COOKIE);
         if (typeof window !== "undefined") {
           window.location.href = "/login";
         }

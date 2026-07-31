@@ -1,13 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROUTES } from "@/config/routes";
 import { STORY_TABS, type StoryTab } from "@/constants/stories-management";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { StoryFilters } from "./components/story-filters";
 import { AllStoriesTable, DraftStoriesTable, MyStoriesTable } from "./components/story-tables";
 import { useStoryFilters } from "./hooks/use-story-filters";
@@ -33,7 +33,7 @@ export default function StoriesManagement() {
         title="Stories Management"
         description="Review, manage, and create platform stories."
         action={
-          <Button onClick={() => router.push(ROUTES.STORIES.ADD)}>
+          <Button onClick={() => router.push(ROUTES.ADMIN.STORIES.ADD)}>
             <Plus /> Add Story
           </Button>
         }

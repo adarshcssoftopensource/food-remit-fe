@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { AUTH_TOKEN_COOKIE } from "@/config/cookie";
 import { ROUTES } from "@/config/routes";
-import { AUTH_REFRESH_TOKEN_COOKIE, AUTH_TOKEN_COOKIE } from "@/config/cookie";
+import { NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_PATHS = [
   ROUTES.AUTH.LOGIN,
@@ -8,7 +8,7 @@ const PUBLIC_PATHS = [
   ROUTES.AUTH.FORGOT_PASSWORD,
 ] as const;
 
-const PRIVATE_PATH_PREFIXES = [ROUTES.ADMIN.DASHBOARD] as const;
+const PRIVATE_PATH_PREFIXES = [ROUTES.ADMIN.DASHBOARD, ROUTES.ADMIN] as const;
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -22,8 +22,7 @@ function isPrivatePath(pathname: string): boolean {
 
 function hasAuthToken(request: NextRequest): boolean {
   const token = request.cookies.get(AUTH_TOKEN_COOKIE)?.value;
-  const refreshToken = request.cookies.get(AUTH_REFRESH_TOKEN_COOKIE)?.value;
-  return Boolean(token?.trim() || refreshToken?.trim());
+  return Boolean(token?.trim());
 }
 
 export default function middleware(request: NextRequest) {
