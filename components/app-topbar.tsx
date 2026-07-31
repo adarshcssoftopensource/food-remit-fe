@@ -1,11 +1,13 @@
 "use client";
 import { Bell, ChevronDown, Settings, User } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 import { LogoutButton } from "./logout-button";
 
 export function AppTopBar() {
@@ -15,6 +17,9 @@ export function AppTopBar() {
     .join("")
     .toUpperCase()
     .slice(0, 2);
+
+  const pathname = usePathname();
+  const isProfilePage = pathname === "/profile";
 
   return (
     <header
@@ -75,10 +80,8 @@ export function AppTopBar() {
         <Popover>
           <PopoverTrigger
             className={cn(
-              "group flex items-center gap-3 rounded-xl px-2 py-1.5",
-              "hover:bg-accent/60",
-              "transition-all duration-200",
-              "outline-none",
+              "group flex items-center gap-3 rounded-xl px-2 py-1.5 transition-all duration-200 outline-none",
+              isProfilePage ? "bg-primary text-white" : "hover:bg-accent/60",
             )}
           >
             <div
@@ -97,7 +100,14 @@ export function AppTopBar() {
               <span className="max-w-32 truncate text-sm leading-none font-semibold">
                 Admin User
               </span>
-              <span className="text-muted-foreground mt-1 text-[11px]">Super Admin</span>
+              <span
+                className={cn(
+                  "text-muted-foreground mt-1 text-[11px]",
+                  isProfilePage && "text-white",
+                )}
+              >
+                Super Admin
+              </span>
             </div>
 
             <ChevronDown
@@ -105,6 +115,7 @@ export function AppTopBar() {
                 "text-muted-foreground h-4 w-4",
                 "transition-transform duration-200",
                 "group-data-[state=open]:rotate-180",
+                isProfilePage && "text-white",
               )}
             />
           </PopoverTrigger>
@@ -114,12 +125,26 @@ export function AppTopBar() {
             sideOffset={8}
             className="border-border/60 w-36 gap-0 rounded-2xl p-2 shadow-xl"
           >
-            <Button variant={"ghost"} className="flex justify-start text-start">
-              <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
-                <User className="text-primary h-4 w-4" />
-              </div>
-              Profile
-            </Button>
+            <Link
+              href="/profile"
+              className={cn(
+                "",
+                isProfilePage && "bg-primary hover:bg-primary/80 rounded-lg text-white",
+              )}
+            >
+              <Button
+                variant={"ghost"}
+                className={cn(
+                  "flex w-full justify-start text-start",
+                  isProfilePage && "hover:bg-primary/80 text-white!",
+                )}
+              >
+                <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
+                  <User className={cn("text-primary h-4 w-4", isProfilePage && "text-white")} />
+                </div>
+                Profile
+              </Button>
+            </Link>
 
             <Button variant={"ghost"} className="flex justify-start text-start">
               <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
