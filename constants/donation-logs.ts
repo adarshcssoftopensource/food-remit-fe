@@ -1,0 +1,220 @@
+import { DollarSign, Heart, HeartHandshake, TrendingUp } from "lucide-react";
+
+export type DonationLog = {
+  id: string;
+  senderFirstName: string;
+  senderLastName: string;
+  senderEmail: string;
+  senderContact: string;
+  storyCreator: string;
+  storyTitle: string;
+  amountDonated: number;
+  currency: string;
+  donatedAt: string;
+  status: "Completed" | "Pending" | "Failed" | "Refunded";
+};
+
+export const MOCK_DONATION_LOGS: DonationLog[] = [
+  {
+    id: "DON-001",
+    senderFirstName: "Alvin",
+    senderLastName: "Mathew",
+    senderEmail: "alvin@yopmail.com",
+    senderContact: "9592701164",
+    storyCreator: "Sarah Johnson",
+    storyTitle: "Help Build a School in Rural India",
+    amountDonated: 500,
+    currency: "USD",
+    donatedAt: "2026-07-22 10:15:00",
+    status: "Completed",
+  },
+  {
+    id: "DON-002",
+    senderFirstName: "Kevin",
+    senderLastName: "Singh",
+    senderEmail: "kevin@yopmail.com",
+    senderContact: "9592701163",
+    storyCreator: "Michael Chen",
+    storyTitle: "Clean Water for 500 Families",
+    amountDonated: 250,
+    currency: "USD",
+    donatedAt: "2026-07-20 14:30:00",
+    status: "Completed",
+  },
+  {
+    id: "DON-003",
+    senderFirstName: "Jenna",
+    senderLastName: "Cee",
+    senderEmail: "jenna@yopmail.com",
+    senderContact: "9989819087",
+    storyCreator: "Priya Sharma",
+    storyTitle: "Feed 100 Children Daily",
+    amountDonated: 1000,
+    currency: "USD",
+    donatedAt: "2026-07-19 09:00:00",
+    status: "Completed",
+  },
+  {
+    id: "DON-004",
+    senderFirstName: "Sachin",
+    senderLastName: "Yadav",
+    senderEmail: "sachin@mailinator.com",
+    senderContact: "7087920183",
+    storyCreator: "David Park",
+    storyTitle: "Medical Aid for Flood Victims",
+    amountDonated: 750,
+    currency: "USD",
+    donatedAt: "2026-07-18 16:45:00",
+    status: "Pending",
+  },
+  {
+    id: "DON-005",
+    senderFirstName: "Vansh",
+    senderLastName: "Arora",
+    senderEmail: "vansh@yopmail.com",
+    senderContact: "6239666975",
+    storyCreator: "Aisha Rahman",
+    storyTitle: "Sponsor a Child's Education",
+    amountDonated: 200,
+    currency: "USD",
+    donatedAt: "2026-07-17 11:20:00",
+    status: "Completed",
+  },
+  {
+    id: "DON-006",
+    senderFirstName: "Shiv",
+    senderLastName: "Kumar",
+    senderEmail: "shiv@yopmail.com",
+    senderContact: "8427961133",
+    storyCreator: "Carlos Rivera",
+    storyTitle: "Rebuild Homes After Earthquake",
+    amountDonated: 350,
+    currency: "USD",
+    donatedAt: "2026-07-15 08:30:00",
+    status: "Failed",
+  },
+  {
+    id: "DON-007",
+    senderFirstName: "Rohit",
+    senderLastName: "Dad",
+    senderEmail: "rohit@yopmail.com",
+    senderContact: "9779318152",
+    storyCreator: "Emma Williams",
+    storyTitle: "Support Women Entrepreneurs",
+    amountDonated: 150,
+    currency: "USD",
+    donatedAt: "2026-07-14 13:00:00",
+    status: "Refunded",
+  },
+  {
+    id: "DON-008",
+    senderFirstName: "User",
+    senderLastName: "Test",
+    senderEmail: "foodremitxos@yopmail.com",
+    senderContact: "8146660065",
+    storyCreator: "Liang Wei",
+    storyTitle: "Plant 10,000 Trees in Amazon",
+    amountDonated: 80,
+    currency: "USD",
+    donatedAt: "2026-07-13 17:55:00",
+    status: "Completed",
+  },
+  {
+    id: "DON-009",
+    senderFirstName: "User",
+    senderLastName: "Xo",
+    senderEmail: "foodremitxo@yopmail.com",
+    senderContact: "827993817",
+    storyCreator: "Fatima Al-Hassan",
+    storyTitle: "Provide Meals for Refugees",
+    amountDonated: 600,
+    currency: "USD",
+    donatedAt: "2026-07-10 12:10:00",
+    status: "Completed",
+  },
+  {
+    id: "DON-010",
+    senderFirstName: "Test",
+    senderLastName: "Gf",
+    senderEmail: "testusergf@yopmail.com",
+    senderContact: "7896616238",
+    storyCreator: "Nikhil Bose",
+    storyTitle: "Rural Healthcare Initiative",
+    amountDonated: 420,
+    currency: "USD",
+    donatedAt: "2026-07-08 09:45:00",
+    status: "Pending",
+  },
+  {
+    id: "DON-011",
+    senderFirstName: "Alvin",
+    senderLastName: "Mathew",
+    senderEmail: "alvin@yopmail.com",
+    senderContact: "9592701164",
+    storyCreator: "Clara Diaz",
+    storyTitle: "Animal Shelter Renovation",
+    amountDonated: 300,
+    currency: "USD",
+    donatedAt: "2026-07-05 15:30:00",
+    status: "Completed",
+  },
+  {
+    id: "DON-012",
+    senderFirstName: "Jenna",
+    senderLastName: "Cee",
+    senderEmail: "jenna@yopmail.com",
+    senderContact: "9989819087",
+    storyCreator: "Omar Khalid",
+    storyTitle: "Disabled Veterans Support Fund",
+    amountDonated: 1200,
+    currency: "USD",
+    donatedAt: "2026-07-03 10:00:00",
+    status: "Completed",
+  },
+];
+
+export const DONATION_STATUS_OPTIONS = [
+  { label: "All Statuses", value: "All" },
+  { label: "Completed", value: "Completed" },
+  { label: "Pending", value: "Pending" },
+  { label: "Failed", value: "Failed" },
+  { label: "Refunded", value: "Refunded" },
+] as const;
+
+export const DONATION_STAT_CONFIG = [
+  {
+    key: "total" as const,
+    label: "Total Donations",
+    Icon: HeartHandshake,
+    color: "text-primary",
+    bg: "bg-primary/10",
+  },
+  {
+    key: "completed" as const,
+    label: "Completed",
+    Icon: Heart,
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
+  },
+  {
+    key: "pending" as const,
+    label: "Pending",
+    Icon: TrendingUp,
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+  },
+  {
+    key: "totalAmount" as const,
+    label: "Total Amount (USD)",
+    Icon: DollarSign,
+    color: "text-violet-600",
+    bg: "bg-violet-50",
+  },
+] as const;
+
+export const DONATION_STATUS_STYLES: Record<DonationLog["status"], string> = {
+  Completed: "bg-emerald-100 text-emerald-700",
+  Pending: "bg-amber-100 text-amber-700",
+  Failed: "bg-red-100 text-red-600",
+  Refunded: "bg-slate-100 text-slate-600",
+};
