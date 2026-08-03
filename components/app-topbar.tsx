@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
+import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "./logout-button";
@@ -19,7 +20,8 @@ export function AppTopBar() {
     .slice(0, 2);
 
   const pathname = usePathname();
-  const isProfilePage = pathname === "/profile";
+  const isProfilePage = pathname === ROUTES.ADMIN.PROFILE;
+  const isSettingsPage = pathname === ROUTES.ADMIN.SETTINGS;
 
   return (
     <header
@@ -81,7 +83,7 @@ export function AppTopBar() {
           <PopoverTrigger
             className={cn(
               "group flex items-center gap-3 rounded-xl px-2 py-1.5 transition-all duration-200 outline-none",
-              isProfilePage ? "bg-primary text-white" : "hover:bg-accent/60",
+              isProfilePage || isSettingsPage ? "bg-primary text-white" : "hover:bg-accent/60",
             )}
           >
             <div
@@ -103,7 +105,7 @@ export function AppTopBar() {
               <span
                 className={cn(
                   "text-muted-foreground mt-1 text-[11px]",
-                  isProfilePage && "text-white",
+                  isProfilePage || isSettingsPage ? "text-white" : "",
                 )}
               >
                 Super Admin
@@ -115,7 +117,7 @@ export function AppTopBar() {
                 "text-muted-foreground h-4 w-4",
                 "transition-transform duration-200",
                 "group-data-[state=open]:rotate-180",
-                isProfilePage && "text-white",
+                isProfilePage || isSettingsPage ? "text-white" : "",
               )}
             />
           </PopoverTrigger>
@@ -126,7 +128,7 @@ export function AppTopBar() {
             className="border-border/60 w-36 gap-0 rounded-2xl p-2 shadow-xl"
           >
             <Link
-              href="/profile"
+              href={ROUTES.ADMIN.PROFILE}
               className={cn(
                 "",
                 isProfilePage && "bg-primary hover:bg-primary/80 rounded-lg text-white",
@@ -146,12 +148,28 @@ export function AppTopBar() {
               </Button>
             </Link>
 
-            <Button variant={"ghost"} className="flex justify-start text-start">
-              <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
-                <Settings className="text-primary h-4 w-4" />
-              </div>
-              Settings
-            </Button>
+            <Link
+              href={ROUTES.ADMIN.SETTINGS}
+              className={cn(
+                "",
+                isSettingsPage && "bg-primary hover:bg-primary/80 rounded-lg text-white",
+              )}
+            >
+              <Button
+                variant={"ghost"}
+                className={cn(
+                  "flex w-full justify-start text-start",
+                  isSettingsPage && "hover:bg-primary/80 text-white!",
+                )}
+              >
+                <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
+                  <Settings
+                    className={cn("text-primary h-4 w-4", isSettingsPage && "text-white")}
+                  />
+                </div>
+                Settings
+              </Button>
+            </Link>
             <LogoutButton />
           </PopoverContent>
         </Popover>

@@ -11,6 +11,7 @@ export const ROUTES = {
     FOUNDATION_MANAGEMENT: "/foundation-management",
     PHILANTHROPIST_MANAGEMENT: "/philanthropist-management",
     PROFILE: "/profile",
+    SETTINGS: "/settings",
     STORIES: {
       LIST: "/stories",
       ADD: "/stories/add",
