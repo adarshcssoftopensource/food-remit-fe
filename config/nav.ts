@@ -64,12 +64,16 @@ export const navigationItems = [
     icon: BookOpen,
     items: [
       {
-        title: "Store",
-        url: "/catalogue-management/store",
+        title: "Departments",
+        url: "/catalogue-management/departments",
       },
       {
-        title: "Assign City-Manager To Stores",
-        url: "/catalogue-management/assign-city-manager",
+        title: "Categories",
+        url: "/catalogue-management/categories",
+      },
+      {
+        title: "Items",
+        url: "/catalogue-management/items",
       },
     ],
   },

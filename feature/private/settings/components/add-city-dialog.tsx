@@ -74,7 +74,7 @@ function AddCityDialog() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent>
         <DialogHeader className="pb-2">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100">
@@ -87,9 +87,7 @@ function AddCityDialog() {
           </div>
         </DialogHeader>
 
-        <div className="-mx-6 h-px bg-slate-100" />
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
           <Controller
             name="countryId"
             control={control}
@@ -103,7 +101,7 @@ function AddCityDialog() {
                   onValueChange={field.onChange}
                   aria-invalid={!!errors.countryId}
                 >
-                  <SelectTrigger className="h-11">
+                  <SelectTrigger className="h-11! w-full">
                     <SelectValue placeholder="Select a country" />
                   </SelectTrigger>
                   <SelectContent>
