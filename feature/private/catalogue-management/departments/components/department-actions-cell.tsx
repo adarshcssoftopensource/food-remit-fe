@@ -18,23 +18,22 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
   return (
     <div className="flex items-center gap-2">
       <Button
-        variant="ghost"
+        variant="outline"
         size="icon"
         className="text-primary hover:bg-primary/10 h-8 w-8 rounded-lg transition-colors"
         onClick={() => onView(department)}
         title="View department"
       >
-        <Eye className="h-4 w-4" />
+        <Eye size={20} />
       </Button>
 
       <Button
-        variant="ghost"
+        variant="outline"
         size="icon"
-        className="h-8 w-8 rounded-lg text-amber-500 transition-colors hover:bg-amber-50"
         onClick={() => onEdit(department)}
         title="Edit department"
       >
-        <Pencil className="h-4 w-4" />
+        <Pencil size={20} />
       </Button>
 
       <Switch

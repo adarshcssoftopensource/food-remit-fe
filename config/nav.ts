@@ -131,8 +131,20 @@ export const navigationItems = [
     icon: FileText,
     items: [
       {
-        title: "Pages",
-        url: "/content-management/pages",
+        title: "About Us",
+        url: "/content-management/about-us",
+      },
+      {
+        title: "Privacy Policy",
+        url: "/content-management/privacy-policy",
+      },
+      {
+        title: "Terms Of Use",
+        url: "/content-management/terms-of-use",
+      },
+      {
+        title: "FAQ",
+        url: "/content-management/faq",
       },
     ],
   },

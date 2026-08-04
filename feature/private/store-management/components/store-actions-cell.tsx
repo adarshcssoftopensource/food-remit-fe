@@ -25,23 +25,23 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
     <>
       <div className="flex items-center gap-1.5">
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
           className="text-primary hover:bg-primary/10 size-8 rounded-lg transition-colors"
           onClick={() => setViewOpen(true)}
           title="View store details"
         >
-          <Eye className="size-4" />
+          <Eye size={20} />
         </Button>
 
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
           className="size-8 rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
           onClick={() => setEditOpen(true)}
           title="Edit store"
         >
-          <Pencil className="size-4" />
+          <Pencil size={20} />
         </Button>
 
         <Switch
@@ -52,12 +52,12 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
         />
 
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
           className="size-8 rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
           title="Open store link"
         >
-          <ExternalLink className="size-4" />
+          <ExternalLink size={20} />
         </Button>
       </div>
 

@@ -100,21 +100,11 @@ export function getCountryManagerColumns({
       header: "Action",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="text-primary hover:bg-primary/10"
-            onClick={() => onView(row.original)}
-          >
-            <Eye className="size-4" />
+          <Button variant="outline" size="icon-sm" onClick={() => onView(row.original)}>
+            <Eye size={20} />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="text-amber-600 hover:bg-amber-50"
-            onClick={() => onEdit(row.original)}
-          >
-            <Pencil className="size-4" />
+          <Button variant="outline" size="icon-sm" onClick={() => onEdit(row.original)}>
+            <Pencil size={20} />
           </Button>
           <Switch
             checked={row.original.status === "Active"}

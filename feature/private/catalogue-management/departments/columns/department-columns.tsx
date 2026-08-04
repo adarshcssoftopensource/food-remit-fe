@@ -1,7 +1,7 @@
+import { CatalogueStatus, DepartmentData } from "@/constants/catalogue-management";
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
 import { Box } from "lucide-react";
-import { DepartmentData, CatalogueStatus } from "@/constants/catalogue-management";
+import Image from "next/image";
 import { DepartmentActionsCell } from "../components/department-actions-cell";
 
 function StatusBadge({ status }: { status: CatalogueStatus }) {
@@ -33,7 +33,7 @@ function DepartmentNameCell({ row }: { row: { original: DepartmentData } }) {
           </div>
         )}
       </div>
-      <span className="max-w-[100px] truncate text-center text-xs font-medium text-slate-700">
+      <span className="max-w-25 truncate text-center text-xs font-medium text-slate-700">
         {name}
       </span>
     </div>

@@ -18,23 +18,17 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
   return (
     <div className="flex items-center gap-2">
       <Button
-        variant="ghost"
+        variant="outline"
         size="icon"
         className="text-primary hover:bg-primary/10 h-8 w-8 rounded-lg transition-colors"
         onClick={() => onView(category)}
         title="View category"
       >
-        <Eye className="h-4 w-4" />
+        <Eye size={20} />
       </Button>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8 rounded-lg text-amber-500 transition-colors hover:bg-amber-50"
-        onClick={() => onEdit(category)}
-        title="Edit category"
-      >
-        <Pencil className="h-4 w-4" />
+      <Button variant="outline" size="icon" onClick={() => onEdit(category)} title="Edit category">
+        <Pencil size={20} />
       </Button>
 
       <Switch
