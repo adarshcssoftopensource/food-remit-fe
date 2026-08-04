@@ -109,7 +109,7 @@ export const navigationItems = [
     icon: MapPin,
     items: [
       {
-        title: "Cities",
+        title: "City Managers",
         url: "/city-management/list",
       },
     ],
