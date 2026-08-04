@@ -18,6 +18,10 @@ export const ROUTES = {
     },
     SUB_ADMIN_MANAGEMENT: "/sub-admin-management",
     USERS_MANAGEMENT: "/users-management",
+    STORE_MANAGEMENT: {
+      ALL: "/store-management/all",
+      ASSIGN_CITY_MANAGER: "/store-management/assign-city-manager",
+    },
   },
 } as const;
 

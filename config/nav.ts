@@ -83,8 +83,12 @@ export const navigationItems = [
     icon: Store,
     items: [
       {
-        title: "All Stores",
+        title: "Store",
         url: "/store-management/all",
+      },
+      {
+        title: "Assign City-Manager To Stores",
+        url: "/store-management/assign-city-manager",
       },
     ],
   },
