@@ -9,6 +9,7 @@ import type {
 } from "axios";
 import axios from "axios";
 import { AUTH_ENDPOINTS } from "./endpoints/auth.endpoints";
+import { AUTH_TOKEN_COOKIE } from "@/config/cookie";
 interface ApiErrorResponse {
   statusCode: number;
   message: string;
@@ -40,7 +41,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     typeof window !== "undefined"
       ? document.cookie
           .split("; ")
-          .find((row) => row.startsWith("auth_token="))
+          .find((row) => row.startsWith(AUTH_TOKEN_COOKIE))
           ?.split("=")[1]
       : null;
   if (!config.headers) config.headers = {} as AxiosRequestHeaders;
