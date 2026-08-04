@@ -5,12 +5,11 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { MapPinPlus, Plus, Sparkles } from "lucide-react";
+import { MapPinPlus, Plus } from "lucide-react";
 import { useState } from "react";
 import { type CityManagerFormValues } from "../schema/city-manager.schema";
 import { CityManagerForm } from "./city-manager-form";
@@ -43,24 +42,16 @@ export function AddCityManagerDialog({ onSubmit }: AddCityManagerDialogProps) {
       <DialogContent className="max-w-5xl gap-0 overflow-hidden border-0 p-0 shadow-2xl sm:max-h-[90vh]">
         <div className="max-h-[90vh] overflow-y-auto overscroll-contain">
           <div className="relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-36 bg-[radial-gradient(ellipse_at_top,_rgba(251,146,60,0.35),_transparent_70%),linear-gradient(135deg,#0f172a_0%,#1e3a5f_50%,#0f766e_100%)]" />
-            <div className="absolute top-6 right-16 size-24 rounded-full bg-orange-400/20 blur-2xl" />
-            <div className="absolute top-10 left-20 size-16 rounded-full bg-teal-300/20 blur-xl" />
-
-            <DialogHeader className="relative z-10 px-8 pt-8 pb-6 text-left">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white/90 backdrop-blur">
-                <Sparkles className="size-3.5 text-amber-300" />
-                NEW ASSIGNMENT
-              </div>
-              <DialogTitle className="flex items-center gap-3 text-3xl font-extrabold tracking-tight text-white">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25 backdrop-blur">
-                  <MapPinPlus className="size-6 text-amber-300" />
-                </span>
-                Add City Manager
+            <DialogHeader className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-6 pb-5">
+              <DialogTitle className="flex items-center justify-center gap-3 text-3xl font-bold text-slate-800">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 shadow-sm">
+                  <MapPinPlus size={20} />
+                </div>
+                <span> Add City Manager</span>
               </DialogTitle>
-              <DialogDescription className="mt-2 max-w-xl text-sm text-slate-200/90">
+              <p className="mt-2 text-center text-sm text-slate-500">
                 Create a polished profile, upload a photo, and assign cities in one smooth flow.
-              </DialogDescription>
+              </p>
             </DialogHeader>
           </div>
 

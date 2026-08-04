@@ -43,7 +43,7 @@ export function AddCountryManagerDialog({ onSubmit }: AddCountryManagerDialogPro
         <DialogHeader className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-6 pb-5">
           <DialogTitle className="flex items-center justify-center gap-3 text-3xl font-bold text-slate-800">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 shadow-sm">
-              <UserPlus className="h-6 w-6" />
+              <UserPlus size={20} />
             </div>
 
             <span>Add Country Manager</span>
