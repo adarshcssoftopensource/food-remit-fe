@@ -1,7 +1,7 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import type { Philanthrophist } from "@/constants/philanthrophist-management";
+import type { ColumnDef } from "@tanstack/react-table";
 
 export const philanthropistColumns: ColumnDef<Philanthrophist>[] = [
   { accessorKey: "userId", header: "User ID" },

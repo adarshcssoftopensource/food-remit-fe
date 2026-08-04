@@ -120,8 +120,24 @@ export const navigationItems = [
     icon: Box,
     items: [
       {
-        title: "Orders",
-        url: "/order-management/list",
+        title: "Sent Orders",
+        url: "/order-management/sent-orders",
+      },
+      {
+        title: "Requested Orders",
+        url: "/order-management/requested-orders",
+      },
+      {
+        title: "Partial Orders",
+        url: "/order-management/partial-orders",
+      },
+      {
+        title: "Completed Orders",
+        url: "/order-management/completed-orders",
+      },
+      {
+        title: "History",
+        url: "/order-management/history",
       },
     ],
   },

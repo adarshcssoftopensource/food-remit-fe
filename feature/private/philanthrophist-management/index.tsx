@@ -3,8 +3,8 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PhilanthrophistFilters } from "./components/philanthrophist-filters";
 import { philanthropistColumns } from "./columns/philanthrophist-columns";
+import { PhilanthrophistFilters } from "./components/philanthrophist-filters";
 import { usePhilanthrophistFilters } from "./hooks/use-philanthrophist-filters";
 
 export default function PhilanthrophistManagement() {
