@@ -22,204 +22,206 @@ import {
   Users,
 } from "lucide-react";
 
+import { ROUTES } from "@/config/routes";
+
 export const navigationItems = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: ROUTES.ADMIN.DASHBOARD,
     icon: Monitor,
   },
   {
     title: "Users Management",
-    url: "/users-management",
+    url: ROUTES.ADMIN.USERS_MANAGEMENT,
     icon: User,
   },
   {
     title: "Foundation And Charitables Management",
-    url: "/foundation-management",
+    url: ROUTES.ADMIN.FOUNDATION_MANAGEMENT,
     icon: Building,
   },
   {
     title: "Philanthropist Management",
-    url: "/philanthropist-management",
+    url: ROUTES.ADMIN.PHILANTHROPIST_MANAGEMENT,
     icon: Users,
   },
   {
     title: "Sub-admin Management",
-    url: "/sub-admin-management",
+    url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT,
     icon: UserCog,
   },
   {
     title: "Stories",
-    url: "/stories",
+    url: ROUTES.ADMIN.STORIES.LIST,
     icon: RefreshCcw,
   },
   {
     title: "Donation Logs",
-    url: "/donation-logs",
+    url: ROUTES.ADMIN.DONATION_LOGS,
     icon: List,
   },
   {
     title: "Catalogue Management",
-    url: "/catalogue-management",
+    url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ROOT,
     icon: BookOpen,
     items: [
       {
         title: "Departments",
-        url: "/catalogue-management/departments",
+        url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.DEPARTMENTS,
       },
       {
         title: "Categories",
-        url: "/catalogue-management/categories",
+        url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES,
       },
       {
         title: "Items",
-        url: "/catalogue-management/items",
+        url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS,
       },
     ],
   },
   {
     title: "Store Management",
-    url: "/store-management",
+    url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
     icon: Store,
     items: [
       {
         title: "Store",
-        url: "/store-management/all",
+        url: ROUTES.ADMIN.STORE_MANAGEMENT.ALL,
       },
       {
         title: "Assign City-Manager To Stores",
-        url: "/store-management/assign-city-manager",
+        url: ROUTES.ADMIN.STORE_MANAGEMENT.ASSIGN_CITY_MANAGER,
       },
     ],
   },
   {
     title: "Country Management",
-    url: "/country-management",
+    url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT,
     icon: Globe,
     items: [
       {
         title: "Countries",
-        url: "/country-management/list",
+        url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST,
       },
     ],
   },
   {
     title: "City Management",
-    url: "/city-management",
+    url: ROUTES.ADMIN.CITY_MANAGEMENT.ROOT,
     icon: MapPin,
     items: [
       {
         title: "City Managers",
-        url: "/city-management/list",
+        url: ROUTES.ADMIN.CITY_MANAGEMENT.LIST,
       },
     ],
   },
   {
     title: "Order Management",
-    url: "/order-management",
+    url: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
     icon: Box,
     items: [
       {
         title: "Sent Orders",
-        url: "/order-management/sent-orders",
+        url: ROUTES.ADMIN.ORDER_MANAGEMENT.SENT_ORDERS,
       },
       {
         title: "Requested Orders",
-        url: "/order-management/requested-orders",
+        url: ROUTES.ADMIN.ORDER_MANAGEMENT.REQUESTED_ORDERS,
       },
       {
         title: "Partial Orders",
-        url: "/order-management/partial-orders",
+        url: ROUTES.ADMIN.ORDER_MANAGEMENT.PARTIAL_ORDERS,
       },
       {
         title: "Completed Orders",
-        url: "/order-management/completed-orders",
+        url: ROUTES.ADMIN.ORDER_MANAGEMENT.COMPLETED_ORDERS,
       },
       {
         title: "History",
-        url: "/order-management/history",
+        url: ROUTES.ADMIN.ORDER_MANAGEMENT.HISTORY,
       },
     ],
   },
   {
     title: "Content Management",
-    url: "/content-management",
+    url: ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT,
     icon: FileText,
     items: [
       {
         title: "About Us",
-        url: "/content-management/about-us",
+        url: ROUTES.ADMIN.CONTENT_MANAGEMENT.ABOUT_US,
       },
       {
         title: "Privacy Policy",
-        url: "/content-management/privacy-policy",
+        url: ROUTES.ADMIN.CONTENT_MANAGEMENT.PRIVACY_POLICY,
       },
       {
         title: "Terms Of Use",
-        url: "/content-management/terms-of-use",
+        url: ROUTES.ADMIN.CONTENT_MANAGEMENT.TERMS_OF_USE,
       },
       {
         title: "FAQ",
-        url: "/content-management/faq",
+        url: ROUTES.ADMIN.CONTENT_MANAGEMENT.FAQ,
       },
     ],
   },
   {
     title: "Ticket Management",
-    url: "/ticket-management",
+    url: ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT,
     icon: Ticket,
     items: [
       {
         title: "Tickets",
-        url: "/ticket-management/list",
+        url: ROUTES.ADMIN.TICKET_MANAGEMENT.LIST,
       },
     ],
   },
   {
     title: "Report Management",
-    url: "/report-management",
+    url: ROUTES.ADMIN.REPORT_MANAGEMENT.ROOT,
     icon: ClipboardList,
     items: [
       {
         title: "Reports",
-        url: "/report-management/list",
+        url: ROUTES.ADMIN.REPORT_MANAGEMENT.LIST,
       },
     ],
   },
   {
     title: "Feedback Management",
-    url: "/feedback-management",
+    url: ROUTES.ADMIN.FEEDBACK_MANAGEMENT,
     icon: MessageSquare,
   },
   {
     title: "Send Notification",
-    url: "/send-notification",
+    url: ROUTES.ADMIN.SEND_NOTIFICATION,
     icon: Bell,
   },
   {
     title: "Coupons Management",
-    url: "/coupons-management",
+    url: ROUTES.ADMIN.COUPONS_MANAGEMENT,
     icon: Gift,
   },
   {
     title: "Amount Limit Management",
-    url: "/amount-limit-management",
+    url: ROUTES.ADMIN.AMOUNT_LIMIT_MANAGEMENT,
     icon: DollarSign,
   },
   {
     title: "Credits Management",
-    url: "/credits-management",
+    url: ROUTES.ADMIN.CREDITS_MANAGEMENT.ROOT,
     icon: CreditCard,
     items: [
       {
         title: "Credits",
-        url: "/credits-management/list",
+        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.LIST,
       },
     ],
   },
   {
     title: "Tutorial Management",
-    url: "/tutorial-management",
+    url: ROUTES.ADMIN.TUTORIAL_MANAGEMENT,
     icon: GraduationCap,
   },
 ];
