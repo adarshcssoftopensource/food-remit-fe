@@ -172,8 +172,12 @@ export const navigationItems = [
     icon: Ticket,
     items: [
       {
-        title: "Tickets",
-        url: ROUTES.ADMIN.TICKET_MANAGEMENT.LIST,
+        title: "Active Requests",
+        url: ROUTES.ADMIN.TICKET_MANAGEMENT.ACTIVE_REQUESTS,
+      },
+      {
+        title: "Closed Requests",
+        url: ROUTES.ADMIN.TICKET_MANAGEMENT.CLOSED_REQUESTS,
       },
     ],
   },

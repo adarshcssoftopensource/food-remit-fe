@@ -52,7 +52,8 @@ export const ROUTES = {
     },
     TICKET_MANAGEMENT: {
       ROOT: "/ticket-management",
-      LIST: "/ticket-management/list",
+      ACTIVE_REQUESTS: "/ticket-management/active-requests",
+      CLOSED_REQUESTS: "/ticket-management/closed-requests",
     },
     REPORT_MANAGEMENT: {
       ROOT: "/report-management",
