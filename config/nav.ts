@@ -187,8 +187,20 @@ export const navigationItems = [
     icon: ClipboardList,
     items: [
       {
-        title: "Reports",
-        url: ROUTES.ADMIN.REPORT_MANAGEMENT.LIST,
+        title: "Store Report",
+        url: ROUTES.ADMIN.REPORT_MANAGEMENT.STORE_REPORT,
+      },
+      {
+        title: "Customer Report",
+        url: ROUTES.ADMIN.REPORT_MANAGEMENT.CUSTOMER_REPORT,
+      },
+      {
+        title: "Orders Report",
+        url: ROUTES.ADMIN.REPORT_MANAGEMENT.ORDERS_REPORT,
+      },
+      {
+        title: "Coupons Report",
+        url: ROUTES.ADMIN.REPORT_MANAGEMENT.COUPONS_REPORT,
       },
     ],
   },
