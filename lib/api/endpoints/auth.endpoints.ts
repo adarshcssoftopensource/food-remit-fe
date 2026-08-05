@@ -1,10 +1,10 @@
 export const AUTH_ENDPOINTS = {
-  LOGIN: "auth/login",
-  REFRESH_TOKEN: "auth/refresh",
-  FORGOT_PASSWORD: "auth/forgot-password",
-  RESET_PASSWORD: "auth/reset-password",
-  LOGOUT: "auth/logout",
-  FORCE_LOGOUT: "auth/force-logout",
+  LOGIN: "admin/login",
+  REFRESH_TOKEN: "admin/refresh",
+  FORGOT_PASSWORD: "admin/forgot-password",
+  RESET_PASSWORD: "admin/reset-password",
+  LOGOUT: "admin/logout",
+  FORCE_LOGOUT: "admin/force-logout",
 } as const;
 
 export interface AuthTokenResponse {

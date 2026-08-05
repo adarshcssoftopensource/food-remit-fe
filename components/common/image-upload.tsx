@@ -1,8 +1,8 @@
 "use client";
 
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import Image from "next/image";
 import { ImageIcon, X } from "lucide-react";
+import Image from "next/image";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
