@@ -1,4 +1,5 @@
 import { errorToast } from "@/components/toaster";
+import { AUTH_TOKEN_COOKIE } from "@/config/cookie";
 import { ROUTES } from "@/config/routes";
 import { clearAuthSession } from "@/lib/auth-client";
 import type {
@@ -9,7 +10,6 @@ import type {
 } from "axios";
 import axios from "axios";
 import { AUTH_ENDPOINTS } from "./endpoints/auth.endpoints";
-import { AUTH_TOKEN_COOKIE } from "@/config/cookie";
 interface ApiErrorResponse {
   statusCode: number;
   message: string;

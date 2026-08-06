@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { useCreateSubAdmin } from "../hooks/use-create-sub-admin";
 import { useSubAdminPermissions } from "../hooks/use-sub-admin-permissions";
 import { type SubAdminFormValues } from "../schema/sub-admin.schema";
 import { SubAdminForm } from "./sub-admin-form";
@@ -36,16 +37,23 @@ export function SubAdminDialog({
   const { data: permissionsResponse, isLoading: isPermissionsLoading } =
     useSubAdminPermissions(open);
 
+  const { mutateAsync: createSubAdmin, isPending: isCreatingSubAdmin } = useCreateSubAdmin();
+
   const handleSubmit = async (values: SubAdminFormValues) => {
     try {
-      console.log(values);
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       if (mode === "add") {
-        successToast({ title: "Sub Admin added successfully" });
-      } else {
-        successToast({ title: "Sub Admin updated successfully" });
+        const response = await createSubAdmin({
+          name: values.name,
+          countryCode: values.phoneCode,
+          email: values.email,
+          phoneNumber: values.phoneNumber,
+          address: values.address,
+          permission: values.permissions.map((key) => ({ key })),
+        });
+
+        successToast({ title: response.message || "Sub Admin added successfully" });
       }
+
       onOpenChange(false);
     } catch (error) {
       console.error(error);
@@ -88,7 +96,7 @@ export function SubAdminDialog({
           initialValues={initialValues}
           onSubmit={handleSubmit}
           submitLabel={mode}
-          isSubmitting={false}
+          isSubmitting={isCreatingSubAdmin}
           permissions={permissionsResponse?.data ?? []}
           isPermissionsLoading={isPermissionsLoading}
         />

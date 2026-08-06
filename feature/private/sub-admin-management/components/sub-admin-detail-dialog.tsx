@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SubAdminData } from "../types/sub-admin-permission.types";
+import { SubAdminData } from "../types/sub-admin.types";
 import { InfoCard } from "./info-card";
 
 interface SubAdminDetailDialogProps {
