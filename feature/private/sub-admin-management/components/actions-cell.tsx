@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { type SubAdminData } from "@/constants/sub-admin-management";
 import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
+import { SubAdminData } from "../types/sub-admin-permission.types";
 import { SubAdminDetailDialog } from "./sub-admin-detail-dialog";
 import { SubAdminDialog } from "./sub-admin-dialog";
 

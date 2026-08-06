@@ -1,16 +1,5 @@
 import { Shield, ShieldCheck, ShieldOff, UserCog } from "lucide-react";
 
-export type SubAdminData = {
-  id: string;
-  userId: string;
-  userName: string;
-  email: string;
-  contactNumber: string;
-  status: "Active" | "Inactive";
-  createdAt: string;
-  permissions: any[];
-};
-
 export const SUB_ADMIN_STAT_CONFIG = [
   {
     key: "total" as const,

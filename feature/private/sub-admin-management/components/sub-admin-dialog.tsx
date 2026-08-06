@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { useSubAdminPermissions } from "../hooks/use-sub-admin-permissions";
 import { type SubAdminFormValues } from "../schema/sub-admin.schema";
 import { SubAdminForm } from "./sub-admin-form";
 
@@ -27,14 +28,15 @@ export function SubAdminDialog({
   onOpenChange: controlledOnOpenChange,
 }: SubAdminDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
+  const { data: permissionsResponse, isLoading: isPermissionsLoading } =
+    useSubAdminPermissions(open);
+
   const handleSubmit = async (values: SubAdminFormValues) => {
-    setIsSubmitting(true);
     try {
       console.log(values);
 
@@ -45,7 +47,6 @@ export function SubAdminDialog({
         successToast({ title: "Sub Admin updated successfully" });
       }
       onOpenChange(false);
-      setIsSubmitting(false);
     } catch (error) {
       console.error(error);
     }
@@ -54,7 +55,6 @@ export function SubAdminDialog({
   const initialValues: Partial<SubAdminFormValues> | undefined = undefined;
 
   const title = mode === "add" ? "Add Sub Admin" : "Edit Sub Admin";
-  const submitLabel = mode === "add" ? "Add" : "Submit";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -87,8 +87,10 @@ export function SubAdminDialog({
         <SubAdminForm
           initialValues={initialValues}
           onSubmit={handleSubmit}
-          submitLabel={submitLabel}
-          isSubmitting={isSubmitting}
+          submitLabel={mode}
+          isSubmitting={false}
+          permissions={permissionsResponse?.data ?? []}
+          isPermissionsLoading={isPermissionsLoading}
         />
       </DialogContent>
     </Dialog>

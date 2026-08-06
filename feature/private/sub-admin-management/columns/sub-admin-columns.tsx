@@ -1,6 +1,6 @@
-import { SubAdminData } from "@/constants/sub-admin-management";
 import { ColumnDef } from "@tanstack/react-table";
 import { SubAdminActionsCell } from "../components/actions-cell";
+import { SubAdminData } from "../types/sub-admin-permission.types";
 
 function StatusBadge({ status }: { status: SubAdminData["status"] }) {
   return (

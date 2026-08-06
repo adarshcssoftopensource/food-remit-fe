@@ -1,5 +1,6 @@
 "use client";
 
+import { NoDataFound } from "@/components/common/no-data-found";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -17,12 +18,16 @@ import { FormInput } from "@/feature/private/stories/components/form-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { subAdminSchema, type SubAdminFormValues } from "../schema/sub-admin.schema";
+import { type SubAdminPermission } from "../types/sub-admin-permission.types";
+import { PermissionsSkeleton } from "./permissions-skeleton";
 
 interface SubAdminFormProps {
   initialValues?: Partial<SubAdminFormValues>;
   onSubmit: (values: SubAdminFormValues) => void;
   submitLabel?: string;
   isSubmitting?: boolean;
+  permissions?: SubAdminPermission[];
+  isPermissionsLoading?: boolean;
 }
 
 export function SubAdminForm({
@@ -30,6 +35,8 @@ export function SubAdminForm({
   onSubmit,
   submitLabel = "Submit",
   isSubmitting = false,
+  permissions = [],
+  isPermissionsLoading = false,
 }: SubAdminFormProps) {
   const {
     control,
@@ -143,33 +150,43 @@ export function SubAdminForm({
               name="permissions"
               control={control}
               render={({ field }) => (
-                <div className="grid gap-3 p-6 sm:grid-cols-2">
-                  {[].map((permission) => {
-                    const active = field.value.includes(permission);
+                <>
+                  {isPermissionsLoading ? (
+                    <PermissionsSkeleton />
+                  ) : permissions.length === 0 ? (
+                    <NoDataFound title="No permissions available." />
+                  ) : (
+                    <div className="grid gap-3 p-6 sm:grid-cols-2">
+                      {permissions.map((permission) => {
+                        const active = field.value.includes(permission.key);
 
-                    return (
-                      <label
-                        key={permission}
-                        className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
-                          active ? "border-primary bg-primary/5" : "hover:bg-muted"
-                        } `}
-                      >
-                        <Checkbox
-                          checked={active}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              field.onChange([...field.value, permission]);
-                            } else {
-                              field.onChange(field.value.filter((x) => x !== permission));
-                            }
-                          }}
-                        />
+                        return (
+                          <label
+                            key={permission.key}
+                            className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
+                              active ? "border-primary bg-primary/5" : "hover:bg-muted"
+                            } `}
+                          >
+                            <Checkbox
+                              checked={active}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  field.onChange([...field.value, permission.key]);
+                                } else {
+                                  field.onChange(
+                                    field.value.filter((key) => key !== permission.key),
+                                  );
+                                }
+                              }}
+                            />
 
-                        <span className="text-sm font-medium">{permission}</span>
-                      </label>
-                    );
-                  })}
-                </div>
+                            <span className="text-sm font-medium">{permission.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
               )}
             />
           </ScrollArea>
@@ -184,10 +201,11 @@ export function SubAdminForm({
       <div className="flex justify-end border-t bg-gray-50 px-6 py-5">
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isPermissionsLoading}
+          isLoading={isSubmitting}
           className="h-11 rounded-xl px-10 font-semibold shadow-sm"
         >
-          {submitLabel}
+          {submitLabel === "add" ? "Add" : "Submit"}
         </Button>
       </div>
     </form>
