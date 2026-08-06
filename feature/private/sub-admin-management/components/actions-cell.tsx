@@ -5,8 +5,8 @@ import { Switch } from "@/components/ui/switch";
 import { type SubAdminData } from "@/constants/sub-admin-management";
 import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
-import { EditSubAdminDialog } from "./edit-sub-admin-dialog";
 import { SubAdminDetailDialog } from "./sub-admin-detail-dialog";
+import { SubAdminDialog } from "./sub-admin-dialog";
 
 export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
   const [isActive, setIsActive] = useState(admin.status === "Active");
@@ -44,7 +44,7 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
       </div>
 
       <SubAdminDetailDialog admin={admin} open={viewOpen} onOpenChange={setViewOpen} />
-      <EditSubAdminDialog admin={admin} open={editOpen} onOpenChange={setEditOpen} />
+      <SubAdminDialog mode="edit" open={editOpen} onOpenChange={setEditOpen} />
     </>
   );
 }
