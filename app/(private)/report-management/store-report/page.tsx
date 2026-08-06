@@ -1,4 +1,5 @@
+import { ReportManagementPage } from "@/feature/private/report-management";
+
 export default function StoreReportRoute() {
-  return <>page</>;
-  // return <ReportManagementPage section="store-report" />;
+  return <ReportManagementPage section="store-report" />;
 }

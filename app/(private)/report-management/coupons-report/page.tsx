@@ -1,4 +1,5 @@
+import { ReportManagementPage } from "@/feature/private/report-management";
+
 export default function CouponsReportRoute() {
-  return <>page</>;
-  // return <ReportManagementPage section="coupons-report" />;
+  return <ReportManagementPage section="coupons-report" />;
 }
