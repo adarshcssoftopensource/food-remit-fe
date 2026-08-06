@@ -54,7 +54,7 @@ export function SendNotificationForm({ className, ...props }: React.ComponentPro
 
   return (
     <>
-      <div className="p-6 sm:p-10">
+      <div>
         <PageHeader
           title="Send Notifications"
           description="Send notifications to users"
