@@ -1,18 +1,13 @@
+import { SubAdminData } from "@/constants/sub-admin-management";
 import { ColumnDef } from "@tanstack/react-table";
-import { type SubAdminData } from "@/constants/sub-admin-management";
 import { SubAdminActionsCell } from "../components/actions-cell";
 
 function StatusBadge({ status }: { status: SubAdminData["status"] }) {
-  const isActive = status === "Active";
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-        isActive ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
-      }`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${"bg-red-100 text-red-600"}`}
     >
-      <span
-        className={`inline-block size-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`}
-      />
+      <span className={`inline-block size-1.5 rounded-full ${"bg-red-500"}`} />
       {status}
     </span>
   );
@@ -35,7 +30,7 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
     cell: ({ row }) => {
       const initials = row.original.userName
         .split(/[\s-_]/)
-        .map((w) => w[0]?.toUpperCase())
+        .map((w: any) => w[0]?.toUpperCase())
         .slice(0, 2)
         .join("");
       return (

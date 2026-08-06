@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Eye, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { type SubAdminData } from "@/constants/sub-admin-management";
-import { SubAdminDetailDialog } from "./sub-admin-detail-dialog";
+import { Eye, Pencil } from "lucide-react";
+import { useState } from "react";
 import { EditSubAdminDialog } from "./edit-sub-admin-dialog";
+import { SubAdminDetailDialog } from "./sub-admin-detail-dialog";
 
 export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
   const [isActive, setIsActive] = useState(admin.status === "Active");

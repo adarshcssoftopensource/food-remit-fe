@@ -19,22 +19,8 @@ import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub
 import { Filter, RotateCcw } from "lucide-react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
 import { AddSubAdminDialog } from "./components/add-sub-admin-dialog";
-import { useSubAdminManagement } from "./hooks/use-sub-admin-management";
 
 export function SubAdminManagement() {
-  const {
-    clearFilters,
-    filteredData,
-    fromDate,
-    hasFilters,
-    setFromDate,
-    setStatusFilter,
-    setToDate,
-    stats,
-    statusFilter,
-    toDate,
-  } = useSubAdminManagement();
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -48,7 +34,7 @@ export function SubAdminManagement() {
           <MetricStatCard
             key={key}
             label={label}
-            value={stats[key]}
+            value={0}
             trendLabel="vs last month"
             trendValue="+8%"
             icon={Icon}
@@ -71,19 +57,15 @@ export function SubAdminManagement() {
         <CardContent className="p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end lg:flex-nowrap">
             <DateRangeFilter
-              fromDate={fromDate}
-              toDate={toDate}
-              onFromDateChange={setFromDate}
-              onToDateChange={setToDate}
               wrapperClassName="flex flex-col sm:flex-row flex-1 gap-3"
               itemClassName="flex-1 space-y-1 min-w-0"
               pickerClassName="h-10 w-full"
               labelClassName="text-muted-foreground text-xs font-medium uppercase"
             />
 
-            <div className="min-w-0 flex-1 space-y-1 sm:min-w-[160px]">
+            <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
               <Label className="text-muted-foreground text-xs font-medium uppercase">Status</Label>
-              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
+              <Select value={""}>
                 <SelectTrigger className="h-10! w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -99,12 +81,7 @@ export function SubAdminManagement() {
               </Select>
             </div>
 
-            <Button
-              variant="destructive"
-              onClick={clearFilters}
-              disabled={!hasFilters}
-              className="h-10 w-full shrink-0 sm:w-auto"
-            >
+            <Button variant="destructive" className="h-10 w-full shrink-0 sm:w-auto">
               <RotateCcw className="mr-2 h-4 w-4" />
               Reset
             </Button>
@@ -116,13 +93,11 @@ export function SubAdminManagement() {
         <CardHeader className="flex flex-row items-center justify-between border-b">
           <div>
             <CardTitle className="text-xl font-semibold">All Sub Admins</CardTitle>
-            <p className="text-muted-foreground mt-0.5 text-sm">
-              {filteredData.length} sub admin{filteredData.length !== 1 ? "s" : ""} found
-            </p>
+            <p className="text-muted-foreground mt-0.5 text-sm">0 sub admin found</p>
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={subAdminColumns} data={filteredData} searchKey="userName" />
+          <DataTable columns={subAdminColumns} data={[]} searchKey="userName" />
         </CardContent>
       </Card>
     </div>

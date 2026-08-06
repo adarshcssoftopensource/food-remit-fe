@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 interface DateRangeFilterProps {
   fromDate?: Date;
   toDate?: Date;
-  onFromDateChange: (date?: Date) => void;
-  onToDateChange: (date?: Date) => void;
+  onFromDateChange?: (date?: Date) => void;
+  onToDateChange?: (date?: Date) => void;
   fromLabel?: string;
   toLabel?: string;
   placeholder?: string;

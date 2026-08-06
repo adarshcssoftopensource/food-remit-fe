@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { COUNTRY_CODES, PERMISSIONS_LIST } from "@/constants/sub-admin-management";
+import { COUNTRY_CODES } from "@/constants/sub-admin-management";
 import { FormInput } from "@/feature/private/stories/components/form-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -144,7 +144,7 @@ export function SubAdminForm({
               control={control}
               render={({ field }) => (
                 <div className="grid gap-3 p-6 sm:grid-cols-2">
-                  {PERMISSIONS_LIST.map((permission) => {
+                  {[].map((permission) => {
                     const active = field.value.includes(permission);
 
                     return (
