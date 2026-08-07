@@ -40,6 +40,7 @@ interface DataTableProps<TData, TValue> {
   rowsPerPage?: number;
   onPageChange?: (page: number) => void;
   onRowsPerPageChange?: (limit: number) => void;
+  onSortingChange?: (sorting: SortingState) => void;
 }
 
 function renderHeader<TData, TValue>(
@@ -78,16 +79,28 @@ export function DataTable<TData, TValue>({
   rowsPerPage = 10,
   onPageChange,
   onRowsPerPageChange,
+  onSortingChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+
+  const handleSortingChange = React.useCallback(
+    (updater: SortingState | ((prev: SortingState) => SortingState)) => {
+      setSorting((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
+        onSortingChange?.(next);
+        return next;
+      });
+    },
+    [onSortingChange],
+  );
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
+    onSortingChange: handleSortingChange,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub-admin-management";
 import { useDebounce } from "@/lib/debounce";
+import type { SortingState } from "@tanstack/react-table";
 import { Filter, RotateCcw, UserCheck, Users } from "lucide-react";
 import { useCallback, useState } from "react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
@@ -32,6 +33,7 @@ export function SubAdminManagement() {
   const debouncedSearch = useDebounce(search, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
@@ -45,6 +47,8 @@ export function SubAdminManagement() {
     fromDate,
     toDate,
     status: status || undefined,
+    sortBy: sorting[0]?.id || undefined,
+    sortOrder: sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined,
   };
 
   const { data: res, isLoading } = useGetSubAdmins(queryArgs);
@@ -64,6 +68,11 @@ export function SubAdminManagement() {
 
   const handleRowsPerPageChange = useCallback((limit: number) => {
     setRowsPerPage(limit);
+    setCurrentPage(1);
+  }, []);
+
+  const handleSortingChange = useCallback((nextSorting: SortingState) => {
+    setSorting(nextSorting);
     setCurrentPage(1);
   }, []);
 
@@ -129,7 +138,7 @@ export function SubAdminManagement() {
             />
 
             <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">
+              <Label className="text-muted-foreground mt-2 text-xs font-medium uppercase">
                 Filter by user status
               </Label>
               <Select
@@ -203,6 +212,7 @@ export function SubAdminManagement() {
             rowsPerPage={rowsPerPage}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
+            onSortingChange={handleSortingChange}
           />
         </CardContent>
       </Card>

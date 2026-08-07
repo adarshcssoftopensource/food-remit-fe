@@ -27,6 +27,7 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
   {
     accessorKey: "userName",
     header: "User Name",
+    enableSorting: true,
     cell: ({ row }) => {
       const initials = row.original.userName
         .split(/[\s-_]/)
@@ -54,11 +55,13 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
   {
     accessorKey: "contactNumber",
     header: "Contact Number",
+    enableSorting: true,
     cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.contactNumber}</span>,
   },
   {
     accessorKey: "permissions",
     header: "Permissions",
+    enableSorting: true,
     cell: ({ row }) => (
       <span className="bg-primary/10 text-primary rounded-full px-2.5 py-0.5 text-xs font-semibold">
         {row.original.permissions.length} modules
@@ -68,6 +71,7 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    enableSorting: true,
     cell: ({ row }) => <StatusBadge status={row.original.status} />,
   },
   {

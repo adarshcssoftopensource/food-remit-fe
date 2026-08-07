@@ -11,6 +11,8 @@ type UseGetSubAdminsArgs = {
   fromDate?: Date | null;
   toDate?: Date | null;
   status?: string | null; // "1" | "0" | null
+  sortBy?: string | null;
+  sortOrder?: string | null;
 };
 
 function buildUrl(args: UseGetSubAdminsArgs) {
@@ -21,6 +23,8 @@ function buildUrl(args: UseGetSubAdminsArgs) {
   if (args.fromDate) params.set("from", format(args.fromDate, "yyyy-MM-dd"));
   if (args.toDate) params.set("to", format(args.toDate, "yyyy-MM-dd"));
   if (args.status) params.set("status", args.status);
+  if (args.sortBy) params.set("sortBy", args.sortBy);
+  if (args.sortOrder) params.set("sortOrder", args.sortOrder);
 
   const qs = params.toString();
   return qs ? `${SUB_ADMIN_ENDPOINTS.GET_SUB_ADMINS}?${qs}` : SUB_ADMIN_ENDPOINTS.GET_SUB_ADMINS;
@@ -36,9 +40,10 @@ export function useGetSubAdmins(args: UseGetSubAdminsArgs = {}) {
     args.fromDate ? format(args.fromDate, "yyyy-MM-dd") : "",
     args.toDate ? format(args.toDate, "yyyy-MM-dd") : "",
     args.status ?? "",
+    args.sortBy ?? "",
+    args.sortOrder ?? "",
   ];
 
-  // Fetch raw response then map to internal `GetSubAdminsResponse` shape
   const query = useApiQuery<any>(cacheKey, url, { staleTime: 1000 * 60 * 2 });
 
   const mappedData = React.useMemo(() => {
