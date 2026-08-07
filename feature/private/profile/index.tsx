@@ -3,6 +3,7 @@
 import { PageHeader } from "@/components/common/page-header";
 import { ProfileForm } from "./components/profile-form";
 import { ProfileHeader } from "./components/profile-header";
+import { ProfilePermissions } from "./components/profile-permissions";
 
 export function ProfilePage() {
   return (
@@ -15,6 +16,8 @@ export function ProfilePage() {
       <ProfileHeader />
 
       <ProfileForm />
+
+      <ProfilePermissions />
     </div>
   );
 }

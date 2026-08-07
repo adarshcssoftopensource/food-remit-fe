@@ -2,8 +2,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { SubAdminActionsCell } from "../components/actions-cell";
 import { SubAdminData } from "../types/sub-admin.types";
 
-function StatusBadge({ status }: { status: SubAdminData["status"] }) {
-  const isActive = status === "Active";
+function StatusBadge({ status }: { status: SubAdminData["status"] | number | string }) {
+  const isActive = status === "Active" || status === 1 || status === "1";
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -13,7 +13,7 @@ function StatusBadge({ status }: { status: SubAdminData["status"] }) {
       <span
         className={`inline-block size-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`}
       />
-      {status}
+      {isActive ? "Active" : "Inactive"}
     </span>
   );
 }

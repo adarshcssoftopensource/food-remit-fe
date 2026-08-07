@@ -11,7 +11,9 @@ import { SubAdminDetailDialog } from "./sub-admin-detail-dialog";
 import { SubAdminDialog } from "./sub-admin-dialog";
 
 export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
-  const [isActive, setIsActive] = useState(admin.status === "Active");
+  const [isActive, setIsActive] = useState(
+    admin.status === "Active" || (admin.status as any) === 1 || (admin.status as any) === "1",
+  );
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 

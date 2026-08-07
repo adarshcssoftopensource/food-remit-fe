@@ -10,19 +10,28 @@ import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { profileDetailsSchema, type ProfileDetailsValues } from "../schema/profile.schema";
+import { useProfile } from "@/components/providers/profile-provider";
+
+import { PhoneInputComponent } from "@/components/ui/phone-input";
 
 export function ProfileForm() {
+  const { profile } = useProfile();
+
+  const nameParts = (profile?.name || "").trim().split(" ");
+  const firstName = nameParts[0] || "Admin";
+  const lastName = nameParts.slice(1).join(" ") || "User";
+
   const {
     control,
     handleSubmit,
     formState: { errors, isDirty, isSubmitting },
   } = useForm<ProfileDetailsValues>({
     resolver: zodResolver(profileDetailsSchema),
-    defaultValues: {
-      firstName: "Admin",
-      lastName: "User",
-      email: "admin@foodremit.com",
-      contactNumber: "+1 (555) 123-4567",
+    values: {
+      firstName,
+      lastName,
+      email: profile?.email || "admin@foodremit.com",
+      contactNumber: "919999999999", // Fallback mock number since profile endpoint does not return phone
     },
     mode: "onChange",
   });
@@ -113,7 +122,7 @@ export function ProfileForm() {
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel htmlFor="email" className="text-sm font-semibold">
+                  <FieldLabel htmlFor="email" className="text-sm font-semibold text-slate-500">
                     Email Address
                   </FieldLabel>
                   <div className="relative">
@@ -122,20 +131,11 @@ export function ProfileForm() {
                       {...field}
                       id="email"
                       type="email"
+                      disabled
                       placeholder="Enter your email"
-                      aria-invalid={!!errors.email}
-                      className={cn(
-                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
-                        "hover:border-gray-300 hover:bg-gray-50",
-                        "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
-                        errors.email &&
-                          "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
-                      )}
+                      className="h-12 cursor-not-allowed rounded-xl border-gray-200/50 bg-gray-100/50 pl-10 text-sm text-gray-400"
                     />
                   </div>
-                  {errors.email && (
-                    <p className="text-xs font-medium text-red-500">{errors.email.message}</p>
-                  )}
                 </div>
               )}
             />
@@ -148,22 +148,12 @@ export function ProfileForm() {
                   <FieldLabel htmlFor="contactNumber" className="text-sm font-semibold">
                     Contact Number
                   </FieldLabel>
-                  <div className="relative">
-                    <Phone className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
-                    <Input
-                      {...field}
-                      id="contactNumber"
-                      placeholder="Enter your contact number"
-                      aria-invalid={!!errors.contactNumber}
-                      className={cn(
-                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
-                        "hover:border-gray-300 hover:bg-gray-50",
-                        "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
-                        errors.contactNumber &&
-                          "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
-                      )}
-                    />
-                  </div>
+                  <PhoneInputComponent
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                    onBlur={field.onBlur}
+                    error={!!errors.contactNumber}
+                  />
                   {errors.contactNumber && (
                     <p className="text-xs font-medium text-red-500">
                       {errors.contactNumber.message}

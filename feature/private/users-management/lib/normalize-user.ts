@@ -20,6 +20,12 @@ export function normalizeUser(item: any): UserData {
     state: String(item.state ?? ""),
     city: String(item.city ?? ""),
     status:
-      item.status === 1 || item.status === "1" || item.status === "Active" ? "Active" : "Inactive",
+      item.userStatus === 1 ||
+      item.userStatus === "1" ||
+      item.status === 1 ||
+      item.status === "1" ||
+      item.status === "Active"
+        ? "Active"
+        : "Inactive",
   };
 }

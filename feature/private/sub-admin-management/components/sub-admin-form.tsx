@@ -1,7 +1,5 @@
 "use client";
 
-import "react-phone-input-2/lib/style.css";
-
 import { NoDataFound } from "@/components/common/no-data-found";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,10 +9,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FormInput } from "@/feature/private/stories/components/form-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import PhoneInput from "react-phone-input-2";
 import { subAdminSchema, type SubAdminFormValues } from "../schema/sub-admin.schema";
 import { type SubAdminPermission } from "../types/sub-admin.types";
 import { PermissionsSkeleton } from "./permissions-skeleton";
+import { PhoneInputComponent } from "@/components/ui/phone-input";
 
 interface SubAdminFormProps {
   initialValues?: Partial<SubAdminFormValues>;
@@ -97,62 +95,12 @@ export function SubAdminForm({
                     <span className="text-destructive ml-0.5">*</span>
                   </Label>
 
-                  <div
-                    className={`rounded-xl border bg-gray-50 transition-colors focus-within:border-slate-400 ${
-                      errors.phone ? "border-destructive" : "border-input"
-                    }`}
-                  >
-                    <PhoneInput
-                      country="in"
-                      value={field.value}
-                      onChange={(value) => field.onChange(value)}
-                      onBlur={field.onBlur}
-                      enableSearch
-                      searchPlaceholder="Search country..."
-                      searchStyle={{
-                        width: "calc(100% - 16px)",
-                        margin: "0 8px 4px",
-                        padding: "6px 10px",
-                        border: "1px solid #e2e8f0",
-                        borderRadius: "8px",
-                        fontSize: "13px",
-                        outline: "none",
-                      }}
-                      containerStyle={{
-                        width: "100%",
-                        background: "transparent",
-                        position: "relative",
-                      }}
-                      inputStyle={{
-                        width: "100%",
-                        height: "48px",
-                        border: "none",
-                        borderRadius: "12px",
-                        background: "transparent",
-                        fontSize: "14px",
-                        paddingLeft: "56px",
-                        outline: "none",
-                        boxShadow: "none",
-                      }}
-                      buttonStyle={{
-                        border: "none",
-                        borderRadius: "12px 0 0 12px",
-                        background: "transparent",
-                        borderRight: "1px solid #e2e8f0",
-                        paddingInline: "10px",
-                      }}
-                      dropdownStyle={{
-                        position: "fixed",
-                        borderRadius: "12px",
-                        boxShadow: "0 8px 30px rgba(0,0,0,0.14)",
-                        border: "1px solid #e2e8f0",
-                        zIndex: 99999,
-                        maxHeight: "260px",
-                        overflowY: "auto",
-                        background: "#fff",
-                      }}
-                    />
-                  </div>
+                  <PhoneInputComponent
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                    onBlur={field.onBlur}
+                    error={!!errors.phone}
+                  />
 
                   {errors.phone && (
                     <p className="text-destructive text-sm">{errors.phone.message}</p>
