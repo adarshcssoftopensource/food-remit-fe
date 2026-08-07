@@ -151,7 +151,10 @@ export function SubAdminManagement() {
                 }}
               >
                 <SelectTrigger className="h-10! w-full">
-                  <SelectValue placeholder="All" />
+                  <SelectValue placeholder="All">
+                    {SUB_ADMIN_STATUS_OPTIONS.find((opt) => opt.value === (status ?? ""))?.label ||
+                      "All"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>

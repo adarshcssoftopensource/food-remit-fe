@@ -49,7 +49,9 @@ function FilterSelect({ label, value, onChange, options }: FilterSelectProps) {
       </Label>
       <Select value={value} onValueChange={(v) => onChange(v ?? options[0].value)}>
         <SelectTrigger className="h-10! w-full rounded-lg border-gray-200">
-          <SelectValue />
+          <SelectValue>
+            {options.find((opt) => opt.value === value)?.label || options[0]?.label}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>

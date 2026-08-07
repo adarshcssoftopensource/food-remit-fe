@@ -63,7 +63,9 @@ export function DonationFilters({
           </Label>
           <Select value={statusFilter} onValueChange={(v) => onStatusChange(v ?? "All")}>
             <SelectTrigger className="h-10! w-full">
-              <SelectValue />
+              <SelectValue>
+                {DONATION_STATUS_OPTIONS.find((opt) => opt.value === statusFilter)?.label || "All"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
