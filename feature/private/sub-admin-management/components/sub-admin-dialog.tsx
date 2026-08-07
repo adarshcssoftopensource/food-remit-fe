@@ -51,7 +51,6 @@ export function SubAdminDialog({
           countryCode: values.phoneCode,
           email: values.email,
           phoneNumber: values.phoneNumber,
-          address: values.address,
           permission: values.permissions.map((key) => ({ key })),
         });
 
@@ -72,7 +71,6 @@ export function SubAdminDialog({
           email: admin.email,
           phoneCode: admin.contactNumber?.split(" ")?.[0] || "",
           phoneNumber: admin.contactNumber || "",
-          address: admin.address || "",
           permissions: admin.permissions || [],
         }
       : undefined;

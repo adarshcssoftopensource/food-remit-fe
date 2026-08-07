@@ -49,7 +49,6 @@ export function SubAdminForm({
       email: initialValues?.email || "",
       phoneCode: initialValues?.phoneCode || "",
       phoneNumber: initialValues?.phoneNumber || "",
-      address: initialValues?.address || "",
       permissions: initialValues?.permissions || [],
     },
     mode: "onBlur",
@@ -88,20 +87,6 @@ export function SubAdminForm({
                     {...field}
                     type="email"
                     placeholder="Enter email address"
-                    className="h-12 rounded-xl bg-gray-50"
-                  />
-                </FormInput>
-              )}
-            />
-
-            <Controller
-              name="address"
-              control={control}
-              render={({ field }) => (
-                <FormInput label="Address" error={errors.address?.message}>
-                  <Input
-                    {...field}
-                    placeholder="Enter address"
                     className="h-12 rounded-xl bg-gray-50"
                   />
                 </FormInput>

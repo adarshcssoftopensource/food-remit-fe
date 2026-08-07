@@ -8,10 +8,7 @@ export const subAdminSchema = z.object({
     .string()
     .min(1, "Phone number is required")
     .regex(/^[0-9]{7,15}$/, "Invalid phone number"),
-  address: z
-    .string()
-    .min(3, "Address must be at least 3 characters")
-    .max(200, "Address is too long"),
+
   permissions: z.array(z.string()).min(1, "Select at least one permission"),
 });
 
