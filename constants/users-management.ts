@@ -12,8 +12,8 @@ export type OrderData = {
 
 export const USER_STATUS_OPTIONS = [
   { label: "All Users", value: "" },
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
+  { label: "Active", value: "1" },
+  { label: "Inactive", value: "0" },
 ];
 
 export const MOCK_REQUESTED_ORDERS: Record<string, OrderData[]> = {};

@@ -1,6 +1,6 @@
 "use client";
 
-import { Filter, RotateCcw } from "lucide-react";
+import { Filter, RotateCcw, UsersRound } from "lucide-react";
 import { useCallback, useState } from "react";
 
 import { STAT_CONFIG, USER_STATUS_OPTIONS } from "@/constants/users-management";
@@ -21,7 +21,6 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { SortingState } from "@tanstack/react-table";
 
@@ -152,7 +151,10 @@ export function UserManagement() {
                 }}
               >
                 <SelectTrigger className="h-10! w-full">
-                  <SelectValue placeholder="All Users" />
+                  <span className={status ? undefined : "text-muted-foreground"}>
+                    {USER_STATUS_OPTIONS.find((option) => option.value === status)?.label ??
+                      "All Users"}
+                  </span>
                 </SelectTrigger>
 
                 <SelectContent>
@@ -181,9 +183,19 @@ export function UserManagement() {
       </Card>
 
       <Card className="rounded-xl shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b">
-          <div>
-            <CardTitle className="text-xl font-semibold">All Users</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between rounded-t-xl border-b bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-5">
+          <div className="flex items-center gap-4">
+            <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-xl">
+              <UsersRound className="h-6 w-6" />
+            </div>
+
+            <div>
+              <CardTitle className="text-xl font-bold tracking-tight text-slate-800">
+                All Users
+              </CardTitle>
+
+              <p className="mt-1 text-sm text-slate-500">Manage and monitor registered users</p>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
