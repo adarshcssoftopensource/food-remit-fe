@@ -1,13 +1,25 @@
 import { z } from "zod";
 
 export const subAdminSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name is too long"),
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
-  phoneCode: z.string().min(1, "Country code is required"),
-  phoneNumber: z
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name is too long")
+    .regex(/^[a-zA-Z\s'-]+$/, "Name can only contain letters, spaces, hyphens, or apostrophes"),
+
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Enter a valid email address (e.g. user@example.com)"),
+
+  // Stored as the full international number e.g. "919876543210"
+  // react-phone-input-2 returns digits only (no +), min 10 digits after country code
+  phone: z
     .string()
     .min(1, "Phone number is required")
-    .regex(/^[0-9]{7,15}$/, "Invalid phone number"),
+    .min(10, "Phone number must be at least 10 digits")
+    .max(15, "Phone number is too long")
+    .regex(/^\d{10,15}$/, "Enter a valid phone number"),
 
   permissions: z.array(z.string()).min(1, "Select at least one permission"),
 });

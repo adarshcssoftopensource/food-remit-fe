@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/lib/api/client";
 
 interface FetcherArgs<TBody = unknown> {
-  method: "get" | "post" | "put" | "delete";
+  method: "get" | "post" | "put" | "patch" | "delete";
   url: string;
   body?: TBody;
   timeout?: number;
@@ -48,7 +48,7 @@ export function useApiQuery<TResponse>(
 
 // POST / PUT / DELETE Hook
 export function useApiMutation<TResponse, TBody = unknown>(
-  method: "post" | "put" | "delete",
+  method: "post" | "put" | "patch" | "delete",
   url: string,
   options?: UseMutationOptions<TResponse, Error, TBody>,
 ) {

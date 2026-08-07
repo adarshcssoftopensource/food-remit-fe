@@ -3,27 +3,22 @@ import { SubAdminActionsCell } from "../components/actions-cell";
 import { SubAdminData } from "../types/sub-admin.types";
 
 function StatusBadge({ status }: { status: SubAdminData["status"] }) {
+  const isActive = status === "Active";
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${"bg-red-100 text-red-600"}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+        isActive ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
+      }`}
     >
-      <span className={`inline-block size-1.5 rounded-full ${"bg-red-500"}`} />
+      <span
+        className={`inline-block size-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`}
+      />
       {status}
     </span>
   );
 }
 
 export const subAdminColumns: ColumnDef<SubAdminData>[] = [
-  // {
-  //   accessorKey: "userId",
-  //   header: "User ID",
-  //   enableSorting: true,
-  //   cell: ({ row }) => (
-  //     <span className="pl-3 font-mono text-xs font-medium text-slate-500">
-  //       #{row.original.userId}
-  //     </span>
-  //   ),
-  // },
   {
     accessorKey: "userName",
     header: "User Name",

@@ -14,6 +14,7 @@ import { Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useCreateSubAdmin } from "../hooks/use-create-sub-admin";
 import { useSubAdminPermissions } from "../hooks/use-sub-admin-permissions";
+import { useUpdateSubAdmin } from "../hooks/use-update-sub-admin";
 import { type SubAdminFormValues } from "../schema/sub-admin.schema";
 import type { SubAdminData } from "../types/sub-admin.types";
 import { SubAdminForm } from "./sub-admin-form";
@@ -42,18 +43,36 @@ export function SubAdminDialog({
 
   const { mutateAsync: createSubAdmin, isPending: isCreatingSubAdmin } = useCreateSubAdmin();
 
+  const { mutateAsync: updateSubAdmin, isPending: isUpdatingSubAdmin } = useUpdateSubAdmin(
+    admin?.id ?? "",
+  );
+
   const handleSubmit = async (values: SubAdminFormValues) => {
     try {
+      const rawPhone = values.phone;
+      const localNumber = rawPhone.slice(rawPhone.length - 10);
+      const countryCode = rawPhone.slice(0, rawPhone.length - 10);
+
       if (mode === "add") {
         const response = await createSubAdmin({
           name: values.name,
-          countryCode: values.phoneCode,
+          countryCode,
           email: values.email,
-          phoneNumber: values.phoneNumber,
+          phoneNumber: localNumber,
           permission: values.permissions.map((key) => ({ key })),
         });
 
         successToast({ title: response.message || "Sub Admin added successfully" });
+      } else if (mode === "edit" && admin) {
+        const response = await updateSubAdmin({
+          name: values.name,
+          countryCode,
+          email: values.email,
+          phoneNumber: localNumber,
+          permission: values.permissions.map((key) => ({ key })),
+        });
+
+        successToast({ title: response.message || "Sub Admin updated successfully" });
       }
 
       onOpenChange(false);
@@ -62,16 +81,22 @@ export function SubAdminDialog({
     }
   };
 
+  const buildInitialPhone = (): string => {
+    if (!admin?.contactNumber) return "";
+    return admin.contactNumber.replace(/^\+/, "").replace(/\s+/g, "");
+  };
+
   const initialValues: Partial<SubAdminFormValues> | undefined =
     mode === "edit" && admin
       ? {
           name: admin.userName,
           email: admin.email,
-          phoneCode: admin.contactNumber?.split(" ")?.[0] || "",
-          phoneNumber: admin.contactNumber || "",
+          phone: buildInitialPhone(),
           permissions: admin.permissions.map((permission) => permission.key),
         }
       : undefined;
+
+  const isSubmitting = mode === "add" ? isCreatingSubAdmin : isUpdatingSubAdmin;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -105,7 +130,7 @@ export function SubAdminDialog({
           initialValues={initialValues}
           onSubmit={handleSubmit}
           submitLabel={mode}
-          isSubmitting={isCreatingSubAdmin}
+          isSubmitting={isSubmitting}
           permissions={permissionsResponse?.data ?? []}
           isPermissionsLoading={isPermissionsLoading}
         />

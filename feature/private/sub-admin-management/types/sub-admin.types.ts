@@ -58,3 +58,21 @@ export interface GetSubAdminsResponse {
   data: SubAdminData[];
   pagination: PaginationMeta;
 }
+
+// ─── PATCH: Update Sub Admin ───────────────────────────────────────────────
+
+export interface UpdateSubAdminPayload {
+  name: string;
+  countryCode: string;
+  email: string;
+  phoneNumber: string;
+  permission: Array<{ key: string }>;
+}
+
+export interface UpdateSubAdminStatusPayload {
+  status: 0 | 1;
+}
+
+export interface UpdateSubAdminResponse {
+  message: string;
+}

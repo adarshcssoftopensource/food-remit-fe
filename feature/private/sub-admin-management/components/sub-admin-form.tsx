@@ -1,22 +1,17 @@
 "use client";
 
+import "react-phone-input-2/lib/style.css";
+
 import { NoDataFound } from "@/components/common/no-data-found";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { COUNTRY_CODES } from "@/constants/sub-admin-management";
 import { FormInput } from "@/feature/private/stories/components/form-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import PhoneInput from "react-phone-input-2";
 import { subAdminSchema, type SubAdminFormValues } from "../schema/sub-admin.schema";
 import { type SubAdminPermission } from "../types/sub-admin.types";
 import { PermissionsSkeleton } from "./permissions-skeleton";
@@ -47,8 +42,7 @@ export function SubAdminForm({
     defaultValues: {
       name: initialValues?.name || "",
       email: initialValues?.email || "",
-      phoneCode: initialValues?.phoneCode || "",
-      phoneNumber: initialValues?.phoneNumber || "",
+      phone: initialValues?.phone || "",
       permissions: initialValues?.permissions || [],
     },
     mode: "onBlur",
@@ -71,7 +65,7 @@ export function SubAdminForm({
                 <FormInput label="Full Name" error={errors.name?.message}>
                   <Input
                     {...field}
-                    placeholder="Enter sub admin name"
+                    placeholder="Enter full name"
                     className="h-12 rounded-xl bg-gray-50"
                   />
                 </FormInput>
@@ -86,65 +80,95 @@ export function SubAdminForm({
                   <Input
                     {...field}
                     type="email"
-                    placeholder="Enter email address"
+                    placeholder="user@example.com"
                     className="h-12 rounded-xl bg-gray-50"
                   />
                 </FormInput>
               )}
             />
 
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">Phone Number</Label>
+            <Controller
+              name="phone"
+              control={control}
+              render={({ field }) => (
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold">
+                    Phone Number
+                    <span className="text-destructive ml-0.5">*</span>
+                  </Label>
 
-              <div className="flex gap-3">
-                <Controller
-                  name="phoneCode"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-12! w-36 rounded-xl bg-gray-50">
-                        <SelectValue placeholder="+91" />
-                      </SelectTrigger>
-
-                      <SelectContent>
-                        {COUNTRY_CODES.map((code) => (
-                          <SelectItem key={code.value} value={code.value}>
-                            {code.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-
-                <Controller
-                  name="phoneNumber"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      placeholder="Phone number"
-                      className="h-12 rounded-xl bg-gray-50"
+                  <div
+                    className={`rounded-xl border bg-gray-50 transition-colors focus-within:border-slate-400 ${
+                      errors.phone ? "border-destructive" : "border-input"
+                    }`}
+                  >
+                    <PhoneInput
+                      country="in"
+                      value={field.value}
+                      onChange={(value) => field.onChange(value)}
+                      onBlur={field.onBlur}
+                      enableSearch
+                      searchPlaceholder="Search country..."
+                      searchStyle={{
+                        width: "calc(100% - 16px)",
+                        margin: "0 8px 4px",
+                        padding: "6px 10px",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "8px",
+                        fontSize: "13px",
+                        outline: "none",
+                      }}
+                      containerStyle={{
+                        width: "100%",
+                        background: "transparent",
+                        position: "relative",
+                      }}
+                      inputStyle={{
+                        width: "100%",
+                        height: "48px",
+                        border: "none",
+                        borderRadius: "12px",
+                        background: "transparent",
+                        fontSize: "14px",
+                        paddingLeft: "56px",
+                        outline: "none",
+                        boxShadow: "none",
+                      }}
+                      buttonStyle={{
+                        border: "none",
+                        borderRadius: "12px 0 0 12px",
+                        background: "transparent",
+                        borderRight: "1px solid #e2e8f0",
+                        paddingInline: "10px",
+                      }}
+                      dropdownStyle={{
+                        position: "fixed",
+                        borderRadius: "12px",
+                        boxShadow: "0 8px 30px rgba(0,0,0,0.14)",
+                        border: "1px solid #e2e8f0",
+                        zIndex: 99999,
+                        maxHeight: "260px",
+                        overflowY: "auto",
+                        background: "#fff",
+                      }}
                     />
-                  )}
-                />
-              </div>
+                  </div>
 
-              {(errors.phoneCode || errors.phoneNumber) && (
-                <p className="text-destructive text-sm">
-                  {errors.phoneCode?.message || errors.phoneNumber?.message}
-                </p>
+                  {errors.phone && (
+                    <p className="text-destructive text-sm">{errors.phone.message}</p>
+                  )}
+                </div>
               )}
-            </div>
+            />
           </div>
         </div>
 
         <div className="rounded-2xl border bg-white shadow-sm">
           <div className="border-b px-6 py-5">
             <h3 className="text-xl font-semibold">Permissions</h3>
-
             <p className="text-muted-foreground text-sm">Select modules this admin can access.</p>
           </div>
+
           <ScrollArea className="max-h-[40vh] overflow-auto">
             <Controller
               name="permissions"
@@ -190,6 +214,7 @@ export function SubAdminForm({
               )}
             />
           </ScrollArea>
+
           {errors.permissions && (
             <p className="text-destructive col-span-full ml-2 p-2 text-sm">
               {errors.permissions.message}
@@ -205,7 +230,7 @@ export function SubAdminForm({
           isLoading={isSubmitting}
           className="h-11 rounded-xl px-10 font-semibold shadow-sm"
         >
-          {submitLabel === "add" ? "Add" : "Submit"}
+          {submitLabel === "add" ? "Add Sub Admin" : "Save Changes"}
         </Button>
       </div>
     </form>
