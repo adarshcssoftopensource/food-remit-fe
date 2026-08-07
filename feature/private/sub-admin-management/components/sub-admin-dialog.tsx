@@ -15,18 +15,21 @@ import { useState } from "react";
 import { useCreateSubAdmin } from "../hooks/use-create-sub-admin";
 import { useSubAdminPermissions } from "../hooks/use-sub-admin-permissions";
 import { type SubAdminFormValues } from "../schema/sub-admin.schema";
+import type { SubAdminData } from "../types/sub-admin.types";
 import { SubAdminForm } from "./sub-admin-form";
 
 interface SubAdminDialogProps {
   mode?: "add" | "edit";
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  admin?: SubAdminData | null;
 }
 
 export function SubAdminDialog({
   mode = "add",
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
+  admin = null,
 }: SubAdminDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
 
@@ -34,6 +37,7 @@ export function SubAdminDialog({
   const open = isControlled ? controlledOpen : internalOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
+  // fetch permission options when dialog is open
   const { data: permissionsResponse, isLoading: isPermissionsLoading } =
     useSubAdminPermissions(open);
 
@@ -60,7 +64,18 @@ export function SubAdminDialog({
     }
   };
 
-  const initialValues: Partial<SubAdminFormValues> | undefined = undefined;
+  // derive initial form values from provided `admin` prop for edit mode
+  const initialValues: Partial<SubAdminFormValues> | undefined =
+    mode === "edit" && admin
+      ? {
+          name: admin.userName,
+          email: admin.email,
+          phoneCode: admin.contactNumber?.split(" ")?.[0] || "",
+          phoneNumber: admin.contactNumber || "",
+          address: admin.address || "",
+          permissions: admin.permissions || [],
+        }
+      : undefined;
 
   const title = mode === "add" ? "Add Sub Admin" : "Edit Sub Admin";
 

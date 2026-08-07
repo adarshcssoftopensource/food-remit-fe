@@ -98,11 +98,12 @@ export function SubAdminManagement() {
                     ? (res?.stats?.inactive ?? 0)
                     : (res?.stats?.avgPermissions ?? 0)
             }
-            trendLabel="vs last month"
-            trendValue="+8%"
+            // trendLabel="vs last month"
+            // trendValue="+8%"
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}
+            loading={isLoading}
           />
         ))}
       </div>
@@ -135,6 +136,7 @@ export function SubAdminManagement() {
                 setCurrentPage(1);
               }}
               maxDate={new Date()}
+              loading={isLoading}
             />
 
             <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">

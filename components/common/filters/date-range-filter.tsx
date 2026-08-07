@@ -16,6 +16,7 @@ interface DateRangeFilterProps {
   itemClassName?: string;
   pickerClassName?: string;
   labelClassName?: string;
+  loading?: boolean;
 }
 
 export function DateRangeFilter({
@@ -31,29 +32,38 @@ export function DateRangeFilter({
   itemClassName = "space-y-2",
   pickerClassName = "h-10 w-full rounded-lg border-gray-200",
   labelClassName = "text-muted-foreground text-xs font-semibold tracking-wide uppercase",
+  loading = false,
 }: DateRangeFilterProps) {
   return (
     <div className={wrapperClassName}>
       <div className={itemClassName}>
         <Label className={labelClassName}>{fromLabel}</Label>
-        <DatePicker
-          date={fromDate}
-          setDate={onFromDateChange}
-          placeholder={placeholder}
-          className={pickerClassName}
-          maxDate={maxDate}
-        />
+        {loading ? (
+          <div className={`h-10 w-full rounded bg-slate-200 ${pickerClassName}`} />
+        ) : (
+          <DatePicker
+            date={fromDate}
+            setDate={onFromDateChange}
+            placeholder={placeholder}
+            className={pickerClassName}
+            maxDate={maxDate}
+          />
+        )}
       </div>
 
       <div className={itemClassName}>
         <Label className={labelClassName}>{toLabel}</Label>
-        <DatePicker
-          date={toDate}
-          setDate={onToDateChange}
-          placeholder={placeholder}
-          className={pickerClassName}
-          maxDate={maxDate}
-        />
+        {loading ? (
+          <div className={`h-10 w-full rounded bg-slate-200 ${pickerClassName}`} />
+        ) : (
+          <DatePicker
+            date={toDate}
+            setDate={onToDateChange}
+            placeholder={placeholder}
+            className={pickerClassName}
+            maxDate={maxDate}
+          />
+        )}
       </div>
     </div>
   );

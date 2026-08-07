@@ -14,6 +14,7 @@ export type SubAdminData = {
   userName: string;
   email: string;
   contactNumber: string;
+  address: string;
   status: "Active" | "Inactive";
   createdAt: string;
   permissions: any[];

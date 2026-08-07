@@ -6,11 +6,12 @@ import { type LucideIcon } from "lucide-react";
 interface MetricStatCardProps {
   label: string;
   value: number;
-  trendLabel: string;
-  trendValue: string;
+  trendLabel?: string;
+  trendValue?: string;
   icon: LucideIcon;
   iconClassName: string;
   iconWrapperClassName: string;
+  loading?: boolean;
 }
 
 export function MetricStatCard({
@@ -21,6 +22,7 @@ export function MetricStatCard({
   icon: Icon,
   iconClassName,
   iconWrapperClassName,
+  loading = false,
 }: MetricStatCardProps) {
   return (
     <Card className="group overflow-hidden rounded-2xl">
@@ -29,14 +31,29 @@ export function MetricStatCard({
 
         <div className="relative flex items-center justify-between">
           <div>
-            <p className="text-muted-foreground text-sm font-medium tracking-wide">{label}</p>
-            <h2 className={`mt-2 text-4xl font-bold ${iconClassName}`}>{value}</h2>
-            <div className="mt-4 flex items-center gap-2">
-              <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">
-                {trendValue}
-              </span>
-              <span className="text-muted-foreground text-xs">{trendLabel}</span>
-            </div>
+            {loading ? (
+              <div className="space-y-3">
+                <div className="h-4 w-32 rounded bg-slate-200" />
+                <div className={`h-8 w-40 rounded bg-slate-200 ${iconClassName}`} />
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-12 rounded bg-slate-200" />
+                  <div className="h-3 w-20 rounded bg-slate-200" />
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className="text-muted-foreground text-sm font-medium tracking-wide">{label}</p>
+                <h2 className={`mt-2 text-4xl font-bold ${iconClassName}`}>{value}</h2>
+                <div className="mt-4 flex items-center gap-2">
+                  {trendValue && (
+                    <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">
+                      {trendValue}
+                    </span>
+                  )}
+                  <span className="text-muted-foreground text-xs">{trendLabel}</span>
+                </div>
+              </>
+            )}
           </div>
 
           <div

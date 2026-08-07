@@ -44,7 +44,7 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
       </div>
 
       <SubAdminDetailDialog admin={admin} open={viewOpen} onOpenChange={setViewOpen} />
-      <SubAdminDialog mode="edit" open={editOpen} onOpenChange={setEditOpen} />
+      <SubAdminDialog mode="edit" admin={admin} open={editOpen} onOpenChange={setEditOpen} />
     </>
   );
 }

@@ -56,19 +56,34 @@ export function useGetSubAdmins(args: UseGetSubAdminsArgs = {}) {
       const mapped: GetSubAdminsResponse = {
         message: api.message,
         stats: api.stats || { total: 0, active: 0, inactive: 0, avgPermissions: 0 },
-        data: (api.data || []).map((item: any): SubAdminData => ({
-          id: item.id,
-          userId: item.userId ?? item.id,
-          userName: item.userName ?? item.name ?? "",
-          email: item.email ?? "",
-          contactNumber: item.contactNumber ?? item.phoneNumber ?? "",
-          status:
-            item.status === 1 || item.status === "1" || item.status === "Active"
-              ? "Active"
-              : "Inactive",
-          createdAt: item.createdAt ?? item.created_at ?? "",
-          permissions: item.permission ?? item.permissions ?? [],
-        })),
+        data: (api.data || []).map((item: any): SubAdminData => {
+          // Normalize address from various possible API shapes
+          const address = item.address ?? item.addressLine ?? item.address1 ?? item.location ?? "";
+
+          // Prefer countryCode if provided, fall back to phoneCountryCode or empty
+          const countryCode = item.countryCode ?? item.phoneCountryCode ?? "";
+
+          // Compose contact number as '+<countryCode> <number>' when possible
+          const rawNumber = item.contactNumber ?? item.phoneNumber ?? item.mobile ?? "";
+          const contactNumber = countryCode
+            ? `+${String(countryCode).replace(/^\+/, "")} ${String(rawNumber)}`.trim()
+            : String(rawNumber);
+
+          return {
+            id: item.id,
+            userId: item.userId ?? item.id,
+            userName: item.userName ?? item.name ?? "",
+            email: item.email ?? "",
+            contactNumber: contactNumber || "",
+            address: String(address || ""),
+            status:
+              item.status === 1 || item.status === "1" || item.status === "Active"
+                ? "Active"
+                : "Inactive",
+            createdAt: item.createdAt ?? item.created_at ?? "",
+            permissions: item.permission ?? item.permissions ?? [],
+          } as SubAdminData;
+        }),
         pagination: api.pagination || { page: 1, limit: 0, total: 0, totalPages: 0 },
       };
 
