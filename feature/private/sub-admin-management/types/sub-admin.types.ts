@@ -33,3 +33,24 @@ export interface CreateSubAdminPayload {
 export interface CreateSubAdminResponse {
   message: string;
 }
+
+export interface SubAdminStats {
+  total: number;
+  active: number;
+  inactive: number;
+  avgPermissions: number;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface GetSubAdminsResponse {
+  message: string;
+  stats: SubAdminStats;
+  data: SubAdminData[];
+  pagination: PaginationMeta;
+}
