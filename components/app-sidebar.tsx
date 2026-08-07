@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 
+import { useProfile } from "@/components/providers/profile-provider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,11 +22,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { navigationItems } from "@/config/nav";
+import { hasPathPermission } from "@/config/permissions";
 import { cn } from "@/lib/utils";
 
 export function AppSidebar() {
   const pathname = usePathname();
   const { state, isMobile, toggleSidebar } = useSidebar();
+  const { profile, isSuperAdmin } = useProfile();
 
   const isCollapsed = state === "collapsed";
 
@@ -38,15 +41,37 @@ export function AppSidebar() {
     return active?.title ?? null;
   });
 
+  const allowedNavItems = React.useMemo(() => {
+    return navigationItems
+      .map((item) => {
+        // If the item has sub-items, filter them first based on permissions
+        if (item.items && item.items.length > 0) {
+          const filteredSubs = item.items.filter((sub) =>
+            hasPathPermission(sub.url, profile?.permissions, isSuperAdmin),
+          );
+          return { ...item, items: filteredSubs };
+        }
+        return item;
+      })
+      .filter((item) => {
+        // If it had sub-items but none are allowed, filter it out
+        if (item.items && item.items.length === 0) {
+          return false;
+        }
+        // Otherwise check the item's main URL permission
+        return hasPathPermission(item.url, profile?.permissions, isSuperAdmin);
+      });
+  }, [profile, isSuperAdmin]);
+
   const filteredNavItems = React.useMemo(() => {
-    if (!searchQuery) return navigationItems;
+    if (!searchQuery) return allowedNavItems;
     const lowerQuery = searchQuery.toLowerCase();
-    return navigationItems.filter((item) => {
+    return allowedNavItems.filter((item) => {
       if (item.title.toLowerCase().includes(lowerQuery)) return true;
       if (item.items?.some((sub) => sub.title.toLowerCase().includes(lowerQuery))) return true;
       return false;
     });
-  }, [searchQuery]);
+  }, [allowedNavItems, searchQuery]);
 
   const isActive = (url: string) => {
     if (url === "/dashboard" && pathname === "/") return true;

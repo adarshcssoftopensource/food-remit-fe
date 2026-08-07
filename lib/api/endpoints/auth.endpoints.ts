@@ -5,6 +5,7 @@ export const AUTH_ENDPOINTS = {
   RESET_PASSWORD: "admin/reset-password",
   LOGOUT: "admin/logout",
   FORCE_LOGOUT: "admin/force-logout",
+  PROFILE: "admin/profile",
 } as const;
 
 export interface AuthTokenResponse {

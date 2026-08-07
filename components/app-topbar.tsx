@@ -6,13 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
+import { useProfile } from "@/components/providers/profile-provider";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "./logout-button";
 
 export function AppTopBar() {
-  const initials = "Admin User"
+  const { profile } = useProfile();
+  const displayName = profile?.name || "Admin User";
+  const displayRole = profile?.roleCode === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin";
+
+  const initials = displayName
     .split(" ")
     .map((n) => n[0])
     .join("")
@@ -100,7 +105,7 @@ export function AppTopBar() {
 
             <div className="hidden flex-col items-start sm:flex">
               <span className="max-w-32 truncate text-sm leading-none font-semibold">
-                Admin User
+                {displayName}
               </span>
               <span
                 className={cn(
@@ -108,7 +113,7 @@ export function AppTopBar() {
                   isProfilePage || isSettingsPage ? "text-white" : "",
                 )}
               >
-                Super Admin
+                {displayRole}
               </span>
             </div>
 
