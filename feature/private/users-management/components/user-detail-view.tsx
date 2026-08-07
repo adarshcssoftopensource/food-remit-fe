@@ -36,15 +36,16 @@ function InfoCard({ title, value }: { title: string; value?: string }) {
   );
 }
 
-export function UserDetailView({ user }: { user: UserData }) {
+export function UserDetailView({ user, id }: { user?: UserData; id: string }) {
   const router = useRouter();
+  console.log(id);
 
   const [tab, setTab] = useState<TabKey>("profile");
 
   const orders = {
-    requested: MOCK_REQUESTED_ORDERS[user.id] ?? [],
-    sent: MOCK_SENT_ORDERS[user.id] ?? [],
-    received: MOCK_RECEIVED_ORDERS[user.id] ?? [],
+    requested: user ? (MOCK_REQUESTED_ORDERS[user.id] ?? []) : [],
+    sent: user ? (MOCK_SENT_ORDERS[user.id] ?? []) : [],
+    received: user ? (MOCK_RECEIVED_ORDERS[user.id] ?? []) : [],
   };
 
   const tableConfig = {
@@ -101,23 +102,23 @@ export function UserDetailView({ user }: { user: UserData }) {
 
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">
-                    {user.firstName} {user.lastName}
+                    {user?.firstName} {user?.lastName}
                   </h2>
 
-                  <p className="text-sm text-slate-500">{user.email}</p>
+                  <p className="text-sm text-slate-500">{user?.email}</p>
                 </div>
               </div>
 
               <div className="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3">
-                <InfoCard title="User ID" value={user.id} />
-                <InfoCard title="First Name" value={user.firstName} />
-                <InfoCard title="Last Name" value={user.lastName} />
-                <InfoCard title="Username" value={user.userName} />
-                <InfoCard title="Phone" value={user.contactNumber} />
-                <InfoCard title="Country" value={user.country} />
-                <InfoCard title="State" value={user.state} />
-                <InfoCard title="City" value={user.city} />
-                <InfoCard title="Registered On" value={user.registeredOn} />
+                <InfoCard title="User ID" value={user?.id} />
+                <InfoCard title="First Name" value={user?.firstName} />
+                <InfoCard title="Last Name" value={user?.lastName} />
+                <InfoCard title="Username" value={user?.userName} />
+                <InfoCard title="Phone" value={user?.contactNumber} />
+                <InfoCard title="Country" value={user?.country} />
+                <InfoCard title="State" value={user?.state} />
+                <InfoCard title="City" value={user?.city} />
+                <InfoCard title="Registered On" value={user?.registeredOn} />
               </div>
             </div>
           </TabsContent>

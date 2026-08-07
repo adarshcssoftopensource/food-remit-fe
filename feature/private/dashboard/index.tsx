@@ -1,7 +1,6 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RECENT_ORDERS } from "@/constants/dashboard";
 import { orderColumns } from "./components/columns/columns";
 import { DataTablesSection } from "./components/data-tables-section";
 import { FinancialStats } from "./components/financial-stats";
@@ -42,7 +41,7 @@ export function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="bg-white p-4">
-              <DataTable columns={orderColumns} data={RECENT_ORDERS} />
+              <DataTable columns={orderColumns} data={[]} />
             </CardContent>
           </Card>
 

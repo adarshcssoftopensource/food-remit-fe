@@ -1,7 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/common/data-table/data-table";
-import { RECENT_ORDERS_REQUESTS } from "@/constants/dashboard";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { orderColumnsRequest } from "./columns/order-columns";
 
 export function DataTablesSection() {
@@ -19,7 +18,7 @@ export function DataTablesSection() {
         </CardHeader>
 
         <CardContent className="p-0 px-2">
-          <DataTable columns={orderColumnsRequest} data={RECENT_ORDERS_REQUESTS} />
+          <DataTable columns={orderColumnsRequest} data={[]} />
         </CardContent>
       </Card>
 

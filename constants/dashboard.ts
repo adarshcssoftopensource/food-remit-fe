@@ -11,8 +11,8 @@ export const OVERVIEW_STATS = {
   foodSent: {
     today: 0,
     thisWeek: 0,
-    thisMonth: 3,
-    thisYear: 9,
+    thisMonth: 0,
+    thisYear: 0,
   },
   foodRequested: {
     today: 0,
@@ -21,17 +21,17 @@ export const OVERVIEW_STATS = {
     thisYear: 0,
   },
   registeredUsers: {
-    users: 20,
-    activeUsers: 19,
+    users: 0,
+    activeUsers: 0,
     inactiveUsers: 0,
   },
 };
 
 export const MANAGEMENT_STATS = [
-  { title: "Country Manager", value: "2" },
-  { title: "City Manager", value: "4" },
-  { title: "Store Manager", value: "5" },
-  { title: "Employees", value: "2" },
+  { title: "Country Manager", value: "0" },
+  { title: "City Manager", value: "0" },
+  { title: "Store Manager", value: "0" },
+  { title: "Employees", value: "0" },
 ];
 
 export const FINANCIAL_STATS = [
@@ -40,9 +40,9 @@ export const FINANCIAL_STATS = [
 ];
 
 export const SALES_OVERVIEW = [
-  { title: "Sells Graph", value: "47.06 USD" },
-  { title: "New Users", value: "10" },
-  { title: "Total Orders", value: "3" },
+  { title: "Sells Graph", value: "0 USD" },
+  { title: "New Users", value: "0" },
+  { title: "Total Orders", value: "0" },
 ];
 
 export type Order = {
@@ -53,49 +53,6 @@ export type Order = {
   deliveredTime: string;
   price: string;
 };
-
-export const RECENT_ORDERS: Order[] = [
-  {
-    id: "SE7874341682",
-    customerName: "noel123 hill",
-    location: "2300 S Hamilton Road",
-    status: "Paid",
-    deliveredTime: "Not Delivered Yet",
-    price: "$19.48",
-  },
-  {
-    id: "SE9283998077",
-    customerName: "Kevin Hill",
-    location: "2300 S Hamilton Road",
-    status: "Paid",
-    deliveredTime: "Not Delivered Yet",
-    price: "$9.92",
-  },
-  {
-    id: "SE3620470515",
-    customerName: "noel123 hill",
-    location: "47 W 13th St, New York, NY 10011, USA",
-    status: "Paid",
-    deliveredTime: "Not Delivered Yet",
-    price: "$17.66",
-  },
-  {
-    id: "SE6644814868",
-    customerName: "noel123 hill",
-    location: "2300 S Hamilton Road",
-    status: "Paid",
-    deliveredTime: "Not Delivered Yet",
-    price: "$9.92",
-  },
-  {
-    id: "SE1597417358",
-    customerName: "noel123 hill",
-    location: "2300 S Hamilton Road",
-    status: "Paid",
-    deliveredTime: "Not Delivered Yet",
-    price: "$18.72",
-  },
-];
 
 export const TRENDING_ORDERS = [
   {
@@ -134,8 +91,8 @@ export const TRENDING_ORDERS = [
 
 export const MONTHLY_REVENUE = [
   { label: "week 1", percentage: 0 },
-  { label: "week 2", percentage: 70.72 },
-  { label: "week 3", percentage: 29.28 },
+  { label: "week 2", percentage: 0 },
+  { label: "week 3", percentage: 0 },
   { label: "week 4", percentage: 0 },
 ];
 
@@ -198,32 +155,5 @@ export const OVERVIEW_CARDS = [
       { label: "Active", value: OVERVIEW_STATS.registeredUsers.activeUsers },
       { label: "Inactive", value: OVERVIEW_STATS.registeredUsers.inactiveUsers },
     ],
-  },
-];
-
-export const RECENT_ORDERS_REQUESTS = [
-  {
-    orderId: "#1001",
-    customerName: "John Doe",
-    location: "New York",
-    orderStatus: "Delivered",
-    deliveredTime: "10:30 AM",
-    price: "$120",
-  },
-  {
-    orderId: "#1002",
-    customerName: "Jane Smith",
-    location: "California",
-    orderStatus: "Pending",
-    deliveredTime: "-",
-    price: "$95",
-  },
-  {
-    orderId: "#1003",
-    customerName: "Michael Lee",
-    location: "Texas",
-    orderStatus: "Delivered",
-    deliveredTime: "02:15 PM",
-    price: "$180",
   },
 ];
