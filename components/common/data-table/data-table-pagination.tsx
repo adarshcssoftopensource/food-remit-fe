@@ -22,25 +22,64 @@ import {
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  currentPage?: number;
+  totalPages?: number;
+  rowsPerPage?: number;
+  onPageChange?: (page: number) => void;
+  onRowsPerPageChange?: (limit: number) => void;
 }
 
-export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
+export function DataTablePagination<TData>({
+  table,
+  currentPage,
+  totalPages,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+}: DataTablePaginationProps<TData>) {
+  // Backend-driven mode
+  const isBackendMode = currentPage !== undefined && totalPages !== undefined && onPageChange;
+
+  // Client-side mode (fallback)
   const pageIndex = table.getState().pagination.pageIndex;
   const pageCount = table.getPageCount();
 
+  const activePage = isBackendMode ? currentPage : pageIndex + 1;
+  const maxPages = isBackendMode ? totalPages : pageCount;
+  const pageSize = rowsPerPage ?? table.getState().pagination.pageSize;
+
   const getPages = () => {
-    const current = pageIndex + 1;
-    if (pageCount <= 5) {
-      return Array.from({ length: pageCount }, (_, i) => i + 1);
+    const current = activePage;
+    if (maxPages <= 5) {
+      return Array.from({ length: maxPages }, (_, i) => i + 1);
     }
     if (current <= 3) {
-      return [1, 2, 3, "ellipsis", pageCount];
+      return [1, 2, 3, "ellipsis", maxPages];
     }
-    if (current >= pageCount - 2) {
-      return [1, "ellipsis", pageCount - 2, pageCount - 1, pageCount];
+    if (current >= maxPages - 2) {
+      return [1, "ellipsis", maxPages - 2, maxPages - 1, maxPages];
     }
-    return [1, "ellipsis", current - 1, current, current + 1, "ellipsis", pageCount];
+    return [1, "ellipsis", current - 1, current, current + 1, "ellipsis", maxPages];
   };
+
+  const handlePageChange = (page: number) => {
+    if (isBackendMode && onPageChange) {
+      onPageChange(page);
+    } else {
+      table.setPageIndex(page - 1);
+    }
+  };
+
+  const handleRowsPerPageChange = (size: number) => {
+    if (isBackendMode && onRowsPerPageChange) {
+      onRowsPerPageChange(size);
+    } else {
+      table.setPageSize(size);
+    }
+  };
+
+  const canPrevious = activePage > 1;
+  const canNext = activePage < maxPages;
 
   return (
     <div className="flex flex-col gap-3 border-t px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -48,8 +87,8 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
         <span className="text-sm font-medium text-slate-700">Rows per page</span>
 
         <Select
-          value={`${table.getState().pagination.pageSize}`}
-          onValueChange={(value) => table.setPageSize(Number(value))}
+          value={`${pageSize}`}
+          onValueChange={(value) => handleRowsPerPageChange(Number(value))}
         >
           <SelectTrigger className="h-9 w-16">
             <SelectValue />
@@ -72,9 +111,9 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                table.previousPage();
+                if (canPrevious) handlePageChange(activePage - 1);
               }}
-              className={!table.getCanPreviousPage() ? "pointer-events-none opacity-50" : ""}
+              className={!canPrevious ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>
 
@@ -87,10 +126,10 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
               <PaginationItem key={index}>
                 <PaginationLink
                   href="#"
-                  isActive={page === pageIndex + 1}
+                  isActive={page === activePage}
                   onClick={(e) => {
                     e.preventDefault();
-                    table.setPageIndex(Number(page) - 1);
+                    handlePageChange(Number(page));
                   }}
                 >
                   {page}
@@ -104,9 +143,9 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                table.nextPage();
+                if (canNext) handlePageChange(activePage + 1);
               }}
-              className={!table.getCanNextPage() ? "pointer-events-none opacity-50" : ""}
+              className={!canNext ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>
         </PaginationContent>
@@ -119,11 +158,11 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           type="number"
           placeholder="No."
           className="h-9 w-16"
+          defaultValue={activePage}
           onChange={(e) => {
             const page = Number(e.target.value);
-
-            if (page >= 1 && page <= pageCount) {
-              table.setPageIndex(page - 1);
+            if (page >= 1 && page <= maxPages) {
+              handlePageChange(page);
             }
           }}
         />

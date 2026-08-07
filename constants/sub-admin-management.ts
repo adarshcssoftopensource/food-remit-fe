@@ -32,9 +32,9 @@ export const SUB_ADMIN_STAT_CONFIG = [
 ];
 
 export const SUB_ADMIN_STATUS_OPTIONS = [
-  { label: "All", value: "All" },
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
+  { label: "All", value: "" },
+  { label: "Active", value: "1" },
+  { label: "Inactive", value: "0" },
 ] as const;
 
 export const COUNTRY_CODES = [

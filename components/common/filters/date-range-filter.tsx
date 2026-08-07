@@ -11,6 +11,7 @@ interface DateRangeFilterProps {
   fromLabel?: string;
   toLabel?: string;
   placeholder?: string;
+  maxDate?: Date;
   wrapperClassName?: string;
   itemClassName?: string;
   pickerClassName?: string;
@@ -22,9 +23,10 @@ export function DateRangeFilter({
   toDate,
   onFromDateChange,
   onToDateChange,
-  fromLabel = "From Date",
-  toLabel = "To Date",
-  placeholder = "dd/mm/yyyy",
+  fromLabel = "From date (YYYY-MM-DD)",
+  toLabel = "To date (YYYY-MM-DD)",
+  placeholder = "YYYY-MM-DD",
+  maxDate,
   wrapperClassName = "grid grid-cols-1 gap-3 md:grid-cols-2",
   itemClassName = "space-y-2",
   pickerClassName = "h-10 w-full rounded-lg border-gray-200",
@@ -39,6 +41,7 @@ export function DateRangeFilter({
           setDate={onFromDateChange}
           placeholder={placeholder}
           className={pickerClassName}
+          maxDate={maxDate}
         />
       </div>
 
@@ -49,6 +52,7 @@ export function DateRangeFilter({
           setDate={onToDateChange}
           placeholder={placeholder}
           className={pickerClassName}
+          maxDate={maxDate}
         />
       </div>
     </div>

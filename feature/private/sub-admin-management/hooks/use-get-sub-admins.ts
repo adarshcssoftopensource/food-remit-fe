@@ -1,5 +1,6 @@
 import { useApiQuery } from "@/hooks/useApi";
 import { SUB_ADMIN_ENDPOINTS } from "@/lib/api/endpoints/sub-admin.endpoints";
+import { format } from "date-fns";
 import * as React from "react";
 import type { GetSubAdminsResponse, SubAdminData } from "../types/sub-admin.types";
 
@@ -9,7 +10,7 @@ type UseGetSubAdminsArgs = {
   search?: string;
   fromDate?: Date | null;
   toDate?: Date | null;
-  status?: string | null; // "Active" | "Inactive" | null
+  status?: string | null; // "1" | "0" | null
 };
 
 function buildUrl(args: UseGetSubAdminsArgs) {
@@ -17,8 +18,8 @@ function buildUrl(args: UseGetSubAdminsArgs) {
   if (args.page) params.set("page", String(args.page));
   if (args.limit) params.set("limit", String(Math.min(args.limit, 100)));
   if (args.search) params.set("search", args.search);
-  if (args.fromDate) params.set("from", args.fromDate.toISOString());
-  if (args.toDate) params.set("to", args.toDate.toISOString());
+  if (args.fromDate) params.set("from", format(args.fromDate, "yyyy-MM-dd"));
+  if (args.toDate) params.set("to", format(args.toDate, "yyyy-MM-dd"));
   if (args.status) params.set("status", args.status);
 
   const qs = params.toString();
@@ -32,8 +33,8 @@ export function useGetSubAdmins(args: UseGetSubAdminsArgs = {}) {
     String(args.page ?? 1),
     String(Math.min(args.limit ?? 100, 100)),
     args.search ?? "",
-    args.fromDate ? args.fromDate.toISOString() : "",
-    args.toDate ? args.toDate.toISOString() : "",
+    args.fromDate ? format(args.fromDate, "yyyy-MM-dd") : "",
+    args.toDate ? format(args.toDate, "yyyy-MM-dd") : "",
     args.status ?? "",
   ];
 

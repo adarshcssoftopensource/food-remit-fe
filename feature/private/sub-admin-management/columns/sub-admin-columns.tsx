@@ -48,7 +48,7 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
     header: "Email Address",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="pl-3 text-sm text-blue-600 hover:underline">{row.original.email}</span>
+      <span className="text-sm text-blue-600 hover:underline">{row.original.email}</span>
     ),
   },
   {

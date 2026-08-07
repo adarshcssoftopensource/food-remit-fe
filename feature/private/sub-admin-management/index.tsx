@@ -16,8 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub-admin-management";
+import { useDebounce } from "@/lib/debounce";
 import { Filter, RotateCcw, UserCheck, Users } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
 import { SubAdminDialog } from "./components/sub-admin-dialog";
 import { useGetSubAdmins, UseGetSubAdminsArgs } from "./hooks/use-get-sub-admins";
@@ -27,33 +28,44 @@ export function SubAdminManagement() {
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
   const [toDate, setToDate] = useState<Date | undefined>(undefined);
   const [status, setStatus] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  }, []);
 
   const queryArgs: UseGetSubAdminsArgs = {
-    page: 1,
-    limit: 100,
+    page: currentPage,
+    limit: rowsPerPage,
+    search: debouncedSearch || undefined,
+    fromDate,
+    toDate,
+    status: status || undefined,
   };
+
   const { data: res, isLoading } = useGetSubAdmins(queryArgs);
   const allData = (res?.data ?? []) as SubAdminData[];
 
-  const filtered = useMemo(() => {
-    return allData.filter((d) => {
-      if (status) {
-        if (d.status.toLowerCase() !== status.toLowerCase()) return false;
-      }
+  const handleReset = useCallback(() => {
+    setFromDate(undefined);
+    setToDate(undefined);
+    setStatus(null);
+    setSearch("");
+    setCurrentPage(1);
+  }, []);
 
-      if (fromDate) {
-        const created = new Date(d.createdAt);
-        if (created < fromDate) return false;
-      }
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
-      if (toDate) {
-        const created = new Date(d.createdAt);
-        if (created > toDate) return false;
-      }
-
-      return true;
-    });
-  }, [allData, status, fromDate, toDate]);
+  const handleRowsPerPageChange = useCallback((limit: number) => {
+    setRowsPerPage(limit);
+    setCurrentPage(1);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -105,19 +117,33 @@ export function SubAdminManagement() {
               labelClassName="text-muted-foreground text-xs font-medium uppercase"
               fromDate={fromDate}
               toDate={toDate}
-              onFromDateChange={(d) => setFromDate(d ?? undefined)}
-              onToDateChange={(d) => setToDate(d ?? undefined)}
+              onFromDateChange={(d) => {
+                setFromDate(d ?? undefined);
+                setCurrentPage(1);
+              }}
+              onToDateChange={(d) => {
+                setToDate(d ?? undefined);
+                setCurrentPage(1);
+              }}
+              maxDate={new Date()}
             />
 
             <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">Status</Label>
-              <Select value={status ?? ""} onValueChange={(v) => setStatus(v ?? null)}>
+              <Label className="text-muted-foreground text-xs font-medium uppercase">
+                Filter by user status
+              </Label>
+              <Select
+                value={status ?? ""}
+                onValueChange={(v) => {
+                  setStatus(v || null);
+                  setCurrentPage(1);
+                }}
+              >
                 <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
+                  <SelectValue placeholder="All" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="">All</SelectItem>
                     {SUB_ADMIN_STATUS_OPTIONS.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
                         {opt.label}
@@ -128,7 +154,11 @@ export function SubAdminManagement() {
               </Select>
             </div>
 
-            <Button variant="destructive" className="h-10 w-full shrink-0 sm:w-auto">
+            <Button
+              variant="destructive"
+              className="h-10 w-full shrink-0 sm:w-auto"
+              onClick={handleReset}
+            >
               <RotateCcw className="mr-2 h-4 w-4" />
               Reset
             </Button>
@@ -152,7 +182,7 @@ export function SubAdminManagement() {
                 <p className="mt-1 flex items-center gap-1 text-sm text-slate-500">
                   <UserCheck className="h-4 w-4 text-emerald-500" />
                   <span>
-                    <strong className="text-slate-700">{filtered.length}</strong> sub-admins found
+                    <strong className="text-slate-700">{allData.length}</strong> sub-admins found
                   </span>
                 </p>
               </div>
@@ -163,9 +193,16 @@ export function SubAdminManagement() {
         <CardContent>
           <DataTable
             columns={subAdminColumns}
-            data={filtered}
+            data={allData}
             searchKey="userName"
             loading={isLoading}
+            searchValue={search}
+            onSearchChange={handleSearchChange}
+            currentPage={currentPage}
+            totalPages={res?.pagination?.totalPages ?? 1}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
           />
         </CardContent>
       </Card>

@@ -1,26 +1,27 @@
 "use client";
 
-import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface DatePickerProps {
   date?: Date;
   setDate?: (date?: Date) => void;
   placeholder?: string;
   className?: string;
+  maxDate?: Date;
 }
 
 export function DatePicker({
   date,
   setDate,
-  placeholder = "Pick a date",
+  placeholder = "YYYY-MM-DD",
   className,
+  maxDate,
 }: DatePickerProps) {
   return (
     <Popover>
@@ -35,7 +36,7 @@ export function DatePicker({
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-            {date ? format(date, "dd/MM/yyyy") : <span>{placeholder}</span>}
+            {date ? format(date, "yyyy-MM-dd") : <span>{placeholder}</span>}
             {date && (
               <span
                 role="button"
@@ -67,6 +68,7 @@ export function DatePicker({
           onSelect={setDate}
           captionLayout="dropdown"
           className="p-3 [--cell-size:--spacing(9)]"
+          disabled={maxDate ? { after: maxDate } : undefined}
         />
       </PopoverContent>
     </Popover>

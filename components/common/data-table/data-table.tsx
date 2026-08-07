@@ -33,6 +33,13 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   searchKey?: string; // e.g., 'name' to filter by name
   loading?: boolean;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+  currentPage?: number;
+  totalPages?: number;
+  rowsPerPage?: number;
+  onPageChange?: (page: number) => void;
+  onRowsPerPageChange?: (limit: number) => void;
 }
 
 function renderHeader<TData, TValue>(
@@ -64,6 +71,13 @@ export function DataTable<TData, TValue>({
   data,
   searchKey,
   loading = false,
+  searchValue = "",
+  onSearchChange,
+  currentPage = 1,
+  totalPages = 1,
+  rowsPerPage = 10,
+  onPageChange,
+  onRowsPerPageChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -134,9 +148,19 @@ export function DataTable<TData, TValue>({
           <div className="relative w-full sm:max-w-sm">
             <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
             <Input
-              placeholder={`Search...`}
-              value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn(searchKey)?.setFilterValue(event.target.value)}
+              placeholder="Query"
+              value={
+                onSearchChange
+                  ? searchValue
+                  : ((table.getColumn(searchKey)?.getFilterValue() as string) ?? "")
+              }
+              onChange={(event) => {
+                if (onSearchChange) {
+                  onSearchChange(event.target.value);
+                } else {
+                  table.getColumn(searchKey)?.setFilterValue(event.target.value);
+                }
+              }}
               className="pl-8 text-black"
             />
           </div>
@@ -164,7 +188,14 @@ export function DataTable<TData, TValue>({
           <TableBody>{renderedBody}</TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination
+        table={table}
+        currentPage={onPageChange ? currentPage : undefined}
+        totalPages={onPageChange ? totalPages : undefined}
+        rowsPerPage={onRowsPerPageChange ? rowsPerPage : undefined}
+        onPageChange={onPageChange}
+        onRowsPerPageChange={onRowsPerPageChange}
+      />
     </div>
   );
 }
