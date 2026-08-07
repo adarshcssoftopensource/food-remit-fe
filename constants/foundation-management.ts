@@ -1,4 +1,4 @@
-import { Building2, Clock, CheckCircle2 } from "lucide-react";
+import { Building2, CheckCircle2, Clock } from "lucide-react";
 
 export type FoundationData = {
   id: string;

@@ -3,11 +3,11 @@
 import { PageHeader } from "@/components/common/page-header";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 
-import { useFoundationFilters } from "./hooks/useFoundationFilters";
-import { FoundationStats } from "./components/foundation-stats";
-import { FoundationHeader } from "./components/foundation-header";
 import { FoundationFilters } from "./components/foundation-filters";
+import { FoundationHeader } from "./components/foundation-header";
+import { FoundationStats } from "./components/foundation-stats";
 import { FoundationTable } from "./components/foundation-table";
+import { useFoundationFilters } from "./hooks/useFoundationFilters";
 
 export default function FoundationManagement() {
   const {
