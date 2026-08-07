@@ -59,10 +59,18 @@ function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
+      disabled={isLoading || props.disabled}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      {isLoading ? <Loader2 className="size-4 animate-spin" /> : children}
+      {isLoading ? (
+        <span className="flex items-center gap-2">
+          <Loader2 className="size-4 animate-spin" />
+          {children}
+        </span>
+      ) : (
+        children
+      )}
     </ButtonPrimitive>
   );
 }

@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub-admin-management";
-import { Filter, RotateCcw } from "lucide-react";
+import { Filter, RotateCcw, UserCheck, Users } from "lucide-react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
 import { SubAdminDialog } from "./components/sub-admin-dialog";
 
@@ -90,12 +90,29 @@ export function SubAdminManagement() {
       </Card>
 
       <Card className="rounded-xl shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b">
-          <div>
-            <CardTitle className="text-xl font-semibold">All Sub Admins</CardTitle>
-            <p className="text-muted-foreground mt-0.5 text-sm">0 sub admin found</p>
+        <CardHeader className="border-b bg-linear-to-r from-slate-50 via-white to-slate-50 px-6 py-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border">
+                <Users className="h-6 w-6" />
+              </div>
+
+              <div>
+                <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-900">
+                  All Sub Admins
+                </CardTitle>
+
+                <p className="mt-1 flex items-center gap-1 text-sm text-slate-500">
+                  <UserCheck className="h-4 w-4 text-emerald-500" />
+                  <span>
+                    <strong className="text-slate-700">0</strong> sub-admins found
+                  </span>
+                </p>
+              </div>
+            </div>
           </div>
         </CardHeader>
+
         <CardContent>
           <DataTable columns={subAdminColumns} data={[]} searchKey="userName" />
         </CardContent>
