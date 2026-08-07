@@ -37,7 +37,6 @@ export function SubAdminDialog({
   const open = isControlled ? controlledOpen : internalOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
-  // fetch permission options when dialog is open
   const { data: permissionsResponse, isLoading: isPermissionsLoading } =
     useSubAdminPermissions(open);
 
@@ -63,7 +62,6 @@ export function SubAdminDialog({
     }
   };
 
-  // derive initial form values from provided `admin` prop for edit mode
   const initialValues: Partial<SubAdminFormValues> | undefined =
     mode === "edit" && admin
       ? {
@@ -71,11 +69,9 @@ export function SubAdminDialog({
           email: admin.email,
           phoneCode: admin.contactNumber?.split(" ")?.[0] || "",
           phoneNumber: admin.contactNumber || "",
-          permissions: admin.permissions || [],
+          permissions: admin.permissions.map((permission) => permission.key),
         }
       : undefined;
-
-  const title = mode === "add" ? "Add Sub Admin" : "Edit Sub Admin";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -94,7 +90,7 @@ export function SubAdminDialog({
 
             <div className="flex-1">
               <DialogTitle className="text-xl font-bold tracking-tight text-slate-900">
-                {title}
+                {mode === "add" ? "Add Sub Admin" : "Edit Sub Admin"}
               </DialogTitle>
 
               {mode === "add" && (

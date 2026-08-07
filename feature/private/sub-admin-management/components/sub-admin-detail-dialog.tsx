@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Mail, Phone, ShieldCheck, User } from "lucide-react";
+import { CalendarDays, CheckCircle2, Mail, Phone, ShieldCheck, User } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -125,14 +125,22 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
                 </div>
 
                 {admin?.permissions?.length ? (
-                  <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {admin.permissions.map((permission) => (
-                      <Badge
-                        key={permission}
-                        className="justify-center rounded-xl border-0 bg-indigo-50 py-3 text-indigo-700 hover:bg-indigo-100"
+                      <div
+                        key={permission.key}
+                        className="flex items-center gap-3 rounded-2xl border border-indigo-100 bg-linear-to-r from-indigo-50 to-violet-50 p-4 transition-all"
                       >
-                        {permission}
-                      </Badge>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl border">
+                          <CheckCircle2 className="h-5 w-5" />
+                        </div>
+
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-slate-800">{permission.value}</p>
+
+                          <p className="truncate text-xs text-slate-500">{permission.key}</p>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 ) : (

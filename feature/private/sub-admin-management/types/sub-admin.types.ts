@@ -3,6 +3,11 @@ export interface SubAdminPermission {
   label: string;
 }
 
+export interface AssignedSubAdminPermission {
+  key: string;
+  value: string;
+}
+
 export interface GetSubAdminPermissionsResponse {
   message: string;
   data: SubAdminPermission[];
@@ -16,7 +21,7 @@ export type SubAdminData = {
   contactNumber: string;
   status: "Active" | "Inactive";
   createdAt: string;
-  permissions: any[];
+  permissions: AssignedSubAdminPermission[];
 };
 
 export interface CreateSubAdminPayload {
