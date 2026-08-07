@@ -68,8 +68,8 @@ export const ROUTES = {
     COUPONS_MANAGEMENT: "/coupons-management",
     AMOUNT_LIMIT_MANAGEMENT: "/amount-limit-management",
     CREDITS_MANAGEMENT: {
-      ROOT: "/credits-management",
-      LIST: "/credits-management/list",
+      PENDING_CREDITS: "/credits-management/pending-credits",
+      COMPLETED_CREDITS: "/credits-management/completed-credits",
     },
     TUTORIAL_MANAGEMENT: "/tutorial-management",
     PROFILE: "/profile",

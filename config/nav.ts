@@ -226,12 +226,16 @@ export const navigationItems = [
   },
   {
     title: "Credits Management",
-    url: ROUTES.ADMIN.CREDITS_MANAGEMENT.ROOT,
+    url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
     icon: CreditCard,
     items: [
       {
-        title: "Credits",
-        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.LIST,
+        title: "Pending Credits",
+        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
+      },
+      {
+        title: "Completed Credits",
+        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.COMPLETED_CREDITS,
       },
     ],
   },
