@@ -126,9 +126,9 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
 
                 {admin?.permissions?.length ? (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    {admin.permissions.map((permission) => (
+                    {admin?.permissions?.map((permission) => (
                       <div
-                        key={permission.key}
+                        key={permission?.key}
                         className="flex items-center gap-3 rounded-2xl border border-indigo-100 bg-linear-to-r from-indigo-50 to-violet-50 p-4 transition-all"
                       >
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl border">
@@ -136,9 +136,9 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
                         </div>
 
                         <div className="min-w-0">
-                          <p className="truncate font-medium text-slate-800">{permission.value}</p>
+                          <p className="truncate font-medium text-slate-800">{permission?.value}</p>
 
-                          <p className="truncate text-xs text-slate-500">{permission.key}</p>
+                          <p className="truncate text-xs text-slate-500">{permission?.key}</p>
                         </div>
                       </div>
                     ))}
