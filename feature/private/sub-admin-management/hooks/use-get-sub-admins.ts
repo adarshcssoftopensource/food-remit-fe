@@ -1,6 +1,7 @@
 import { useApiQuery } from "@/hooks/useApi";
 import { SUB_ADMIN_ENDPOINTS } from "@/lib/api/endpoints/sub-admin.endpoints";
-import type { GetSubAdminsResponse } from "../types/sub-admin.types";
+import * as React from "react";
+import type { GetSubAdminsResponse, SubAdminData } from "../types/sub-admin.types";
 
 type UseGetSubAdminsArgs = {
   page?: number;
@@ -36,7 +37,42 @@ export function useGetSubAdmins(args: UseGetSubAdminsArgs = {}) {
     args.status ?? "",
   ];
 
-  return useApiQuery<GetSubAdminsResponse>(cacheKey, url, { staleTime: 1000 * 60 * 2 });
+  // Fetch raw response then map to internal `GetSubAdminsResponse` shape
+  const query = useApiQuery<any>(cacheKey, url, { staleTime: 1000 * 60 * 2 });
+
+  const mappedData = React.useMemo(() => {
+    const raw = query as any;
+    if (!raw?.data) return undefined;
+
+    try {
+      const api = raw.data as any;
+
+      const mapped: GetSubAdminsResponse = {
+        message: api.message,
+        stats: api.stats || { total: 0, active: 0, inactive: 0, avgPermissions: 0 },
+        data: (api.data || []).map((item: any): SubAdminData => ({
+          id: item.id,
+          userId: item.userId ?? item.id,
+          userName: item.userName ?? item.name ?? "",
+          email: item.email ?? "",
+          contactNumber: item.contactNumber ?? item.phoneNumber ?? "",
+          status:
+            item.status === 1 || item.status === "1" || item.status === "Active"
+              ? "Active"
+              : "Inactive",
+          createdAt: item.createdAt ?? item.created_at ?? "",
+          permissions: item.permission ?? item.permissions ?? [],
+        })),
+        pagination: api.pagination || { page: 1, limit: 0, total: 0, totalPages: 0 },
+      };
+
+      return mapped;
+    } catch (e) {
+      return undefined;
+    }
+  }, [query.data]);
+
+  return { ...query, data: mappedData } as any;
 }
 
 export type { UseGetSubAdminsArgs };

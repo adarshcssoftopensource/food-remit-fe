@@ -21,6 +21,7 @@ import { useMemo, useState } from "react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
 import { SubAdminDialog } from "./components/sub-admin-dialog";
 import { useGetSubAdmins, UseGetSubAdminsArgs } from "./hooks/use-get-sub-admins";
+import type { SubAdminData } from "./types/sub-admin.types";
 
 export function SubAdminManagement() {
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
@@ -32,7 +33,7 @@ export function SubAdminManagement() {
     limit: 100,
   };
   const { data: res, isLoading } = useGetSubAdmins(queryArgs);
-  const allData = res?.data ?? [];
+  const allData = (res?.data ?? []) as SubAdminData[];
 
   const filtered = useMemo(() => {
     return allData.filter((d) => {

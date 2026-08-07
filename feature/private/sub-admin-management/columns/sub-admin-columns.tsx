@@ -14,16 +14,16 @@ function StatusBadge({ status }: { status: SubAdminData["status"] }) {
 }
 
 export const subAdminColumns: ColumnDef<SubAdminData>[] = [
-  {
-    accessorKey: "userId",
-    header: "User ID",
-    enableSorting: true,
-    cell: ({ row }) => (
-      <span className="pl-3 font-mono text-xs font-medium text-slate-500">
-        #{row.original.userId}
-      </span>
-    ),
-  },
+  // {
+  //   accessorKey: "userId",
+  //   header: "User ID",
+  //   enableSorting: true,
+  //   cell: ({ row }) => (
+  //     <span className="pl-3 font-mono text-xs font-medium text-slate-500">
+  //       #{row.original.userId}
+  //     </span>
+  //   ),
+  // },
   {
     accessorKey: "userName",
     header: "User Name",
