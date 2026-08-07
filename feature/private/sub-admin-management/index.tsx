@@ -31,7 +31,7 @@ export function SubAdminManagement() {
     page: 1,
     limit: 100,
   };
-  const { data: res } = useGetSubAdmins(queryArgs);
+  const { data: res, isLoading } = useGetSubAdmins(queryArgs);
   const allData = res?.data ?? [];
 
   const filtered = useMemo(() => {
@@ -160,7 +160,12 @@ export function SubAdminManagement() {
         </CardHeader>
 
         <CardContent>
-          <DataTable columns={subAdminColumns} data={filtered} searchKey="userName" />
+          <DataTable
+            columns={subAdminColumns}
+            data={filtered}
+            searchKey="userName"
+            loading={isLoading}
+          />
         </CardContent>
       </Card>
     </div>

@@ -14,6 +14,7 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 
+import { NoDataFound } from "@/components/common/no-data-found";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,6 +32,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey?: string; // e.g., 'name' to filter by name
+  loading?: boolean;
 }
 
 function renderHeader<TData, TValue>(
@@ -61,6 +63,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
+  loading = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -79,6 +82,50 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
   });
+
+  const rows = table.getRowModel().rows;
+
+  const renderedBody = React.useMemo(() => {
+    if (loading) {
+      return Array.from({ length: Math.min(table.getState().pagination.pageSize || 5, 5) }).map(
+        (_, rIdx) => (
+          <TableRow key={`skeleton-${rIdx}`} className="animate-pulse">
+            {columns.map((col, cIdx) => (
+              <TableCell key={`s-${rIdx}-${cIdx}`} className="py-3">
+                <div className="h-3 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
+              </TableCell>
+            ))}
+          </TableRow>
+        ),
+      );
+    }
+
+    if (!rows?.length) {
+      return (
+        <TableRow>
+          <TableCell colSpan={columns.length} className="h-24">
+            <div className="p-2">
+              <NoDataFound />
+            </div>
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    return rows.map((row) => (
+      <TableRow
+        key={row.id}
+        data-state={row.getIsSelected() && "selected"}
+        className="transition-colors hover:bg-slate-50/50"
+      >
+        {row.getVisibleCells().map((cell) => (
+          <TableCell key={cell.id} className="py-3 text-slate-600">
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+      </TableRow>
+    ));
+  }, [loading, rows, columns, table]);
 
   return (
     <div className="space-y-4">
@@ -114,29 +161,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="transition-colors hover:bg-slate-50/50"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-3 text-slate-600">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+          <TableBody>{renderedBody}</TableBody>
         </Table>
       </div>
       <DataTablePagination table={table} />
