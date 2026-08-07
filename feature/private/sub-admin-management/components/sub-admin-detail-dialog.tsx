@@ -56,7 +56,7 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[90vh] max-w-6xl flex-col overflow-hidden rounded-3xl border-0 p-0 shadow-2xl">
-        <div className="relative bg-linear-to-r from-indigo-600 via-violet-600 to-purple-700 px-5 py-8 sm:px-8 sm:py-10">
+        <div className="relative bg-slate-100 px-5 py-8 sm:px-8 sm:py-10">
           <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
           <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
 
@@ -72,7 +72,7 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
                     {admin?.userName}
                   </DialogTitle>
 
-                  <DialogDescription className="mt-2 text-sm text-slate-100 sm:text-base">
+                  <DialogDescription className="mt-2 text-sm sm:text-base">
                     Sub Administrator
                   </DialogDescription>
                 </div>
@@ -80,7 +80,7 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
 
               <Badge
                 className={`w-fit rounded-full px-5 py-2 text-sm font-semibold ${
-                  admin?.status === "Active" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
+                  admin?.status === "Active" ? "bg-emerald-500" : "bg-red-500"
                 }`}
               >
                 {admin?.status}
@@ -89,7 +89,7 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
           </DialogHeader>
         </div>
         <ScrollArea className="max-h-[70vh] overflow-auto">
-          <div className="grid gap-6 bg-slate-100 p-5 sm:p-6 lg:grid-cols-[1.4fr_0.8fr] lg:p-8">
+          <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.4fr_0.8fr] lg:p-8">
             <Card className="rounded-3xl border-0">
               <CardContent className="space-y-6 p-5 sm:p-6">
                 <div>

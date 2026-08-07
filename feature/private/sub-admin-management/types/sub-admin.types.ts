@@ -29,7 +29,7 @@ export interface CreateSubAdminPayload {
   countryCode: string;
   email: string;
   phoneNumber: string;
-  permission: Array<{
+  permissions: Array<{
     key: string;
   }>;
 }
@@ -66,7 +66,7 @@ export interface UpdateSubAdminPayload {
   countryCode: string;
   email: string;
   phoneNumber: string;
-  permission: Array<{ key: string }>;
+  permissions: Array<{ key: string }>;
 }
 
 export interface UpdateSubAdminStatusPayload {

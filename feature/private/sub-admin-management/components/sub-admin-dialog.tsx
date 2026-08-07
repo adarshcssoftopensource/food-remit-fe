@@ -59,7 +59,7 @@ export function SubAdminDialog({
           countryCode,
           email: values.email,
           phoneNumber: localNumber,
-          permission: values.permissions.map((key) => ({ key })),
+          permissions: values.permissions.map((key) => ({ key })),
         });
 
         successToast({ title: response.message || "Sub Admin added successfully" });
@@ -69,7 +69,7 @@ export function SubAdminDialog({
           countryCode,
           email: values.email,
           phoneNumber: localNumber,
-          permission: values.permissions.map((key) => ({ key })),
+          permissions: values.permissions.map((key) => ({ key })),
         });
 
         successToast({ title: response.message || "Sub Admin updated successfully" });
