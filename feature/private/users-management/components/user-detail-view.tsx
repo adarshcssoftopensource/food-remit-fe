@@ -9,8 +9,8 @@ import {
   MOCK_REQUESTED_ORDERS,
   MOCK_SENT_ORDERS,
   USER_MANAGEMENT_VIEW_TABS,
-  UserData,
 } from "@/constants/users-management";
+import { UserData } from "../types/user.types";
 
 import {
   RECEIVED_ORDER_COLUMNS,

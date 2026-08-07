@@ -1,15 +1,12 @@
 "use client";
 
 import { Filter, RotateCcw } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 
-import {
-  MOCK_USERS_DATA,
-  STAT_CONFIG,
-  USER_STATUS_OPTIONS,
-  type UserData,
-} from "@/constants/users-management";
+import { STAT_CONFIG, USER_STATUS_OPTIONS } from "@/constants/users-management";
+import { useDebounce } from "@/lib/debounce";
 import { usersColumns } from "./columns/users-columns";
+import { useGetUsers, UseGetUsersArgs } from "./hooks/use-get-users";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
@@ -26,37 +23,69 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SortingState } from "@tanstack/react-table";
 
 export function UserManagement() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [status, setStatus] = useState("All Users");
+  const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
+  const [toDate, setToDate] = useState<Date | undefined>(undefined);
+  const [status, setStatus] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
 
-  const filteredData = useMemo<UserData[]>(
-    () =>
-      MOCK_USERS_DATA.filter((user) => {
-        if (status !== "All Users" && user.status !== status) return false;
-        const date = new Date(user.registeredOn);
-        if (fromDate && date < fromDate) return false;
-        if (toDate && date > toDate) return false;
-        return true;
-      }),
-    [status, fromDate, toDate],
-  );
-
-  const stats = {
-    total: MOCK_USERS_DATA.length,
-    active: MOCK_USERS_DATA.filter((u) => u.status === "Active").length,
-    inactive: MOCK_USERS_DATA.filter((u) => u.status === "Inactive").length,
+  const queryArgs: UseGetUsersArgs = {
+    page: currentPage,
+    limit: rowsPerPage,
+    search: debouncedSearch || undefined,
+    fromDate,
+    toDate,
+    status: status || undefined,
+    sortBy: sorting[0]?.id || undefined,
+    sortOrder: sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined,
   };
 
-  const hasFilters = !!(fromDate || toDate || status !== "All Users");
+  const { data: res, isLoading } = useGetUsers(queryArgs);
+  const allData = (res?.data ?? []) as any[];
+  const stats = {
+    total: res?.stats?.total ?? 0,
+    active: res?.stats?.active ?? 0,
+    inactive: res?.stats?.inactive ?? 0,
+  };
+
+  const hasFilters = !!(fromDate || toDate || status);
 
   const clearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setStatus("All Users");
+    setStatus(null);
+    setSearch("");
+    setCurrentPage(1);
+    setSorting([]);
   };
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  }, []);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const handleRowsPerPageChange = useCallback((limit: number) => {
+    setRowsPerPage(limit);
+    setCurrentPage(1);
+  }, []);
+
+  const handleSortingChange = useCallback(
+    (nextSorting: import("@tanstack/react-table").SortingState) => {
+      setSorting(nextSorting);
+      setCurrentPage(1);
+    },
+    [],
+  );
 
   return (
     <div className="space-y-6">
@@ -71,11 +100,10 @@ export function UserManagement() {
             key={key}
             label={label}
             value={stats[key]}
-            trendLabel="Compared to last month"
-            trendValue="+12%"
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}
+            loading={isLoading}
           />
         ))}
       </div>
@@ -95,12 +123,20 @@ export function UserManagement() {
             <DateRangeFilter
               fromDate={fromDate}
               toDate={toDate}
-              onFromDateChange={setFromDate}
-              onToDateChange={setToDate}
+              onFromDateChange={(d) => {
+                setFromDate(d ?? undefined);
+                setCurrentPage(1);
+              }}
+              onToDateChange={(d) => {
+                setToDate(d ?? undefined);
+                setCurrentPage(1);
+              }}
               wrapperClassName="flex flex-col sm:flex-row flex-1 gap-3"
               itemClassName="flex-1 space-y-1 min-w-0"
               pickerClassName="h-10 w-full"
               labelClassName="text-muted-foreground text-xs font-medium uppercase"
+              maxDate={new Date()}
+              loading={isLoading}
             />
 
             <div className="min-w-0 flex-1 sm:min-w-[160px]">
@@ -108,9 +144,15 @@ export function UserManagement() {
                 User Status
               </Label>
 
-              <Select value={status} onValueChange={(v) => setStatus(v ?? "All Users")}>
+              <Select
+                value={status ?? ""}
+                onValueChange={(v) => {
+                  setStatus(v || null);
+                  setCurrentPage(1);
+                }}
+              >
                 <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
+                  <SelectValue placeholder="All Users" />
                 </SelectTrigger>
 
                 <SelectContent>
@@ -145,7 +187,20 @@ export function UserManagement() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={usersColumns} data={filteredData} searchKey="fullName" />
+          <DataTable
+            columns={usersColumns}
+            data={allData}
+            searchKey="fullName"
+            loading={isLoading}
+            searchValue={search}
+            onSearchChange={handleSearchChange}
+            currentPage={currentPage}
+            totalPages={res?.pagination?.totalPages ?? 1}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            onSortingChange={handleSortingChange}
+          />
         </CardContent>
       </Card>
     </div>

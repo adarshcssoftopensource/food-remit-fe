@@ -1,10 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { UserData } from "@/constants/users-management";
 import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { UserData } from "../types/user.types";
 
 export function ActionsCell({ user }: { user: UserData }) {
   const router = useRouter();

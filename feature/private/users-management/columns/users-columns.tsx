@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { UserData } from "@/constants/users-management";
 import { ActionsCell } from "../components/actions-cell";
+import { UserData } from "../types/user.types";
 
 function UserStatusBadge({ status }: { status: UserData["status"] }) {
   const isActive = status === "Active";
@@ -19,14 +19,6 @@ function UserStatusBadge({ status }: { status: UserData["status"] }) {
 }
 
 export const usersColumns: ColumnDef<UserData>[] = [
-  {
-    accessorKey: "id",
-    header: "User ID",
-    enableSorting: true,
-    cell: ({ row }) => (
-      <span className="pl-3 font-mono text-xs text-slate-500">{row.original.id}</span>
-    ),
-  },
   {
     accessorKey: "userName",
     id: "fullName",
