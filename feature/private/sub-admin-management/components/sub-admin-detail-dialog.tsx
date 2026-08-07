@@ -11,6 +11,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+import { getInitials } from "@/lib/get-initials";
 import { SubAdminData } from "../types/sub-admin.types";
 import { InfoCard } from "./info-card";
 
@@ -21,120 +24,134 @@ interface SubAdminDetailDialogProps {
 }
 
 export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDetailDialogProps) {
-  if (!admin) return null;
-
-  const initials = admin.userName
-    .split(/[\s-_]/)
-    .map((x) => x[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   const details = [
     {
       label: "Full Name",
-      value: admin.userName,
-      icon: <User className="h-4 w-4" />,
+      value: admin?.userName,
+      icon: <User className="h-5 w-5" />,
     },
     {
       label: "Email Address",
-      value: admin.email,
-      icon: <Mail className="h-4 w-4" />,
+      value: admin?.email,
+      icon: <Mail className="h-5 w-5" />,
     },
     {
       label: "Phone Number",
-      value: admin.contactNumber,
-      icon: <Phone className="h-4 w-4" />,
+      value: admin?.contactNumber,
+      icon: <Phone className="h-5 w-5" />,
     },
     {
       label: "Joined On",
-      value: admin.createdAt.split(" ")[0],
-      icon: <CalendarDays className="h-4 w-4" />,
+      value: admin?.createdAt
+        ? new Date(admin.createdAt).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : "-",
+      icon: <CalendarDays className="h-5 w-5" />,
     },
   ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[95vh] w-[95vw] max-w-5xl overflow-hidden rounded-3xl border-0 p-0">
-        <div className="overflow-y-auto">
-          <div className="relative overflow-hidden bg-gray-200 px-8 py-10">
-            <div className="bg-primary/20 absolute -bottom-20 -left-20 h-60 w-60 rounded-full" />
+      <DialogContent className="flex max-h-[90vh] max-w-6xl flex-col overflow-hidden rounded-3xl border-0 p-0 shadow-2xl">
+        <div className="relative bg-linear-to-r from-indigo-600 via-violet-600 to-purple-700 px-5 py-8 sm:px-8 sm:py-10">
+          <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
 
-            <DialogHeader className="relative p-0">
-              <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center gap-5">
-                  <div className="bg-primary flex h-24 w-24 items-center justify-center rounded-3xl text-3xl font-bold text-white shadow-lg backdrop-blur">
-                    {initials}
-                  </div>
-
-                  <div>
-                    <DialogTitle className="text-3xl font-bold text-gray-700">
-                      {admin.userName}
-                    </DialogTitle>
-
-                    <DialogDescription className="mt-2 text-base text-gray-700">
-                      Sub Admin • ID #{admin.userId}
-                    </DialogDescription>
-                  </div>
+          <DialogHeader className="relative p-0">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-4 sm:gap-6">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border text-2xl font-bold sm:h-24 sm:w-24 sm:text-3xl">
+                  {getInitials(admin?.userName)}
                 </div>
 
-                <Badge
-                  className={`rounded-full px-5 py-2 text-sm ${
-                    admin.status === "Active"
-                      ? "bg-emerald-600 text-white"
-                      : "bg-red-500 text-white"
-                  }`}
-                >
-                  {admin.status}
-                </Badge>
-              </div>
-            </DialogHeader>
-          </div>
+                <div>
+                  <DialogTitle className="text-2xl font-bold sm:text-3xl">
+                    {admin?.userName}
+                  </DialogTitle>
 
-          <div className="grid gap-6 bg-slate-50 p-8 lg:grid-cols-[1.2fr_1fr]">
-            <div className="space-y-6">
-              <h3 className="text-lg font-semibold">Personal Information</h3>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                {details.map((item) => (
-                  <InfoCard
-                    key={item.label}
-                    icon={item.icon}
-                    label={item.label}
-                    value={item.value}
-                  />
-                ))}
+                  <DialogDescription className="mt-2 text-sm text-slate-100 sm:text-base">
+                    Sub Administrator
+                  </DialogDescription>
+                </div>
               </div>
+
+              <Badge
+                className={`w-fit rounded-full px-5 py-2 text-sm font-semibold ${
+                  admin?.status === "Active" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
+                }`}
+              >
+                {admin?.status}
+              </Badge>
             </div>
+          </DialogHeader>
+        </div>
+        <ScrollArea className="max-h-[70vh] overflow-auto">
+          <div className="grid gap-6 bg-slate-100 p-5 sm:p-6 lg:grid-cols-[1.4fr_0.8fr] lg:p-8">
+            <Card className="rounded-3xl border-0">
+              <CardContent className="space-y-6 p-5 sm:p-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-800">Personal Information</h3>
 
-            <div className="mt-14 space-y-6">
-              <Card className="rounded-2xl border-0 shadow-sm">
-                <CardContent className="p-6">
-                  <div className="mb-6 flex items-center justify-between">
-                    <h3 className="flex items-center gap-2 text-lg font-semibold">
-                      <ShieldCheck className="text-primary h-5 w-5" />
-                      Permissions
-                    </h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Basic details of this sub admin account
+                  </p>
+                </div>
 
-                    <Badge variant="secondary">{admin.permissions.length} Modules</Badge>
-                  </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {details.map((item) => (
+                    <InfoCard
+                      key={item.label}
+                      icon={item.icon}
+                      label={item.label}
+                      value={item.value || "-"}
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-                  <div className="grid grid-cols-2 gap-3">
+            <Card className="rounded-3xl border-0">
+              <CardContent className="p-5 sm:p-6">
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800">
+                    <ShieldCheck className="text-primary h-5 w-5" />
+                    Permissions
+                  </h3>
+
+                  <Badge className="rounded-full px-4">{admin?.permissions?.length || 0}</Badge>
+                </div>
+
+                {admin?.permissions?.length ? (
+                  <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
                     {admin.permissions.map((permission) => (
                       <Badge
                         key={permission}
-                        variant="outline"
-                        className="justify-center rounded-lg py-2 text-sm"
+                        className="justify-center rounded-xl border-0 bg-indigo-50 py-3 text-indigo-700 hover:bg-indigo-100"
                       >
                         {permission}
                       </Badge>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                ) : (
+                  <div className="flex h-60 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 text-center">
+                    <ShieldCheck className="mb-3 h-10 w-10 text-slate-400" />
+
+                    <h4 className="font-semibold text-slate-700">No Permissions Assigned</h4>
+
+                    <p className="mt-2 text-sm text-slate-500">
+                      This sub admin currently has no
+                      <br />
+                      module access permissions.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

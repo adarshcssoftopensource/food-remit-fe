@@ -20,7 +20,7 @@ export function NoDataFound({
   action,
 }: NoDataFoundProps) {
   return (
-    <Empty className="border-border border border-dashed">
+    <Empty className="border-border border border-dashed bg-slate-50">
       <EmptyHeader>
         <EmptyMedia variant="icon">{icon}</EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>

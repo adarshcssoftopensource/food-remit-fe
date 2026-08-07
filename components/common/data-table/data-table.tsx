@@ -161,7 +161,7 @@ export function DataTable<TData, TValue>({
           <div className="relative w-full sm:max-w-sm">
             <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
             <Input
-              placeholder="Query"
+              placeholder="Search..."
               value={
                 onSearchChange
                   ? searchValue
