@@ -11,6 +11,8 @@ import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import React, { createContext, useContext } from "react";
 
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+
 export type ProfilePermissions = Record<string, number | null | undefined>;
 
 export interface AdminProfile {
@@ -41,7 +43,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     error,
     refetch,
   } = useQuery<AdminProfile, Error>({
-    queryKey: ["admin-profile"],
+    queryKey: API_CACHE_KEYS.ADMIN_PROFILE,
     queryFn: async () => {
       return fetcher<AdminProfile>({
         method: "get",

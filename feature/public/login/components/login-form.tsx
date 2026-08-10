@@ -1,13 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -15,13 +12,16 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { ROUTES } from "@/config/routes";
 import { useApiMutation } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
-import { setAuthSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useSuccessfulLogin } from "../hooks/use-successful-login";
 import { LoginFormValues, loginSchema } from "../schema/login.schema";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const { handleSuccessfulLogin } = useSuccessfulLogin();
 
   const { mutateAsync, isPending } = useApiMutation<AuthTokenResponse, LoginFormValues>(
     "post",
@@ -50,15 +50,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     try {
       const res = await mutateAsync(data);
       if (res?.access_token) {
-        setAuthSession({
-          accessToken: res.access_token,
-        });
-        successToast({
-          title: "",
-          description: "You have been logged in successfully.",
-        });
-        router.refresh();
-        router.push(ROUTES.ADMIN.DASHBOARD);
+        await handleSuccessfulLogin(res.access_token, "You have been logged in successfully.");
       }
     } catch (error: any) {
       if (
@@ -80,15 +72,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       const res = await mutateAsync(formData);
 
       if (res?.access_token) {
-        setAuthSession({
-          accessToken: res.access_token,
-        });
-        successToast({
-          title: "",
-          description: "All other sessions logged out. You are now logged in.",
-        });
-        router.refresh();
-        router.push(ROUTES.ADMIN.DASHBOARD);
+        await handleSuccessfulLogin(
+          res.access_token,
+          "All other sessions logged out. You are now logged in.",
+        );
       }
     } catch (error) {
       // ignore
