@@ -12,26 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import React, { createContext, useContext, useTransition } from "react";
 
-export interface ProfilePermissions {
-  userManagement: number;
-  countryManagement: number;
-  donationLogs: number;
-  philanthropistsManagement: number;
-  cityManagement: number;
-  storeManagement: number;
-  ticketManagement: number;
-  feedbacks: number;
-  sendNotifications: number;
-  creditsManagement: number;
-  catalogueManagement: number;
-  contentManagement: number;
-  reportManagement: number;
-  couponManagement: number;
-  amountLimits: number;
-  imageManagement: number;
-  organization: number;
-  [key: string]: number;
-}
+export type ProfilePermissions = Record<string, number | null | undefined>;
 
 export interface AdminProfile {
   name: string;

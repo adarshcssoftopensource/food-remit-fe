@@ -1,28 +1,29 @@
 "use client";
 
 import { useProfile } from "@/components/providers/profile-provider";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Users,
-  Globe,
-  FileText,
-  Heart,
-  Building,
-  Store,
-  Ticket,
-  MessageSquare,
-  Bell,
-  Coins,
-  FolderOpen,
-  Video,
   BarChart3,
-  Tag,
-  Sliders,
-  Image as ImageIcon,
+  Bell,
+  Building,
   Building2,
   CheckCircle2,
+  Coins,
+  FileText,
+  FolderOpen,
+  Globe,
+  Heart,
+  Image as ImageIcon,
+  LayoutDashboard,
   Lock,
+  MessageSquare,
+  Sliders,
+  Store,
+  Tag,
+  Ticket,
+  Users,
+  Video,
 } from "lucide-react";
 
 // Mapping of permission keys to user-friendly labels and icons
@@ -30,6 +31,7 @@ const PERMISSION_CONFIG: Record<
   string,
   { label: string; icon: React.ComponentType<{ className?: string }> }
 > = {
+  dashboard: { label: "Dashboard", icon: LayoutDashboard },
   userManagement: { label: "User Management", icon: Users },
   countryManagement: { label: "Country Management", icon: Globe },
   donationLogs: { label: "Donation Logs", icon: FileText },

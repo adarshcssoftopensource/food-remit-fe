@@ -1,6 +1,7 @@
 import { ROUTES } from "./routes";
 
 export const ROUTE_PERMISSION_MAP: Record<string, string> = {
+  [ROUTES.ADMIN.DASHBOARD]: "dashboard",
   [ROUTES.ADMIN.USERS_MANAGEMENT]: "userManagement",
   [ROUTES.ADMIN.FOUNDATION_MANAGEMENT]: "organization",
   [ROUTES.ADMIN.PHILANTHROPIST_MANAGEMENT]: "philanthropistsManagement",
@@ -24,18 +25,13 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   [ROUTES.ADMIN.TUTORIAL_MANAGEMENT]: "contentManagement",
 };
 
-/**
- * Verifies if the admin has permission to access a specific route pathname.
- * Super Admins always have access to everything.
- */
 export function hasPathPermission(
   pathname: string,
-  permissions: Record<string, number> | null | undefined,
+  permissions: Record<string, number | null | undefined> | null | undefined,
   isSuperAdmin: boolean = false,
 ): boolean {
   if (isSuperAdmin) return true;
 
-  // Sub-admins must have at least one active permission to access any route (including dashboard)
   if (!permissions) return false;
   const hasAnyPermission = Object.values(permissions).some((val) => val === 1);
   if (!hasAnyPermission) return false;
@@ -46,7 +42,7 @@ export function hasPathPermission(
     .find((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 
   if (!matchedKey) {
-    // If route doesn't have a configured permission key, it's open to all authenticated admins
+    // Routes without a configured permission key are open to authenticated admins.
     return true;
   }
 

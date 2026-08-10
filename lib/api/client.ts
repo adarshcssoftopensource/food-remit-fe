@@ -74,10 +74,22 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
+      const token =
+        typeof window !== "undefined"
+          ? document.cookie
+              .split("; ")
+              .find((row) => row.startsWith(AUTH_TOKEN_COOKIE))
+              ?.split("=")[1]
+          : null;
+
       try {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BASE_URL}${AUTH_ENDPOINTS.REFRESH_TOKEN}`,
-          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
           { withCredentials: true },
         );
 
