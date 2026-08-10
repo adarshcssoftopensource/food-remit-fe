@@ -14,13 +14,11 @@ import { useApiMutation } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSuccessfulLogin } from "../hooks/use-successful-login";
 import { LoginFormValues, loginSchema } from "../schema/login.schema";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-  const router = useRouter();
   const { handleSuccessfulLogin } = useSuccessfulLogin();
 
   const { mutateAsync, isPending } = useApiMutation<AuthTokenResponse, LoginFormValues>(
