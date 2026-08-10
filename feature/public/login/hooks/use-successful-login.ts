@@ -24,6 +24,8 @@ export const useSuccessfulLogin = () => {
         method: "get",
         url: AUTH_ENDPOINTS.PROFILE,
       });
+
+      queryClient.clear();
       queryClient.setQueryData(API_CACHE_KEYS.ADMIN_PROFILE, profile);
 
       const isSuperAdmin = profile.roleCode === "SUPER_ADMIN" || profile.role === "super_admin";

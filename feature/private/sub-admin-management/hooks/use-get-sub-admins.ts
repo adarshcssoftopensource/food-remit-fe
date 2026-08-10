@@ -3,13 +3,14 @@ import { SUB_ADMIN_ENDPOINTS } from "@/lib/api/endpoints/sub-admin.endpoints";
 import { buildCacheKey, buildUrl } from "@/lib/build-query-string";
 import { useMemo } from "react";
 import { normalizeSubAdmin } from "../lib/normalize-sub-admin";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import type {
   GetSubAdminsResponse,
   SubAdminData,
   UseGetSubAdminsArgs,
 } from "../types/sub-admin.types";
 
-const CACHE_PREFIX = "sub-admins";
+const CACHE_PREFIX = API_CACHE_KEYS.SUB_ADMINS[0];
 
 /** Raw shape returned by the API before normalisation. */
 interface RawGetSubAdminsResponse {
