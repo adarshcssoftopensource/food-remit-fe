@@ -15,7 +15,7 @@ export function ActionsCell({ user }: { user: UserData }) {
   const [isActive, setIsActive] = useState(user.userStatus === "ACTIVE");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const updateUserStatus = useUpdateUserStatus(user.id);
-  const deleteUser = useDeleteUser();
+  const deleteUser = useDeleteUser(user.id);
 
   const handleStatusChange = (checked: boolean) => {
     setIsActive(checked);
@@ -34,18 +34,15 @@ export function ActionsCell({ user }: { user: UserData }) {
   };
 
   const handleDelete = () => {
-    deleteUser.mutate(
-      { userId: user.id },
-      {
-        onSuccess: () => {
-          setIsDeleteDialogOpen(false);
-          toast.success("User has been deleted successfully");
-        },
-        onError: () => {
-          toast.error("Failed to delete user");
-        },
+    deleteUser.mutate(undefined, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        toast.success("User has been deleted successfully");
       },
-    );
+      onError: () => {
+        toast.error("Failed to delete user");
+      },
+    });
   };
 
   return (
