@@ -23,6 +23,7 @@ export const usersColumns: ColumnDef<UserData>[] = [
     accessorKey: "userName",
     id: "fullName",
     header: "Full Name",
+    enableSorting: true,
     cell: ({ row }) => (
       <div className="flex items-center gap-2.5">
         <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
@@ -41,6 +42,7 @@ export const usersColumns: ColumnDef<UserData>[] = [
   {
     accessorKey: "userType",
     header: "User Type",
+    enableSorting: true,
     cell: ({ row }) => (
       <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
         {row.original.userType}
@@ -56,11 +58,13 @@ export const usersColumns: ColumnDef<UserData>[] = [
   {
     accessorKey: "contactNumber",
     header: "Contact",
+    enableSorting: true,
     cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.contactNumber}</span>,
   },
   {
     accessorKey: "country",
     header: "Country",
+    enableSorting: true,
     cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.country}</span>,
   },
   {
@@ -74,6 +78,7 @@ export const usersColumns: ColumnDef<UserData>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    enableSorting: true,
     cell: ({ row }) => <UserStatusBadge status={row.original.status} />,
   },
   {

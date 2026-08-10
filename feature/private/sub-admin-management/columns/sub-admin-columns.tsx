@@ -2,8 +2,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { SubAdminActionsCell } from "../components/actions-cell";
 import { SubAdminData } from "../types/sub-admin.types";
 
-function StatusBadge({ status }: { status: SubAdminData["status"] | number | string }) {
-  const isActive = status === 1 || status === "1" || String(status).toUpperCase() === "ACTIVE";
+function StatusBadge({ status }: { status: SubAdminData["status"] }) {
+  const isActive = status === "Active";
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${

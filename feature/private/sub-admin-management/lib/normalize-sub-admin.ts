@@ -1,0 +1,35 @@
+import type { SubAdminData } from "../types/sub-admin.types";
+
+/**
+ * Normalises a raw API sub-admin payload into a consistent SubAdminData shape.
+ * Handles legacy field aliases and the boolean / numeric status variants the
+ * API may return (true | false | 1 | 0 | "Active" | "Inactive").
+ */
+export function normalizeSubAdmin(item: Record<string, unknown>): SubAdminData {
+  const countryCode = String(item.countryCode ?? item.phoneCountryCode ?? "");
+  const rawNumber = String(item.contactNumber ?? item.phoneNumber ?? item.mobile ?? "");
+  const contactNumber = countryCode
+    ? `+${countryCode.replace(/^\+/, "")} ${rawNumber}`.trim()
+    : rawNumber;
+
+  const isActive =
+    item.status === true ||
+    item.status === 1 ||
+    item.status === "1" ||
+    item.status === "Active" ||
+    item.status === "true";
+
+  return {
+    id: String(item.id ?? ""),
+    userId: String(item.userId ?? item.id ?? ""),
+    userName: String(item.userName ?? item.name ?? ""),
+    email: String(item.email ?? ""),
+    contactNumber,
+    status: isActive ? "Active" : "Inactive",
+    createdAt: String(item.createdAt ?? item.created_at ?? ""),
+    permissions:
+      (item.permission as SubAdminData["permissions"]) ??
+      (item.permissions as SubAdminData["permissions"]) ??
+      [],
+  };
+}

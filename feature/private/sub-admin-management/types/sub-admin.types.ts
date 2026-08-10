@@ -59,6 +59,17 @@ export interface GetSubAdminsResponse {
   pagination: PaginationMeta;
 }
 
+export type UseGetSubAdminsArgs = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  fromDate?: Date | null;
+  toDate?: Date | null;
+  status?: string | null;
+  sortBy?: string | null;
+  sortOrder?: string | null;
+};
+
 // ─── PATCH: Update Sub Admin ───────────────────────────────────────────────
 
 export interface UpdateSubAdminPayload {
@@ -70,7 +81,7 @@ export interface UpdateSubAdminPayload {
 }
 
 export interface UpdateSubAdminStatusPayload {
-  status: string;
+  status: boolean;
 }
 
 export interface UpdateSubAdminResponse {

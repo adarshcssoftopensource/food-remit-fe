@@ -11,9 +11,7 @@ import { SubAdminDetailDialog } from "./sub-admin-detail-dialog";
 import { SubAdminDialog } from "./sub-admin-dialog";
 
 export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
-  const [isActive, setIsActive] = useState(
-    admin.status === "Active" || (admin.status as any) === 1 || (admin.status as any) === "1",
-  );
+  const [isActive, setIsActive] = useState(admin.status === "Active");
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 
@@ -26,7 +24,7 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
     setIsActive(checked);
 
     try {
-      const response = await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
+      const response = await updateStatus({ status: checked });
       successToast({
         title:
           response.message || `Sub Admin ${checked ? "activated" : "deactivated"} successfully`,

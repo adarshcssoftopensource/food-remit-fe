@@ -80,18 +80,12 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
 
               <Badge
                 className={`w-fit rounded-full border-0 px-5 py-2 text-sm font-semibold ${
-                  admin?.status === "Active" ||
-                  (admin?.status as any) === 1 ||
-                  (admin?.status as any) === "1"
+                  admin?.status === "Active"
                     ? "bg-emerald-500 text-white hover:bg-emerald-500"
                     : "bg-red-500 text-white hover:bg-red-500"
                 }`}
               >
-                {admin?.status === "Active" ||
-                (admin?.status as any) === 1 ||
-                (admin?.status as any) === "1"
-                  ? "Active"
-                  : "Inactive"}
+                {admin?.status === "Active" ? "Active" : "Inactive"}
               </Badge>
             </div>
           </DialogHeader>
