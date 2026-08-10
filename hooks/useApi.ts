@@ -1,6 +1,6 @@
-import type { UseQueryOptions, UseMutationOptions } from "@tanstack/react-query";
-import { useQuery, useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/lib/api/client";
+import type { UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 interface FetcherArgs<TBody = unknown> {
   method: "get" | "post" | "put" | "patch" | "delete";

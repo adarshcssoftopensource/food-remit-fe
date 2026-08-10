@@ -11,7 +11,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { successToast } from "./toaster";
 
-export function LogoutButton() {
+type LogoutButtonProps = {
+  showConfirmation?: boolean;
+};
+
+export function LogoutButton({ showConfirmation = false }: LogoutButtonProps) {
   const router = useRouter();
   const { mutateAsync, isPending } = useApiMutation("post", AUTH_ENDPOINTS.LOGOUT);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -33,7 +37,7 @@ export function LogoutButton() {
   return (
     <>
       <Button
-        onClick={() => setIsConfirmOpen(true)}
+        onClick={showConfirmation ? () => setIsConfirmOpen(true) : handleLogout}
         isLoading={isPending}
         className="flex justify-start text-start"
         variant={"ghost"}
@@ -44,18 +48,20 @@ export function LogoutButton() {
         Logout
       </Button>
 
-      <ConfirmationDialog
-        open={isConfirmOpen}
-        onOpenChange={setIsConfirmOpen}
-        title="Confirm Logout"
-        description="Are you sure you want to logout from this device? You will need to sign in again to access your account."
-        confirmLabel="Yes, Logout"
-        cancelLabel="Stay Logged In"
-        onConfirm={handleLogout}
-        isLoading={isPending}
-        variant="destructive"
-        icon={<LogOut className="h-5 w-5" />}
-      />
+      {showConfirmation && (
+        <ConfirmationDialog
+          open={isConfirmOpen}
+          onOpenChange={setIsConfirmOpen}
+          title="Confirm Logout"
+          description="Are you sure you want to logout from this device? You will need to sign in again to access your account."
+          confirmLabel="Yes, Logout"
+          cancelLabel="Stay Logged In"
+          onConfirm={handleLogout}
+          isLoading={isPending}
+          variant="destructive"
+          icon={<LogOut className="h-5 w-5" />}
+        />
+      )}
     </>
   );
 }

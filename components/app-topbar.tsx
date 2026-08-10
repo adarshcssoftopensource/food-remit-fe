@@ -8,23 +8,20 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import { useProfile } from "@/components/providers/profile-provider";
 import { ROUTES } from "@/config/routes";
+import { getInitials } from "@/lib/get-initials";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "./logout-button";
 
 export function AppTopBar() {
   const { profile } = useProfile();
+  const pathname = usePathname();
+
   const displayName = profile?.name || "Admin User";
+  const initials = getInitials(displayName);
+
   const displayRole = profile?.roleCode === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin";
 
-  const initials = displayName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-
-  const pathname = usePathname();
   const isProfilePage = pathname === ROUTES.ADMIN.PROFILE;
   const isSettingsPage = pathname === ROUTES.ADMIN.SETTINGS;
 
@@ -175,7 +172,7 @@ export function AppTopBar() {
                 Settings
               </Button>
             </Link>
-            <LogoutButton />
+            <LogoutButton showConfirmation />
           </PopoverContent>
         </Popover>
       </div>
