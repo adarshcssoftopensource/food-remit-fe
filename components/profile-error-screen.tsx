@@ -1,21 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { LogOut, RefreshCw, ShieldAlert } from "lucide-react";
+import { RefreshCw, ShieldAlert } from "lucide-react";
+import { LogoutButton } from "./logout-button";
 
 interface ProfileErrorScreenProps {
   errorMessage: string;
   onRetry: () => void;
-  onLogout: () => void;
-  isPendingLogout: boolean;
 }
 
-export function ProfileErrorScreen({
-  errorMessage,
-  onRetry,
-  onLogout,
-  isPendingLogout,
-}: ProfileErrorScreenProps) {
+export function ProfileErrorScreen({ errorMessage, onRetry }: ProfileErrorScreenProps) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-slate-50 px-4 py-8">
       <div className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-8 text-center">
@@ -39,15 +33,7 @@ export function ProfileErrorScreen({
             Try Again
           </Button>
 
-          <Button
-            variant="outline"
-            disabled={isPendingLogout}
-            onClick={onLogout}
-            className="flex h-11 items-center justify-center gap-2 rounded-xl font-semibold text-slate-600"
-          >
-            <LogOut className="h-4 w-4" />
-            {isPendingLogout ? "Logging out..." : "Log In Again"}
-          </Button>
+          <LogoutButton />
         </div>
       </div>
     </div>

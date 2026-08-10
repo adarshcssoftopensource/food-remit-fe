@@ -1,21 +1,16 @@
 "use client";
 
-import { ShieldAlert, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
+import { ShieldAlert } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { LogoutButton } from "./logout-button";
 
 interface AccessDeniedScreenProps {
   hasDashboardAccess: boolean;
-  onLogout: () => void;
-  isPendingLogout: boolean;
 }
 
-export function AccessDeniedScreen({
-  hasDashboardAccess,
-  onLogout,
-  isPendingLogout,
-}: AccessDeniedScreenProps) {
+export function AccessDeniedScreen({ hasDashboardAccess }: AccessDeniedScreenProps) {
   const router = useRouter();
 
   return (
@@ -48,25 +43,10 @@ export function AccessDeniedScreen({
               Go Back
             </Button>
 
-            <Button
-              variant="outline"
-              disabled={isPendingLogout}
-              onClick={onLogout}
-              className="flex h-11 items-center gap-2 rounded-xl px-6 font-semibold text-red-600 hover:bg-red-50 hover:text-red-700"
-            >
-              <LogOut className="h-4 w-4" />
-              {isPendingLogout ? "Logging out..." : "Logout"}
-            </Button>
+            <LogoutButton />
           </>
         ) : (
-          <Button
-            disabled={isPendingLogout}
-            onClick={onLogout}
-            className="flex h-11 items-center gap-2 rounded-xl bg-red-600 px-10 font-semibold text-white shadow-sm hover:bg-red-700"
-          >
-            <LogOut className="h-4 w-4" />
-            {isPendingLogout ? "Logging out..." : "Logout"}
-          </Button>
+          <LogoutButton />
         )}
       </div>
     </div>

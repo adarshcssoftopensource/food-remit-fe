@@ -22,13 +22,10 @@ export function useDonationLogs() {
 
   const stats = useMemo(
     () => ({
-      total: MOCK_DONATION_LOGS.length,
-      completed: MOCK_DONATION_LOGS.filter((l) => l.status === "Completed").length,
-      pending: MOCK_DONATION_LOGS.filter((l) => l.status === "Pending").length,
-      totalAmount: MOCK_DONATION_LOGS.filter((l) => l.status === "Completed").reduce(
-        (sum, l) => sum + l.amountDonated,
-        0,
-      ),
+      total: 0,
+      completed: 0,
+      pending: 0,
+      totalAmount: 0,
     }),
     [],
   );

@@ -8,18 +8,6 @@ const PUBLIC_PATHS = [
   ROUTES.AUTH.FORGOT_PASSWORD,
 ] as const;
 
-// const PRIVATE_PATH_PREFIXES = [
-//   ROUTES.ADMIN.DASHBOARD,
-//   ROUTES.ADMIN.USERS_MANAGEMENT,
-//   ROUTES.ADMIN.FOUNDATION_MANAGEMENT,
-//   ROUTES.ADMIN.DONATION_LOGS,
-//   ROUTES.ADMIN.PHILANTHROPIST_MANAGEMENT,
-//   ROUTES.ADMIN.PROFILE,
-//   ROUTES.ADMIN.STORIES.ADD,
-//   ROUTES.ADMIN.STORIES.LIST,
-//   ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT,
-// ] as const;
-
 function getRoutes(obj: Record<string, any>): string[] {
   return Object.values(obj).flatMap((value) =>
     typeof value === "string" ? [value] : getRoutes(value),

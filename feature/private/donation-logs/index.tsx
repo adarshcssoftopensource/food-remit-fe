@@ -68,7 +68,7 @@ export function DonationLogs() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={donationColumns} data={filteredData} searchKey="senderFirstName" />
+          <DataTable columns={donationColumns} data={[]} searchKey="senderFirstName" />
         </CardContent>
       </Card>
     </div>

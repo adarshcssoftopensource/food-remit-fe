@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Column,
   ColumnDef,
   ColumnFiltersState,
   SortingState,
@@ -15,7 +14,6 @@ import {
 import * as React from "react";
 
 import { NoDataFound } from "@/components/common/no-data-found";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -25,7 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowUpDown, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import { renderHeader } from "./data-table-column-header";
 import { DataTablePagination } from "./data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
@@ -41,30 +40,6 @@ interface DataTableProps<TData, TValue> {
   onPageChange?: (page: number) => void;
   onRowsPerPageChange?: (limit: number) => void;
   onSortingChange?: (sorting: SortingState) => void;
-}
-
-function renderHeader<TData, TValue>(
-  column: Column<TData, TValue>,
-  renderedHeader: React.ReactNode,
-) {
-  const headerLabel =
-    typeof column.columnDef.header === "string" ? column.columnDef.header : renderedHeader;
-
-  if (!column.getCanSort()) {
-    return renderedHeader;
-  }
-
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-8 px-0 font-semibold text-slate-700 hover:bg-transparent"
-      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    >
-      {headerLabel}
-      <ArrowUpDown className="ml-2 size-3.5 text-slate-400" />
-    </Button>
-  );
 }
 
 export function DataTable<TData, TValue>({

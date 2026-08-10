@@ -37,10 +37,8 @@ export function DataTablePagination<TData>({
   onPageChange,
   onRowsPerPageChange,
 }: DataTablePaginationProps<TData>) {
-  // Backend-driven mode
   const isBackendMode = currentPage !== undefined && totalPages !== undefined && onPageChange;
 
-  // Client-side mode (fallback)
   const pageIndex = table.getState().pagination.pageIndex;
   const pageCount = table.getPageCount();
 

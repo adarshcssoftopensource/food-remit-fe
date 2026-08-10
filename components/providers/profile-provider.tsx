@@ -7,10 +7,9 @@ import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";
 import { fetcher } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
-import { clearAuthSession } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
-import { usePathname, useRouter } from "next/navigation";
-import React, { createContext, useContext, useTransition } from "react";
+import { usePathname } from "next/navigation";
+import React, { createContext, useContext } from "react";
 
 export type ProfilePermissions = Record<string, number | null | undefined>;
 
@@ -33,9 +32,7 @@ interface ProfileContextType {
 const ProfileContext = createContext<ProfileContextType | null>(null);
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const pathname = usePathname();
-  const [isPendingLogout, startTransition] = useTransition();
 
   const {
     data: profileData,
@@ -55,14 +52,6 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     staleTime: 1000 * 60 * 5,
   });
 
-  const handleLogout = () => {
-    startTransition(() => {
-      clearAuthSession();
-      router.push(ROUTES.AUTH.LOGIN);
-      router.refresh();
-    });
-  };
-
   const isSuperAdmin =
     profileData?.roleCode === "SUPER_ADMIN" || profileData?.role === "super_admin";
 
@@ -81,8 +70,6 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       <ProfileErrorScreen
         errorMessage={error?.message || "There was an error retrieving your session profile."}
         onRetry={() => refetch()}
-        onLogout={handleLogout}
-        isPendingLogout={isPendingLogout}
       />
     );
   }
@@ -96,13 +83,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       isSuperAdmin,
     );
 
-    return (
-      <AccessDeniedScreen
-        hasDashboardAccess={hasDashboardAccess}
-        onLogout={handleLogout}
-        isPendingLogout={isPendingLogout}
-      />
-    );
+    return <AccessDeniedScreen hasDashboardAccess={hasDashboardAccess} />;
   }
 
   return (
