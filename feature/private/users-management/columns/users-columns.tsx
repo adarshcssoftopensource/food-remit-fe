@@ -1,9 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
+import Image from "next/image";
 import { ActionsCell } from "../components/actions-cell";
 import { UserData } from "../types/user.types";
 
-function UserStatusBadge({ status }: { status: UserData["status"] }) {
-  const isActive = status === "Active";
+function UserStatusBadge({ status }: { status: UserData["userStatus"] }) {
+  const isActive = status === "ACTIVE";
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -26,10 +27,20 @@ export const usersColumns: ColumnDef<UserData>[] = [
     enableSorting: true,
     cell: ({ row }) => (
       <div className="flex items-center gap-2.5">
-        <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
-          {row.original.firstName?.[0]}
-          {row.original.lastName?.[0]}
-        </div>
+        {row.original.profileImage ? (
+          <Image
+            src={row.original.profileImage}
+            alt={`${row.original.firstName} ${row.original.lastName}`}
+            className="h-8 w-8 shrink-0 rounded-full object-cover"
+            width={40}
+            height={40}
+          />
+        ) : (
+          <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+            {row.original.firstName?.[0]}
+            {row.original.lastName?.[0]}
+          </div>
+        )}
         <div>
           <p className="text-sm font-medium text-slate-800">
             {row.original.firstName} {row.original.lastName}
@@ -56,30 +67,24 @@ export const usersColumns: ColumnDef<UserData>[] = [
     cell: ({ row }) => <span className="pl-3 text-sm text-blue-600">{row.original.email}</span>,
   },
   {
-    accessorKey: "contactNumber",
+    accessorKey: "phoneNumber",
     header: "Contact",
     enableSorting: true,
-    cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.contactNumber}</span>,
+    cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.phoneNumber}</span>,
   },
   {
-    accessorKey: "country",
-    header: "Country",
-    enableSorting: true,
-    cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.country}</span>,
-  },
-  {
-    accessorKey: "registeredOn",
+    accessorKey: "createdAt",
     header: "Registered On",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="pl-3 text-xs text-slate-500">{row.original.registeredOn}</span>
+      <span className="pl-3 text-xs text-slate-500">{row.original.createdAt}</span>
     ),
   },
   {
-    accessorKey: "status",
+    accessorKey: "userStatus",
     header: "Status",
     enableSorting: true,
-    cell: ({ row }) => <UserStatusBadge status={row.original.status} />,
+    cell: ({ row }) => <UserStatusBadge status={row.original.userStatus} />,
   },
   {
     id: "actions",

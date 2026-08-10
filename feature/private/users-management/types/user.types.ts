@@ -5,13 +5,10 @@ export type UserData = {
   userName: string;
   userType: string;
   email: string;
-  contactNumber: string;
-  registeredOn: string;
-  country: string;
-  state: string;
-  city: string;
-  status: "Active" | "Inactive";
-  image?: string;
+  phoneNumber: string;
+  createdAt: string;
+  userStatus: "ACTIVE" | "INACTIVE";
+  profileImage?: string;
 };
 
 export interface UserStats {

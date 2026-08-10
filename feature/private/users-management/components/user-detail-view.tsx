@@ -10,6 +10,7 @@ import {
   MOCK_SENT_ORDERS,
   USER_MANAGEMENT_VIEW_TABS,
 } from "@/constants/users-management";
+import { useGetUserById } from "../hooks/use-get-user-by-id";
 import { UserData } from "../types/user.types";
 
 import {
@@ -23,6 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
+import { formatDateTime } from "@/lib/date";
+import Image from "next/image";
 
 type TabKey = "profile" | "requested" | "sent" | "received";
 
@@ -36,11 +39,43 @@ function InfoCard({ title, value }: { title: string; value?: string }) {
   );
 }
 
-export function UserDetailView({ user, id }: { user?: UserData; id: string }) {
+export function UserDetailView({ user: initialUser, id }: { user?: UserData; id: string }) {
   const router = useRouter();
-  console.log(id);
+  const { data: userData, isLoading } = useGetUserById(id);
+  const user = userData?.data || initialUser;
 
   const [tab, setTab] = useState<TabKey>("profile");
+
+  const infoCardArray = [
+    {
+      value: user?.firstName,
+      title: "First Name",
+    },
+    {
+      value: user?.lastName,
+      title: "Last Name",
+    },
+    {
+      value: user?.userName,
+      title: "Username",
+    },
+    {
+      value: user?.phoneNumber,
+      title: "Phone",
+    },
+    {
+      value: user?.userType,
+      title: "User Type",
+    },
+    {
+      value: user?.userStatus,
+      title: "Status",
+    },
+    {
+      value: formatDateTime(user?.createdAt),
+      title: "Registered On",
+    },
+  ];
 
   const orders = {
     requested: user ? (MOCK_REQUESTED_ORDERS[user.id] ?? []) : [],
@@ -62,6 +97,14 @@ export function UserDetailView({ user, id }: { user?: UserData; id: string }) {
       data: orders.received,
     },
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <p className="text-slate-500">Loading user details...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -96,9 +139,19 @@ export function UserDetailView({ user, id }: { user?: UserData; id: string }) {
           <TabsContent value="profile">
             <div className="overflow-hidden rounded-xl border">
               <div className="bg-primary/5 flex flex-col gap-4 border-b p-6 sm:flex-row sm:items-center">
-                <div className="ring-primary/10 flex h-24 w-24 items-center justify-center rounded-full bg-white shadow ring-4">
-                  <User className="text-primary h-12 w-12" />
-                </div>
+                {user?.profileImage ? (
+                  <Image
+                    src={user.profileImage}
+                    alt={`${user.firstName} ${user.lastName}`}
+                    className="ring-primary/10 h-24 w-24 shrink-0 rounded-full object-cover shadow ring-4"
+                    width={96}
+                    height={96}
+                  />
+                ) : (
+                  <div className="ring-primary/10 flex h-24 w-24 items-center justify-center rounded-full bg-white shadow ring-4">
+                    <User className="text-primary h-12 w-12" />
+                  </div>
+                )}
 
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">
@@ -110,15 +163,9 @@ export function UserDetailView({ user, id }: { user?: UserData; id: string }) {
               </div>
 
               <div className="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3">
-                <InfoCard title="User ID" value={user?.id} />
-                <InfoCard title="First Name" value={user?.firstName} />
-                <InfoCard title="Last Name" value={user?.lastName} />
-                <InfoCard title="Username" value={user?.userName} />
-                <InfoCard title="Phone" value={user?.contactNumber} />
-                <InfoCard title="Country" value={user?.country} />
-                <InfoCard title="State" value={user?.state} />
-                <InfoCard title="City" value={user?.city} />
-                <InfoCard title="Registered On" value={user?.registeredOn} />
+                {infoCardArray?.map((item, index) => (
+                  <InfoCard key={index} title={item?.title} value={item?.value} />
+                ))}
               </div>
             </div>
           </TabsContent>
