@@ -83,7 +83,7 @@ export function SiteHeader() {
             Sign In
           </Link>
           <Link
-            href="#join"
+            href={ROUTES.AUTH.BECOME_A_PARTNER}
             className={cn(
               buttonVariants(),
               "bg-primary hover:bg-primary/80 h-10 rounded-full px-5 text-white",
@@ -132,7 +132,7 @@ export function SiteHeader() {
               Sign In
             </Link>
             <Link
-              href="#join"
+              href={ROUTES.AUTH.BECOME_A_PARTNER}
               onClick={() => setOpen(false)}
               className={cn(
                 buttonVariants(),

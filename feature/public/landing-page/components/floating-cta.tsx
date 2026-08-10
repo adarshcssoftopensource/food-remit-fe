@@ -1,9 +1,11 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 export function FloatingCta() {
@@ -34,8 +36,8 @@ export function FloatingCta() {
         visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
       )}
     >
-      <a
-        href="#join"
+      <Link
+        href={ROUTES.AUTH.BECOME_A_PARTNER}
         className={cn(
           buttonVariants(),
           "h-12 rounded-full bg-[#166534] px-6 text-white shadow-lg shadow-green-900/20 hover:bg-[#14532d]",
@@ -43,8 +45,8 @@ export function FloatingCta() {
         )}
       >
         Become a Vendor Partner
-        <ArrowUpRight className="size-4" />
-      </a>
+        <ArrowUpRight className="ml-1 size-4" />
+      </Link>
     </div>
   );
 }

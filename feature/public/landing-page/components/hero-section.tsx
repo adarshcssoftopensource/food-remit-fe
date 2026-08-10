@@ -1,4 +1,5 @@
 import { buttonVariants } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
@@ -32,14 +33,14 @@ export function HeroSection() {
 
         <div className="vendor-fade-up vendor-delay-3 mt-8 flex flex-wrap gap-3">
           <Link
-            href="#join"
+            href={ROUTES.AUTH.BECOME_A_PARTNER}
             className={cn(
               buttonVariants(),
-              "bg-primary hover:bg-primary/80 h-12 rounded-full px-6 text-base text-white",
+              "h-12 rounded-full bg-emerald-600 px-6 text-base font-semibold text-white shadow-lg hover:bg-emerald-700",
             )}
           >
             Register Your Store
-            <ArrowRight className="size-4" />
+            <ArrowRight className="ml-2 size-4" />
           </Link>
         </div>
       </div>

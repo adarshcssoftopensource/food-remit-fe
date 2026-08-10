@@ -4,6 +4,7 @@ export const ROUTES = {
     LOGIN: "/login",
     FORGOT_PASSWORD: "/forgot-password",
     CHANGE_PASSWORD: "/change-password",
+    BECOME_A_PARTNER: "/become-a-partner",
   },
   ADMIN: {
     DASHBOARD: "/dashboard",
