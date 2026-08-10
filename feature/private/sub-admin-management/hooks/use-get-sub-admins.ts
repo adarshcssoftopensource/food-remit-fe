@@ -74,7 +74,9 @@ export function useGetSubAdmins(args: UseGetSubAdminsArgs = {}) {
             contactNumber: contactNumber || "",
             address: String(address || ""),
             status:
-              item.status === 1 || item.status === "1" || item.status === "Active"
+              item.status === 1 ||
+              item.status === "1" ||
+              String(item.status).toUpperCase() === "ACTIVE"
                 ? "Active"
                 : "Inactive",
             createdAt: item.createdAt ?? item.created_at ?? "",

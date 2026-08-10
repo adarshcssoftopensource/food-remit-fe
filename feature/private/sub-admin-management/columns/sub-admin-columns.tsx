@@ -3,7 +3,7 @@ import { SubAdminActionsCell } from "../components/actions-cell";
 import { SubAdminData } from "../types/sub-admin.types";
 
 function StatusBadge({ status }: { status: SubAdminData["status"] | number | string }) {
-  const isActive = status === "ACTIVE" || status === 1 || status === "1" || status === "active";
+  const isActive = status === 1 || status === "1" || String(status).toUpperCase() === "ACTIVE";
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
