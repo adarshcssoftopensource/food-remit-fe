@@ -70,7 +70,7 @@ export interface UpdateSubAdminPayload {
 }
 
 export interface UpdateSubAdminStatusPayload {
-  status: 0 | 1;
+  status: string;
 }
 
 export interface UpdateSubAdminResponse {
