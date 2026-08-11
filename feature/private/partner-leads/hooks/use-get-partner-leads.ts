@@ -6,6 +6,7 @@ import { PartnerLeadData } from "../types/partner-lead.types";
 interface RawGetPartnerLeadsResponse {
   message: string;
   data: PartnerLeadData[];
+  stats?: Record<string, number>;
   pagination?: {
     page: number;
     limit: number;
@@ -25,17 +26,18 @@ export function usePartnerLeads(
     [...API_CACHE_KEYS.PARTNER_LEADS_LIST, search, sortBy, sortOrder, page, limit].filter(
       Boolean,
     ) as string[],
-    PARTNER_LEAD_ENDPOINTS.GET_LEADS(search, sortBy, sortOrder ?? "asc", page ?? 1, limit ?? 10),
+    PARTNER_LEAD_ENDPOINTS.GET_LEADS(search, sortBy, sortOrder ?? "desc", page ?? 1, limit ?? 10),
   );
   const leads = response?.data;
   const pagination = response?.pagination;
+  const apiStats = response?.stats;
 
   const leadsArray = leads || [];
   const stats = {
-    total: pagination?.total ?? leadsArray.length,
-    new: leadsArray.filter((l) => l.status === "NEW").length,
-    contacted: leadsArray.filter((l) => l.status === "CONTACTED").length,
-    approved: leadsArray.filter((l) => l.status === "APPROVED").length,
+    total: apiStats?.total ?? pagination?.total ?? leadsArray.length,
+    new: apiStats?.NEW ?? leadsArray.filter((l) => l.status === "NEW").length,
+    contacted: apiStats?.CONTACTED ?? leadsArray.filter((l) => l.status === "CONTACTED").length,
+    approved: apiStats?.APPROVED ?? leadsArray.filter((l) => l.status === "APPROVED").length,
   };
 
   return {
