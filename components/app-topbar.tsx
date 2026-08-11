@@ -104,14 +104,6 @@ export function AppTopBar() {
               <span className="max-w-32 truncate text-sm leading-none font-semibold">
                 {displayName}
               </span>
-              <span
-                className={cn(
-                  "text-muted-foreground mt-1 text-[11px]",
-                  isProfilePage || isSettingsPage ? "text-white" : "",
-                )}
-              >
-                {displayRole}
-              </span>
             </div>
 
             <ChevronDown
