@@ -20,7 +20,6 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
   );
 
   const handleStatusToggle = async (checked: boolean) => {
-    // Optimistic update — flip immediately
     setIsActive(checked);
 
     try {
@@ -30,7 +29,6 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
           response.message || `Sub Admin ${checked ? "activated" : "deactivated"} successfully`,
       });
     } catch {
-      // Roll back on error
       setIsActive(!checked);
     }
   };

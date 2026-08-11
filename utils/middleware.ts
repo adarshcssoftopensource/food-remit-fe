@@ -6,6 +6,7 @@ const PUBLIC_PATHS = [
   ROUTES.AUTH.LOGIN,
   ROUTES.AUTH.CHANGE_PASSWORD,
   ROUTES.AUTH.FORGOT_PASSWORD,
+  ROUTES.AUTH.BECOME_A_PARTNER,
 ] as const;
 
 function getRoutes(obj: Record<string, any>): string[] {
