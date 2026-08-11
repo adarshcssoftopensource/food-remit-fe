@@ -36,6 +36,12 @@ export const navigationItems = [
     icon: User,
   },
   {
+    title: "Partner Leads CRM",
+    url: ROUTES.ADMIN.PARTNER_LEADS,
+    icon: Building,
+    isNewFeature: true,
+  },
+  {
     title: "Foundation And Charities Management",
     url: ROUTES.ADMIN.FOUNDATION_MANAGEMENT,
     icon: Building,
