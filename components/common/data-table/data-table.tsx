@@ -40,6 +40,8 @@ interface DataTableProps<TData, TValue> {
   onPageChange?: (page: number) => void;
   onRowsPerPageChange?: (limit: number) => void;
   onSortingChange?: (sorting: SortingState) => void;
+  manualSorting?: boolean;
+  manualFiltering?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -55,6 +57,8 @@ export function DataTable<TData, TValue>({
   onPageChange,
   onRowsPerPageChange,
   onSortingChange,
+  manualSorting = false,
+  manualFiltering = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -79,6 +83,8 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    manualSorting,
+    manualFiltering,
     state: {
       sorting,
       columnFilters,

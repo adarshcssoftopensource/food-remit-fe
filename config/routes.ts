@@ -9,6 +9,7 @@ export const ROUTES = {
   ADMIN: {
     DASHBOARD: "/dashboard",
     USERS_MANAGEMENT: "/users-management",
+    PARTNER_LEADS: "/partner-leads",
     FOUNDATION_MANAGEMENT: "/foundation-management",
     PHILANTHROPIST_MANAGEMENT: "/philanthropist-management",
     SUB_ADMIN_MANAGEMENT: "/sub-admin-management",

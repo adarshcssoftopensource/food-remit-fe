@@ -244,6 +244,7 @@ export function AppSidebar() {
                           : "text-foreground/70 hover:bg-primary/5 hover:text-foreground",
                         isCollapsed && "px-2",
                         !isCollapsed && item.isComingSoon && active && "h-16 items-end pb-2.5",
+                        !isCollapsed && item.isNewFeature && active && "h-16 items-end pb-2.5",
                       )}
                     >
                       <item.icon
@@ -261,6 +262,14 @@ export function AppSidebar() {
                           label="This page is coming soon"
                           showIcon
                           className="absolute top-1.5 left-1/2 -translate-x-1/2 border-violet-200 bg-linear-to-r from-violet-50 to-fuchsia-50 font-bold text-red-700 shadow-sm dark:border-violet-500/30 dark:from-violet-500/15 dark:to-fuchsia-500/10 dark:text-violet-200"
+                        />
+                      )}
+                      {!isCollapsed && item.isNewFeature && active && (
+                        <ComingSoonBadge
+                          size="compact"
+                          label="New Feature"
+                          showIcon
+                          className="absolute top-1.5 left-1/2 -translate-x-1/2 border-emerald-200 bg-linear-to-r from-emerald-50 to-teal-50 font-bold text-emerald-700 shadow-sm dark:border-emerald-500/30 dark:from-emerald-500/15 dark:to-teal-500/10 dark:text-emerald-200"
                         />
                       )}
                     </Link>
