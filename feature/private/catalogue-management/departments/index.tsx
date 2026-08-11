@@ -1,6 +1,6 @@
 "use client";
 
-import { Filter, Plus, RotateCcw } from "lucide-react";
+import { Building2, Filter, Plus, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import {
@@ -113,93 +113,157 @@ export function DepartmentsManagement() {
         ))}
       </div>
 
-      <Card className="rounded-xl border bg-white shadow-sm">
-        <CardHeader className="border-b py-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
-              <Filter className="text-primary h-4 w-4" />
+      <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
+        <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
+
+        <CardHeader className="border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 text-primary ring-primary/10 flex h-10 w-10 items-center justify-center rounded-xl ring-1">
+                <Filter className="h-4.5 w-4.5" />
+              </div>
+
+              <div>
+                <CardTitle className="text-base font-bold tracking-tight text-slate-900 sm:text-lg dark:text-white">
+                  Filter Departments
+                </CardTitle>
+
+                <p className="mt-0.5 text-xs font-medium text-slate-400 dark:text-slate-500">
+                  Narrow departments by date, country and status
+                </p>
+              </div>
             </div>
-            <CardTitle className="text-lg font-semibold">Filter Departments</CardTitle>
+
+            {hasFilters && (
+              <div className="border-primary/15 bg-primary/5 hidden items-center gap-2 rounded-full border px-3 py-1.5 sm:flex">
+                <span className="bg-primary h-1.5 w-1.5 rounded-full" />
+
+                <span className="text-primary text-[11px] font-semibold">Filters applied</span>
+              </div>
+            )}
           </div>
         </CardHeader>
 
-        <CardContent className="p-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end lg:flex-nowrap">
-            <DateRangeFilter
-              fromDate={fromDate}
-              toDate={toDate}
-              onFromDateChange={setFromDate}
-              onToDateChange={setToDate}
-              wrapperClassName="flex flex-col sm:flex-row flex-1 gap-3"
-              itemClassName="flex-1 space-y-1 min-w-0"
-              pickerClassName="h-10 w-full"
-              labelClassName="text-muted-foreground text-xs font-medium uppercase"
-            />
+        <CardContent className="p-4 sm:p-5">
+          <div className="rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-900/40">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+              <div className="min-w-0 flex-1 lg:min-w-70">
+                <DateRangeFilter
+                  fromDate={fromDate}
+                  toDate={toDate}
+                  onFromDateChange={setFromDate}
+                  onToDateChange={setToDate}
+                  wrapperClassName="flex flex-col sm:flex-row gap-3"
+                  itemClassName="flex-1 min-w-0 space-y-1.5"
+                  pickerClassName="h-10 w-full rounded-lg border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                  labelClassName="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                />
+              </div>
 
-            <div className="min-w-0 flex-1 sm:min-w-40">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">Country</Label>
-              <Select value={country} onValueChange={(v) => setCountry(v ?? "all")}>
-                <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {CATALOGUE_COUNTRY_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <div className="w-full lg:w-47.5">
+                <Label className="mb-1.5 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                  Country
+                </Label>
+
+                <Select value={country} onValueChange={(v) => setCountry(v ?? "all")}>
+                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      {CATALOGUE_COUNTRY_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="w-full lg:w-45">
+                <Label className="mb-1.5 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                  Status
+                </Label>
+
+                <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
+                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      {CATALOGUE_STATUS_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button
+                variant="outline"
+                onClick={clearFilters}
+                disabled={!hasFilters}
+                className="h-10 w-full shrink-0 rounded-lg border-slate-200 bg-white px-4 font-semibold text-slate-600 shadow-none hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 lg:w-auto dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
+              >
+                <RotateCcw className="mr-2 h-3.5 w-3.5" />
+                Reset
+              </Button>
             </div>
-
-            <div className="min-w-0 flex-1 sm:min-w-40">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">Status</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
-                <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {CATALOGUE_STATUS_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button
-              variant="destructive"
-              onClick={clearFilters}
-              disabled={!hasFilters}
-              className="h-10 w-full shrink-0 px-5 sm:w-auto"
-            >
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Reset
-            </Button>
           </div>
         </CardContent>
       </Card>
+      <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
+        <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
 
-      <Card className="rounded-xl shadow-sm">
-        <CardHeader className="border-b px-6 py-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl font-bold">Departments</CardTitle>
+        <CardHeader className="border-b border-slate-100 px-5 py-5 sm:px-6 dark:border-slate-800">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3.5">
+              <div className="bg-primary/10 text-primary ring-primary/10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1">
+                <Building2 className="h-5.25 w-5.25" />
+              </div>
 
-              <p className="text-muted-foreground mt-1 text-sm">
-                View, search, and manage all departments.
-              </p>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <CardTitle className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
+                    Departments
+                  </CardTitle>
+
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:bg-slate-800 dark:text-slate-400">
+                    Directory
+                  </span>
+                </div>
+
+                <p className="mt-1 text-xs font-medium text-slate-400 sm:text-sm dark:text-slate-500">
+                  View, search, and manage all departments
+                </p>
+              </div>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="p-6">
-          <DataTable columns={columns} data={filteredData} searchKey="name" />
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-5 dark:border-slate-800 dark:bg-slate-900/30">
+            <div className="flex items-center gap-2">
+              <span className="bg-primary h-1.5 w-1.5 rounded-full" />
+
+              <span className="text-[10px] font-bold tracking-[0.14em] text-slate-400 uppercase">
+                Department Directory
+              </span>
+            </div>
+
+            <span className="hidden text-[11px] font-medium text-slate-400 sm:block">
+              Search & manage departments
+            </span>
+          </div>
+
+          <div className="px-3 pt-2 pb-4 sm:px-4">
+            <DataTable columns={columns} data={filteredData} searchKey="name" />
+          </div>
         </CardContent>
       </Card>
 

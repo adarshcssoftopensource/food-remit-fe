@@ -58,7 +58,7 @@ export function CategoryFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md rounded-2xl p-0 shadow-xl">
-        <DialogHeader className="bg-muted/20 border-b px-6 py-5">
+        <DialogHeader className="bg-muted/20 rounded-2xl border-b px-6 py-5">
           <div className="flex items-center gap-3">
             <div className="bg-primary/10 flex h-11 w-11 items-center justify-center rounded-xl">
               <FolderTree className="text-primary h-5 w-5" />
@@ -79,7 +79,7 @@ export function CategoryFormDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6">
+          <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl px-6 py-6">
             <FormField
               control={form.control}
               name="country"

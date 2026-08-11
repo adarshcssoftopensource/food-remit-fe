@@ -1,6 +1,6 @@
 "use client";
 
-import { Filter, Plus, RotateCcw } from "lucide-react";
+import { Filter, Package, Plus, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import {
@@ -113,7 +113,6 @@ export function ItemsManagement() {
         }
       />
 
-      {/* Stat Cards */}
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {ITEM_STAT_CONFIG.map(({ key, label, Icon, color, bg }) => (
           <MetricStatCard
@@ -129,137 +128,219 @@ export function ItemsManagement() {
         ))}
       </div>
 
-      {/* Filter Card */}
-      <Card className="rounded-xl border bg-white shadow-sm">
-        <CardHeader className="border-b py-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
-              <Filter className="text-primary h-4 w-4" />
+      <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
+        <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
+
+        <CardHeader className="border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 text-primary ring-primary/10 flex h-10 w-10 items-center justify-center rounded-xl ring-1">
+                <Filter className="h-4.5 w-4.5" />
+              </div>
+
+              <div>
+                <CardTitle className="text-base font-bold tracking-tight text-slate-900 sm:text-lg dark:text-white">
+                  Filter Items
+                </CardTitle>
+
+                <p className="mt-0.5 text-xs font-medium text-slate-400 dark:text-slate-500">
+                  Refine items by date, department, category, country and status
+                </p>
+              </div>
             </div>
-            <CardTitle className="text-lg font-semibold">Filter Items</CardTitle>
+
+            {hasFilters && (
+              <div className="border-primary/15 bg-primary/5 hidden items-center gap-2 rounded-full border px-3 py-1.5 sm:flex">
+                <span className="bg-primary h-1.5 w-1.5 rounded-full" />
+
+                <span className="text-primary text-[11px] font-semibold">Filters applied</span>
+              </div>
+            )}
           </div>
         </CardHeader>
 
-        <CardContent className="p-5">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <DateRangeFilter
-              fromDate={fromDate}
-              toDate={toDate}
-              onFromDateChange={setFromDate}
-              onToDateChange={setToDate}
-              wrapperClassName="contents"
-              itemClassName="space-y-1 min-w-0"
-              pickerClassName="h-10 w-full"
-              labelClassName="text-muted-foreground text-xs font-medium uppercase"
-            />
+        <CardContent className="p-4 sm:p-5">
+          <div className="rounded-xl border border-slate-200/70 bg-slate-50/60 p-3.5 sm:p-4 dark:border-slate-800 dark:bg-slate-900/40">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="sm:col-span-2">
+                <DateRangeFilter
+                  fromDate={fromDate}
+                  toDate={toDate}
+                  onFromDateChange={setFromDate}
+                  onToDateChange={setToDate}
+                  wrapperClassName="flex flex-col sm:flex-row gap-3"
+                  itemClassName="flex-1 min-w-0 space-y-1.5"
+                  pickerClassName="h-10 w-full rounded-lg border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                  labelClassName="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                />
+              </div>
 
-            {/* Department */}
-            <div className="space-y-1">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">
-                Department
-              </Label>
-              <Select value={department} onValueChange={(v) => setDepartment(v ?? "all")}>
-                <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {CATALOGUE_DEPARTMENT_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                  Department
+                </Label>
 
-            {/* Category */}
-            <div className="space-y-1">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">
-                Category
-              </Label>
-              <Select value={category} onValueChange={(v) => setCategory(v ?? "all")}>
-                <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {CATALOGUE_CATEGORY_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+                <Select value={department} onValueChange={(v) => setDepartment(v ?? "all")}>
+                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
+                    <SelectValue />
+                  </SelectTrigger>
 
-            {/* Country */}
-            <div className="space-y-1">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">Country</Label>
-              <Select value={country} onValueChange={(v) => setCountry(v ?? "all")}>
-                <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {CATALOGUE_COUNTRY_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+                  <SelectContent>
+                    <SelectGroup>
+                      {CATALOGUE_DEPARTMENT_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Status */}
-            <div className="space-y-1">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">Status</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
-                <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {CATALOGUE_STATUS_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                  Category
+                </Label>
 
-            {/* Reset */}
-            <div className="flex items-end">
-              <Button
-                variant="destructive"
-                onClick={clearFilters}
-                disabled={!hasFilters}
-                className="h-10 w-full rounded-lg"
-              >
-                <RotateCcw className="mr-2 h-4 w-4" />
-                Reset Filters
-              </Button>
+                <Select value={category} onValueChange={(v) => setCategory(v ?? "all")}>
+                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      {CATALOGUE_CATEGORY_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                  Country
+                </Label>
+
+                <Select value={country} onValueChange={(v) => setCountry(v ?? "all")}>
+                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      {CATALOGUE_COUNTRY_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                  Status
+                </Label>
+
+                <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
+                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      {CATALOGUE_STATUS_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-end sm:col-span-2 lg:col-span-4">
+                <Button
+                  variant="outline"
+                  onClick={clearFilters}
+                  disabled={!hasFilters}
+                  className="h-10 w-full rounded-lg border-slate-200 bg-white font-semibold text-slate-600 shadow-none transition-colors hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
+                >
+                  <RotateCcw className="mr-2 h-3.5 w-3.5" />
+                  Reset Filters
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
+      <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
+        <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
 
-      <Card className="rounded-xl shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b py-2">
-          <div>
-            <CardTitle className="text-xl font-semibold">All Items</CardTitle>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {filteredData.length} item{filteredData.length !== 1 ? "s" : ""} found
-            </p>
+        <CardHeader className="border-b border-slate-100 px-5 py-5 sm:px-6 dark:border-slate-800">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3.5">
+              <div className="bg-primary/10 text-primary ring-primary/10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1">
+                <Package className="h-5.25 w-5.25" />
+              </div>
+
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <CardTitle className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
+                    All Items
+                  </CardTitle>
+
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:bg-slate-800 dark:text-slate-400">
+                    Catalogue
+                  </span>
+                </div>
+
+                <p className="mt-1 text-xs font-medium text-slate-400 sm:text-sm dark:text-slate-500">
+                  Browse, search, and manage all catalogue items
+                </p>
+              </div>
+            </div>
+
+            <div className="flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-white shadow-sm dark:bg-slate-800">
+                <Package className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+              </div>
+
+              <div className="leading-none">
+                <p className="text-[9px] font-bold tracking-wider text-slate-400 uppercase">
+                  Results
+                </p>
+
+                <p className="mt-1 text-sm font-bold text-slate-800 dark:text-slate-200">
+                  {filteredData.length}
+                </p>
+              </div>
+            </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6">
-          <DataTable columns={columns} data={filteredData} searchKey="name" />
+
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-5 dark:border-slate-800 dark:bg-slate-900/30">
+            <div className="flex items-center gap-2">
+              <span className="bg-primary h-1.5 w-1.5 rounded-full" />
+
+              <span className="text-[10px] font-bold tracking-[0.14em] text-slate-400 uppercase">
+                Item Directory
+              </span>
+            </div>
+
+            <span className="hidden text-[11px] font-medium text-slate-400 sm:block">
+              Search & manage items
+            </span>
+          </div>
+
+          <div className="px-3 pt-2 pb-4 sm:px-4">
+            <DataTable columns={columns} data={filteredData} searchKey="name" />
+          </div>
         </CardContent>
       </Card>
 

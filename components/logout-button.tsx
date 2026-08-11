@@ -6,6 +6,7 @@ import { ROUTES } from "@/config/routes";
 import { useApiMutation } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
 import { clearAuthSession } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -39,11 +40,16 @@ export function LogoutButton({ showConfirmation = false }: LogoutButtonProps) {
       <Button
         onClick={showConfirmation ? () => setIsConfirmOpen(true) : handleLogout}
         isLoading={isPending}
-        className="flex justify-start text-start"
-        variant={"ghost"}
+        className={`flex justify-start text-start ${!showConfirmation ? "flex w-full justify-center text-center" : ""}`}
+        variant={showConfirmation ? "ghost" : "default"}
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
-          <LogOut className="h-4 w-4 text-red-500" />
+        <div
+          className={cn(
+            "",
+            showConfirmation && "flex h-8 w-8 items-center justify-center rounded-lg bg-red-100",
+          )}
+        >
+          <LogOut className={cn("", showConfirmation && "h-4 w-4 text-red-500")} />
         </div>
         Logout
       </Button>
