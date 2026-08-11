@@ -674,7 +674,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         id="additionalNotes"
                         placeholder="Tell us about your business goals..."
                         rows={3}
-                        className="min-h-24 rounded-xl border-slate-200 bg-white pt-3 pl-9 text-sm"
+                        className="min-h-16 rounded-xl border-slate-200 bg-white pl-9 text-sm"
                       />
                     </div>
                   </div>
@@ -755,7 +755,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
           </div>
         )}
 
-        <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-5">
+        <div className="flex items-center justify-between border-t border-slate-100 pt-5">
           {currentStep > 1 ? (
             <Button
               type="button"
@@ -791,7 +791,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         </div>
       </form>
 
-      <div className="mt-6 text-center text-xs font-medium text-slate-500">
+      <div className="mt-3 text-center text-xs font-medium text-slate-500">
         Already started your registration?{" "}
         <Link
           href={ROUTES.AUTH.LOGIN}
