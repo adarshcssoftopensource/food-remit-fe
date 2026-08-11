@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MessageSquarePlus } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useUpdateLeadStatus } from "../hooks/use-update-lead-status";
 import { updateLeadStatusSchema, UpdateLeadStatusValues } from "../schema/update-status.schema";
 import { getStatusColor } from "@/constants/partner.leads";
@@ -36,7 +36,6 @@ export function UpdateStatusDialog({
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isValid },
   } = useForm<UpdateLeadStatusValues>({
     resolver: zodResolver(updateLeadStatusSchema),
@@ -44,7 +43,10 @@ export function UpdateStatusDialog({
     mode: "onChange",
   });
 
-  const watchStatus = watch("status");
+  const watchStatus = useWatch({
+    control,
+    name: "status",
+  });
 
   const onSubmit = async (data: UpdateLeadStatusValues) => {
     await updateLeadStatus(leadId, data.status, data.remark);
