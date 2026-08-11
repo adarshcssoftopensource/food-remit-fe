@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
+import { CountrySelect } from "@/components/common/country-select";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,7 +36,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { ROUTES } from "@/config/routes";
 import {
   BUSINESS_TYPES,
-  COUNTRY_OPTIONS,
   INVENTORY_MANAGEMENT_OPTIONS,
   NUMBER_OF_LOCATIONS_OPTIONS,
   STEPS,
@@ -366,24 +366,12 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     <FieldLabel htmlFor="country" className="text-xs font-semibold text-slate-700">
                       Country <span className="text-red-500">*</span>
                     </FieldLabel>
-                    <Select value={field.value} onValueChange={(val) => field.onChange(val ?? "")}>
-                      <SelectTrigger
-                        id="country"
-                        className={cn(
-                          "h-11! w-full rounded-xl border-slate-200 bg-white text-sm",
-                          errors.country && "border-red-400 bg-red-50/30",
-                        )}
-                      >
-                        <SelectValue placeholder="Select country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {COUNTRY_OPTIONS.map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <CountrySelect
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      id="country"
+                      invalid={Boolean(errors.country)}
+                    />
                     {errors.country && (
                       <p className="text-xs font-medium text-red-500">{errors.country.message}</p>
                     )}
@@ -543,8 +531,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
         {/* STEP 3: Tell Us About Your Business */}
         {currentStep === 3 && (
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+          <div className="flex flex-col gap-5">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
               <Store className="size-4 text-emerald-600" />
               <div>
                 <h2 className="text-sm font-bold text-slate-900">
@@ -556,7 +544,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-5">
               <Controller
                 name="workPreferences"
                 control={control}
@@ -570,31 +558,31 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     }
                   };
                   return (
-                    <div className="flex flex-col gap-1.5">
-                      <FieldLabel className="text-xs font-semibold text-slate-700">
+                    <div className="flex flex-col gap-2.5">
+                      <FieldLabel className="text-sm font-semibold text-slate-800">
                         How would you like to work with Food Remit?{" "}
                         <span className="font-normal text-slate-400">(Select all that apply)</span>
                       </FieldLabel>
 
-                      <div className="grid gap-1.5 sm:grid-cols-3">
+                      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                         {WORK_PREFERENCES_OPTIONS.map((opt) => {
                           const isChecked = values.includes(opt);
                           return (
                             <label
                               key={opt}
                               className={cn(
-                                "flex cursor-pointer items-center gap-2 rounded-lg border px-2.5 py-1.5 transition-all",
+                                "flex min-h-16 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 shadow-sm transition-all",
                                 isChecked
-                                  ? "border-emerald-500 bg-emerald-50/50 font-medium text-emerald-950"
-                                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300",
+                                  ? "border-emerald-500 bg-emerald-50 font-medium text-emerald-950 shadow-emerald-100"
+                                  : "border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30",
                               )}
                             >
                               <Checkbox
                                 checked={isChecked}
                                 onCheckedChange={() => toggleValue(opt)}
-                                className="size-3.5 rounded"
+                                className="size-4 rounded"
                               />
-                              <span className="text-[11px] leading-tight font-medium">{opt}</span>
+                              <span className="text-xs leading-5 font-medium">{opt}</span>
                             </label>
                           );
                         })}
@@ -604,15 +592,15 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 }}
               />
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Controller
                   name="inventoryManagement"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1.5">
                       <FieldLabel
                         htmlFor="inventoryManagement"
-                        className="text-xs font-semibold text-slate-700"
+                        className="text-sm font-semibold text-slate-800"
                       >
                         Inventory Management{" "}
                         <span className="font-normal text-slate-400">(Optional)</span>
@@ -623,7 +611,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       >
                         <SelectTrigger
                           id="inventoryManagement"
-                          className="h-10! w-full rounded-lg border-slate-200 bg-white text-xs"
+                          className="h-11! w-full rounded-xl border-slate-200 bg-white text-sm"
                         >
                           <SelectValue placeholder="Select inventory method" />
                         </SelectTrigger>
@@ -643,10 +631,10 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name="websiteOrSocial"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1.5">
                       <FieldLabel
                         htmlFor="websiteOrSocial"
-                        className="text-xs font-semibold text-slate-700"
+                        className="text-sm font-semibold text-slate-800"
                       >
                         Website or Social Page{" "}
                         <span className="font-normal text-slate-400">(Optional)</span>
@@ -657,7 +645,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           {...field}
                           id="websiteOrSocial"
                           placeholder="https://yourbusiness.com"
-                          className="h-10 rounded-lg border-slate-200 bg-white pl-9 text-xs"
+                          className="h-11 rounded-xl border-slate-200 bg-white pl-9 text-sm"
                         />
                       </div>
                     </div>
@@ -669,10 +657,10 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 name="additionalNotes"
                 control={control}
                 render={({ field }) => (
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1.5">
                     <FieldLabel
                       htmlFor="additionalNotes"
-                      className="text-xs font-semibold text-slate-700"
+                      className="text-sm font-semibold text-slate-800"
                     >
                       Anything else to know?{" "}
                       <span className="font-normal text-slate-400">(Optional)</span>
@@ -683,8 +671,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         {...field}
                         id="additionalNotes"
                         placeholder="Tell us about your business goals..."
-                        rows={2}
-                        className="min-h-12.5 rounded-lg border-slate-200 bg-white pl-9 text-xs"
+                        rows={3}
+                        className="min-h-24 rounded-xl border-slate-200 bg-white pt-3 pl-9 text-sm"
                       />
                     </div>
                   </div>
