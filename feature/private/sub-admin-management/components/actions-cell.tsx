@@ -23,7 +23,7 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
     setIsActive(checked);
 
     try {
-      const response = await updateStatus({ status: checked });
+      const response = await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
       successToast({
         title:
           response.message || `Sub Admin ${checked ? "activated" : "deactivated"} successfully`,

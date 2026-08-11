@@ -81,7 +81,7 @@ export interface UpdateSubAdminPayload {
 }
 
 export interface UpdateSubAdminStatusPayload {
-  status: boolean;
+  status: "ACTIVE" | "INACTIVE" | "PENDING" | "DENIED";
 }
 
 export interface UpdateSubAdminResponse {

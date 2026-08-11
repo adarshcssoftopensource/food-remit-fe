@@ -17,6 +17,7 @@ export function normalizeSubAdmin(item: Record<string, unknown>): SubAdminData {
     item.status === 1 ||
     item.status === "1" ||
     item.status === "Active" ||
+    item.status === "ACTIVE" ||
     item.status === "true";
 
   return {
