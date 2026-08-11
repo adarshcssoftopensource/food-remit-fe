@@ -9,10 +9,12 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            retry: 1,
+            // Show the error from the first failed request; do not issue an automatic retry.
+            retry: false,
           },
           mutations: {
-            retry: 1,
+            // Mutations must never be re-submitted automatically after an error.
+            retry: false,
           },
         },
       }),

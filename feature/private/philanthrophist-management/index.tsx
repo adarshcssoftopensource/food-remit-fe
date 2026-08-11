@@ -1,5 +1,6 @@
 "use client";
 
+import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +15,7 @@ export default function PhilanthrophistManagement() {
       <PageHeader
         title="Individual Philanthrophist Management"
         description="Manage and monitor all active philanthropists on the platform."
+        badge={<ComingSoonBadge />}
       />
       <Card className="overflow-hidden rounded-xl">
         <PhilanthrophistFilters

@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/common/page-header";
+import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -32,6 +33,7 @@ export default function StoriesManagement() {
       <PageHeader
         title="Stories Management"
         description="Review, manage, and create platform stories."
+        badge={<ComingSoonBadge />}
         action={
           <Button onClick={() => router.push(ROUTES.ADMIN.STORIES.ADD)}>
             <Plus /> Add Story

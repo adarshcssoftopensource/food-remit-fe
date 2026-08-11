@@ -4,11 +4,12 @@ import { ReactNode } from "react";
 type PageHeaderProps = {
   title: string;
   description?: string;
+  badge?: ReactNode;
   action?: ReactNode;
   className?: string;
 };
 
-export function PageHeader({ title, description, action, className }: PageHeaderProps) {
+export function PageHeader({ title, description, badge, action, className }: PageHeaderProps) {
   return (
     <div
       className={cn(
@@ -17,7 +18,10 @@ export function PageHeader({ title, description, action, className }: PageHeader
       )}
     >
       <div className="space-y-1">
-        <h1 className="text-foreground text-3xl font-bold tracking-tight">{title}</h1>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <h1 className="text-foreground text-3xl font-bold tracking-tight">{title}</h1>
+          {badge}
+        </div>
         {description && <p className="text-muted-foreground max-w-2xl text-sm">{description}</p>}
       </div>
 

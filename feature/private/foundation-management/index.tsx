@@ -1,5 +1,6 @@
 "use client";
 
+import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 import { PageHeader } from "@/components/common/page-header";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 
@@ -32,6 +33,7 @@ export default function FoundationManagement() {
       <PageHeader
         title="Foundation And Charities Management"
         description="Manage and monitor all registered foundations and foundation requests."
+        badge={<ComingSoonBadge />}
       />
 
       <FoundationStats stats={stats} />

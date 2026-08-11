@@ -234,7 +234,7 @@ export function AppSidebar() {
                     <Link
                       onClick={handleMobileClose}
                       href={item.url}
-                      title={isCollapsed ? item.title : undefined}
+                      title={item.title}
                       className={cn(
                         "flex h-12 w-full items-center gap-3 rounded-xl px-4 text-sm font-medium transition-all duration-300",
                         "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
@@ -250,7 +250,9 @@ export function AppSidebar() {
                           active ? "text-primary-foreground" : "text-foreground/60",
                         )}
                       />
-                      {!isCollapsed && <span className="truncate">{item.title}</span>}
+                      {!isCollapsed && (
+                        <span className="min-w-0 flex-1 truncate">{item.title}</span>
+                      )}
                     </Link>
                   </SidebarMenuItem>
                 );
