@@ -25,7 +25,7 @@ export function usePartnerLeads(
     [...API_CACHE_KEYS.PARTNER_LEADS_LIST, search, sortBy, sortOrder, page, limit].filter(
       Boolean,
     ) as string[],
-    PARTNER_LEAD_ENDPOINTS.GET_LEADS(search, sortBy, sortOrder ?? "asc", page, limit),
+    PARTNER_LEAD_ENDPOINTS.GET_LEADS(search, sortBy, sortOrder ?? "asc", page ?? 1, limit ?? 10),
   );
   const leads = response?.data;
   const pagination = response?.pagination;
