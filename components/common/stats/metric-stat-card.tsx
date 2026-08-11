@@ -47,7 +47,7 @@ export function MetricStatCard({
           <>
             <div className="absolute top-0 right-0 h-full w-[42%] overflow-hidden">
               <Icon
-                className={`absolute right-5 bottom-5 mb-6 h-28 w-28 opacity-[0.08] ${iconClassName}`}
+                className={`absolute right-5 bottom-5 mb-8 h-28 w-28 opacity-[0.08] ${iconClassName}`}
                 strokeWidth={1.4}
               />
 

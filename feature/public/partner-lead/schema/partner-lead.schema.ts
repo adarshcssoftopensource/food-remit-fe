@@ -3,7 +3,7 @@ import { z } from "zod/v3";
 export const partnerLeadSchema = z.object({
   businessName: z.string().min(1, "Business name is required"),
   businessType: z.string().min(1, "Please select a business type"),
-  numberOfLocations: z.string().min(1, "Please select number of locations"),
+  locationsCount: z.string().min(1, "Please select number of locations"),
   country: z.string().min(1, "Please select a country"),
   businessCity: z.string().optional(),
   stateProvinceRegion: z.string().optional(),

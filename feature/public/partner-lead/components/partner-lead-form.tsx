@@ -66,7 +66,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     defaultValues: {
       businessName: "",
       businessType: "",
-      numberOfLocations: "",
+      locationsCount: "",
       country: "",
       businessCity: "",
       stateProvinceRegion: "",
@@ -87,7 +87,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   async function handleNextStep() {
     let fieldsToValidate: (keyof PartnerLeadFormValues)[] = [];
     if (currentStep === 1) {
-      fieldsToValidate = ["businessName", "businessType", "numberOfLocations", "country"];
+      fieldsToValidate = ["businessName", "businessType", "locationsCount", "country"];
     } else if (currentStep === 2) {
       fieldsToValidate = ["firstName", "lastName", "businessEmail", "phoneNumber"];
     } else if (currentStep === 3) {
@@ -112,13 +112,11 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   async function onSubmit(data: PartnerLeadFormValues) {
     try {
       const res = await mutateAsync(data);
-      console.log(res);
-
       successToast({
         title: "Interest Registered",
         description: "Your partnership request has been submitted successfully.",
       });
-      onSuccess("FR-INT000001");
+      onSuccess(res?.data?.referenceNumber ?? "");
     } catch (error) {
       console.log(error);
     }
@@ -280,22 +278,22 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               />
 
               <Controller
-                name="numberOfLocations"
+                name="locationsCount"
                 control={control}
                 render={({ field }) => (
                   <div className="flex flex-col gap-1.5">
                     <FieldLabel
-                      htmlFor="numberOfLocations"
+                      htmlFor="locationsCount"
                       className="text-xs font-semibold text-slate-700"
                     >
                       Number of Locations <span className="text-red-500">*</span>
                     </FieldLabel>
                     <Select value={field.value} onValueChange={(val) => field.onChange(val ?? "")}>
                       <SelectTrigger
-                        id="numberOfLocations"
+                        id="locationsCount"
                         className={cn(
                           "h-11! w-full rounded-xl border-slate-200 bg-white text-sm",
-                          errors.numberOfLocations && "border-red-400 bg-red-50/30",
+                          errors.locationsCount && "border-red-400 bg-red-50/30",
                         )}
                       >
                         <SelectValue placeholder="Select location count" />
@@ -308,9 +306,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.numberOfLocations && (
+                    {errors.locationsCount && (
                       <p className="text-xs font-medium text-red-500">
-                        {errors.numberOfLocations.message}
+                        {errors.locationsCount.message}
                       </p>
                     )}
                   </div>
@@ -716,7 +714,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               <div className="flex justify-between">
                 <span className="font-medium text-slate-500">Locations / Country:</span>
                 <span className="font-semibold text-slate-900">
-                  {getValues("numberOfLocations")} | {getValues("country")}
+                  {getValues("locationsCount")} | {getValues("country")}
                 </span>
               </div>
             </div>
