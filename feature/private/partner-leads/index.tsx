@@ -6,19 +6,18 @@ import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { usePartnerLeads } from "./hooks/use-partner-leads";
+import { usePartnerLeads } from "./hooks/use-get-partner-leads";
 import { getPartnerLeadColumns } from "./columns/partner-lead-columns";
-import { Building2, Users, CheckCircle, MailOpen } from "lucide-react";
 import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
+import { STATS_CONFIG } from "@/constants/partner.leads";
+import { ROUTES } from "@/config/routes";
 
 export function PartnerLeadsManagement() {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
-  // We debounce the search value so the API doesn't spam on every keystroke
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sorting, setSorting] = useState<any[]>([]);
 
-  // Update debounced search after a short delay
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchValue);
@@ -32,35 +31,10 @@ export function PartnerLeadsManagement() {
   const { leads, stats, isLoading } = usePartnerLeads(debouncedSearch, sortBy, sortOrder);
 
   const handleViewDetails = (id: string) => {
-    router.push(`/partner-leads/${id}`);
+    router.push(`${ROUTES.ADMIN.PARTNER_LEADS}/${id}`);
   };
 
   const columns = useMemo(() => getPartnerLeadColumns(handleViewDetails), []);
-
-  const STATS_CONFIG = [
-    { key: "total", label: "Total Leads", Icon: Users, color: "text-blue-600", bg: "bg-blue-100" },
-    {
-      key: "new",
-      label: "New Leads",
-      Icon: Building2,
-      color: "text-emerald-600",
-      bg: "bg-emerald-100",
-    },
-    {
-      key: "contacted",
-      label: "Contacted",
-      Icon: MailOpen,
-      color: "text-amber-600",
-      bg: "bg-amber-100",
-    },
-    {
-      key: "approved",
-      label: "Approved",
-      Icon: CheckCircle,
-      color: "text-green-600",
-      bg: "bg-green-100",
-    },
-  ];
 
   return (
     <div className="space-y-6">

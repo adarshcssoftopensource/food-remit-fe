@@ -13,9 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MessageSquarePlus } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
-import { useUpdateLeadStatus } from "../hooks/use-partner-leads";
+import { useUpdateLeadStatus } from "../hooks/use-update-lead-status";
 import { updateLeadStatusSchema, UpdateLeadStatusValues } from "../schema/update-status.schema";
-import { getStatusColor } from "../utils";
+import { getStatusColor } from "@/constants/partner.leads";
 
 interface UpdateStatusDialogProps {
   leadId: string;
