@@ -52,7 +52,7 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
   }
 
   return (
-    <div className="mx-auto space-y-6 pb-10">
+    <div>
       {dialogOpen && (
         <UpdateStatusDialog
           leadId={lead.id}
