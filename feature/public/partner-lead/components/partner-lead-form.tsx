@@ -371,6 +371,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       onValueChange={field.onChange}
                       id="country"
                       invalid={Boolean(errors.country)}
+                      valueKey="name"
                     />
                     {errors.country && (
                       <p className="text-xs font-medium text-red-500">{errors.country.message}</p>

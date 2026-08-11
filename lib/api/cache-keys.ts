@@ -6,4 +6,7 @@ export const API_CACHE_KEYS = {
   PARTNER_LEADS_LIST: ["partner-leads"],
   PARTNER_LEADS_DETAIL: (id: string) => [`partner-leads-${id}`],
   SETTINGS_COUNTRIES: ["settings-countries"],
+  SETTINGS_COUNTRIES_DROPDOWN: ["settings-countries-dropdown"],
+  SETTINGS_CITIES: ["settings-cities"],
+  SETTINGS_CITIES_DROPDOWN: ["settings-cities-dropdown"],
 };

@@ -4,11 +4,6 @@ import type { CountryData } from "../types/settings.types";
 
 export const countriesColumns: ColumnDef<CountryData>[] = [
   {
-    accessorKey: "id",
-    header: "S.no",
-    cell: ({ row }) => row.index + 1,
-  },
-  {
     accessorKey: "countryName",
     header: "Country Name",
     cell: ({ row }) => (

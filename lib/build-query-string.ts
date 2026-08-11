@@ -13,36 +13,45 @@ export interface BaseListArgs {
 
 const MAX_LIMIT = 100;
 
-export function buildQueryString(args: BaseListArgs): string {
+export function buildQueryString(args: BaseListArgs | Record<string, unknown>): string {
   const params = new URLSearchParams();
 
-  if (args.page) params.set("page", String(args.page));
-  if (args.limit) params.set("limit", String(Math.min(args.limit, MAX_LIMIT)));
-  if (args.search?.trim()) params.set("search", args.search.trim());
-  if (args.fromDate) params.set("from", format(args.fromDate, "yyyy-MM-dd"));
-  if (args.toDate) params.set("to", format(args.toDate, "yyyy-MM-dd"));
-  if (args.status) params.set("status", args.status);
-  if (args.sortBy) params.set("sortBy", args.sortBy);
-  if (args.sortOrder) params.set("sortOrder", args.sortOrder);
+  Object.entries(args as Record<string, unknown>).forEach(([key, val]) => {
+    if (val === undefined || val === null || val === "") return;
+
+    if (key === "limit" && typeof val === "number") {
+      params.set("limit", String(Math.min(val, MAX_LIMIT)));
+    } else if (key === "fromDate" && val instanceof Date) {
+      params.set("from", format(val, "yyyy-MM-dd"));
+    } else if (key === "toDate" && val instanceof Date) {
+      params.set("to", format(val, "yyyy-MM-dd"));
+    } else if (typeof val === "string") {
+      const trimmed = val.trim();
+      if (trimmed) params.set(key, trimmed);
+    } else if (typeof val === "number" || typeof val === "boolean") {
+      params.set(key, String(val));
+    }
+  });
 
   return params.toString();
 }
 
-export function buildUrl(baseUrl: string, args: BaseListArgs): string {
+export function buildUrl(baseUrl: string, args: BaseListArgs | Record<string, unknown>): string {
   const qs = buildQueryString(args);
   return qs ? `${baseUrl}?${qs}` : baseUrl;
 }
 
-export function buildCacheKey(prefix: string, args: BaseListArgs): string[] {
-  return [
-    prefix,
-    String(args.page ?? 1),
-    String(Math.min(args.limit ?? MAX_LIMIT, MAX_LIMIT)),
-    args.search?.trim() ?? "",
-    args.fromDate ? format(args.fromDate, "yyyy-MM-dd") : "",
-    args.toDate ? format(args.toDate, "yyyy-MM-dd") : "",
-    args.status ?? "",
-    args.sortBy ?? "",
-    args.sortOrder ?? "",
-  ];
+export function buildCacheKey(
+  prefix: string,
+  args: BaseListArgs | Record<string, unknown>,
+): string[] {
+  const entries = Object.entries(args as Record<string, unknown>)
+    .filter(([_, v]) => v !== undefined && v !== null && v !== "")
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => {
+      if (v instanceof Date) return `${k}:${format(v, "yyyy-MM-dd")}`;
+      return `${k}:${String(v).trim()}`;
+    });
+
+  return [prefix, ...entries];
 }

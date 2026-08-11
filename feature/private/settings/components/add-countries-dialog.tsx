@@ -110,12 +110,14 @@ export function AddCountriesDialog({
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
       {mode === "add" && !isControlled && (
-        <DialogTrigger>
-          <Button size="lg">
-            <Plus size={20} />
-            Add Country
-          </Button>
-        </DialogTrigger>
+        <DialogTrigger
+          render={
+            <Button size="lg">
+              <Plus size={20} />
+              Add Country
+            </Button>
+          }
+        />
       )}
 
       <DialogContent>
