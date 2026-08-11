@@ -1,16 +1,53 @@
 "use client";
 
-import { Database, Globe2 } from "lucide-react";
-import { useState } from "react";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { Card, CardContent } from "@/components/ui/card";
-import { CountryData, MOCK_COUNTRIES } from "@/constants/settings";
+import { useDebounce } from "@/lib/debounce";
+import type { SortingState } from "@tanstack/react-table";
+import { Database, Globe2 } from "lucide-react";
+import { useCallback, useState } from "react";
 import { countriesColumns } from "../columns/countries-columns";
+import { useGetCountries } from "../hooks/use-get-countries";
+import type { CountryData, UseGetCountriesArgs } from "../types/settings.types";
 import AddCountriesDialog from "./add-countries-dialog";
 
 export function CountriesManagement() {
-  const [countries, setCountries] = useState<CountryData[]>(MOCK_COUNTRIES);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  }, []);
+
+  const queryArgs: UseGetCountriesArgs = {
+    page: currentPage,
+    limit: rowsPerPage,
+    search: debouncedSearch || undefined,
+    sortBy: sorting[0]?.id || undefined,
+    sortOrder: sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined,
+  };
+
+  const { data: res, isLoading } = useGetCountries(queryArgs);
+  const countries = (res?.data ?? []) as CountryData[];
+  const totalCount = res?.pagination?.total ?? countries.length;
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const handleRowsPerPageChange = useCallback((limit: number) => {
+    setRowsPerPage(limit);
+    setCurrentPage(1);
+  }, []);
+
+  const handleSortingChange = useCallback((nextSorting: SortingState) => {
+    setSorting(nextSorting);
+    setCurrentPage(1);
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -32,14 +69,29 @@ export function CountriesManagement() {
           <div className="flex items-center gap-3">
             <div className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2">
               <Database className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-700">{countries.length}</span>
+              <span className="text-sm font-semibold text-blue-700">{totalCount}</span>
               <span className="text-sm text-blue-600">Countries</span>
             </div>
             <AddCountriesDialog />
           </div>
         </div>
         <CardContent className="p-6">
-          <DataTable columns={countriesColumns} data={countries} searchKey="countryName" />
+          <DataTable
+            columns={countriesColumns}
+            data={countries}
+            searchKey="countryName"
+            loading={isLoading}
+            searchValue={search}
+            onSearchChange={handleSearchChange}
+            currentPage={currentPage}
+            totalPages={res?.pagination?.totalPages ?? 1}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            onSortingChange={handleSortingChange}
+            manualSorting={true}
+            manualFiltering={true}
+          />
         </CardContent>
       </Card>
     </div>
