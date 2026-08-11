@@ -24,8 +24,16 @@ interface RawGetCountriesResponse {
 }
 
 export function useGetCountries(args: UseGetCountriesArgs = {}) {
-  const url = buildUrl(SETTINGS_ENDPOINTS.GET_COUNTRIES, args);
-  const cacheKey = buildCacheKey(CACHE_PREFIX, args);
+  const url = buildUrl(SETTINGS_ENDPOINTS.GET_COUNTRIES, {
+    ...args,
+
+    sortOrder: args.sortOrder ?? "asc",
+  });
+  const cacheKey = buildCacheKey(CACHE_PREFIX, {
+    ...args,
+
+    sortOrder: args.sortOrder ?? "asc",
+  });
 
   const query = useApiQuery<RawGetCountriesResponse>(cacheKey, url, {
     staleTime: 1000 * 60 * 2, // 2 minutes

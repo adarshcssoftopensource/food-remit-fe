@@ -28,7 +28,7 @@ export function useGetCities(args: UseGetCitiesArgs = {}) {
     cleanArgs.countryId = args.countryId;
   }
   if (args.sortBy) cleanArgs.sortBy = args.sortBy;
-  if (args.sortOrder) cleanArgs.sortOrder = args.sortOrder;
+  cleanArgs.sortOrder = args.sortOrder ?? "asc";
 
   const url = buildUrl(SETTINGS_ENDPOINTS.GET_CITIES, cleanArgs);
   const cacheKey = buildCacheKey(CACHE_PREFIX, cleanArgs);
