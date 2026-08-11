@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, Phone } from "lucide-react";
+import { Mail, Phone, User } from "lucide-react";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
 export function ContactInformationCard({ lead }: { lead: PartnerLeadData }) {

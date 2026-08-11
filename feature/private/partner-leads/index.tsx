@@ -1,29 +1,24 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { usePartnerLeads } from "./hooks/use-get-partner-leads";
-import { getPartnerLeadColumns } from "./columns/partner-lead-columns";
-import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
-import { STATS_CONFIG } from "@/constants/partner.leads";
 import { ROUTES } from "@/config/routes";
+import { STATS_CONFIG } from "@/constants/partner.leads";
+import { useDebounce } from "@/lib/debounce";
+import { SortingState } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { getPartnerLeadColumns } from "./columns/partner-lead-columns";
+import { usePartnerLeads } from "./hooks/use-get-partner-leads";
 
 export function PartnerLeadsManagement() {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [sorting, setSorting] = useState<any[]>([]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchValue);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchValue]);
+  const debouncedSearch = useDebounce(searchValue, 500);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
   const sortOrder = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;

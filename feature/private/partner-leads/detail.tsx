@@ -1,15 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Activity } from "lucide-react";
 import { format } from "date-fns";
+import { Activity, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { usePartnerLead } from "./hooks/use-get-partner-lead";
-import { useUpdateLeadStatus } from "./hooks/use-update-lead-status";
-import { UpdateStatusDialog } from "./components/update-status-dialog";
 import {
   Select,
   SelectContent,
@@ -18,11 +14,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PARTNER_LEAD_STATUSES, getStatusColor } from "@/constants/partner.leads";
+import { AdditionalInfoCard } from "./components/cards/additional-info-card";
 import { BusinessOverviewCard } from "./components/cards/business-overview-card";
 import { ContactInformationCard } from "./components/cards/contact-information-card";
 import { LocationDetailsCard } from "./components/cards/location-details-card";
 import { OperationalPreferencesCard } from "./components/cards/operational-preferences-card";
-import { AdditionalInfoCard } from "./components/cards/additional-info-card";
+import { PartnerLeadDetailSkeleton } from "./components/partner-lead-detail-skeleton";
+import { UpdateStatusDialog } from "./components/update-status-dialog";
+import { usePartnerLead } from "./hooks/use-get-partner-lead";
+import { useUpdateLeadStatus } from "./hooks/use-update-lead-status";
 
 interface PartnerLeadDetailProps {
   id: string;
@@ -36,33 +36,8 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
 
-  if (!isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="mt-6 flex items-center gap-4">
-          <Skeleton className="h-10 w-24 rounded-lg" />
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Skeleton className="h-64 rounded-xl" />
-          <Skeleton className="h-64 rounded-xl" />
-        </div>
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-10 w-24 rounded-lg" />
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Skeleton className="h-64 rounded-xl" />
-          <Skeleton className="h-64 rounded-xl" />
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <PartnerLeadDetailSkeleton />;
   }
 
   if (!lead) {

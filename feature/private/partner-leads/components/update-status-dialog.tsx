@@ -10,12 +10,12 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { getStatusColor } from "@/constants/partner.leads";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MessageSquarePlus } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useUpdateLeadStatus } from "../hooks/use-update-lead-status";
 import { updateLeadStatusSchema, UpdateLeadStatusValues } from "../schema/update-status.schema";
-import { getStatusColor } from "@/constants/partner.leads";
 
 interface UpdateStatusDialogProps {
   leadId: string;
@@ -63,9 +63,9 @@ export function UpdateStatusDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="overflow-hidden rounded-[2rem] border-slate-200 p-0 shadow-2xl sm:max-w-[480px]">
+      <DialogContent className="overflow-hidden rounded-[2rem] border-slate-200 p-0 shadow-2xl sm:max-w-120">
         <form onSubmit={handleSubmit(onSubmit)} noValidate suppressHydrationWarning>
-          <DialogHeader className="border-b border-slate-100 bg-gradient-to-br from-slate-50 to-white px-8 py-6">
+          <DialogHeader className="border-b border-slate-100 bg-linear-to-br from-slate-50 to-white px-8 py-6">
             <DialogTitle className="flex items-center gap-3 text-xl font-extrabold tracking-tight text-slate-900">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-200 bg-blue-100/50 shadow-inner">
                 <MessageSquarePlus className="h-5 w-5 text-blue-700" />
@@ -103,7 +103,7 @@ export function UpdateStatusDialog({
                       id="remark"
                       placeholder="E.g. Spoke with the owner, they are ready for registration..."
                       aria-invalid={!!errors.remark}
-                      className={`min-h-[120px] resize-none rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium transition-all duration-300 placeholder:text-slate-400 hover:border-slate-300 hover:bg-slate-50 focus-visible:border-blue-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(37,99,235,0.1)] focus-visible:ring-blue-600/20 ${
+                      className={`min-h-30 resize-none rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium transition-all duration-300 placeholder:text-slate-400 hover:border-slate-300 hover:bg-slate-50 focus-visible:border-blue-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(37,99,235,0.1)] focus-visible:ring-blue-600/20 ${
                         errors.remark
                           ? "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15"
                           : ""
