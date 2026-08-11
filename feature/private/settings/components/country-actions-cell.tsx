@@ -42,24 +42,24 @@ export function CountryActionsCell({ country }: { country: CountryData }) {
     <>
       <div className="flex items-center gap-2">
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-lg text-blue-600 transition-colors hover:bg-blue-50 dark:hover:bg-blue-950/40"
+          className="h-8 w-8"
           onClick={() => setIsEditDialogOpen(true)}
           title="Edit country"
         >
-          <Edit className="h-4 w-4" />
+          <Edit size={20} />
         </Button>
 
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-lg text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40"
+          className="h-8 w-8"
           onClick={() => setIsDeleteDialogOpen(true)}
           disabled={isDeleting}
           title="Delete country"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="text-red-600" size={20} />
         </Button>
       </div>
 

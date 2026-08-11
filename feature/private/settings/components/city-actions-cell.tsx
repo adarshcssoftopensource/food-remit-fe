@@ -41,24 +41,24 @@ export function CityActionsCell({ city }: { city: CityData }) {
     <>
       <div className="flex items-center gap-2">
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-lg text-emerald-600 transition-colors hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
+          className="h-8 w-8 rounded-lg"
           onClick={() => setIsEditDialogOpen(true)}
           title="Edit city"
         >
-          <Edit className="h-4 w-4" />
+          <Edit size={20} />
         </Button>
 
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-lg text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40"
+          className="h-8 w-8 rounded-lg"
           onClick={() => setIsDeleteDialogOpen(true)}
           disabled={isDeleting}
           title="Delete city"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="text-red-600" size={20} />
         </Button>
       </div>
 
