@@ -24,8 +24,14 @@ interface RawGetUsersResponse {
 }
 
 export function useGetUsers(args: UseGetUsersArgs = {}) {
-  const url = buildUrl(USER_MANAGEMENT_ENDPOINTS.GET_USERS, args);
-  const cacheKey = buildCacheKey(CACHE_PREFIX, args);
+  const url = buildUrl(USER_MANAGEMENT_ENDPOINTS.GET_USERS, {
+    ...args,
+    sortOrder: args.sortOrder ?? "asc",
+  });
+  const cacheKey = buildCacheKey(CACHE_PREFIX, {
+    ...args,
+    sortOrder: args.sortOrder ?? "asc",
+  });
 
   const query = useApiQuery<RawGetUsersResponse>(cacheKey, url, {
     staleTime: 1000 * 60 * 2, // 2 minutes

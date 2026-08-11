@@ -1,9 +1,9 @@
 import { useApiQuery } from "@/hooks/useApi";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { SUB_ADMIN_ENDPOINTS } from "@/lib/api/endpoints/sub-admin.endpoints";
 import { buildCacheKey, buildUrl } from "@/lib/build-query-string";
 import { useMemo } from "react";
 import { normalizeSubAdmin } from "../lib/normalize-sub-admin";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import type {
   GetSubAdminsResponse,
   SubAdminData,
@@ -31,8 +31,14 @@ interface RawGetSubAdminsResponse {
 }
 
 export function useGetSubAdmins(args: UseGetSubAdminsArgs = {}) {
-  const url = buildUrl(SUB_ADMIN_ENDPOINTS.GET_SUB_ADMINS, args);
-  const cacheKey = buildCacheKey(CACHE_PREFIX, args);
+  const url = buildUrl(SUB_ADMIN_ENDPOINTS.GET_SUB_ADMINS, {
+    ...args,
+    sortOrder: args.sortOrder ?? "asc",
+  });
+  const cacheKey = buildCacheKey(CACHE_PREFIX, {
+    ...args,
+    sortOrder: args.sortOrder ?? "asc",
+  });
 
   const query = useApiQuery<RawGetSubAdminsResponse>(cacheKey, url, {
     staleTime: 1000 * 60 * 2, // 2 minutes

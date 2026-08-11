@@ -1,12 +1,12 @@
 import { useApiQuery } from "@/hooks/useApi";
-import { PARTNER_LEAD_ENDPOINTS } from "@/lib/api/endpoints/partner-lead.endpoints";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { PARTNER_LEAD_ENDPOINTS } from "@/lib/api/endpoints/partner-lead.endpoints";
 import { PartnerLeadData } from "../types/partner-lead.types";
 
 export function usePartnerLeads(search?: string, sortBy?: string, sortOrder?: string) {
   const { data: response, isLoading } = useApiQuery<{ data: PartnerLeadData[] }>(
     [...API_CACHE_KEYS.PARTNER_LEADS_LIST, search, sortBy, sortOrder].filter(Boolean) as string[],
-    PARTNER_LEAD_ENDPOINTS.GET_LEADS(search, sortBy, sortOrder),
+    PARTNER_LEAD_ENDPOINTS.GET_LEADS(search, sortBy, sortOrder ?? "asc"),
   );
   const leads = response?.data;
 
