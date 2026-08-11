@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 
+import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 import { useProfile } from "@/components/providers/profile-provider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
@@ -236,12 +237,13 @@ export function AppSidebar() {
                       href={item.url}
                       title={item.title}
                       className={cn(
-                        "flex h-12 w-full items-center gap-3 rounded-xl px-4 text-sm font-medium transition-all duration-300",
+                        "relative flex h-12 w-full items-center gap-3 rounded-xl px-4 text-sm font-medium transition-all duration-300",
                         "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
                         active
                           ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-linear-to-r shadow-md ring-1"
                           : "text-foreground/70 hover:bg-primary/5 hover:text-foreground",
                         isCollapsed && "px-2",
+                        !isCollapsed && item.isComingSoon && active && "h-16 items-end pb-2.5",
                       )}
                     >
                       <item.icon
@@ -252,6 +254,14 @@ export function AppSidebar() {
                       />
                       {!isCollapsed && (
                         <span className="min-w-0 flex-1 truncate">{item.title}</span>
+                      )}
+                      {!isCollapsed && item.isComingSoon && active && (
+                        <ComingSoonBadge
+                          size="compact"
+                          label="This page is coming soon"
+                          showIcon
+                          className="absolute top-1.5 left-1/2 -translate-x-1/2 border-violet-200 bg-linear-to-r from-violet-50 to-fuchsia-50 font-bold text-red-700 shadow-sm dark:border-violet-500/30 dark:from-violet-500/15 dark:to-fuchsia-500/10 dark:text-violet-200"
+                        />
                       )}
                     </Link>
                   </SidebarMenuItem>

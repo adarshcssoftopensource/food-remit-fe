@@ -39,11 +39,13 @@ export const navigationItems = [
     title: "Foundation And Charities Management",
     url: ROUTES.ADMIN.FOUNDATION_MANAGEMENT,
     icon: Building,
+    isComingSoon: true,
   },
   {
     title: "Philanthropist Management",
     url: ROUTES.ADMIN.PHILANTHROPIST_MANAGEMENT,
     icon: Users,
+    isComingSoon: true,
   },
   {
     title: "Sub-admin Management",
@@ -54,6 +56,7 @@ export const navigationItems = [
     title: "Stories",
     url: ROUTES.ADMIN.STORIES.LIST,
     icon: RefreshCcw,
+    isComingSoon: true,
   },
   {
     title: "Donation Logs",
