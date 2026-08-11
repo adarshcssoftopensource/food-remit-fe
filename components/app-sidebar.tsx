@@ -10,6 +10,7 @@ import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 import { useProfile } from "@/components/providers/profile-provider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Sidebar,
   SidebarContent,
@@ -151,6 +152,72 @@ export function AppSidebar() {
                       item.items.some((sub) =>
                         sub.title.toLowerCase().includes(searchQuery.toLowerCase()),
                       ));
+
+                  if (isCollapsed) {
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <Popover>
+                          <PopoverTrigger
+                            className={cn(
+                              "flex h-12 w-full items-center justify-center rounded-xl px-2 text-sm font-medium transition-all duration-300",
+                              "focus-visible:ring-primary/50 border-none bg-transparent outline-none focus-visible:ring-2",
+                              hasActiveChild
+                                ? "from-primary to-primary/90 text-primary-foreground ring-primary/20 bg-linear-to-r shadow-md ring-1"
+                                : "text-foreground/70 hover:bg-primary/5 hover:text-foreground",
+                            )}
+                            title={item.title}
+                          >
+                            <item.icon
+                              className={cn(
+                                "h-4 w-4 shrink-0",
+                                hasActiveChild ? "text-primary-foreground" : "text-foreground/60",
+                              )}
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent
+                            side="right"
+                            align="start"
+                            sideOffset={8}
+                            className="w-56 p-2"
+                          >
+                            <div className="text-muted-foreground mb-2 px-2 text-xs font-semibold">
+                              {item.title}
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              {item.items.map((sub) => {
+                                const isSubActive =
+                                  pathname === sub.url || pathname?.startsWith(sub.url);
+                                return (
+                                  <Link
+                                    key={sub.title}
+                                    href={sub.url}
+                                    onClick={handleMobileClose}
+                                    className={cn(
+                                      "flex h-9 items-center rounded-lg px-3 text-sm transition-all duration-300",
+                                      "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
+                                      isSubActive
+                                        ? "bg-primary/15 text-primary ring-primary/10 font-semibold shadow-sm ring-1"
+                                        : "text-muted-foreground hover:bg-primary/5 hover:text-foreground",
+                                    )}
+                                  >
+                                    <span
+                                      className={cn(
+                                        "mr-3 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-300",
+                                        isSubActive
+                                          ? "bg-primary scale-125 shadow-sm"
+                                          : "bg-muted-foreground/30",
+                                      )}
+                                    />
+                                    <span className="truncate">{sub.title}</span>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </SidebarMenuItem>
+                    );
+                  }
 
                   return (
                     <Collapsible
