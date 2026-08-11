@@ -146,20 +146,22 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       </div>
 
       <div className="mt-6 border-b border-slate-100 pb-6">
-        <div className="relative flex items-center justify-between">
-          <div className="absolute top-1/2 right-4 left-4 -z-0 h-0.5 -translate-y-1/2 bg-slate-200">
-            <div
-              className="h-full bg-emerald-600 transition-all duration-300"
-              style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
-            />
-          </div>
-
+        <div className="relative flex">
           {STEPS.map((step) => {
             const isCompleted = currentStep > step.id;
             const isActive = currentStep === step.id;
 
             return (
-              <div key={step.id} className="relative z-10 flex flex-col items-center">
+              <div key={step.id} className="relative z-10 flex flex-1 flex-col items-center">
+                {step.id < STEPS.length && (
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "pointer-events-none absolute top-4.5 left-1/2 z-0 h-0.5 w-full",
+                      isCompleted ? "bg-emerald-600" : "bg-slate-200",
+                    )}
+                  />
+                )}
                 <button
                   type="button"
                   onClick={async () => {
@@ -168,7 +170,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     }
                   }}
                   className={cn(
-                    "flex size-9 items-center justify-center rounded-full text-xs font-bold transition-all duration-300",
+                    "relative z-10 flex size-9 items-center justify-center rounded-full text-xs font-bold transition-all duration-300",
                     isCompleted && "bg-emerald-600 text-white shadow-sm",
                     isActive && "scale-110 bg-emerald-700 text-white ring-4 ring-emerald-100",
                     !isCompleted &&
