@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useChangePassword } from "../hooks/use-change-password";
 import { PasswordFormValues, passwordSchema } from "../schema/password.schema";
 
 const requirements = [
@@ -18,12 +19,14 @@ const requirements = [
 ];
 
 export function ChangePassword() {
+  const { mutateAsync: changePasswordMutation, isPending } = useChangePassword();
+
   const {
     control,
     handleSubmit,
     reset,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -47,12 +50,20 @@ export function ChangePassword() {
           : "bg-emerald-500";
 
   const onSubmit = async (data: PasswordFormValues) => {
-    console.log("Password change data:", data);
-    reset();
-    successToast({
-      title: "Password Updated",
-      description: "Your password has been changed successfully.",
-    });
+    try {
+      await changePasswordMutation({
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword,
+      });
+      reset();
+      successToast({
+        title: "Password Updated",
+        description: "Your password has been changed successfully.",
+      });
+    } catch {
+      // Error handling is managed by API interceptor
+    }
   };
 
   return (
@@ -180,12 +191,19 @@ export function ChangePassword() {
             />
 
             <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => reset()} className="px-6">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isPending}
+                onClick={() => reset()}
+                className="px-6"
+              >
                 Reset
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isPending}
+                isLoading={isPending}
                 className="shadow-primary/20 gap-2 px-6 shadow-md"
               >
                 <ShieldCheck className="h-4 w-4" />
