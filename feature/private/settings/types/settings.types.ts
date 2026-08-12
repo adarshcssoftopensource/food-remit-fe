@@ -149,7 +149,7 @@ export interface UseGetCitiesArgs {
 }
 
 export interface ChangePasswordPayload {
-  currentPassword: string;
+  oldPassword: string;
   newPassword: string;
   confirmPassword?: string;
 }

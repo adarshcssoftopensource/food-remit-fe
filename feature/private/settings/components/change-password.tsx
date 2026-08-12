@@ -30,7 +30,7 @@ export function ChangePassword() {
   } = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
-      currentPassword: "",
+      oldPassword: "",
       newPassword: "",
       confirmPassword: "",
     },
@@ -52,7 +52,7 @@ export function ChangePassword() {
   const onSubmit = async (data: PasswordFormValues) => {
     try {
       await changePasswordMutation({
-        currentPassword: data.currentPassword,
+        oldPassword: data.oldPassword,
         newPassword: data.newPassword,
         confirmPassword: data.confirmPassword,
       });
@@ -93,29 +93,25 @@ export function ChangePassword() {
         <CardContent className="p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Controller
-              name="currentPassword"
+              name="oldPassword"
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel htmlFor="currentPassword" className="text-sm font-semibold">
-                    Current Password <span className="text-red-500">*</span>
+                  <FieldLabel htmlFor="oldPassword" className="text-sm font-semibold">
+                    Old Password <span className="text-red-500">*</span>
                   </FieldLabel>
                   <PasswordInput
                     {...field}
-                    placeholder="Enter your current password"
-                    isInvalid={!!errors.currentPassword}
+                    placeholder="Enter your old password"
+                    isInvalid={!!errors.oldPassword}
                     leftIcon={<Lock className="size-4" />}
                   />
-                  {errors.currentPassword && (
-                    <p className="text-xs font-medium text-red-500">
-                      {errors.currentPassword.message}
-                    </p>
+                  {errors.oldPassword && (
+                    <p className="text-xs font-medium text-red-500">{errors.oldPassword.message}</p>
                   )}
                 </div>
               )}
             />
-
-            <div className="h-px bg-slate-100" />
 
             <Controller
               name="newPassword"
