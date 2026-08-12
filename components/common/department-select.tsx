@@ -41,8 +41,14 @@ export function DepartmentSelect({
             <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
             <span className="text-slate-400">Loading departments...</span>
           </div>
+        ) : value ? (
+          <span className="truncate">
+            {departments.find((d: any) => d.id === value)?.name ||
+              departments.find((d: any) => d.id === value)?.departmentName ||
+              placeholder}
+          </span>
         ) : (
-          <SelectValue placeholder={placeholder} />
+          <span className="text-muted-foreground truncate">{placeholder}</span>
         )}
       </SelectTrigger>
       <SelectContent>

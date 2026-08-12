@@ -98,8 +98,6 @@ export function SubAdminManagement() {
                     ? (res?.stats?.inactive ?? 0)
                     : (res?.stats?.avgPermissions ?? 0)
             }
-            // trendLabel="vs last month"
-            // trendValue="+8%"
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}

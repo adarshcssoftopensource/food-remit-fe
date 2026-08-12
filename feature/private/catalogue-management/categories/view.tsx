@@ -77,51 +77,52 @@ export function CategoryView({ id }: CategoryViewProps) {
 
       <div className="animate-in fade-in slide-in-from-bottom-4 grid gap-6 duration-700 lg:grid-cols-3">
         {/* Profile Card */}
-        <Card className="relative overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
+        <Card className="relative flex flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
           {/* Cover Background */}
           <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-gradient-to-br opacity-90" />
 
-          <CardHeader className="relative px-6 pt-20 pb-8 text-center">
+          <CardHeader className="relative flex flex-1 flex-col px-6 pt-2 pb-8 text-center">
             {/* Icon Container with overlap */}
-            <div className="shadow-primary/20 mx-auto mb-5 flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white p-2 shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105 dark:bg-slate-900 dark:ring-slate-950">
-              <div className="bg-primary/5 text-primary flex h-full w-full items-center justify-center rounded-[1.5rem]">
+            <div className="shadow-primary/20 mx-auto flex h-60 w-60 shrink-0 items-center justify-center rounded-[3rem] bg-white p-3 shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105 dark:bg-slate-900 dark:ring-slate-950">
+              <div className="bg-primary/5 text-primary relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2.5rem]">
                 {category.categoryIcon ? (
                   <Image
                     key={category.id}
                     src={category.categoryIcon}
                     alt={category.categoryName}
-                    width={72}
-                    height={72}
-                    className="object-contain drop-shadow-md"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
-                  <Building2 className="h-12 w-12" />
+                  <Building2 className="h-20 w-20" />
                 )}
               </div>
             </div>
 
-            <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              {category.categoryName}
-            </CardTitle>
+            <div className="mt-10 w-full text-center">
+              <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {category.categoryName}
+              </CardTitle>
 
-            <div className="mt-4 flex justify-center">
-              <span
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm backdrop-blur-sm transition-colors ${
-                  category.status === "ACTIVE"
-                    ? "bg-green-500/10 text-green-700 ring-1 ring-green-500/20 dark:bg-green-500/20 dark:text-green-400"
-                    : "bg-red-500/10 text-red-700 ring-1 ring-red-500/20 dark:bg-red-500/20 dark:text-red-400"
-                }`}
-              >
-                <span className="relative flex h-2 w-2">
-                  <span
-                    className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
-                  ></span>
-                  <span
-                    className={`relative inline-flex h-2 w-2 rounded-full ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
-                  ></span>
+              <div className="mt-4 flex justify-center">
+                <span
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm backdrop-blur-sm transition-colors ${
+                    category.status === "ACTIVE"
+                      ? "bg-green-500/10 text-green-700 ring-1 ring-green-500/20 dark:bg-green-500/20 dark:text-green-400"
+                      : "bg-red-500/10 text-red-700 ring-1 ring-red-500/20 dark:bg-red-500/20 dark:text-red-400"
+                  }`}
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span
+                      className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                    ></span>
+                    <span
+                      className={`relative inline-flex h-2 w-2 rounded-full ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                    ></span>
+                  </span>
+                  {category.status === "ACTIVE" ? "Active" : "Inactive"}
                 </span>
-                {category.status === "ACTIVE" ? "Active" : "Inactive"}
-              </span>
+              </div>
             </div>
           </CardHeader>
         </Card>
