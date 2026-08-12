@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
-import { DepartmentData } from "../types/department.types";
 import { DepartmentActionsCell } from "../components/department-actions-cell";
+import { DepartmentData } from "../types/department.types";
 
 function StatusBadge({ status }: { status: string }) {
   const isActive = status === "ACTIVE";

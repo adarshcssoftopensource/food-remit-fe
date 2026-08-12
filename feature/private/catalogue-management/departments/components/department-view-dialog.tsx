@@ -2,8 +2,8 @@ import { Building2, Calendar, MapPin, Tag } from "lucide-react";
 import Image from "next/image";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import type { DepartmentData } from "../types/department.types";
 import { format } from "date-fns";
+import type { DepartmentData } from "../types/department.types";
 
 interface DepartmentViewDialogProps {
   open: boolean;

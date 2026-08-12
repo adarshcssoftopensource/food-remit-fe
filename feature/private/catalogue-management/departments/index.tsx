@@ -3,15 +3,15 @@
 import { Building2, Filter, Plus, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
-import type { DepartmentData } from "./types/department.types";
-import { useGetDepartments, type UseGetDepartmentsArgs } from "./hooks/use-get-departments";
 import { CountrySelect } from "@/components/common/country-select";
+import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
+import { useDebounce } from "@/lib/debounce";
+import { SortingState } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
 import { getDepartmentColumns } from "./columns/department-columns";
 import { DepartmentFormDialog } from "./components/department-form-dialog";
-import { useDebounce } from "@/lib/debounce";
-import { useRouter } from "next/navigation";
-import { SortingState } from "@tanstack/react-table";
+import { useGetDepartments, type UseGetDepartmentsArgs } from "./hooks/use-get-departments";
+import type { DepartmentData } from "./types/department.types";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";

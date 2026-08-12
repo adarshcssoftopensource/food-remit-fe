@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { DepartmentData } from "../types/department.types";
-import { useUpdateDepartmentStatus } from "../hooks/use-update-department-status";
 import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
+import { useUpdateDepartmentStatus } from "../hooks/use-update-department-status";
+import { DepartmentData } from "../types/department.types";
 
 interface DepartmentActionsCellProps {
   department: DepartmentData;

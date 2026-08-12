@@ -1,23 +1,13 @@
 "use client";
 
-import { useGetDepartment } from "./hooks/use-get-department";
 import { PageHeader } from "@/components/common/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Building2,
-  Calendar,
-  MapPin,
-  Tag,
-  ArrowLeft,
-  User,
-  Clock,
-  Layers,
-  Users,
-} from "lucide-react";
-import Image from "next/image";
-import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { format } from "date-fns";
+import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User, Users } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useGetDepartment } from "./hooks/use-get-department";
 
 interface DepartmentViewProps {
   id: string;
@@ -78,7 +68,7 @@ export function DepartmentView({ id }: DepartmentViewProps) {
 
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80 md:col-span-1">
-          <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-1 bg-gradient-to-r" />
+          <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-1 bg-linear-to-r" />
           <CardHeader className="flex flex-col items-center justify-center border-b border-slate-100 bg-slate-50/50 py-8 text-center dark:border-slate-800 dark:bg-slate-900/30">
             <div className="bg-primary/5 text-primary ring-primary/10 mb-4 flex h-24 w-24 items-center justify-center rounded-3xl shadow-sm ring-1">
               {department.departmentIcon ? (
