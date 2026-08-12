@@ -5,17 +5,18 @@ import { PartnerLeadData } from "../types/partner-lead.types";
 
 interface RawGetPartnerLeadsResponse {
   message: string;
-  stats?: {
-    total: number;
-    NEW: number;
-    CONTACTED: number;
-    QUALIFIED: number;
-    REGISTRATION_INVITED: number;
-    REGISTRATION_STARTED: number;
-    APPROVED: number;
-    NOT_QUALIFIED: number;
-  };
+  // stats?: {
+  //   total: number;
+  //   NEW: number;
+  //   CONTACTED: number;
+  //   QUALIFIED: number;
+  //   REGISTRATION_INVITED: number;
+  //   REGISTRATION_STARTED: number;
+  //   APPROVED: number;
+  //   NOT_QUALIFIED: number;
+  // };
   data: PartnerLeadData[];
+  stats?: Record<string, number>;
   pagination?: {
     page: number;
     limit: number;
@@ -35,7 +36,7 @@ export function usePartnerLeads(
     [...API_CACHE_KEYS.PARTNER_LEADS_LIST, search, sortBy, sortOrder, page, limit].filter(
       Boolean,
     ) as string[],
-    PARTNER_LEAD_ENDPOINTS.GET_LEADS(search, sortBy, sortOrder ?? "asc", page ?? 1, limit ?? 10),
+    PARTNER_LEAD_ENDPOINTS.GET_LEADS(search, sortBy, sortOrder ?? "desc", page ?? 1, limit ?? 10),
   );
   const leads = response?.data;
   const pagination = response?.pagination;

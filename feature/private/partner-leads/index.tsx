@@ -19,11 +19,19 @@ export function PartnerLeadsManagement() {
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearch = useDebounce(searchValue, 500);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
   const sortOrder = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
 
-  const { leads, stats, isLoading } = usePartnerLeads(debouncedSearch, sortBy, sortOrder);
+  const { leads, stats, pagination, isLoading } = usePartnerLeads(
+    debouncedSearch,
+    sortBy,
+    sortOrder,
+    page,
+    limit,
+  );
 
   const handleViewDetails = (id: string) => {
     router.push(`${ROUTES.ADMIN.PARTNER_LEADS}/${id}`);
@@ -75,10 +83,21 @@ export function PartnerLeadsManagement() {
               loading={isLoading}
               searchKey="businessName"
               searchValue={searchValue}
-              onSearchChange={setSearchValue}
+              onSearchChange={(val) => {
+                setSearchValue(val);
+                setPage(1); // Reset page on search
+              }}
               onSortingChange={setSorting}
               manualSorting={true}
               manualFiltering={true}
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              rowsPerPage={pagination.limit}
+              onPageChange={setPage}
+              onRowsPerPageChange={(newLimit) => {
+                setLimit(newLimit);
+                setPage(1); // Reset page on limit change
+              }}
             />
           </div>
         </CardContent>
