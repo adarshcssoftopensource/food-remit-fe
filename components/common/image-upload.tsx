@@ -7,8 +7,10 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { toast } from "sonner";
+
 interface Preview {
-  file: File;
+  file?: File;
   url: string;
 }
 
@@ -21,6 +23,7 @@ export interface ImageUploadProps {
   className?: string;
   label?: string;
   hint?: string;
+  initialImages?: string[];
 }
 
 export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
@@ -33,6 +36,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
       className,
       label = "Upload images",
       hint = "PNG, JPG or WEBP",
+      initialImages = [],
     },
     ref,
   ) => {
@@ -40,11 +44,17 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
 
     useImperativeHandle(ref, () => inputRef.current!, []);
 
-    const [images, setImages] = useState<Preview[]>([]);
+    const [images, setImages] = useState<Preview[]>(() => initialImages.map((url) => ({ url })));
+
+    useEffect(() => {
+      setImages(initialImages.map((url) => ({ url })));
+    }, [initialImages.join(",")]);
 
     useEffect(() => {
       return () => {
-        images.forEach((img) => URL.revokeObjectURL(img.url));
+        images.forEach((img) => {
+          if (img.file) URL.revokeObjectURL(img.url);
+        });
       };
     }, [images]);
 
@@ -53,12 +63,26 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
 
       if (!files.length) return;
 
+      const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+      const validFiles = files.filter((f) => f.size <= MAX_SIZE);
+
+      if (validFiles.length < files.length) {
+        toast.error("Image size must be less than 5MB");
+      }
+
+      if (!validFiles.length) {
+        event.target.value = "";
+        return;
+      }
+
       setImages((prev) => {
-        const existing = new Set(prev.map((i) => `${i.file.name}-${i.file.size}`));
+        const existing = new Set(
+          prev.map((i) => (i.file ? `${i.file.name}-${i.file.size}` : i.url)),
+        );
 
         const next = [...prev];
 
-        files.forEach((file) => {
+        validFiles.forEach((file) => {
           const key = `${file.name}-${file.size}`;
 
           if (!existing.has(key)) {
@@ -70,7 +94,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
         });
 
         const finalImages = next.slice(0, maxFiles);
-        onChange?.(finalImages.map((i) => i.file));
+        onChange?.(finalImages.map((i) => i.file).filter(Boolean) as File[]);
 
         return finalImages;
       });
@@ -87,7 +111,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
         }
 
         const next = prev.filter((_, i) => i !== index);
-        onChange?.(next.map((i) => i.file));
+        onChange?.(next.map((i) => i.file).filter(Boolean) as File[]);
 
         return next;
       });
@@ -132,7 +156,12 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
                 key={image.url}
                 className="group relative h-20 w-20 overflow-hidden rounded-lg border"
               >
-                <Image src={image.url} alt={image.file.name} fill className="object-cover" />
+                <Image
+                  src={image.url}
+                  alt={image.file?.name || "Image"}
+                  fill
+                  className="object-cover"
+                />
 
                 <Button
                   type="button"

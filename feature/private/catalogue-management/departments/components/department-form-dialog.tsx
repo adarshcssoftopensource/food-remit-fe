@@ -20,14 +20,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { CATALOGUE_COUNTRY_OPTIONS, DepartmentData } from "@/constants/catalogue-management";
+import { CountrySelect } from "@/components/common/country-select";
+import type { DepartmentData } from "../types/department.types";
 import { DepartmentFormValues, useDepartmentForm } from "../../hooks/useDepartmentForm";
 
 interface DepartmentFormDialogProps {
@@ -79,28 +73,19 @@ export function DepartmentFormDialog({
             <div className="space-y-5 px-3 py-3">
               <FormField
                 control={form.control}
-                name="country"
+                name="countryId"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
                       Country <span className="text-destructive">*</span>
                     </FormLabel>
 
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900">
-                          <SelectValue placeholder="Select country" />
-                        </SelectTrigger>
-                      </FormControl>
-
-                      <SelectContent>
-                        {CATALOGUE_COUNTRY_OPTIONS.filter((o) => o.value !== "all").map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <CountrySelect
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      valueKey="id"
+                      placeholder="Select country"
+                    />
 
                     <FormMessage />
                   </FormItem>
@@ -109,7 +94,7 @@ export function DepartmentFormDialog({
 
               <FormField
                 control={form.control}
-                name="name"
+                name="departmentName"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
@@ -152,6 +137,9 @@ export function DepartmentFormDialog({
                           onChange={field.onChange}
                           label="Upload department icon"
                           hint="Click to browse or drag & drop · Max 1 file"
+                          initialImages={
+                            department?.departmentIcon ? [department.departmentIcon] : []
+                          }
                         />
                       </div>
                     </FormControl>
