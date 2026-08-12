@@ -1,23 +1,13 @@
 "use client";
 
-import { useGetCategory } from "./hooks/use-get-category";
 import { PageHeader } from "@/components/common/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Building2,
-  Calendar,
-  MapPin,
-  Tag,
-  ArrowLeft,
-  User,
-  Clock,
-  Layers,
-  Users,
-} from "lucide-react";
-import Image from "next/image";
-import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { format } from "date-fns";
+import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User, Users } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useGetCategory } from "./hooks/use-get-category";
 
 interface CategoryViewProps {
   id: string;
@@ -34,13 +24,22 @@ export function CategoryView({ id }: CategoryViewProps) {
           <div className="h-10 w-24 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
           <div className="h-8 w-64 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
         </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card className="animate-pulse border-slate-200/80 md:col-span-1">
-            <CardHeader className="h-64 rounded-t-2xl bg-slate-100 dark:bg-slate-800" />
+        <div className="grid gap-6 lg:grid-cols-3">
+          <Card className="animate-pulse overflow-hidden border-slate-200/80 lg:col-span-1 dark:border-slate-800">
+            <div className="h-32 bg-slate-200 dark:bg-slate-800" />
+            <div className="px-6 pt-0 pb-6 text-center">
+              <div className="mx-auto -mt-12 h-24 w-24 rounded-3xl bg-slate-300 ring-4 ring-white dark:bg-slate-700 dark:ring-slate-950" />
+              <div className="mx-auto mt-4 h-6 w-32 rounded-lg bg-slate-200 dark:bg-slate-800" />
+              <div className="mx-auto mt-3 h-5 w-16 rounded-full bg-slate-200 dark:bg-slate-800" />
+            </div>
           </Card>
-          <Card className="animate-pulse border-slate-200/80 md:col-span-2">
-            <CardHeader className="h-20 border-b border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40" />
-            <CardContent className="h-96" />
+          <Card className="animate-pulse border-slate-200/80 lg:col-span-2 dark:border-slate-800">
+            <CardHeader className="h-20 border-b border-slate-100 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-900/20" />
+            <CardContent className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-24 rounded-xl bg-slate-100 dark:bg-slate-800/50" />
+              ))}
+            </CardContent>
           </Card>
         </div>
       </div>
@@ -49,10 +48,10 @@ export function CategoryView({ id }: CategoryViewProps) {
 
   if (!category) {
     return (
-      <div className="flex h-100 flex-col items-center justify-center space-y-4">
-        <Building2 className="h-12 w-12 text-slate-300" />
-        <h2 className="text-xl font-semibold text-slate-700">Category not found</h2>
-        <Button onClick={() => router.back()} variant="outline">
+      <div className="flex h-[60vh] flex-col items-center justify-center space-y-4">
+        <Building2 className="h-16 w-16 text-slate-300" />
+        <h2 className="text-2xl font-bold tracking-tight text-slate-700">Category not found</h2>
+        <Button onClick={() => router.back()} variant="outline" className="mt-2 rounded-full px-6">
           <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
       </div>
@@ -66,7 +65,7 @@ export function CategoryView({ id }: CategoryViewProps) {
           variant="ghost"
           size="icon"
           onClick={() => router.back()}
-          className="h-10 w-10 shrink-0 rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100"
+          className="h-10 w-10 shrink-0 rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:scale-105 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -76,132 +75,135 @@ export function CategoryView({ id }: CategoryViewProps) {
         />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80 md:col-span-1">
-          <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-1 bg-gradient-to-r" />
-          <CardHeader className="flex flex-col items-center justify-center border-b border-slate-100 bg-slate-50/50 py-8 text-center dark:border-slate-800 dark:bg-slate-900/30">
-            <div className="bg-primary/5 text-primary ring-primary/10 mb-4 flex h-24 w-24 items-center justify-center rounded-3xl shadow-sm ring-1">
-              {category.categoryIcon ? (
-                <Image
-                  key={category.id}
-                  src={category.categoryIcon}
-                  alt={category.categoryName}
-                  width={64}
-                  height={64}
-                  className="object-contain"
-                />
-              ) : (
-                <Building2 className="h-10 w-10" />
-              )}
+      <div className="animate-in fade-in slide-in-from-bottom-4 grid gap-6 duration-700 lg:grid-cols-3">
+        {/* Profile Card */}
+        <Card className="relative overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
+          {/* Cover Background */}
+          <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-gradient-to-br opacity-90" />
+
+          <CardHeader className="relative px-6 pt-20 pb-8 text-center">
+            {/* Icon Container with overlap */}
+            <div className="shadow-primary/20 mx-auto mb-5 flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white p-2 shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105 dark:bg-slate-900 dark:ring-slate-950">
+              <div className="bg-primary/5 text-primary flex h-full w-full items-center justify-center rounded-[1.5rem]">
+                {category.categoryIcon ? (
+                  <Image
+                    key={category.id}
+                    src={category.categoryIcon}
+                    alt={category.categoryName}
+                    width={72}
+                    height={72}
+                    className="object-contain drop-shadow-md"
+                  />
+                ) : (
+                  <Building2 className="h-12 w-12" />
+                )}
+              </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">
+
+            <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               {category.categoryName}
             </CardTitle>
-            <span
-              className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${
-                category.status === "ACTIVE"
-                  ? "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400"
-                  : "bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400"
-              }`}
-            >
+
+            <div className="mt-4 flex justify-center">
               <span
-                className={`inline-block size-2 rounded-full ${
-                  category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm backdrop-blur-sm transition-colors ${
+                  category.status === "ACTIVE"
+                    ? "bg-green-500/10 text-green-700 ring-1 ring-green-500/20 dark:bg-green-500/20 dark:text-green-400"
+                    : "bg-red-500/10 text-red-700 ring-1 ring-red-500/20 dark:bg-red-500/20 dark:text-red-400"
                 }`}
-              />
-              {category.status === "ACTIVE" ? "Active" : "Inactive"}
-            </span>
+              >
+                <span className="relative flex h-2 w-2">
+                  <span
+                    className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                  ></span>
+                  <span
+                    className={`relative inline-flex h-2 w-2 rounded-full ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                  ></span>
+                </span>
+                {category.status === "ACTIVE" ? "Active" : "Inactive"}
+              </span>
+            </div>
           </CardHeader>
         </Card>
 
-        <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80 md:col-span-2">
-          <CardHeader className="border-b border-slate-100 px-6 py-5 dark:border-slate-800">
-            <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">
+        {/* Information Grid */}
+        <Card className="rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-2 dark:bg-slate-950 dark:shadow-none">
+          <CardHeader className="border-b border-slate-100/80 px-8 py-6 dark:border-slate-800/80">
+            <CardTitle className="flex items-center gap-3 text-lg font-bold text-slate-900 dark:text-white">
+              <div className="bg-primary h-5 w-1.5 rounded-full" />
               Information Overview
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0">
-            <dl className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0 dark:divide-slate-800">
-              <div className="px-6 py-5 sm:py-6">
-                <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <Building2 className="h-4.5 w-4.5" />
-                  Department
-                </dt>
-                <dd className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {category.department?.departmentName || "Unknown"}
-                </dd>
-              </div>
-
-              <div className="px-6 py-5 sm:border-t sm:border-slate-100 sm:py-6 dark:sm:border-slate-800">
-                <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <Layers className="h-4.5 w-4.5" />
-                  Parent Category
-                </dt>
-                <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {category.parentCategoryName || "None"}
-                </dd>
-              </div>
-
-              <div className="px-6 py-5 sm:border-t sm:border-slate-100 sm:py-6 dark:sm:border-slate-800">
-                <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <MapPin className="h-4.5 w-4.5" />
-                  City
-                </dt>
-                <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {category.cityName || "All Cities"}
-                </dd>
-              </div>
-
-              <div className="px-6 py-5 sm:border-t sm:border-slate-100 sm:py-6 dark:sm:border-slate-800">
-                <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <User className="h-4.5 w-4.5" />
-                  Created By
-                </dt>
-                <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {category.createdBy || "System"}
-                </dd>
-              </div>
-
-              <div className="px-6 py-5 sm:border-t sm:border-slate-100 sm:py-6 dark:sm:border-slate-800">
-                <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <Users className="h-4.5 w-4.5" />
-                  Sub-categories
-                </dt>
-                <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {category.children?.length || 0}
-                </dd>
-              </div>
-
-              <div className="px-6 py-5 sm:border-t sm:border-slate-100 sm:py-6 dark:sm:border-slate-800">
-                <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <Calendar className="h-4.5 w-4.5" />
-                  Added On
-                </dt>
-                <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {category.addedOn
-                    ? format(new Date(category.addedOn), "MMMM d, yyyy 'at' h:mm a")
+          <CardContent className="p-8">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <InfoCard
+                icon={<Building2 className="h-5 w-5" />}
+                label="Department"
+                value={category.department?.departmentName || "Unknown"}
+              />
+              <InfoCard
+                icon={<Layers className="h-5 w-5" />}
+                label="Parent Category"
+                value={category.parentCategoryName || category.parent?.categoryName || "None"}
+              />
+              <InfoCard
+                icon={<MapPin className="h-5 w-5" />}
+                label="City"
+                value={category.city?.name || category.cityName || "All Cities"}
+              />
+              <InfoCard
+                icon={<User className="h-5 w-5" />}
+                label="Created By"
+                value={category.createdBy || "System"}
+              />
+              <InfoCard
+                icon={<Users className="h-5 w-5" />}
+                label="Sub-categories"
+                value={category.children?.length?.toString() || "0"}
+              />
+              <InfoCard
+                icon={<Calendar className="h-5 w-5" />}
+                label="Added On"
+                value={
+                  category.addedOn
+                    ? format(new Date(category.addedOn), "MMM d, yyyy 'at' h:mm a")
                     : category.createdAt
-                      ? format(new Date(category.createdAt), "MMMM d, yyyy 'at' h:mm a")
-                      : "-"}
-                </dd>
-              </div>
-
-              <div className="px-6 py-5 sm:border-t sm:border-slate-100 sm:py-6 dark:sm:border-slate-800">
-                <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <Clock className="h-4.5 w-4.5" />
-                  Modified On
-                </dt>
-                <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {category.modifiedOn
-                    ? format(new Date(category.modifiedOn), "MMMM d, yyyy 'at' h:mm a")
+                      ? format(new Date(category.createdAt), "MMM d, yyyy 'at' h:mm a")
+                      : "-"
+                }
+              />
+              <InfoCard
+                icon={<Clock className="h-5 w-5" />}
+                label="Modified On"
+                value={
+                  category.modifiedOn
+                    ? format(new Date(category.modifiedOn), "MMM d, yyyy 'at' h:mm a")
                     : category.updatedAt
-                      ? format(new Date(category.updatedAt), "MMMM d, yyyy 'at' h:mm a")
-                      : "-"}
-                </dd>
-              </div>
-            </dl>
+                      ? format(new Date(category.updatedAt), "MMM d, yyyy 'at' h:mm a")
+                      : "-"
+                }
+              />
+            </div>
           </CardContent>
         </Card>
+      </div>
+    </div>
+  );
+}
+
+function InfoCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="group hover:border-primary/20 hover:shadow-primary/5 relative flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/30 dark:hover:bg-slate-900">
+      <div className="group-hover:bg-primary/10 group-hover:text-primary group-hover:ring-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-colors dark:bg-slate-800 dark:ring-slate-700">
+        <div className="group-hover:text-primary text-slate-500 transition-colors dark:text-slate-400">
+          {icon}
+        </div>
+      </div>
+      <div className="flex flex-col justify-center space-y-1">
+        <span className="text-xs font-medium tracking-wider text-slate-500 uppercase dark:text-slate-400">
+          {label}
+        </span>
+        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{value}</span>
       </div>
     </div>
   );
