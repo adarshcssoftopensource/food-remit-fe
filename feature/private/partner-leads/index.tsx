@@ -59,11 +59,10 @@ export function PartnerLeadsManagement() {
             key={key}
             label={label}
             value={stats[key as keyof typeof stats] || 0}
-            trendLabel="in pipeline"
-            trendValue=""
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}
+            loading={isLoading}
           />
         ))}
       </div>
@@ -87,7 +86,7 @@ export function PartnerLeadsManagement() {
               searchValue={searchValue}
               onSearchChange={(val) => {
                 setSearchValue(val);
-                setPage(1); // Reset page on search
+                setPage(1);
               }}
               onSortingChange={setSorting}
               manualSorting={true}
@@ -98,7 +97,7 @@ export function PartnerLeadsManagement() {
               onPageChange={setPage}
               onRowsPerPageChange={(newLimit) => {
                 setLimit(newLimit);
-                setPage(1); // Reset page on limit change
+                setPage(1);
               }}
             />
           </div>

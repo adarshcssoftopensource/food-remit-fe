@@ -3,16 +3,15 @@
 import { Building2, Filter, Plus, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import {
-  CATALOGUE_COUNTRY_OPTIONS,
-  CATALOGUE_STATUS_OPTIONS,
-  DEPARTMENT_STAT_CONFIG,
-  DepartmentData,
-  MOCK_DEPARTMENTS,
-} from "@/constants/catalogue-management";
-
+import { CountrySelect } from "@/components/common/country-select";
+import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
+import { useDebounce } from "@/lib/debounce";
+import { SortingState } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
 import { getDepartmentColumns } from "./columns/department-columns";
 import { DepartmentFormDialog } from "./components/department-form-dialog";
+import { useGetDepartments, type UseGetDepartmentsArgs } from "./hooks/use-get-departments";
+import type { DepartmentData } from "./types/department.types";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
@@ -38,26 +37,40 @@ export function DepartmentsManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDept, setEditingDept] = useState<DepartmentData | null>(null);
 
-  const filteredData = useMemo<DepartmentData[]>(
-    () =>
-      MOCK_DEPARTMENTS.filter((dept) => {
-        if (status !== "all" && dept.status !== status) return false;
-        if (country !== "all" && dept.country !== country) return false;
-        const date = new Date(dept.createdOn);
-        if (fromDate && date < fromDate) return false;
-        if (toDate && date > toDate) return false;
-        return true;
-      }),
-    [status, country, fromDate, toDate],
-  );
+  const router = useRouter();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const debouncedSearch = useDebounce(searchQuery, 500);
+
+  const queryArgs: UseGetDepartmentsArgs = useMemo(() => {
+    return {
+      page: currentPage,
+      limit: pageSize,
+      search: debouncedSearch || undefined,
+      countryId: country !== "all" && country !== "All" ? country : undefined,
+      status: status !== "all" ? status : undefined,
+      fromDate: fromDate ? fromDate.toISOString().split("T")[0] : undefined,
+      toDate: toDate ? toDate.toISOString().split("T")[0] : undefined,
+      sortBy: sorting.length ? sorting[0].id : undefined,
+      sortOrder: sorting.length ? (sorting[0].desc ? "desc" : "asc") : undefined,
+    };
+  }, [currentPage, pageSize, debouncedSearch, country, status, fromDate, toDate, sorting]);
+
+  const { data: res, isLoading } = useGetDepartments(queryArgs);
+
+  const departments = res?.data ?? [];
 
   const stats = {
-    total: MOCK_DEPARTMENTS.length,
-    active: MOCK_DEPARTMENTS.filter((d) => d.status === "Active").length,
-    inactive: MOCK_DEPARTMENTS.filter((d) => d.status === "Inactive").length,
+    total: res?.stats?.total ?? 0,
+    active: res?.stats?.active ?? 0,
+    inactive: res?.stats?.inactive ?? 0,
   };
 
-  const hasFilters = !!(fromDate || toDate || status !== "all" || country !== "all");
+  const hasFilters = !!(fromDate || toDate || status !== "all" || country !== "all" || searchQuery);
 
   const clearFilters = () => {
     setFromDate(undefined);
@@ -71,7 +84,9 @@ export function DepartmentsManagement() {
     setDialogOpen(true);
   };
 
-  const handleView = (_dept: DepartmentData) => {};
+  const handleView = (dept: DepartmentData) => {
+    router.push(`/catalogue-management/departments/${dept.id}`);
+  };
 
   const columns = useMemo(
     () => getDepartmentColumns(handleEdit, handleView),
@@ -165,21 +180,13 @@ export function DepartmentsManagement() {
                   Country
                 </Label>
 
-                <Select value={country} onValueChange={(v) => setCountry(v ?? "all")}>
-                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
-                    <SelectValue />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {CATALOGUE_COUNTRY_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <CountrySelect
+                  value={country === "all" ? "" : country}
+                  onValueChange={(val) => setCountry(val || "all")}
+                  valueKey="id"
+                  includeAll
+                  allLabel="All Countries"
+                />
               </div>
 
               <div className="w-full lg:w-45">
@@ -262,7 +269,21 @@ export function DepartmentsManagement() {
           </div>
 
           <div className="px-3 pt-2 pb-4 sm:px-4">
-            <DataTable columns={columns} data={filteredData} searchKey="name" />
+            <DataTable
+              columns={columns}
+              data={departments}
+              loading={isLoading}
+              searchKey="departmentName"
+              searchValue={searchQuery}
+              onSearchChange={setSearchQuery}
+              onSortingChange={setSorting}
+              manualSorting
+              currentPage={currentPage}
+              totalPages={res?.pagination?.totalPages ?? 1}
+              rowsPerPage={pageSize}
+              onPageChange={setCurrentPage}
+              onRowsPerPageChange={setPageSize}
+            />
           </div>
         </CardContent>
       </Card>

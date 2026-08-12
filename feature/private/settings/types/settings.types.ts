@@ -147,3 +147,14 @@ export interface UseGetCitiesArgs {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
+
+export interface ChangePasswordPayload {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword?: string;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+  status: boolean;
+}

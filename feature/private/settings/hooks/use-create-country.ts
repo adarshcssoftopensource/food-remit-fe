@@ -15,6 +15,9 @@ export function useCreateCountry() {
         queryClient.invalidateQueries({
           queryKey: API_CACHE_KEYS.SETTINGS_COUNTRIES,
         });
+        queryClient.invalidateQueries({
+          queryKey: API_CACHE_KEYS.SETTINGS_COUNTRIES_DROPDOWN,
+        });
       },
     },
   );
