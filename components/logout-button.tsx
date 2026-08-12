@@ -29,7 +29,6 @@ export function LogoutButton({ showConfirmation = false }: LogoutButtonProps) {
       router.push(ROUTES.AUTH.LOGIN);
       router.refresh();
       successToast({
-        title: "",
         description: "Session logout successfully",
       });
     } catch {}

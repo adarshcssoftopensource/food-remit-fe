@@ -41,7 +41,6 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
       await mutateAsync({ email: data?.email });
       setSubmittedEmail(data.email);
       successToast({
-        title: "",
         description: "A password reset link has been sent to your email.",
       });
     } catch {}

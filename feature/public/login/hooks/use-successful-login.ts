@@ -45,7 +45,6 @@ export const useSuccessfulLogin = () => {
     }
 
     successToast({
-      title: "",
       description: successMessage,
     });
     router.refresh();

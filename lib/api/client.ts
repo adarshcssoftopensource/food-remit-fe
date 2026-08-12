@@ -112,7 +112,6 @@ axiosInstance.interceptors.response.use(
 
     if (error.response?.status !== 401 || originalRequest?._retry) {
       errorToast({
-        title: "",
         description: message,
       });
     }

@@ -9,4 +9,5 @@ export const API_CACHE_KEYS = {
   SETTINGS_COUNTRIES_DROPDOWN: ["settings-countries-dropdown"],
   SETTINGS_CITIES: ["settings-cities"],
   SETTINGS_CITIES_DROPDOWN: ["settings-cities-dropdown"],
+  FLASH_IMAGES: ["flash-images"],
 };

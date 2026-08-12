@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
+import { successToast, errorToast } from "@/components/toaster";
 import { useUpdateDepartmentStatus } from "../hooks/use-update-department-status";
 import { DepartmentData } from "../types/department.types";
 
@@ -21,8 +22,10 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
     setIsActive(checked);
     try {
       await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
+      successToast({ description: "Department status updated successfully" });
     } catch (error) {
       setIsActive(!checked);
+      errorToast({ description: "Failed to update department status" });
     }
   };
 

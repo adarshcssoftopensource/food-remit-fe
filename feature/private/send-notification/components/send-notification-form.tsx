@@ -44,7 +44,6 @@ export function SendNotificationForm({ className, ...props }: React.ComponentPro
     try {
       await mutateAsync(data);
       successToast({
-        title: "",
         description: "Notification sent successfully.",
       });
     } catch (error) {

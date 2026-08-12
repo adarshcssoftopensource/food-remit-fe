@@ -4,18 +4,30 @@ import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+  Calendar,
+  Clock,
+  Layers,
+  MapPin,
+  Package,
+  Barcode,
+  Scale,
+  Percent,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useGetCategory } from "./hooks/use-get-category";
+import { useGetItemById } from "./hooks/use-get-item-by-id";
 
-interface CategoryViewProps {
+interface ItemViewProps {
   id: string;
 }
 
-export function CategoryView({ id }: CategoryViewProps) {
+export function ItemView({ id }: ItemViewProps) {
   const router = useRouter();
-  const { data: category, isLoading } = useGetCategory(id);
+  const { data: response, isLoading } = useGetItemById(id);
+  const item = response?.data;
 
   if (isLoading) {
     return (
@@ -36,7 +48,7 @@ export function CategoryView({ id }: CategoryViewProps) {
           <Card className="animate-pulse border-slate-200/80 lg:col-span-2 dark:border-slate-800">
             <CardHeader className="h-20 border-b border-slate-100 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-900/20" />
             <CardContent className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div key={i} className="h-24 rounded-xl bg-slate-100 dark:bg-slate-800/50" />
               ))}
             </CardContent>
@@ -46,11 +58,11 @@ export function CategoryView({ id }: CategoryViewProps) {
     );
   }
 
-  if (!category) {
+  if (!item) {
     return (
       <div className="flex h-[60vh] flex-col items-center justify-center space-y-4">
-        <Building2 className="h-16 w-16 text-slate-300" />
-        <h2 className="text-2xl font-bold tracking-tight text-slate-700">Category not found</h2>
+        <Package className="h-16 w-16 text-slate-300" />
+        <h2 className="text-2xl font-bold tracking-tight text-slate-700">Item not found</h2>
         <Button onClick={() => router.back()} variant="outline" className="mt-2 rounded-full px-6">
           <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
@@ -70,8 +82,8 @@ export function CategoryView({ id }: CategoryViewProps) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <PageHeader
-          title="Category Details"
-          description="View comprehensive information about this category."
+          title="Item Details"
+          description="View comprehensive information about this catalogue item."
         />
       </div>
 
@@ -85,43 +97,52 @@ export function CategoryView({ id }: CategoryViewProps) {
             {/* Icon Container with overlap */}
             <div className="shadow-primary/20 mx-auto flex h-60 w-60 shrink-0 items-center justify-center rounded-[3rem] bg-white p-3 shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105 dark:bg-slate-900 dark:ring-slate-950">
               <div className="bg-primary/5 text-primary relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2.5rem]">
-                {category.categoryIcon ? (
+                {item.productImageUrl ? (
                   <Image
-                    key={category.id}
-                    src={category.categoryIcon}
-                    alt={category.categoryName}
+                    key={item.id}
+                    src={item.productImageUrl}
+                    alt={item.productName}
                     fill
                     className="object-cover"
                   />
                 ) : (
-                  <Building2 className="h-20 w-20" />
+                  <Package className="h-20 w-20" />
                 )}
               </div>
             </div>
 
             <div className="mt-10 w-full text-center">
               <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {category.categoryName}
+                {item.productName}
               </CardTitle>
+              {item.description && (
+                <p className="mt-2 text-sm text-slate-500">{item.description}</p>
+              )}
 
-              <div className="mt-4 flex justify-center">
+              <div className="mt-4 flex justify-center gap-2">
                 <span
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm backdrop-blur-sm transition-colors ${
-                    category.status === "ACTIVE"
+                    item.status === "ACTIVE"
                       ? "bg-green-500/10 text-green-700 ring-1 ring-green-500/20 dark:bg-green-500/20 dark:text-green-400"
                       : "bg-red-500/10 text-red-700 ring-1 ring-red-500/20 dark:bg-red-500/20 dark:text-red-400"
                   }`}
                 >
                   <span className="relative flex h-2 w-2">
                     <span
-                      className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                      className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${item.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
                     ></span>
                     <span
-                      className={`relative inline-flex h-2 w-2 rounded-full ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                      className={`relative inline-flex h-2 w-2 rounded-full ${item.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
                     ></span>
                   </span>
-                  {category.status === "ACTIVE" ? "Active" : "Inactive"}
+                  {item.status === "ACTIVE" ? "Active" : "Inactive"}
                 </span>
+
+                {item.adminShare && (
+                  <span className="inline-flex items-center rounded-full bg-blue-500/10 px-4 py-1.5 text-sm font-semibold text-blue-700 shadow-sm ring-1 ring-blue-500/20">
+                    Admin Share
+                  </span>
+                )}
               </div>
             </div>
           </CardHeader>
@@ -138,53 +159,85 @@ export function CategoryView({ id }: CategoryViewProps) {
           <CardContent className="p-8">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <InfoCard
+                icon={<MapPin className="h-5 w-5" />}
+                label="Country"
+                value={item.country?.name || "Unknown"}
+              />
+              <InfoCard
                 icon={<Building2 className="h-5 w-5" />}
                 label="Department"
-                value={category.department?.departmentName || "Unknown"}
+                value={item.department?.departmentName || "None"}
               />
               <InfoCard
                 icon={<Layers className="h-5 w-5" />}
-                label="Parent Category"
-                value={category.parentCategoryName || category.parent?.categoryName || "None"}
+                label="Category"
+                value={item.category?.categoryName || "None"}
               />
               <InfoCard
-                icon={<MapPin className="h-5 w-5" />}
-                label="City"
-                value={category.city?.name || category.cityName || "All Cities"}
+                icon={<Barcode className="h-5 w-5" />}
+                label="UPC Code"
+                value={item.upcCode || "N/A"}
               />
               <InfoCard
-                icon={<User className="h-5 w-5" />}
-                label="Created By"
-                value={category.createdBy || "System"}
+                icon={<Scale className="h-5 w-5" />}
+                label="Base Quantity"
+                value={item.baseQuantity && item.unit ? `${item.baseQuantity} ${item.unit}` : "N/A"}
               />
               <InfoCard
-                icon={<Users className="h-5 w-5" />}
-                label="Sub-categories"
-                value={category.children?.length?.toString() || "0"}
+                icon={<Percent className="h-5 w-5" />}
+                label="Discount"
+                value={
+                  item.discountAvailability
+                    ? item.discountPercentage
+                      ? `${item.discountPercentage}%`
+                      : "Available"
+                    : "Not Available"
+                }
               />
               <InfoCard
                 icon={<Calendar className="h-5 w-5" />}
                 label="Added On"
                 value={
-                  category.addedOn
-                    ? format(new Date(category.addedOn), "MMM d, yyyy 'at' h:mm a")
-                    : category.createdAt
-                      ? format(new Date(category.createdAt), "MMM d, yyyy 'at' h:mm a")
-                      : "-"
+                  item.createdAt ? format(new Date(item.createdAt), "MMM d, yyyy 'at' h:mm a") : "-"
                 }
               />
               <InfoCard
                 icon={<Clock className="h-5 w-5" />}
                 label="Modified On"
                 value={
-                  category.modifiedOn
-                    ? format(new Date(category.modifiedOn), "MMM d, yyyy 'at' h:mm a")
-                    : category.updatedAt
-                      ? format(new Date(category.updatedAt), "MMM d, yyyy 'at' h:mm a")
-                      : "-"
+                  item.updatedAt ? format(new Date(item.updatedAt), "MMM d, yyyy 'at' h:mm a") : "-"
                 }
               />
             </div>
+
+            {/* Additional info images if present */}
+            {(item.productInfoImageUrl || item.nutritionInfoImageUrl) && (
+              <div className="mt-8">
+                <h3 className="mb-4 text-sm font-semibold text-slate-700">Additional Images</h3>
+                <div className="flex gap-4">
+                  {item.productInfoImageUrl && (
+                    <div className="relative h-32 w-32 overflow-hidden rounded-xl border">
+                      <Image
+                        src={item.productInfoImageUrl}
+                        alt="Product Info"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  {item.nutritionInfoImageUrl && (
+                    <div className="relative h-32 w-32 overflow-hidden rounded-xl border">
+                      <Image
+                        src={item.nutritionInfoImageUrl}
+                        alt="Nutrition Info"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -204,7 +257,9 @@ function InfoCard({ icon, label, value }: { icon: React.ReactNode; label: string
         <span className="text-xs font-medium tracking-wider text-slate-500 uppercase dark:text-slate-400">
           {label}
         </span>
-        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{value}</span>
+        <span className="text-sm font-semibold text-slate-900 capitalize dark:text-slate-100">
+          {value}
+        </span>
       </div>
     </div>
   );

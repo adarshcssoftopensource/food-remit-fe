@@ -5,9 +5,8 @@ import { useMemo, useState } from "react";
 
 import { CountrySelect } from "@/components/common/country-select";
 import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
-import { useDebounce } from "@/lib/debounce";
-import { SortingState } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
+import { useTableFilters } from "@/hooks/use-table-filters";
 import { getDepartmentColumns } from "./columns/department-columns";
 import { DepartmentFormDialog } from "./components/department-form-dialog";
 import { useGetDepartments, type UseGetDepartmentsArgs } from "./hooks/use-get-departments";
@@ -30,21 +29,33 @@ import {
 } from "@/components/ui/select";
 
 export function DepartmentsManagement() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [status, setStatus] = useState("all");
+  const {
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    status,
+    setStatus,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    searchQuery,
+    setSearchQuery,
+    sorting,
+    setSorting,
+    debouncedSearch,
+    formattedFromDate,
+    formattedToDate,
+    sortBy,
+    sortOrder,
+  } = useTableFilters();
+
   const [country, setCountry] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDept, setEditingDept] = useState<DepartmentData | null>(null);
 
   const router = useRouter();
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sorting, setSorting] = useState<SortingState>([]);
-
-  const debouncedSearch = useDebounce(searchQuery, 500);
 
   const queryArgs: UseGetDepartmentsArgs = useMemo(() => {
     return {
@@ -53,12 +64,22 @@ export function DepartmentsManagement() {
       search: debouncedSearch || undefined,
       countryId: country !== "all" && country !== "All" ? country : undefined,
       status: status !== "all" ? status : undefined,
-      fromDate: fromDate ? fromDate.toISOString().split("T")[0] : undefined,
-      toDate: toDate ? toDate.toISOString().split("T")[0] : undefined,
-      sortBy: sorting.length ? sorting[0].id : undefined,
-      sortOrder: sorting.length ? (sorting[0].desc ? "desc" : "asc") : undefined,
+      fromDate: formattedFromDate,
+      toDate: formattedToDate,
+      sortBy,
+      sortOrder,
     };
-  }, [currentPage, pageSize, debouncedSearch, country, status, fromDate, toDate, sorting]);
+  }, [
+    currentPage,
+    pageSize,
+    debouncedSearch,
+    country,
+    status,
+    formattedFromDate,
+    formattedToDate,
+    sortBy,
+    sortOrder,
+  ]);
 
   const { data: res, isLoading } = useGetDepartments(queryArgs);
 
@@ -77,6 +98,7 @@ export function DepartmentsManagement() {
     setToDate(undefined);
     setStatus("all");
     setCountry("all");
+    setSearchQuery("");
   };
 
   const handleEdit = (dept: DepartmentData) => {
@@ -119,8 +141,6 @@ export function DepartmentsManagement() {
             key={key}
             label={label}
             value={stats[key]}
-            trendLabel="Compared to last month"
-            trendValue="+8%"
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}

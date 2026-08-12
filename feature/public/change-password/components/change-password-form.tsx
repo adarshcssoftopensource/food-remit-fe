@@ -55,7 +55,6 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
       router.refresh();
       router.push(ROUTES.AUTH.LOGIN);
       successToast({
-        title: "",
         description: "Your password has been changed successfully. ",
       });
     } catch {}

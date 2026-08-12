@@ -13,7 +13,7 @@ export interface ToasterOptions {
 const defaultErrorDescription = "Something went wrong. Please try again.";
 
 export function successToast(options: ToasterOptions) {
-  const { id, title = "Success", description, duration } = options;
+  const { id, title = "", description, duration } = options;
   toast.success(title, typeof description === "string" ? description : undefined, {
     id,
     duration: duration ?? 3000,
@@ -21,7 +21,7 @@ export function successToast(options: ToasterOptions) {
 }
 
 export function errorToast(options: ToasterOptions) {
-  const { id, title = "Error", description, duration } = options;
+  const { id, title = "", description, duration } = options;
   const desc = description ?? defaultErrorDescription;
   toast.error(title, typeof desc === "string" ? desc : String(desc), {
     id,
@@ -30,7 +30,7 @@ export function errorToast(options: ToasterOptions) {
 }
 
 export function infoToast(options: ToasterOptions) {
-  const { id, title = "Info", description, duration } = options;
+  const { id, title = "", description, duration } = options;
   toast.info(title, typeof description === "string" ? description : undefined, {
     id,
     duration: duration ?? 4000,

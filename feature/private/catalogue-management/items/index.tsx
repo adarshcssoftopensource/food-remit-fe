@@ -6,9 +6,13 @@ import { useMemo, useState } from "react";
 import { CATALOGUE_STATUS_OPTIONS, ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
 import { ItemData } from "./types/item.types";
 import { useGetItems } from "./hooks/use-get-items";
+import { format } from "date-fns";
+import { useTableFilters } from "@/hooks/use-table-filters";
 
 import { getItemColumns } from "./columns/item-columns";
 import { ItemFormDialog } from "./components/item-form-dialog";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/config/routes";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
@@ -30,18 +34,29 @@ import { DepartmentSelect } from "@/components/common/department-select";
 import { CategorySelect } from "@/components/common/category-select";
 
 export function ItemsManagement() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [status, setStatus] = useState("all");
+  const {
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    status,
+    setStatus,
+    page,
+    setPage,
+    limit,
+    setLimit,
+    searchQuery: search,
+    setSearchQuery: setSearch,
+    formattedFromDate,
+    formattedToDate,
+  } = useTableFilters();
+
+  const router = useRouter();
   const [country, setCountry] = useState("all");
   const [department, setDepartment] = useState("all");
   const [category, setCategory] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ItemData | null>(null);
-
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [search, setSearch] = useState("");
 
   const { data: itemsResponse, isLoading } = useGetItems({
     page,
@@ -51,8 +66,8 @@ export function ItemsManagement() {
     departmentId: department !== "all" ? department : undefined,
     categoryId: category !== "all" ? category : undefined,
     status: status !== "all" ? status : undefined,
-    fromDate: fromDate?.toISOString().split("T")[0],
-    toDate: toDate?.toISOString().split("T")[0],
+    fromDate: formattedFromDate,
+    toDate: formattedToDate,
   });
 
   const filteredData = itemsResponse?.data || [];
@@ -80,6 +95,7 @@ export function ItemsManagement() {
     setCountry("all");
     setDepartment("all");
     setCategory("all");
+    setSearch("");
   };
 
   const handleEdit = (item: ItemData) => {
@@ -87,7 +103,9 @@ export function ItemsManagement() {
     setDialogOpen(true);
   };
 
-  const handleView = (_item: ItemData) => {};
+  const handleView = (item: ItemData) => {
+    router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS}/${item.id}`);
+  };
 
   const columns = useMemo(
     () => getItemColumns(handleEdit, handleView),
@@ -120,8 +138,6 @@ export function ItemsManagement() {
             key={key}
             label={label}
             value={stats[key]}
-            trendLabel="Compared to last month"
-            trendValue="+10%"
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}

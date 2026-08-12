@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronDown, Globe, Loader2, Search } from "lucide-react";
+import { Check, ChevronDown, Flag, Globe, Loader2, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -124,17 +124,17 @@ export function CountrySelect({
               className,
             )}
           >
-            <span className="flex min-w-0 items-center gap-2">
+            <span className="flex min-w-0 items-center gap-2 capitalize">
               {selectedCountry ? (
                 countryFlag(selectedCountry.code || selectedCountry.countryCode) ? (
                   <span aria-hidden="true" className="text-base leading-none">
                     {countryFlag(selectedCountry.code || selectedCountry.countryCode)}
                   </span>
                 ) : (
-                  <Globe className="size-4 shrink-0 text-slate-400" />
+                  <Flag className="size-4 shrink-0 text-slate-400" />
                 )
               ) : includeAll ? (
-                <Globe className="size-4 shrink-0 text-slate-400" />
+                <Flag className="size-4 shrink-0 text-slate-400" />
               ) : null}
               <span className="truncate">{displayLabel}</span>
             </span>
@@ -163,7 +163,7 @@ export function CountrySelect({
         </div>
 
         <div
-          className="max-h-60 [scrollbar-width:thin] overflow-y-auto overscroll-contain rounded-md pt-1"
+          className="max-h-60 scrollbar-thin overflow-y-auto overscroll-contain rounded-md pt-1"
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
           style={{ overscrollBehavior: "contain" }}
@@ -182,7 +182,7 @@ export function CountrySelect({
                   "bg-primary/10 text-primary font-medium",
               )}
             >
-              <Globe className="size-4 shrink-0 text-slate-400" />
+              <Flag className="size-4 shrink-0 text-slate-400" />
               <span className="flex-1">{allLabel}</span>
               {(value === "All" || value === "all" || !value) && <Check className="size-4" />}
             </Button>
@@ -218,7 +218,7 @@ export function CountrySelect({
                     setSearchQuery("");
                   }}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-100",
+                    "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 capitalize transition-colors hover:bg-slate-100",
                     isSelected && "bg-primary/10 text-primary font-medium",
                   )}
                 >
@@ -227,9 +227,9 @@ export function CountrySelect({
                       {flag}
                     </span>
                   ) : (
-                    <Globe className="size-4 shrink-0 text-slate-400" />
+                    <Flag className="size-4 shrink-0 text-slate-400" />
                   )}
-                  <span className="flex-1 truncate">{country.name}</span>
+                  <span className="flex-1 truncate capitalize">{country.name}</span>
                   {isSelected && <Check className="size-4" />}
                 </Button>
               );

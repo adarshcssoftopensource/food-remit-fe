@@ -77,7 +77,7 @@ export function DepartmentView({ id }: DepartmentViewProps) {
 
       <div className="animate-in fade-in slide-in-from-bottom-4 grid gap-6 duration-700 lg:grid-cols-3">
         {/* Profile Card */}
-        <Card className="relative flex flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
+        <Card className="relative flex h-fit flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
           {/* Cover Background */}
           <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-gradient-to-br opacity-90" />
 
