@@ -2,6 +2,7 @@
 
 import { Building2, Loader2 } from "lucide-react";
 
+import { CountrySelect } from "@/components/common/country-select";
 import { ImageUpload } from "@/components/common/image-upload";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,9 +21,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { CountrySelect } from "@/components/common/country-select";
-import type { DepartmentData } from "../types/department.types";
 import { DepartmentFormValues, useDepartmentForm } from "../../hooks/useDepartmentForm";
+import type { DepartmentData } from "../types/department.types";
 
 interface DepartmentFormDialogProps {
   open: boolean;

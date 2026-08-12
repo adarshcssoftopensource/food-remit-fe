@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useChangePassword } from "../hooks/use-change-password";
 import { PasswordFormValues, passwordSchema } from "../schema/password.schema";
 
 const requirements = [
@@ -18,16 +19,18 @@ const requirements = [
 ];
 
 export function ChangePassword() {
+  const { mutateAsync: changePasswordMutation, isPending } = useChangePassword();
+
   const {
     control,
     handleSubmit,
     reset,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
-      currentPassword: "",
+      oldPassword: "",
       newPassword: "",
       confirmPassword: "",
     },
@@ -47,12 +50,20 @@ export function ChangePassword() {
           : "bg-emerald-500";
 
   const onSubmit = async (data: PasswordFormValues) => {
-    console.log("Password change data:", data);
-    reset();
-    successToast({
-      title: "Password Updated",
-      description: "Your password has been changed successfully.",
-    });
+    try {
+      await changePasswordMutation({
+        oldPassword: data.oldPassword,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword,
+      });
+      reset();
+      successToast({
+        title: "Password Updated",
+        description: "Your password has been changed successfully.",
+      });
+    } catch {
+      // Error handling is managed by API interceptor
+    }
   };
 
   return (
@@ -82,29 +93,25 @@ export function ChangePassword() {
         <CardContent className="p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Controller
-              name="currentPassword"
+              name="oldPassword"
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel htmlFor="currentPassword" className="text-sm font-semibold">
-                    Current Password <span className="text-red-500">*</span>
+                  <FieldLabel htmlFor="oldPassword" className="text-sm font-semibold">
+                    Old Password <span className="text-red-500">*</span>
                   </FieldLabel>
                   <PasswordInput
                     {...field}
-                    placeholder="Enter your current password"
-                    isInvalid={!!errors.currentPassword}
+                    placeholder="Enter your old password"
+                    isInvalid={!!errors.oldPassword}
                     leftIcon={<Lock className="size-4" />}
                   />
-                  {errors.currentPassword && (
-                    <p className="text-xs font-medium text-red-500">
-                      {errors.currentPassword.message}
-                    </p>
+                  {errors.oldPassword && (
+                    <p className="text-xs font-medium text-red-500">{errors.oldPassword.message}</p>
                   )}
                 </div>
               )}
             />
-
-            <div className="h-px bg-slate-100" />
 
             <Controller
               name="newPassword"
@@ -180,12 +187,19 @@ export function ChangePassword() {
             />
 
             <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => reset()} className="px-6">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isPending}
+                onClick={() => reset()}
+                className="px-6"
+              >
                 Reset
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isPending}
+                isLoading={isPending}
                 className="shadow-primary/20 gap-2 px-6 shadow-md"
               >
                 <ShieldCheck className="h-4 w-4" />
