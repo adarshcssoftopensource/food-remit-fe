@@ -36,9 +36,7 @@ export function useGetDepartments(args: UseGetDepartmentsArgs = {}) {
     sortOrder: args.sortOrder ?? "desc",
   });
 
-  const query = useApiQuery<RawGetDepartmentsResponse>(cacheKey, url, {
-    staleTime: 1000 * 60 * 2, // 2 minutes
-  });
+  const query = useApiQuery<RawGetDepartmentsResponse>(cacheKey, url, {});
 
   const data = useMemo<GetDepartmentsResponse | undefined>(() => {
     const api = query.data;

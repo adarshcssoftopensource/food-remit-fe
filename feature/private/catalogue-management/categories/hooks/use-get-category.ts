@@ -14,7 +14,6 @@ export function useGetCategory(id: string) {
     ["category", id],
     CATALOGUE_MANAGEMENT_ENDPOINTS.GET_CATEGORY(id),
     {
-      staleTime: 1000 * 60 * 5, // 5 minutes
       enabled: !!id,
     },
   );

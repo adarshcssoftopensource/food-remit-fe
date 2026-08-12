@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DepartmentSelect } from "@/components/common/department-select";
+import { CountrySelect } from "@/components/common/country-select";
 import type { CategoryData } from "../types/category.types";
 import { CategoryFormValues, useCategoryForm } from "../../hooks/useCategoryForm";
 
@@ -82,6 +83,30 @@ export function CategoryFormDialog({
               <div className="space-y-5">
                 <FormField
                   control={form.control}
+                  name="countryId"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                        Country <span className="text-destructive">*</span>
+                      </FormLabel>
+
+                      <CountrySelect
+                        value={field.value}
+                        onValueChange={(val) => {
+                          field.onChange(val);
+                          form.setValue("departmentId", "");
+                        }}
+                        placeholder="Select country"
+                        className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
+                      />
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="departmentId"
                   render={({ field }) => (
                     <FormItem className="space-y-2">
@@ -90,9 +115,12 @@ export function CategoryFormDialog({
                       </FormLabel>
 
                       <DepartmentSelect
+                        countryId={form.watch("countryId")}
                         value={field.value}
                         onValueChange={field.onChange}
                         placeholder="Select department"
+                        disabled={!form.watch("countryId")}
+                        className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
                       />
 
                       <FormMessage />

@@ -40,9 +40,7 @@ export function useGetSubAdmins(args: UseGetSubAdminsArgs = {}) {
     sortOrder: args.sortOrder ?? "asc",
   });
 
-  const query = useApiQuery<RawGetSubAdminsResponse>(cacheKey, url, {
-    staleTime: 1000 * 60 * 2, // 2 minutes
-  });
+  const query = useApiQuery<RawGetSubAdminsResponse>(cacheKey, url, {});
 
   const data = useMemo<GetSubAdminsResponse | undefined>(() => {
     const api = query.data;

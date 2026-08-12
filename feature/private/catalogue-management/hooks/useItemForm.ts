@@ -2,7 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ItemData } from "@/constants/catalogue-management";
+import { toast } from "sonner";
+import { ItemData } from "../items/types/item.types";
+import { useCreateItem } from "../items/hooks/use-create-item";
+import { useUpdateItem } from "../items/hooks/use-update-item";
 
 const itemSchema = z.object({
   productName: z.string().min(2, "Item name must be at least 2 characters"),
@@ -13,7 +16,7 @@ const itemSchema = z.object({
   discountPercentage: z.string().optional(),
   baseQuantity: z.string().min(1, "Base quantity is required"),
   unit: z.string().min(1, "Unit is required"),
-  country: z.string().min(1, "Country is required"),
+  countryId: z.string().min(1, "Country is required"),
   departmentId: z.string().min(1, "Department is required"),
   categoryId: z.string().min(1, "Category is required"),
   productImageFile: z.array(z.instanceof(File)).optional(),
@@ -29,7 +32,10 @@ export function useItemForm(
   onOpenChange: (open: boolean) => void,
   onSubmitCallback?: (values: ItemFormValues) => void,
 ) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutateAsync: createItem, isPending: isCreating } = useCreateItem();
+  const { mutateAsync: updateItem, isPending: isUpdating } = useUpdateItem(item?.id ?? "");
+
+  const isSubmitting = isCreating || isUpdating;
 
   const form = useForm<ItemFormValues>({
     resolver: zodResolver(itemSchema),
@@ -42,7 +48,7 @@ export function useItemForm(
       discountPercentage: item?.discountPercentage?.toString() ?? "",
       baseQuantity: item?.baseQuantity?.toString() ?? "",
       unit: item?.unit ?? "",
-      country: item?.country ?? "",
+      countryId: item?.countryId ?? "",
       departmentId: item?.departmentId ?? "",
       categoryId: item?.categoryId ?? "",
       productImageFile: [],
@@ -62,7 +68,7 @@ export function useItemForm(
         discountPercentage: item?.discountPercentage?.toString() ?? "",
         baseQuantity: item?.baseQuantity?.toString() ?? "",
         unit: item?.unit ?? "",
-        country: item?.country ?? "",
+        countryId: item?.countryId ?? "",
         departmentId: item?.departmentId ?? "",
         categoryId: item?.categoryId ?? "",
         productImageFile: [],
@@ -73,11 +79,44 @@ export function useItemForm(
   }, [open, item, form]);
 
   const handleSubmit = async (values: ItemFormValues) => {
-    setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 600));
-    onSubmitCallback?.(values);
-    setIsSubmitting(false);
-    onOpenChange(false);
+    try {
+      const formData = new FormData();
+      formData.append("countryId", values.countryId);
+      formData.append("departmentId", values.departmentId);
+      formData.append("categoryId", values.categoryId);
+      formData.append("productName", values.productName);
+      formData.append("description", values.description);
+      formData.append("upcCode", values.upcCode);
+      formData.append("productInfo", values.productInfo);
+      if (values.nutritionInfo) formData.append("nutritionInfo", values.nutritionInfo);
+      if (values.discountPercentage)
+        formData.append("discountPercentage", values.discountPercentage);
+      formData.append("baseQuantity", values.baseQuantity);
+      formData.append("unit", values.unit);
+
+      if (values.productImageFile && values.productImageFile.length > 0) {
+        formData.append("productImageFile", values.productImageFile[0]);
+      }
+      if (values.productInfoImageFile && values.productInfoImageFile.length > 0) {
+        formData.append("productInfoImageFile", values.productInfoImageFile[0]);
+      }
+      if (values.nutritionInfoImageFile && values.nutritionInfoImageFile.length > 0) {
+        formData.append("nutritionInfoImageFile", values.nutritionInfoImageFile[0]);
+      }
+
+      if (item) {
+        await updateItem(formData as any);
+        toast.success("Item updated successfully");
+      } else {
+        await createItem(formData as any);
+        toast.success("Item created successfully");
+      }
+
+      onSubmitCallback?.(values);
+      onOpenChange(false);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to save item");
+    }
   };
 
   return {

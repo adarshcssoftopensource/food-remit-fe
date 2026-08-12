@@ -3,15 +3,9 @@
 import { Filter, Package, Plus, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import {
-  CATALOGUE_CATEGORY_OPTIONS,
-  CATALOGUE_COUNTRY_OPTIONS,
-  CATALOGUE_DEPARTMENT_OPTIONS,
-  CATALOGUE_STATUS_OPTIONS,
-  ITEM_STAT_CONFIG,
-  ItemData,
-  MOCK_ITEMS,
-} from "@/constants/catalogue-management";
+import { CATALOGUE_STATUS_OPTIONS, ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
+import { ItemData } from "./types/item.types";
+import { useGetItems } from "./hooks/use-get-items";
 
 import { getItemColumns } from "./columns/item-columns";
 import { ItemFormDialog } from "./components/item-form-dialog";
@@ -31,6 +25,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CountrySelect } from "@/components/common/country-select";
+import { DepartmentSelect } from "@/components/common/department-select";
+import { CategorySelect } from "@/components/common/category-select";
 
 export function ItemsManagement() {
   const [fromDate, setFromDate] = useState<Date>();
@@ -42,25 +39,29 @@ export function ItemsManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ItemData | null>(null);
 
-  const filteredData = useMemo<ItemData[]>(
-    () =>
-      MOCK_ITEMS.filter((item) => {
-        if (status !== "all" && item.status !== status) return false;
-        if (country !== "all" && item.country !== country) return false;
-        if (department !== "all" && item.departmentId !== department) return false;
-        if (category !== "all" && item.categoryId !== category) return false;
-        const date = new Date(item.createdOn);
-        if (fromDate && date < fromDate) return false;
-        if (toDate && date > toDate) return false;
-        return true;
-      }),
-    [status, country, department, category, fromDate, toDate],
-  );
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState("");
+
+  const { data: itemsResponse, isLoading } = useGetItems({
+    page,
+    limit,
+    search,
+    countryId: country !== "all" ? country : undefined,
+    departmentId: department !== "all" ? department : undefined,
+    categoryId: category !== "all" ? category : undefined,
+    status: status !== "all" ? status : undefined,
+    fromDate: fromDate?.toISOString().split("T")[0],
+    toDate: toDate?.toISOString().split("T")[0],
+  });
+
+  const filteredData = itemsResponse?.data || [];
+  const pagination = itemsResponse?.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 };
 
   const stats = {
-    total: MOCK_ITEMS.length,
-    active: MOCK_ITEMS.filter((i) => i.status === "Active").length,
-    inactive: MOCK_ITEMS.filter((i) => i.status === "Inactive").length,
+    total: itemsResponse?.stats?.total || 0,
+    active: itemsResponse?.stats?.active || 0,
+    inactive: itemsResponse?.stats?.inactive || 0,
   };
 
   const hasFilters = !!(
@@ -177,24 +178,39 @@ export function ItemsManagement() {
 
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                  Country
+                </Label>
+
+                <CountrySelect
+                  value={country === "all" ? "" : country}
+                  onValueChange={(val) => {
+                    setCountry(val || "all");
+                    setDepartment("all");
+                    setCategory("all");
+                  }}
+                  valueKey="id"
+                  includeAll
+                  allLabel="All Countries"
+                  className="h-10 rounded-lg px-3"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                   Department
                 </Label>
 
-                <Select value={department} onValueChange={(v) => setDepartment(v ?? "all")}>
-                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
-                    <SelectValue />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {CATALOGUE_DEPARTMENT_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <DepartmentSelect
+                  countryId={country !== "all" ? country : undefined}
+                  value={department === "all" ? "" : department}
+                  onValueChange={(val) => {
+                    setDepartment(val || "all");
+                    setCategory("all");
+                  }}
+                  placeholder="All Departments"
+                  disabled={country === "all"}
+                  className="h-10 rounded-lg px-3"
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -202,43 +218,14 @@ export function ItemsManagement() {
                   Category
                 </Label>
 
-                <Select value={category} onValueChange={(v) => setCategory(v ?? "all")}>
-                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
-                    <SelectValue />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {CATALOGUE_CATEGORY_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                  Country
-                </Label>
-
-                <Select value={country} onValueChange={(v) => setCountry(v ?? "all")}>
-                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
-                    <SelectValue />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {CATALOGUE_COUNTRY_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <CategorySelect
+                  departmentId={department !== "all" ? department : undefined}
+                  value={category === "all" ? "" : category}
+                  onValueChange={(val) => setCategory(val || "all")}
+                  placeholder="All Categories"
+                  disabled={department === "all"}
+                  className="h-10 rounded-lg px-3"
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -339,7 +326,16 @@ export function ItemsManagement() {
           </div>
 
           <div className="px-3 pt-2 pb-4 sm:px-4">
-            <DataTable columns={columns} data={filteredData} searchKey="name" />
+            <DataTable
+              columns={columns}
+              data={filteredData}
+              loading={isLoading}
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              rowsPerPage={pagination.limit}
+              onPageChange={(p) => setPage(p)}
+              onRowsPerPageChange={(l) => setLimit(l)}
+            />
           </div>
         </CardContent>
       </Card>

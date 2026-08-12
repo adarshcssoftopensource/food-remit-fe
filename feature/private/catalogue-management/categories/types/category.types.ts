@@ -6,6 +6,7 @@ export interface CategoryData {
   department?: {
     id: string;
     departmentName: string;
+    countryId?: string;
   };
   categoryIcon?: string | null;
   categoryIconUrl?: string | null;
@@ -27,9 +28,16 @@ export interface CategoryData {
   children?: any[];
 }
 
+export interface CategoryDropdownItem {
+  id: string;
+  name?: string;
+  categoryName?: string;
+}
+
 export interface UseGetCategoriesArgs {
   search?: string;
   countryId?: string;
+  departmentId?: string;
   cityId?: string;
   parentId?: string;
   status?: string;

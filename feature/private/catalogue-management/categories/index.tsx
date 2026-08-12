@@ -6,9 +6,10 @@ import { useMemo, useState } from "react";
 import { CATALOGUE_STATUS_OPTIONS, CATEGORY_STAT_CONFIG } from "@/constants/catalogue-management";
 import type { CategoryData } from "./types/category.types";
 import { useGetCategories, type UseGetCategoriesArgs } from "./hooks/use-get-categories";
-import { CountrySelect } from "@/components/common/country-select";
 import { getCategoryColumns } from "./columns/category-columns";
 import { CategoryFormDialog } from "./components/category-form-dialog";
+import { DepartmentSelect } from "@/components/common/department-select";
+import { CountrySelect } from "@/components/common/country-select";
 import { useDebounce } from "@/lib/debounce";
 import { useRouter } from "next/navigation";
 import { SortingState } from "@tanstack/react-table";
@@ -34,6 +35,7 @@ export function CategoriesManagement() {
   const [toDate, setToDate] = useState<Date>();
   const [status, setStatus] = useState("all");
   const [country, setCountry] = useState("all");
+  const [department, setDepartment] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDept, setEditingDept] = useState<CategoryData | null>(null);
 
@@ -52,13 +54,24 @@ export function CategoriesManagement() {
       limit: pageSize,
       search: debouncedSearch || undefined,
       countryId: country !== "all" && country !== "All" ? country : undefined,
+      departmentId: department !== "all" ? department : undefined,
       status: status !== "all" ? status : undefined,
       fromDate: fromDate ? fromDate.toISOString().split("T")[0] : undefined,
       toDate: toDate ? toDate.toISOString().split("T")[0] : undefined,
       sortBy: sorting.length ? sorting[0].id : undefined,
       sortOrder: sorting.length ? (sorting[0].desc ? "desc" : "asc") : undefined,
     };
-  }, [currentPage, pageSize, debouncedSearch, country, status, fromDate, toDate, sorting]);
+  }, [
+    currentPage,
+    pageSize,
+    debouncedSearch,
+    country,
+    department,
+    status,
+    fromDate,
+    toDate,
+    sorting,
+  ]);
 
   const { data: res, isLoading } = useGetCategories(queryArgs);
 
@@ -70,13 +83,21 @@ export function CategoriesManagement() {
     inactive: res?.stats?.inactive ?? 0,
   };
 
-  const hasFilters = !!(fromDate || toDate || status !== "all" || country !== "all" || searchQuery);
+  const hasFilters = !!(
+    fromDate ||
+    toDate ||
+    status !== "all" ||
+    country !== "all" ||
+    department !== "all" ||
+    searchQuery
+  );
 
   const clearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
     setStatus("all");
     setCountry("all");
+    setDepartment("all");
   };
 
   const handleEdit = (dept: CategoryData) => {
@@ -161,8 +182,8 @@ export function CategoriesManagement() {
 
         <CardContent className="p-4 sm:p-5">
           <div className="rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-900/40">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
-              <div className="min-w-0 flex-1 lg:min-w-70">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="sm:col-span-2">
                 <DateRangeFilter
                   fromDate={fromDate}
                   toDate={toDate}
@@ -175,22 +196,41 @@ export function CategoriesManagement() {
                 />
               </div>
 
-              <div className="w-full lg:w-47.5">
-                <Label className="mb-1.5 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                   Country
                 </Label>
 
                 <CountrySelect
                   value={country === "all" ? "" : country}
-                  onValueChange={(val) => setCountry(val || "all")}
+                  onValueChange={(val) => {
+                    setCountry(val || "all");
+                    setDepartment("all");
+                  }}
                   valueKey="id"
                   includeAll
                   allLabel="All Countries"
+                  className="h-10 rounded-lg px-3"
                 />
               </div>
 
-              <div className="w-full lg:w-45">
-                <Label className="mb-1.5 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                  Department
+                </Label>
+
+                <DepartmentSelect
+                  countryId={country !== "all" ? country : undefined}
+                  value={department === "all" ? "" : department}
+                  onValueChange={(val) => setDepartment(val || "all")}
+                  placeholder="All Departments"
+                  disabled={country === "all"}
+                  className="h-10 rounded-lg px-3"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                   Status
                 </Label>
 
@@ -211,15 +251,17 @@ export function CategoriesManagement() {
                 </Select>
               </div>
 
-              <Button
-                variant="outline"
-                onClick={clearFilters}
-                disabled={!hasFilters}
-                className="h-10 w-full shrink-0 rounded-lg border-slate-200 bg-white px-4 font-semibold text-slate-600 shadow-none hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 lg:w-auto dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
-              >
-                <RotateCcw className="mr-2 h-3.5 w-3.5" />
-                Reset
-              </Button>
+              <div className="flex items-end sm:col-span-2 lg:col-span-4">
+                <Button
+                  variant="outline"
+                  onClick={clearFilters}
+                  disabled={!hasFilters}
+                  className="h-10 w-full rounded-lg border-slate-200 bg-white font-semibold text-slate-600 shadow-none transition-colors hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
+                >
+                  <RotateCcw className="mr-2 h-3.5 w-3.5" />
+                  Reset Filters
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>

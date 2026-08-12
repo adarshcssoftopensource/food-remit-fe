@@ -13,9 +13,7 @@ export function useGetCountriesDropdown() {
   const query = useApiQuery<GetCountriesDropdownResponse>(
     API_CACHE_KEYS.SETTINGS_COUNTRIES_DROPDOWN,
     url,
-    {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-    },
+    {},
   );
 
   const data = useMemo<CountryDropdownItem[]>(() => {

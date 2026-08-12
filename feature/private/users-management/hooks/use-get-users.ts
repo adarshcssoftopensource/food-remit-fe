@@ -33,9 +33,7 @@ export function useGetUsers(args: UseGetUsersArgs = {}) {
     sortOrder: args.sortOrder ?? "asc",
   });
 
-  const query = useApiQuery<RawGetUsersResponse>(cacheKey, url, {
-    staleTime: 1000 * 60 * 2, // 2 minutes
-  });
+  const query = useApiQuery<RawGetUsersResponse>(cacheKey, url, {});
 
   const data = useMemo<GetUsersResponse | undefined>(() => {
     const api = query.data;

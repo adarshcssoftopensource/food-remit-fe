@@ -8,6 +8,7 @@ import { useCreateCategory } from "../categories/hooks/use-create-category";
 import { useUpdateCategory } from "../categories/hooks/use-update-category";
 
 const categorySchema = z.object({
+  countryId: z.string().min(1, "Country is required"),
   departmentId: z.string().min(1, "Department is required"),
   categoryName: z.string().min(2, "Category name must be at least 2 characters"),
   iconFile: z.array(z.instanceof(File)).optional(),
@@ -31,6 +32,7 @@ export function useCategoryForm(
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
+      countryId: (category?.department as any)?.countryId ?? "",
       departmentId: category?.department?.id ?? "",
       categoryName: category?.categoryName ?? "",
       iconFile: [],
@@ -40,6 +42,7 @@ export function useCategoryForm(
   useEffect(() => {
     if (open) {
       form.reset({
+        countryId: (category?.department as any)?.countryId ?? "",
         departmentId: category?.department?.id ?? "",
         categoryName: category?.categoryName ?? "",
         iconFile: [],

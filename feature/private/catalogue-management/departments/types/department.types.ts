@@ -27,6 +27,12 @@ export interface DepartmentData {
   children?: any[];
 }
 
+export interface DepartmentDropdownItem {
+  id: string;
+  name?: string;
+  departmentName?: string;
+}
+
 export interface UseGetDepartmentsArgs {
   search?: string;
   countryId?: string;

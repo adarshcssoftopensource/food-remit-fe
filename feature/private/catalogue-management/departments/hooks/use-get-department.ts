@@ -14,7 +14,6 @@ export function useGetDepartment(id: string) {
     ["department", id],
     CATALOGUE_MANAGEMENT_ENDPOINTS.GET_DEPARTMENT(id),
     {
-      staleTime: 1000 * 60 * 5, // 5 minutes
       enabled: !!id,
     },
   );

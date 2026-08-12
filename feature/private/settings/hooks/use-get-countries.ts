@@ -35,9 +35,7 @@ export function useGetCountries(args: UseGetCountriesArgs = {}) {
     sortOrder: args.sortOrder ?? "asc",
   });
 
-  const query = useApiQuery<RawGetCountriesResponse>(cacheKey, url, {
-    staleTime: 1000 * 60 * 2, // 2 minutes
-  });
+  const query = useApiQuery<RawGetCountriesResponse>(cacheKey, url, {});
 
   const data = useMemo<GetCountriesResponse | undefined>(() => {
     const api = query.data;

@@ -36,9 +36,7 @@ export function useGetCategories(args: UseGetCategoriesArgs = {}) {
     sortOrder: args.sortOrder ?? "desc",
   });
 
-  const query = useApiQuery<RawGetCategoriesResponse>(cacheKey, url, {
-    staleTime: 1000 * 60 * 2, // 2 minutes
-  });
+  const query = useApiQuery<RawGetCategoriesResponse>(cacheKey, url, {});
 
   const data = useMemo<GetCategoriesResponse | undefined>(() => {
     const api = query.data;

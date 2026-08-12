@@ -21,7 +21,6 @@ export function useGetUserById(id: string) {
 
   const query = useApiQuery<RawUserResponse>(cacheKey, url, {
     enabled: !!id,
-    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
   const data = useMemo<GetUserByIdResponse | undefined>(() => {

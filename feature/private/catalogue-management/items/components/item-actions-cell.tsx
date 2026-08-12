@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { ItemData } from "@/constants/catalogue-management";
 import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
+import { ItemData } from "../types/item.types";
+import { useUpdateItemStatus } from "../hooks/use-update-item-status";
 
 interface ItemActionsCellProps {
   item: ItemData;
@@ -33,33 +34,46 @@ export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) 
 }
 
 export function ItemAvailabilityCell({ item }: { item: ItemData }) {
-  const [isActive, setIsActive] = useState(item.availability);
+  const { mutate: updateStatus } = useUpdateItemStatus(item.id);
+  const isActive = item.status === "ACTIVE";
+
   return (
     <Switch
       checked={isActive}
-      onCheckedChange={setIsActive}
+      onCheckedChange={(checked) =>
+        updateStatus({
+          status: checked ? "ACTIVE" : "INACTIVE",
+          type: "STATUS",
+        })
+      }
       className="data-[state=checked]:bg-green-500"
     />
   );
 }
 
 export function ItemAdminShareCell({ item }: { item: ItemData }) {
-  const [isActive, setIsActive] = useState(item.adminShare);
+  const { mutate: updateStatus } = useUpdateItemStatus(item.id);
+  const isActive = item.adminShare;
+
   return (
     <Switch
       checked={isActive}
-      onCheckedChange={setIsActive}
+      onCheckedChange={(checked) => updateStatus({ type: "ADMIN_SHARE", adminShare: checked })}
       className="data-[state=checked]:bg-green-500"
     />
   );
 }
 
 export function ItemDiscountAvailabilityCell({ item }: { item: ItemData }) {
-  const [isActive, setIsActive] = useState(item.discountAvailability);
+  const { mutate: updateStatus } = useUpdateItemStatus(item.id);
+  const isActive = item.discountAvailability;
+
   return (
     <Switch
       checked={isActive}
-      onCheckedChange={setIsActive}
+      onCheckedChange={(checked) =>
+        updateStatus({ type: "DISCOUNT_AVAILABILITY", discountAvailability: checked })
+      }
       className="data-[state=checked]:bg-green-500"
     />
   );

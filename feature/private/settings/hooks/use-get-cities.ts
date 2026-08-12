@@ -33,9 +33,7 @@ export function useGetCities(args: UseGetCitiesArgs = {}) {
   const url = buildUrl(SETTINGS_ENDPOINTS.GET_CITIES, cleanArgs);
   const cacheKey = buildCacheKey(CACHE_PREFIX, cleanArgs);
 
-  const query = useApiQuery<RawGetCitiesResponse>(cacheKey, url, {
-    staleTime: 1000 * 60 * 2, // 2 minutes
-  });
+  const query = useApiQuery<RawGetCitiesResponse>(cacheKey, url, {});
 
   const data = useMemo<GetCitiesResponse | undefined>(() => {
     const api = query.data;

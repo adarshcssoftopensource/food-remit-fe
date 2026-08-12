@@ -1,6 +1,7 @@
 "use client";
 
 import { Boxes, ImageIcon, Layers3, Package2, Save, Wrench } from "lucide-react";
+import { generateUpcCode } from "@/lib/utils/generate-upc";
 
 import { ImageUpload } from "@/components/common/image-upload";
 import { Button } from "@/components/ui/button";
@@ -29,13 +30,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  CATALOGUE_CATEGORY_OPTIONS,
-  CATALOGUE_COUNTRY_OPTIONS,
-  CATALOGUE_DEPARTMENT_OPTIONS,
-  ItemData,
-} from "@/constants/catalogue-management";
+import { ItemData } from "../types/item.types";
 import { ItemFormValues, useItemForm } from "../../hooks/useItemForm";
+import { CountrySelect } from "@/components/common/country-select";
+import { DepartmentSelect } from "@/components/common/department-select";
+import { CategorySelect } from "@/components/common/category-select";
 
 interface ItemFormDialogProps {
   open: boolean;
@@ -164,7 +163,9 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                 <Button
                                   type="button"
                                   size="icon"
+                                  title="Generate random UPC code"
                                   className="h-11 w-11 shrink-0 rounded-xl bg-emerald-500 shadow-sm hover:bg-emerald-600"
+                                  onClick={() => field.onChange(generateUpcCode())}
                                 >
                                   <Wrench className="h-4 w-4 text-white" />
                                 </Button>
@@ -374,30 +375,22 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                       <div className="space-y-5">
                         <FormField
                           control={form.control}
-                          name="country"
+                          name="countryId"
                           render={({ field }) => (
                             <FormItem className="space-y-2">
                               <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
                                 Country <span className="text-destructive">*</span>
                               </FormLabel>
 
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl>
-                                  <SelectTrigger className="h-11 w-full rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950">
-                                    <SelectValue placeholder="Select country" />
-                                  </SelectTrigger>
-                                </FormControl>
-
-                                <SelectContent>
-                                  {CATALOGUE_COUNTRY_OPTIONS.filter((o) => o.value !== "all").map(
-                                    (opt) => (
-                                      <SelectItem key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                      </SelectItem>
-                                    ),
-                                  )}
-                                </SelectContent>
-                              </Select>
+                              <CountrySelect
+                                value={field.value}
+                                onValueChange={(val) => {
+                                  field.onChange(val);
+                                  form.setValue("departmentId", "");
+                                  form.setValue("categoryId", "");
+                                }}
+                                placeholder="Select country"
+                              />
 
                               <FormMessage />
                             </FormItem>
@@ -413,23 +406,16 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                 Department <span className="text-destructive">*</span>
                               </FormLabel>
 
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl>
-                                  <SelectTrigger className="h-11 w-full rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950">
-                                    <SelectValue placeholder="Select department" />
-                                  </SelectTrigger>
-                                </FormControl>
-
-                                <SelectContent>
-                                  {CATALOGUE_DEPARTMENT_OPTIONS.filter(
-                                    (o) => o.value !== "all",
-                                  ).map((opt) => (
-                                    <SelectItem key={opt.value} value={opt.value}>
-                                      {opt.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <DepartmentSelect
+                                countryId={form.watch("countryId")}
+                                value={field.value}
+                                onValueChange={(val) => {
+                                  field.onChange(val);
+                                  form.setValue("categoryId", "");
+                                }}
+                                placeholder="Select department"
+                                disabled={!form.watch("countryId")}
+                              />
 
                               <FormMessage />
                             </FormItem>
@@ -445,23 +431,13 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                 Category <span className="text-destructive">*</span>
                               </FormLabel>
 
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl>
-                                  <SelectTrigger className="h-11 w-full rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950">
-                                    <SelectValue placeholder="Select category" />
-                                  </SelectTrigger>
-                                </FormControl>
-
-                                <SelectContent>
-                                  {CATALOGUE_CATEGORY_OPTIONS.filter((o) => o.value !== "all").map(
-                                    (opt) => (
-                                      <SelectItem key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                      </SelectItem>
-                                    ),
-                                  )}
-                                </SelectContent>
-                              </Select>
+                              <CategorySelect
+                                departmentId={form.watch("departmentId")}
+                                value={field.value}
+                                onValueChange={field.onChange}
+                                placeholder="Select category"
+                                disabled={!form.watch("departmentId")}
+                              />
 
                               <FormMessage />
                             </FormItem>

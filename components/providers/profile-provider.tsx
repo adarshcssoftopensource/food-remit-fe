@@ -52,7 +52,6 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     },
     // Keep this explicit so the profile request also remains a single attempt.
     retry: false,
-    staleTime: 1000 * 60 * 5,
   });
 
   const isSuperAdmin =
