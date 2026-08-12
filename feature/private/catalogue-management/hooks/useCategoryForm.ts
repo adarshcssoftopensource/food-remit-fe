@@ -1,13 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CategoryData } from "@/constants/catalogue-management";
+import { toast } from "sonner";
+import { CategoryData } from "../categories/types/category.types";
+import { useCreateCategory } from "../categories/hooks/use-create-category";
+import { useUpdateCategory } from "../categories/hooks/use-update-category";
 
 const categorySchema = z.object({
-  country: z.string().min(1, "Country is required"),
   departmentId: z.string().min(1, "Department is required"),
-  name: z.string().min(2, "Category name must be at least 2 characters"),
+  categoryName: z.string().min(2, "Category name must be at least 2 characters"),
   iconFile: z.array(z.instanceof(File)).optional(),
 });
 
@@ -19,14 +21,18 @@ export function useCategoryForm(
   onOpenChange: (open: boolean) => void,
   onSubmitCallback?: (values: CategoryFormValues) => void,
 ) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutateAsync: createCategory, isPending: isCreating } = useCreateCategory();
+  const { mutateAsync: updateCategory, isPending: isUpdating } = useUpdateCategory(
+    category?.id ?? "",
+  );
+
+  const isSubmitting = isCreating || isUpdating;
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
-      country: category?.country ?? "",
-      departmentId: category?.departmentId ?? "",
-      name: category?.name ?? "",
+      departmentId: category?.department?.id ?? "",
+      categoryName: category?.categoryName ?? "",
       iconFile: [],
     },
   });
@@ -34,20 +40,36 @@ export function useCategoryForm(
   useEffect(() => {
     if (open) {
       form.reset({
-        country: category?.country ?? "",
-        departmentId: category?.departmentId ?? "",
-        name: category?.name ?? "",
+        departmentId: category?.department?.id ?? "",
+        categoryName: category?.categoryName ?? "",
         iconFile: [],
       });
     }
   }, [open, category, form]);
 
   const handleSubmit = async (values: CategoryFormValues) => {
-    setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 600));
-    onSubmitCallback?.(values);
-    setIsSubmitting(false);
-    onOpenChange(false);
+    try {
+      const formData = new FormData();
+      formData.append("departmentId", values.departmentId);
+      formData.append("categoryName", values.categoryName);
+
+      if (values.iconFile && values.iconFile.length > 0) {
+        formData.append("categoryIcon", values.iconFile[0]);
+      }
+
+      if (category) {
+        await updateCategory(formData as any);
+        toast.success("Category updated successfully");
+      } else {
+        await createCategory(formData as any);
+        toast.success("Category created successfully");
+      }
+
+      onSubmitCallback?.(values);
+      onOpenChange(false);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to save category");
+    }
   };
 
   return {

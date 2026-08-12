@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetDepartment } from "./hooks/use-get-department";
+import { useGetCategory } from "./hooks/use-get-category";
 import { PageHeader } from "@/components/common/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -19,13 +19,13 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
-interface DepartmentViewProps {
+interface CategoryViewProps {
   id: string;
 }
 
-export function DepartmentView({ id }: DepartmentViewProps) {
+export function CategoryView({ id }: CategoryViewProps) {
   const router = useRouter();
-  const { data: department, isLoading } = useGetDepartment(id);
+  const { data: category, isLoading } = useGetCategory(id);
 
   if (isLoading) {
     return (
@@ -47,11 +47,11 @@ export function DepartmentView({ id }: DepartmentViewProps) {
     );
   }
 
-  if (!department) {
+  if (!category) {
     return (
       <div className="flex h-100 flex-col items-center justify-center space-y-4">
         <Building2 className="h-12 w-12 text-slate-300" />
-        <h2 className="text-xl font-semibold text-slate-700">Department not found</h2>
+        <h2 className="text-xl font-semibold text-slate-700">Category not found</h2>
         <Button onClick={() => router.back()} variant="outline">
           <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
@@ -71,8 +71,8 @@ export function DepartmentView({ id }: DepartmentViewProps) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <PageHeader
-          title="Department Details"
-          description="View comprehensive information about this department."
+          title="Category Details"
+          description="View comprehensive information about this category."
         />
       </div>
 
@@ -81,11 +81,11 @@ export function DepartmentView({ id }: DepartmentViewProps) {
           <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-1 bg-gradient-to-r" />
           <CardHeader className="flex flex-col items-center justify-center border-b border-slate-100 bg-slate-50/50 py-8 text-center dark:border-slate-800 dark:bg-slate-900/30">
             <div className="bg-primary/5 text-primary ring-primary/10 mb-4 flex h-24 w-24 items-center justify-center rounded-3xl shadow-sm ring-1">
-              {department.departmentIcon ? (
+              {category.categoryIcon ? (
                 <Image
-                  key={department.id}
-                  src={department.departmentIcon}
-                  alt={department.departmentName}
+                  key={category.id}
+                  src={category.categoryIcon}
+                  alt={category.categoryName}
                   width={64}
                   height={64}
                   className="object-contain"
@@ -95,21 +95,21 @@ export function DepartmentView({ id }: DepartmentViewProps) {
               )}
             </div>
             <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-              {department.departmentName}
+              {category.categoryName}
             </CardTitle>
             <span
               className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${
-                department.status === "ACTIVE"
+                category.status === "ACTIVE"
                   ? "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400"
                   : "bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400"
               }`}
             >
               <span
                 className={`inline-block size-2 rounded-full ${
-                  department.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
+                  category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
                 }`}
               />
-              {department.status === "ACTIVE" ? "Active" : "Inactive"}
+              {category.status === "ACTIVE" ? "Active" : "Inactive"}
             </span>
           </CardHeader>
         </Card>
@@ -124,21 +124,21 @@ export function DepartmentView({ id }: DepartmentViewProps) {
             <dl className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0 dark:divide-slate-800">
               <div className="px-6 py-5 sm:py-6">
                 <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <MapPin className="h-4.5 w-4.5" />
-                  Country
+                  <Building2 className="h-4.5 w-4.5" />
+                  Department
                 </dt>
                 <dd className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {department.country?.name || "Unknown"}
+                  {category.department?.departmentName || "Unknown"}
                 </dd>
               </div>
 
               <div className="px-6 py-5 sm:border-t sm:border-slate-100 sm:py-6 dark:sm:border-slate-800">
                 <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                   <Layers className="h-4.5 w-4.5" />
-                  Parent Department
+                  Parent Category
                 </dt>
                 <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {department.parentDepartmentName || "None"}
+                  {category.parentCategoryName || "None"}
                 </dd>
               </div>
 
@@ -148,7 +148,7 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                   City
                 </dt>
                 <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {department.cityName || "All Cities"}
+                  {category.cityName || "All Cities"}
                 </dd>
               </div>
 
@@ -158,17 +158,17 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                   Created By
                 </dt>
                 <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {department.createdBy || "System"}
+                  {category.createdBy || "System"}
                 </dd>
               </div>
 
               <div className="px-6 py-5 sm:border-t sm:border-slate-100 sm:py-6 dark:sm:border-slate-800">
                 <dt className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                   <Users className="h-4.5 w-4.5" />
-                  Sub-departments
+                  Sub-categories
                 </dt>
                 <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {department.children?.length || 0}
+                  {category.children?.length || 0}
                 </dd>
               </div>
 
@@ -178,10 +178,10 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                   Added On
                 </dt>
                 <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {department.addedOn
-                    ? format(new Date(department.addedOn), "MMMM d, yyyy 'at' h:mm a")
-                    : department.createdAt
-                      ? format(new Date(department.createdAt), "MMMM d, yyyy 'at' h:mm a")
+                  {category.addedOn
+                    ? format(new Date(category.addedOn), "MMMM d, yyyy 'at' h:mm a")
+                    : category.createdAt
+                      ? format(new Date(category.createdAt), "MMMM d, yyyy 'at' h:mm a")
                       : "-"}
                 </dd>
               </div>
@@ -192,10 +192,10 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                   Modified On
                 </dt>
                 <dd className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {department.modifiedOn
-                    ? format(new Date(department.modifiedOn), "MMMM d, yyyy 'at' h:mm a")
-                    : department.updatedAt
-                      ? format(new Date(department.updatedAt), "MMMM d, yyyy 'at' h:mm a")
+                  {category.modifiedOn
+                    ? format(new Date(category.modifiedOn), "MMMM d, yyyy 'at' h:mm a")
+                    : category.updatedAt
+                      ? format(new Date(category.updatedAt), "MMMM d, yyyy 'at' h:mm a")
                       : "-"}
                 </dd>
               </div>

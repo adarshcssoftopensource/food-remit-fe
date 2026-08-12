@@ -1,15 +1,15 @@
-export type DepartmentStatus = "ACTIVE" | "INACTIVE";
+export type CategoryStatus = "ACTIVE" | "INACTIVE";
 
-export interface DepartmentData {
+export interface CategoryData {
   id: string;
-  departmentName: string;
-  country?: {
+  categoryName: string;
+  department?: {
     id: string;
-    name: string;
+    departmentName: string;
   };
-  departmentIcon?: string | null;
-  departmentIconUrl?: string | null;
-  status: DepartmentStatus;
+  categoryIcon?: string | null;
+  categoryIconUrl?: string | null;
+  status: CategoryStatus;
 
   addedOn?: string | null;
   addedOnTimestamp?: string | null;
@@ -19,15 +19,15 @@ export interface DepartmentData {
 
   countryName?: string | null;
   cityName?: string | null;
-  parentDepartmentName?: string | null;
+  parentCategoryName?: string | null;
   createdBy?: string | null;
 
   city?: { id: string; name: string } | null;
-  parent?: { id: string; departmentName: string } | null;
+  parent?: { id: string; categoryName: string } | null;
   children?: any[];
 }
 
-export interface UseGetDepartmentsArgs {
+export interface UseGetCategoriesArgs {
   search?: string;
   countryId?: string;
   cityId?: string;
@@ -41,14 +41,14 @@ export interface UseGetDepartmentsArgs {
   sortOrder?: "asc" | "desc";
 }
 
-export interface GetDepartmentsResponse {
+export interface GetCategoriesResponse {
   message: string;
   stats: {
     total: number;
     active: number;
     inactive: number;
   };
-  data: DepartmentData[];
+  data: CategoryData[];
   pagination: {
     page: number;
     limit: number;
@@ -57,13 +57,13 @@ export interface GetDepartmentsResponse {
   };
 }
 
-export interface CreateDepartmentPayload {
-  departmentName: string;
-  countryId: string;
+export interface CreateCategoryPayload {
+  categoryName: string;
+  departmentId: string;
   cityId?: string;
   parentId?: string;
-  departmentIcon?: File | string | null;
-  status?: DepartmentStatus;
+  categoryIcon?: File | string | null;
+  status?: CategoryStatus;
 }
 
-export type UpdateDepartmentPayload = Partial<CreateDepartmentPayload>;
+export type UpdateCategoryPayload = Partial<CreateCategoryPayload>;

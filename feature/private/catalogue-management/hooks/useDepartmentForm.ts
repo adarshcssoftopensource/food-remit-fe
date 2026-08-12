@@ -31,7 +31,7 @@ export function useDepartmentForm(
   const form = useForm<DepartmentFormValues>({
     resolver: zodResolver(departmentSchema),
     defaultValues: {
-      countryId: department?.countryId ?? "",
+      countryId: department?.country?.id ?? "",
       departmentName: department?.departmentName ?? "",
       iconFile: [],
     },
@@ -40,7 +40,7 @@ export function useDepartmentForm(
   useEffect(() => {
     if (open) {
       form.reset({
-        countryId: department?.countryId ?? "",
+        countryId: department?.country?.id ?? "",
         departmentName: department?.departmentName ?? "",
         iconFile: [],
       });

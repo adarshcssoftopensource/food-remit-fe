@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { CategoryData } from "@/constants/catalogue-management";
+import { CategoryData } from "../types/category.types";
+import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
 import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
 
@@ -13,7 +14,17 @@ interface CategoryActionsCellProps {
 }
 
 export function CategoryActionsCell({ category, onEdit, onView }: CategoryActionsCellProps) {
-  const [isActive, setIsActive] = useState(category.status === "Active");
+  const [isActive, setIsActive] = useState(category.status === "ACTIVE");
+  const { mutateAsync: updateStatus, isPending } = useUpdateCategoryStatus(category.id);
+
+  const handleStatusChange = async (checked: boolean) => {
+    setIsActive(checked);
+    try {
+      await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
+    } catch (error) {
+      setIsActive(!checked);
+    }
+  };
 
   return (
     <div className="flex items-center gap-2">
@@ -33,7 +44,8 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
 
       <Switch
         checked={isActive}
-        onCheckedChange={setIsActive}
+        onCheckedChange={handleStatusChange}
+        disabled={isPending}
         className="data-[state=checked]:bg-green-500"
       />
     </div>

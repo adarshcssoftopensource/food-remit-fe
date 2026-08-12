@@ -1,11 +1,10 @@
-import { CatalogueStatus, CategoryData } from "@/constants/catalogue-management";
 import { ColumnDef } from "@tanstack/react-table";
-import { Tag } from "lucide-react";
 import Image from "next/image";
+import { CategoryData } from "../types/category.types";
 import { CategoryActionsCell } from "../components/category-actions-cell";
 
-function StatusBadge({ status }: { status: CatalogueStatus }) {
-  const isActive = status === "Active";
+function StatusBadge({ status }: { status: string }) {
+  const isActive = status === "ACTIVE";
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -15,34 +14,34 @@ function StatusBadge({ status }: { status: CatalogueStatus }) {
       <span
         className={`inline-block size-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-red-500"}`}
       />
-      {status}
+      {isActive ? "Active" : "Inactive"}
     </span>
   );
 }
 
 function CategoryNameCell({ row }: { row: { original: CategoryData } }) {
-  const { name, icon } = row.original;
+  const name = row.original.categoryName;
+  const icon = row.original.categoryIcon;
+
   return (
-    <div className="flex flex-col items-center gap-1.5">
-      <div className="relative h-10 w-10 overflow-hidden rounded-full border bg-slate-50">
+    <div className="flex items-center gap-3">
+      <div className="bg-primary/5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-100">
         {icon ? (
-          <Image src={icon} alt={name} fill className="object-cover" />
+          <Image src={icon} alt={name} className="h-6 w-6 object-contain" height={40} width={40} />
         ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <Tag className="h-5 w-5 text-slate-300" />
-          </div>
+          <span className="text-primary font-bold">{name.charAt(0)}</span>
         )}
       </div>
-      <span className="max-w-25 truncate text-center text-xs font-medium text-slate-700">
-        {name}
-      </span>
+      <div className="flex flex-col">
+        <span className="font-semibold text-slate-900">{name}</span>
+      </div>
     </div>
   );
 }
 
 export function getCategoryColumns(
-  onEdit: (cat: CategoryData) => void,
-  onView: (cat: CategoryData) => void,
+  onEdit: (dept: CategoryData) => void,
+  onView: (dept: CategoryData) => void,
 ): ColumnDef<CategoryData>[] {
   return [
     {
@@ -53,40 +52,41 @@ export function getCategoryColumns(
       ),
     },
     {
-      accessorKey: "name",
+      accessorKey: "categoryName",
       header: "Category Name",
       cell: ({ row }) => <CategoryNameCell row={row} />,
     },
     {
-      accessorKey: "departmentName",
+      accessorKey: "department",
       header: "Department",
+      enableSorting: true,
       cell: ({ row }) => (
-        <span className="text-primary text-sm font-medium">{row.original.departmentName}</span>
+        <span className="text-primary text-sm font-medium">
+          {row.original.department?.departmentName || "-"}
+        </span>
       ),
     },
     {
-      accessorKey: "country",
-      header: "Country",
-      enableSorting: true,
-      cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.country}</span>,
-    },
-    {
-      accessorKey: "city",
-      header: "City",
-      cell: ({ row }) => <span className="text-primary text-sm">{row.original.city}</span>,
-    },
-    {
-      accessorKey: "createdBy",
-      header: "Created By",
-      cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.createdBy}</span>,
-    },
-    {
-      accessorKey: "createdOn",
+      accessorKey: "createdAt",
       header: "Created On",
       enableSorting: true,
-      cell: ({ row }) => (
-        <span className="font-mono text-xs text-slate-500">{row.original.createdOn}</span>
-      ),
+      cell: ({ row }) => {
+        const date = row.original.createdAt
+          ? new Date(row.original.createdAt).toLocaleDateString()
+          : "-";
+        return <span className="font-mono text-xs text-slate-500">{date}</span>;
+      },
+    },
+    {
+      accessorKey: "updatedAt",
+      header: "Updated On",
+      enableSorting: true,
+      cell: ({ row }) => {
+        const date = row.original.updatedAt
+          ? new Date(row.original.updatedAt).toLocaleDateString()
+          : "-";
+        return <span className="font-mono text-xs text-slate-500">{date}</span>;
+      },
     },
     {
       accessorKey: "status",
