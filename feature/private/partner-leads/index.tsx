@@ -51,8 +51,6 @@ export function PartnerLeadsManagement() {
             key={key}
             label={label}
             value={stats[key as keyof typeof stats] || 0}
-            trendLabel="in pipeline"
-            trendValue=""
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}

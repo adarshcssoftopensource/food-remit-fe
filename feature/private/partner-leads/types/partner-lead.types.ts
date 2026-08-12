@@ -1,3 +1,12 @@
+export type PartnerLeadStatus =
+  | "NEW"
+  | "CONTACTED"
+  | "QUALIFIED"
+  | "REGISTRATION_INVITED"
+  | "REGISTRATION_STARTED"
+  | "APPROVED"
+  | "NOT_QUALIFIED";
+
 export interface PartnerLeadData {
   id: string;
   referenceNumber: string;
@@ -17,7 +26,7 @@ export interface PartnerLeadData {
   website: string | null;
   additionalInfo: string | null;
   agreeToContact: boolean;
-  status: string;
+  status: PartnerLeadStatus;
   statusRemark: string | null;
   createdAt: string;
 }

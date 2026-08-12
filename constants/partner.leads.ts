@@ -1,4 +1,13 @@
-import { Building2, Users, CheckCircle, MailOpen } from "lucide-react";
+import {
+  AlertCircle,
+  Building2,
+  CheckCircle,
+  Loader2,
+  MailOpen,
+  Send,
+  Star,
+  Users,
+} from "lucide-react";
 
 export const PARTNER_LEAD_STATUSES = [
   "NEW",
@@ -27,11 +36,39 @@ export const STATS_CONFIG = [
     bg: "bg-amber-100",
   },
   {
+    key: "qualified",
+    label: "Qualified",
+    Icon: Star,
+    color: "text-teal-600",
+    bg: "bg-teal-100",
+  },
+  {
+    key: "registrationInvited",
+    label: "Registration Invited",
+    Icon: Send,
+    color: "text-purple-600",
+    bg: "bg-purple-100",
+  },
+  {
+    key: "registrationStarted",
+    label: "Registration Started",
+    Icon: Loader2,
+    color: "text-indigo-600",
+    bg: "bg-indigo-100",
+  },
+  {
     key: "approved",
     label: "Approved",
     Icon: CheckCircle,
     color: "text-green-600",
     bg: "bg-green-100",
+  },
+  {
+    key: "notQualified",
+    label: "Not Qualified",
+    Icon: AlertCircle,
+    color: "text-red-600",
+    bg: "bg-red-100",
   },
 ] as const;
 

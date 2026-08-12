@@ -5,6 +5,16 @@ import { PartnerLeadData } from "../types/partner-lead.types";
 
 interface RawGetPartnerLeadsResponse {
   message: string;
+  stats?: {
+    total: number;
+    NEW: number;
+    CONTACTED: number;
+    QUALIFIED: number;
+    REGISTRATION_INVITED: number;
+    REGISTRATION_STARTED: number;
+    APPROVED: number;
+    NOT_QUALIFIED: number;
+  };
   data: PartnerLeadData[];
   pagination?: {
     page: number;
@@ -29,13 +39,18 @@ export function usePartnerLeads(
   );
   const leads = response?.data;
   const pagination = response?.pagination;
+  const apiStats = response?.stats;
 
   const leadsArray = leads || [];
   const stats = {
-    total: pagination?.total ?? leadsArray.length,
-    new: leadsArray.filter((l) => l.status === "NEW").length,
-    contacted: leadsArray.filter((l) => l.status === "CONTACTED").length,
-    approved: leadsArray.filter((l) => l.status === "APPROVED").length,
+    total: apiStats?.total ?? pagination?.total ?? leadsArray.length,
+    new: apiStats?.NEW ?? 0,
+    contacted: apiStats?.CONTACTED ?? 0,
+    qualified: apiStats?.QUALIFIED ?? 0,
+    registrationInvited: apiStats?.REGISTRATION_INVITED ?? 0,
+    registrationStarted: apiStats?.REGISTRATION_STARTED ?? 0,
+    approved: apiStats?.APPROVED ?? 0,
+    notQualified: apiStats?.NOT_QUALIFIED ?? 0,
   };
 
   return {
