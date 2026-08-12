@@ -22,9 +22,9 @@ export function buildQueryString(args: BaseListArgs | Record<string, unknown>): 
     if (key === "limit" && typeof val === "number") {
       params.set("limit", String(Math.min(val, MAX_LIMIT)));
     } else if (key === "fromDate" && val instanceof Date) {
-      params.set("from", format(val, "yyyy-MM-dd"));
+      params.set("fromDate", format(val, "yyyy-MM-dd"));
     } else if (key === "toDate" && val instanceof Date) {
-      params.set("to", format(val, "yyyy-MM-dd"));
+      params.set("toDate", format(val, "yyyy-MM-dd"));
     } else if (typeof val === "string") {
       const trimmed = val.trim();
       if (trimmed) params.set(key, trimmed);

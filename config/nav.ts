@@ -63,6 +63,7 @@ export const navigationItems = [
     title: "Donation Logs",
     url: ROUTES.ADMIN.DONATION_LOGS,
     icon: List,
+    isComingSoon: true,
   },
   {
     title: "Catalogue Management",
@@ -244,7 +245,7 @@ export const navigationItems = [
     ],
   },
   {
-    title: "Tutorial Management",
+    title: "Flash Images Management",
     url: ROUTES.ADMIN.TUTORIAL_MANAGEMENT,
     icon: GraduationCap,
   },

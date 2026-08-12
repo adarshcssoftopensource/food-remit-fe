@@ -6,6 +6,7 @@ import { CategoryData } from "../types/category.types";
 import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
 import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
+import { successToast, errorToast } from "@/components/toaster";
 
 interface CategoryActionsCellProps {
   category: CategoryData;
@@ -21,8 +22,10 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
     setIsActive(checked);
     try {
       await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
+      successToast({ description: "Category status updated successfully" });
     } catch (error) {
       setIsActive(!checked);
+      errorToast({ description: "Failed to update category status" });
     }
   };
 

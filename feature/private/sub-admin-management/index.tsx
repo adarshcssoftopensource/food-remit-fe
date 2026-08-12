@@ -16,39 +16,54 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub-admin-management";
-import { useDebounce } from "@/lib/debounce";
 import type { SortingState } from "@tanstack/react-table";
 import { Filter, RotateCcw, UserCheck, Users } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
 import { SubAdminDialog } from "./components/sub-admin-dialog";
 import { useGetSubAdmins, UseGetSubAdminsArgs } from "./hooks/use-get-sub-admins";
 import type { SubAdminData } from "./types/sub-admin.types";
+import { useTableFilters } from "@/hooks/use-table-filters";
 
 export function SubAdminManagement() {
-  const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
-  const [toDate, setToDate] = useState<Date | undefined>(undefined);
-  const [status, setStatus] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 500);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const {
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    status,
+    setStatus,
+    currentPage,
+    setCurrentPage,
+    pageSize: rowsPerPage,
+    setPageSize: setRowsPerPage,
+    searchQuery: search,
+    setSearchQuery: setSearch,
+    setSorting,
+    debouncedSearch,
+    formattedFromDate,
+    formattedToDate,
+    sortBy,
+    sortOrder,
+  } = useTableFilters();
 
-  const handleSearchChange = useCallback((value: string) => {
-    setSearch(value);
-    setCurrentPage(1);
-  }, []);
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearch(value);
+      setCurrentPage(1);
+    },
+    [setSearch, setCurrentPage],
+  );
 
   const queryArgs: UseGetSubAdminsArgs = {
     page: currentPage,
     limit: rowsPerPage,
     search: debouncedSearch || undefined,
-    fromDate,
-    toDate,
-    status: status || undefined,
-    sortBy: sorting[0]?.id || undefined,
-    sortOrder: sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined,
+    fromDate: formattedFromDate ? new Date(formattedFromDate) : undefined,
+    toDate: formattedToDate ? new Date(formattedToDate) : undefined,
+    status: status !== "all" ? status : undefined,
+    sortBy,
+    sortOrder,
   };
 
   const { data: res, isLoading } = useGetSubAdmins(queryArgs);
@@ -57,24 +72,33 @@ export function SubAdminManagement() {
   const handleReset = useCallback(() => {
     setFromDate(undefined);
     setToDate(undefined);
-    setStatus(null);
+    setStatus("all");
     setSearch("");
     setCurrentPage(1);
-  }, []);
+  }, [setFromDate, setToDate, setStatus, setSearch, setCurrentPage]);
 
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-  }, []);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+    },
+    [setCurrentPage],
+  );
 
-  const handleRowsPerPageChange = useCallback((limit: number) => {
-    setRowsPerPage(limit);
-    setCurrentPage(1);
-  }, []);
+  const handleRowsPerPageChange = useCallback(
+    (limit: number) => {
+      setRowsPerPage(limit);
+      setCurrentPage(1);
+    },
+    [setRowsPerPage, setCurrentPage],
+  );
 
-  const handleSortingChange = useCallback((nextSorting: SortingState) => {
-    setSorting(nextSorting);
-    setCurrentPage(1);
-  }, []);
+  const handleSortingChange = useCallback(
+    (nextSorting: SortingState) => {
+      setSorting(nextSorting);
+      setCurrentPage(1);
+    },
+    [setSorting, setCurrentPage],
+  );
 
   return (
     <div className="space-y-6">
@@ -167,16 +191,15 @@ export function SubAdminManagement() {
                 </Label>
 
                 <Select
-                  value={status ?? ""}
+                  value={status}
                   onValueChange={(v) => {
-                    setStatus(v || null);
+                    setStatus(v as string);
                     setCurrentPage(1);
                   }}
                 >
                   <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
                     <SelectValue placeholder="All">
-                      {SUB_ADMIN_STATUS_OPTIONS.find((opt) => opt.value === (status ?? ""))
-                        ?.label || "All"}
+                      {SUB_ADMIN_STATUS_OPTIONS.find((opt) => opt.value === status)?.label || "All"}
                     </SelectValue>
                   </SelectTrigger>
 
@@ -196,7 +219,7 @@ export function SubAdminManagement() {
                 variant="outline"
                 className="h-10 w-full shrink-0 rounded-lg border-slate-200 bg-white px-4 font-semibold text-slate-600 shadow-none hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 lg:w-auto dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
                 onClick={handleReset}
-                disabled={!fromDate && !toDate && !status}
+                disabled={!fromDate && !toDate && status === "all"}
               >
                 <RotateCcw className="mr-2 h-3.5 w-3.5" />
                 Reset

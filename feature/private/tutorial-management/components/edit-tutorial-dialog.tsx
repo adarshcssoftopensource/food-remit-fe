@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,20 +21,23 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { TutorialFormValues, tutorialSchema } from "../schema/tutorial.schema";
 
-interface EditTutorialDialogProps {
+import { FlashImageData } from "../hooks/use-get-flash-images";
+import { useCreateFlashImage } from "../hooks/use-create-flash-image";
+import { useUpdateFlashImage } from "../hooks/use-update-flash-image";
+import { useQueryClient } from "@tanstack/react-query";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+
+interface FlashImageDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  tutorial: {
-    id: number;
-    title: string;
-    description: string;
-    image: string;
-  };
+  tutorial?: FlashImageData | null;
 }
 
-export function EditTutorialDialog({ open, onOpenChange, tutorial }: EditTutorialDialogProps) {
+export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDialogProps) {
+  const queryClient = useQueryClient();
+  const { mutateAsync: updateFlashImage } = useUpdateFlashImage(tutorial?.id || "");
+  const { mutateAsync: createFlashImage } = useCreateFlashImage();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagePreview, setImagePreview] = useState(tutorial.image);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const {
@@ -44,9 +48,10 @@ export function EditTutorialDialog({ open, onOpenChange, tutorial }: EditTutoria
   } = useForm<TutorialFormValues>({
     resolver: zodResolver(tutorialSchema),
     defaultValues: {
-      title: tutorial.title,
-      description: tutorial.description,
-      image: tutorial.image,
+      title: tutorial?.title || "",
+      description: tutorial?.description || "",
+      image: tutorial?.imageUrl || "",
+      isActive: tutorial ? tutorial.isActive : true,
     },
     mode: "onChange",
   });
@@ -56,18 +61,33 @@ export function EditTutorialDialog({ open, onOpenChange, tutorial }: EditTutoria
     if (files.length > 0) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        setValue("image", reader.result as string);
+        setValue("image", reader.result as string, { shouldValidate: true });
       };
       reader.readAsDataURL(files[0]);
+    } else {
+      setValue("image", "", { shouldValidate: true });
     }
   };
 
   const onSubmit = async (values: TutorialFormValues) => {
     setIsSubmitting(true);
     try {
-      console.log("Tutorial Updated:", values);
-      successToast({ title: "Tutorial updated successfully" });
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      formData.append("isActive", values.isActive.toString());
+      if (uploadedFiles.length > 0) {
+        formData.append("image", uploadedFiles[0]);
+      }
+
+      if (tutorial) {
+        await updateFlashImage(formData);
+        successToast({ title: "Flash image updated successfully" });
+      } else {
+        await createFlashImage(formData);
+        successToast({ title: "Flash image created successfully" });
+      }
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.FLASH_IMAGES });
       onOpenChange(false);
     } catch (error) {
       console.error(error);
@@ -87,11 +107,13 @@ export function EditTutorialDialog({ open, onOpenChange, tutorial }: EditTutoria
 
             <div className="flex-1">
               <DialogTitle className="text-xl font-bold tracking-tight text-slate-900">
-                Edit Tutorial
+                {tutorial ? "Edit Flash Image" : "Add Flash Image"}
               </DialogTitle>
 
               <DialogDescription className="mt-1 text-sm text-slate-600">
-                Update tutorial image and description for the app onboarding experience.
+                {tutorial
+                  ? "Update flash image and description for the app onboarding experience."
+                  : "Add a new flash image for the app onboarding experience."}
               </DialogDescription>
             </div>
           </div>
@@ -106,12 +128,14 @@ export function EditTutorialDialog({ open, onOpenChange, tutorial }: EditTutoria
             <ImageUpload
               value={uploadedFiles}
               onChange={handleImageUpload}
+              initialImages={tutorial?.imageUrl ? [tutorial.imageUrl] : []}
               multiple={false}
               maxFiles={1}
               className="w-full"
-              label="Upload tutorial image"
+              label="Upload flash image"
               hint="PNG, JPG or WEBP"
             />
+            {errors.image && <p className="text-xs text-red-500">{errors.image.message}</p>}
           </div>
 
           <Controller
@@ -161,6 +185,22 @@ export function EditTutorialDialog({ open, onOpenChange, tutorial }: EditTutoria
             )}
           />
 
+          <Controller
+            name="isActive"
+            control={control}
+            render={({ field }) => (
+              <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <div className="space-y-0.5">
+                  <FieldLabel className="text-sm font-semibold text-gray-700">Status</FieldLabel>
+                  <p className="text-xs text-slate-500">
+                    Make this flash image visible on the mobile app.
+                  </p>
+                </div>
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
+              </div>
+            )}
+          />
+
           <div className="flex justify-end gap-2 pt-4">
             <Button
               type="button"
@@ -172,7 +212,7 @@ export function EditTutorialDialog({ open, onOpenChange, tutorial }: EditTutoria
             </Button>
             <Button type="submit" disabled={isSubmitting} className="h-12 rounded-xl">
               <Upload className="mr-2 h-4 w-4" />
-              Update Tutorial
+              {tutorial ? "Update Tutorial" : "Add Tutorial"}
             </Button>
           </div>
         </form>

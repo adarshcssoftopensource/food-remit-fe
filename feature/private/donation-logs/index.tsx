@@ -8,6 +8,7 @@ import { DONATION_STAT_CONFIG } from "@/constants/donation-logs";
 import { donationColumns } from "./columns/donation-columns";
 import { DonationFilters } from "./components/donation-filters";
 import { useDonationLogs } from "./hooks/use-donation-logs";
+import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 
 export function DonationLogs() {
   const {
@@ -27,6 +28,7 @@ export function DonationLogs() {
     <div className="space-y-6">
       <PageHeader
         title="Donation Logs"
+        badge={<ComingSoonBadge />}
         description="Monitor and manage all donation transactions across the platform."
       />
 

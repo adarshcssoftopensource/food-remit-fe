@@ -13,6 +13,8 @@ import { CountrySelect } from "@/components/common/country-select";
 import { useDebounce } from "@/lib/debounce";
 import { useRouter } from "next/navigation";
 import { SortingState } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { useTableFilters } from "@/hooks/use-table-filters";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
@@ -31,22 +33,34 @@ import {
 } from "@/components/ui/select";
 
 export function CategoriesManagement() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [status, setStatus] = useState("all");
+  const {
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    status,
+    setStatus,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    searchQuery,
+    setSearchQuery,
+    sorting,
+    setSorting,
+    debouncedSearch,
+    formattedFromDate,
+    formattedToDate,
+    sortBy,
+    sortOrder,
+  } = useTableFilters();
+
   const [country, setCountry] = useState("all");
   const [department, setDepartment] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDept, setEditingDept] = useState<CategoryData | null>(null);
 
   const router = useRouter();
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sorting, setSorting] = useState<SortingState>([]);
-
-  const debouncedSearch = useDebounce(searchQuery, 500);
 
   const queryArgs: UseGetCategoriesArgs = useMemo(() => {
     return {
@@ -56,10 +70,10 @@ export function CategoriesManagement() {
       countryId: country !== "all" && country !== "All" ? country : undefined,
       departmentId: department !== "all" ? department : undefined,
       status: status !== "all" ? status : undefined,
-      fromDate: fromDate ? fromDate.toISOString().split("T")[0] : undefined,
-      toDate: toDate ? toDate.toISOString().split("T")[0] : undefined,
-      sortBy: sorting.length ? sorting[0].id : undefined,
-      sortOrder: sorting.length ? (sorting[0].desc ? "desc" : "asc") : undefined,
+      fromDate: formattedFromDate,
+      toDate: formattedToDate,
+      sortBy,
+      sortOrder,
     };
   }, [
     currentPage,
@@ -68,9 +82,10 @@ export function CategoriesManagement() {
     country,
     department,
     status,
-    fromDate,
-    toDate,
-    sorting,
+    formattedFromDate,
+    formattedToDate,
+    sortBy,
+    sortOrder,
   ]);
 
   const { data: res, isLoading } = useGetCategories(queryArgs);
@@ -98,6 +113,7 @@ export function CategoriesManagement() {
     setStatus("all");
     setCountry("all");
     setDepartment("all");
+    setSearchQuery("");
   };
 
   const handleEdit = (dept: CategoryData) => {
@@ -140,8 +156,6 @@ export function CategoriesManagement() {
             key={key}
             label={label}
             value={stats[key]}
-            trendLabel="Compared to last month"
-            trendValue="+8%"
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}
@@ -180,9 +194,11 @@ export function CategoriesManagement() {
           </div>
         </CardHeader>
 
-        <CardContent className="p-4 sm:p-5">
-          <div className="rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-900/40">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <CardContent className="p-5 sm:p-6">
+          <div className="relative rounded-2xl border border-white/40 bg-white/60 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)] dark:border-white/10 dark:bg-slate-950/50">
+            <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/20 ring-inset dark:ring-white/5" />
+
+            <div className="relative z-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               <div className="sm:col-span-2">
                 <DateRangeFilter
                   fromDate={fromDate}
@@ -256,7 +272,7 @@ export function CategoriesManagement() {
                   variant="outline"
                   onClick={clearFilters}
                   disabled={!hasFilters}
-                  className="h-10 w-full rounded-lg border-slate-200 bg-white font-semibold text-slate-600 shadow-none transition-colors hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
+                  className="h-10 w-full rounded-xl border-slate-200 bg-white/80 font-bold tracking-wide text-slate-600 shadow-sm backdrop-blur-md transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-300 dark:hover:bg-slate-900"
                 >
                   <RotateCcw className="mr-2 h-3.5 w-3.5" />
                   Reset Filters

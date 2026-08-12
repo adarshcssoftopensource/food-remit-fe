@@ -6,6 +6,7 @@ import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
 import { ItemData } from "../types/item.types";
 import { useUpdateItemStatus } from "../hooks/use-update-item-status";
+import { successToast, errorToast } from "@/components/toaster";
 
 interface ItemActionsCellProps {
   item: ItemData;
@@ -41,10 +42,16 @@ export function ItemAvailabilityCell({ item }: { item: ItemData }) {
     <Switch
       checked={isActive}
       onCheckedChange={(checked) =>
-        updateStatus({
-          status: checked ? "ACTIVE" : "INACTIVE",
-          type: "STATUS",
-        })
+        updateStatus(
+          {
+            status: checked ? "ACTIVE" : "INACTIVE",
+            type: "STATUS",
+          },
+          {
+            onSuccess: () => successToast({ description: "Item status updated successfully" }),
+            onError: () => errorToast({ description: "Failed to update item status" }),
+          },
+        )
       }
       className="data-[state=checked]:bg-green-500"
     />
@@ -58,7 +65,15 @@ export function ItemAdminShareCell({ item }: { item: ItemData }) {
   return (
     <Switch
       checked={isActive}
-      onCheckedChange={(checked) => updateStatus({ type: "ADMIN_SHARE", adminShare: checked })}
+      onCheckedChange={(checked) =>
+        updateStatus(
+          { type: "ADMIN_SHARE", adminShare: checked },
+          {
+            onSuccess: () => successToast({ description: "Admin share updated successfully" }),
+            onError: () => errorToast({ description: "Failed to update admin share" }),
+          },
+        )
+      }
       className="data-[state=checked]:bg-green-500"
     />
   );
@@ -72,7 +87,14 @@ export function ItemDiscountAvailabilityCell({ item }: { item: ItemData }) {
     <Switch
       checked={isActive}
       onCheckedChange={(checked) =>
-        updateStatus({ type: "DISCOUNT_AVAILABILITY", discountAvailability: checked })
+        updateStatus(
+          { type: "DISCOUNT_AVAILABILITY", discountAvailability: checked },
+          {
+            onSuccess: () =>
+              successToast({ description: "Discount availability updated successfully" }),
+            onError: () => errorToast({ description: "Failed to update discount availability" }),
+          },
+        )
       }
       className="data-[state=checked]:bg-green-500"
     />

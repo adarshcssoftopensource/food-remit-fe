@@ -12,15 +12,17 @@ interface NoDataFoundProps {
     label: string;
     onClick: () => void;
   };
+  className?: string;
 }
 
 export function NoDataFound({
   icon = <InboxIcon className="size-8" />,
   title = "No Data Found",
   action,
+  className,
 }: NoDataFoundProps) {
   return (
-    <Empty className="border-border border border-dashed bg-slate-50">
+    <Empty className={className ?? "border-border border border-dashed bg-slate-50"}>
       <EmptyHeader>
         <EmptyMedia variant="icon">{icon}</EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>

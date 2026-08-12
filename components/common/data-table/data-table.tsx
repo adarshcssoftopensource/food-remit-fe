@@ -124,10 +124,13 @@ export function DataTable<TData, TValue>({
       <TableRow
         key={row.id}
         data-state={row.getIsSelected() && "selected"}
-        className="transition-colors hover:bg-slate-50/50"
+        className="group hover:bg-primary/5 dark:hover:bg-primary/10 border-b border-slate-100/50 transition-all duration-200 last:border-0 hover:shadow-sm dark:border-slate-800/50"
       >
         {row.getVisibleCells().map((cell) => (
-          <TableCell key={cell.id} className="py-3 text-slate-600">
+          <TableCell
+            key={cell.id}
+            className="py-4 text-sm font-medium text-slate-600 transition-colors group-hover:text-slate-900 dark:text-slate-400 dark:group-hover:text-slate-200"
+          >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </TableCell>
         ))}
@@ -160,9 +163,10 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       )}
-      <div className="w-full overflow-x-auto rounded-md border shadow-sm">
+      <div className="w-full overflow-x-auto rounded-2xl border border-white/40 bg-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/50">
+        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/20 ring-inset dark:ring-white/5" />
         <Table>
-          <TableHeader className="bg-slate-50">
+          <TableHeader className="border-b border-slate-200/60 bg-slate-50/80 dark:border-slate-800/60 dark:bg-slate-900/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -171,7 +175,10 @@ export function DataTable<TData, TValue>({
                     : flexRender(header.column.columnDef.header, header.getContext());
 
                   return (
-                    <TableHead key={header.id} className="font-semibold">
+                    <TableHead
+                      key={header.id}
+                      className="h-12 text-[11px] font-bold tracking-wide text-slate-500 uppercase dark:text-slate-400"
+                    >
                       {header.isPlaceholder ? null : renderHeader(header.column, renderedHeader)}
                     </TableHead>
                   );
