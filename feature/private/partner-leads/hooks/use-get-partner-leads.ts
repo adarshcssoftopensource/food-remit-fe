@@ -5,16 +5,7 @@ import { PartnerLeadData } from "../types/partner-lead.types";
 
 interface RawGetPartnerLeadsResponse {
   message: string;
-  // stats?: {
-  //   total: number;
-  //   NEW: number;
-  //   CONTACTED: number;
-  //   QUALIFIED: number;
-  //   REGISTRATION_INVITED: number;
-  //   REGISTRATION_STARTED: number;
-  //   APPROVED: number;
-  //   NOT_QUALIFIED: number;
-  // };
+
   data: PartnerLeadData[];
   stats?: Record<string, number>;
   pagination?: {
