@@ -1,23 +1,145 @@
-import {
-  MOCK_COUNTRY_MANAGERS,
-  type CountryManagerData,
-  type CountryManagerStatus,
-} from "@/constants/country-manager";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import { type CountryManagerFormValues } from "../schema/country-manager.schema";
+import { type CountryManagerData } from "@/constants/country-manager";
+import { buildUrl } from "@/lib/build-query-string";
+import { COUNTRY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/country-manager.endpoints";
+import { useTableFilters } from "@/hooks/use-table-filters";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
-const DEFAULT_STATUS_FILTER = "All";
+// ── API payload types ─────────────────────────────────────────────────────────
+
+interface CountryManagerPayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  countryCode?: string;
+  phoneNumber?: string;
+  address?: string;
+  address2?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  zipcode?: string;
+  assignCountries?: string;
+  managerStatus?: string;
+}
+
+interface UpdateCountryManagerPayload extends CountryManagerPayload {
+  id: string;
+}
+
+// ── API response types ────────────────────────────────────────────────────────
+
+interface RawCountryManager {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  countryCode?: string;
+  phoneNumber?: string;
+  address?: string;
+  address2?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  zipcode?: string;
+  assignCountries?: string;
+  managerStatus?: string;
+  addedOn?: string;
+  image?: string;
+}
+
+interface CountryManagerListResponse {
+  data: RawCountryManager[];
+  message: string;
+  status: boolean;
+}
+
+interface CountryManagerMutationResponse {
+  message: string;
+  status: boolean;
+  data: { id: string };
+}
+
+// ── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useCountryManagement() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [statusFilter, setStatusFilter] = useState<string>(DEFAULT_STATUS_FILTER);
-  const [countryManagers, setCountryManagers] =
-    useState<CountryManagerData[]>(MOCK_COUNTRY_MANAGERS);
+  const {
+    page,
+    limit,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    status: statusFilter,
+    setStatus: setStatusFilter,
+    resetBaseFilters,
+  } = useTableFilters(10);
+
+  const queryString = buildUrl("", {
+    page: page.toString(),
+    limit: limit.toString(),
+  }).replace("?", "");
+
+  const queryKey = [...API_CACHE_KEYS.COUNTRY_MANAGERS, queryString];
+  const url = `${COUNTRY_MANAGER_ENDPOINTS.GET_COUNTRY_MANAGERS}?${queryString}`;
+
+  // ── GET ────────────────────────────────────────────────────────────────────
+  const {
+    data: rawData,
+    isLoading,
+    refetch,
+  } = useApiQuery<CountryManagerListResponse>(queryKey, url);
+
+  // ── POST (create) ──────────────────────────────────────────────────────────
+  const createMutation = useApiMutation<CountryManagerMutationResponse, CountryManagerPayload>(
+    "post",
+    COUNTRY_MANAGER_ENDPOINTS.CREATE_COUNTRY_MANAGER,
+  );
+
+  // ── PATCH (update) — URL factory extracts id, rest goes as body ────────────
+  const updateMutation = useApiMutation<
+    CountryManagerMutationResponse,
+    UpdateCountryManagerPayload
+  >("patch", ({ id }: UpdateCountryManagerPayload) =>
+    COUNTRY_MANAGER_ENDPOINTS.UPDATE_COUNTRY_MANAGER(id),
+  );
+
+  // ── Data normalisation ─────────────────────────────────────────────────────
+
+  const countryManagers = useMemo<CountryManagerData[]>(() => {
+    if (!rawData?.data) return [];
+    return rawData.data.map((item: RawCountryManager) => ({
+      id: item.id,
+      userId: item.id,
+      firstName: item.firstName,
+      lastName: item.lastName,
+      email: item.email,
+      phoneCode: item.countryCode ?? "",
+      phoneNumber: item.phoneNumber ?? "",
+      address1: item.address ?? "",
+      address2: item.address2 ?? "",
+      residentialCountry: item.country ?? "",
+      state: item.state ?? "",
+      city: item.city ?? "",
+      zipcode: item.zipcode ?? "",
+      assignedCountry: item.assignCountries ?? "",
+      assignedCityManagers: [],
+      createdAt: item.addedOn ?? new Date().toISOString(),
+      status: item.managerStatus === "ACTIVE" ? "Active" : "Inactive",
+      avatar: item.image ?? undefined,
+    }));
+  }, [rawData]);
 
   const filteredData = useMemo<CountryManagerData[]>(() => {
     return countryManagers.filter((manager) => {
-      if (statusFilter !== DEFAULT_STATUS_FILTER && manager.status !== statusFilter) return false;
+      if (
+        statusFilter !== "all" &&
+        statusFilter !== "All" &&
+        manager.status?.toLowerCase() !== statusFilter.toLowerCase()
+      )
+        return false;
       const date = new Date(manager.createdAt);
       if (fromDate && date < fromDate) return false;
       if (toDate && date > toDate) return false;
@@ -34,82 +156,47 @@ export function useCountryManagement() {
           countryManagers.reduce((sum, item) => sum + item.assignedCityManagers.length, 0) / total,
         )
       : 0;
-    return {
-      total,
-      active,
-      countries,
-      cities,
-    };
+    return { total, active, countries, cities };
   }, [countryManagers]);
 
-  const hasFilters = Boolean(fromDate || toDate || statusFilter !== DEFAULT_STATUS_FILTER);
+  const hasFilters = Boolean(
+    fromDate || toDate || (statusFilter !== "All" && statusFilter !== "all"),
+  );
 
-  const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatusFilter(DEFAULT_STATUS_FILTER);
+  const clearFilters = () => resetBaseFilters();
+
+  // ── Payload builder ────────────────────────────────────────────────────────
+
+  const buildPayload = (values: CountryManagerFormValues): CountryManagerPayload => ({
+    firstName: values.firstName.trim(),
+    lastName: values.lastName.trim(),
+    email: values.email.trim(),
+    countryCode: values.phoneCode,
+    phoneNumber: values.phoneNumber.trim(),
+    address: values.address1.trim(),
+    address2: values.address2?.trim(),
+    country: values.residentialCountry,
+    state: values.state,
+    city: values.city,
+    zipcode: values.zipcode.trim(),
+    assignCountries: values.assignedCountry,
+  });
+
+  // ── Action helpers ─────────────────────────────────────────────────────────
+
+  const addCountryManager = async (values: CountryManagerFormValues) => {
+    await createMutation.mutateAsync({ ...buildPayload(values), managerStatus: "ACTIVE" });
+    refetch();
   };
 
-  const addCountryManager = (values: CountryManagerFormValues) => {
-    const firstName = values.firstName.trim();
-    const lastName = values.lastName.trim();
-
-    const newItem: CountryManagerData = {
-      id: `cm-${Date.now()}`,
-      userId: String(countryManagers.length + 1),
-      firstName,
-      lastName,
-      email: values.email.trim(),
-      phoneCode: values.phoneCode,
-      phoneNumber: values.phoneNumber.trim(),
-      address1: values.address1.trim(),
-      address2: values.address2?.trim(),
-      residentialCountry: values.residentialCountry,
-      state: values.state,
-      city: values.city,
-      zipcode: values.zipcode.trim(),
-      assignedCountry: values.assignedCountry,
-      assignedCityManagers: [],
-      createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
-      status: "Active",
-      avatar: values.image?.[0] ? URL.createObjectURL(values.image[0]) : undefined,
-    };
-
-    setCountryManagers((prev) => [newItem, ...prev]);
+  const updateCountryManager = async (id: string, values: CountryManagerFormValues) => {
+    await updateMutation.mutateAsync({ id, ...buildPayload(values) });
+    refetch();
   };
 
-  const updateCountryManager = (id: string, values: CountryManagerFormValues) => {
-    setCountryManagers((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        return {
-          ...item,
-          firstName: values.firstName.trim(),
-          lastName: values.lastName.trim(),
-          email: values.email.trim(),
-          phoneCode: values.phoneCode,
-          phoneNumber: values.phoneNumber.trim(),
-          address1: values.address1.trim(),
-          address2: values.address2?.trim(),
-          residentialCountry: values.residentialCountry,
-          state: values.state,
-          city: values.city,
-          zipcode: values.zipcode.trim(),
-          assignedCountry: values.assignedCountry,
-          avatar: values.image?.[0] ? URL.createObjectURL(values.image[0]) : item.avatar,
-        };
-      }),
-    );
-  };
-
-  const toggleManagerStatus = (id: string, checked: boolean) => {
-    setCountryManagers((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, status: (checked ? "Active" : "Inactive") as CountryManagerStatus }
-          : item,
-      ),
-    );
+  const toggleManagerStatus = async (id: string, checked: boolean) => {
+    await updateMutation.mutateAsync({ id, managerStatus: checked ? "ACTIVE" : "INACTIVE" });
+    refetch();
   };
 
   return {
@@ -126,5 +213,6 @@ export function useCountryManagement() {
     toDate,
     toggleManagerStatus,
     updateCountryManager,
+    isLoading,
   };
 }

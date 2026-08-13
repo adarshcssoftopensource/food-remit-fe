@@ -1,22 +1,142 @@
-import {
-  MOCK_CITY_MANAGERS,
-  type CityManagerData,
-  type CityManagerStatus,
-} from "@/constants/city-manager";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import { type CityManagerFormValues } from "../schema/city-manager.schema";
+import { type CityManagerData } from "@/constants/city-manager";
+import { buildUrl } from "@/lib/build-query-string";
+import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
+import { useTableFilters } from "@/hooks/use-table-filters";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
-const DEFAULT_STATUS_FILTER = "All";
+// ── API payload types ─────────────────────────────────────────────────────────
+
+interface CityManagerPayload {
+  countryManagerId?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  countryCode?: string;
+  phoneNumber?: string;
+  address?: string;
+  address2?: string;
+  residentialCountry?: string;
+  state?: string;
+  city?: string;
+  zipcode?: string;
+  country?: string;
+  assignCities?: string;
+  managerStatus?: string;
+}
+
+interface UpdateCityManagerPayload extends CityManagerPayload {
+  id: string;
+}
+
+// ── API response types ────────────────────────────────────────────────────────
+
+interface RawCityManager {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  countryCode?: string;
+  phoneNumber?: string;
+  address?: string;
+  address2?: string;
+  residentialCountry?: string;
+  state?: string;
+  city?: string;
+  zipcode?: string;
+  country?: string;
+  assignCities?: string;
+  managerStatus?: string;
+  addedOn?: string;
+  image?: string;
+}
+
+interface CityManagerListResponse {
+  data: RawCityManager[];
+  message: string;
+  status: boolean;
+}
+
+interface CityManagerMutationResponse {
+  message: string;
+  status: boolean;
+  data: { id: string };
+}
+
+// ── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useCityManagement() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [statusFilter, setStatusFilter] = useState(DEFAULT_STATUS_FILTER);
-  const [cityManagers, setCityManagers] = useState<CityManagerData[]>(MOCK_CITY_MANAGERS);
+  const {
+    page,
+    limit,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    status: statusFilter,
+    setStatus: setStatusFilter,
+    resetBaseFilters,
+  } = useTableFilters(100);
+
+  const queryString = buildUrl("", {
+    page: page.toString(),
+    limit: limit.toString(),
+  }).replace("?", "");
+
+  const queryKey = [...API_CACHE_KEYS.CITY_MANAGERS, queryString];
+  const url = `${CITY_MANAGER_ENDPOINTS.GET_CITY_MANAGERS}?${queryString}`;
+
+  // ── GET ────────────────────────────────────────────────────────────────────
+  const { data: rawData, isLoading, refetch } = useApiQuery<CityManagerListResponse>(queryKey, url);
+
+  // ── POST (create) ──────────────────────────────────────────────────────────
+  const createMutation = useApiMutation<CityManagerMutationResponse, CityManagerPayload>(
+    "post",
+    CITY_MANAGER_ENDPOINTS.CREATE_CITY_MANAGER,
+  );
+
+  // ── PATCH (update) — URL factory extracts id, rest goes as body ────────────
+  const updateMutation = useApiMutation<CityManagerMutationResponse, UpdateCityManagerPayload>(
+    "patch",
+    ({ id }: UpdateCityManagerPayload) => CITY_MANAGER_ENDPOINTS.UPDATE_CITY_MANAGER(id),
+  );
+
+  // ── Data normalisation ─────────────────────────────────────────────────────
+
+  const cityManagers = useMemo<CityManagerData[]>(() => {
+    if (!rawData?.data) return [];
+    return rawData.data.map((item: RawCityManager) => ({
+      id: item.id,
+      userId: item.id,
+      firstName: item.firstName,
+      lastName: item.lastName,
+      email: item.email,
+      phoneCode: item.countryCode ?? "",
+      phoneNumber: item.phoneNumber ?? "",
+      address1: item.address ?? "",
+      address2: item.address2 ?? "",
+      residentialCountry: item.residentialCountry ?? "",
+      state: item.state ?? "",
+      city: item.city ?? "",
+      zipcode: item.zipcode ?? "",
+      country: item.country ?? "",
+      assignedCities: item.assignCities ? item.assignCities.split(",") : [],
+      createdAt: item.addedOn ?? new Date().toISOString(),
+      status: item.managerStatus === "ACTIVE" ? "Active" : "Inactive",
+      avatar: item.image ?? undefined,
+    }));
+  }, [rawData]);
 
   const filteredData = useMemo<CityManagerData[]>(() => {
     return cityManagers.filter((manager) => {
-      if (statusFilter !== DEFAULT_STATUS_FILTER && manager.status !== statusFilter) return false;
+      if (
+        statusFilter !== "all" &&
+        statusFilter !== "All" &&
+        manager.status?.toLowerCase() !== statusFilter.toLowerCase()
+      )
+        return false;
       const date = new Date(manager.createdAt);
       if (fromDate && date < fromDate) return false;
       if (toDate && date > toDate) return false;
@@ -32,71 +152,50 @@ export function useCityManagement() {
     return { total, active, cities, countries };
   }, [cityManagers]);
 
-  const hasFilters = Boolean(fromDate || toDate || statusFilter !== DEFAULT_STATUS_FILTER);
+  const hasFilters = Boolean(
+    fromDate || toDate || (statusFilter !== "All" && statusFilter !== "all"),
+  );
 
-  const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatusFilter(DEFAULT_STATUS_FILTER);
+  const clearFilters = () => resetBaseFilters();
+
+  // ── Payload builder ────────────────────────────────────────────────────────
+
+  const buildPayload = (
+    values: CityManagerFormValues,
+  ): Omit<CityManagerPayload, "countryManagerId" | "managerStatus"> => ({
+    firstName: values.firstName.trim(),
+    lastName: values.lastName.trim(),
+    email: values.email.trim(),
+    countryCode: values.phoneCode,
+    phoneNumber: values.phoneNumber.trim(),
+    address: values.address1.trim(),
+    address2: values.address2?.trim(),
+    residentialCountry: values.residentialCountry,
+    state: values.state,
+    city: values.city,
+    zipcode: values.zipcode?.trim() ?? "",
+    country: values.country,
+    assignCities: values.assignedCities.join(","),
+  });
+
+  // ── Action helpers ─────────────────────────────────────────────────────────
+
+  const addCityManager = async (values: CityManagerFormValues) => {
+    await createMutation.mutateAsync({
+      ...buildPayload(values),
+      managerStatus: "ACTIVE",
+    });
+    refetch();
   };
 
-  const addCityManager = (values: CityManagerFormValues) => {
-    const newItem: CityManagerData = {
-      id: `cym-${Date.now()}`,
-      userId: String(cityManagers.length + 1),
-      firstName: values.firstName.trim(),
-      lastName: values.lastName.trim(),
-      email: values.email.trim(),
-      phoneCode: values.phoneCode,
-      phoneNumber: values.phoneNumber.trim(),
-      address1: values.address1.trim(),
-      address2: values.address2?.trim(),
-      residentialCountry: values.residentialCountry,
-      state: values.state,
-      city: values.city,
-      zipcode: values.zipcode?.trim() ?? "",
-      country: values.country,
-      assignedCities: values.assignedCities,
-      createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
-      status: "Active",
-      avatar: values.image?.[0] ? URL.createObjectURL(values.image[0]) : undefined,
-    };
-    setCityManagers((prev) => [newItem, ...prev]);
+  const updateCityManager = async (id: string, values: CityManagerFormValues) => {
+    await updateMutation.mutateAsync({ id, ...buildPayload(values) });
+    refetch();
   };
 
-  const updateCityManager = (id: string, values: CityManagerFormValues) => {
-    setCityManagers((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        return {
-          ...item,
-          firstName: values.firstName.trim(),
-          lastName: values.lastName.trim(),
-          email: values.email.trim(),
-          phoneCode: values.phoneCode,
-          phoneNumber: values.phoneNumber.trim(),
-          address1: values.address1.trim(),
-          address2: values.address2?.trim(),
-          residentialCountry: values.residentialCountry,
-          state: values.state,
-          city: values.city,
-          zipcode: values.zipcode?.trim() ?? "",
-          country: values.country,
-          assignedCities: values.assignedCities,
-          avatar: values.image?.[0] ? URL.createObjectURL(values.image[0]) : item.avatar,
-        };
-      }),
-    );
-  };
-
-  const toggleManagerStatus = (id: string, checked: boolean) => {
-    setCityManagers((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, status: (checked ? "Active" : "Inactive") as CityManagerStatus }
-          : item,
-      ),
-    );
+  const toggleManagerStatus = async (id: string, checked: boolean) => {
+    await updateMutation.mutateAsync({ id, managerStatus: checked ? "ACTIVE" : "INACTIVE" });
+    refetch();
   };
 
   return {
@@ -113,5 +212,6 @@ export function useCityManagement() {
     toDate,
     toggleManagerStatus,
     updateCityManager,
+    isLoading,
   };
 }

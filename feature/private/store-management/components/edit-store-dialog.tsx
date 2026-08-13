@@ -24,9 +24,7 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
     storeAddress: store.storeAddress,
     address2: store.address2,
     storeCountry: store.storeCountry,
-    storeState: store.storeState,
     storeCity: store.storeCity,
-    storeZipCode: store.storeZipCode,
     storeTax: store.storeTax,
     foodRemitCommission: store.foodRemitCommission,
     managerFirstName: store.managerFirstName,
@@ -45,7 +43,6 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
     setIsSubmitting(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Store Updated:", values);
       successToast({ title: "Store updated successfully!" });
       onOpenChange(false);
     } catch (error) {

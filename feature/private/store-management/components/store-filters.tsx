@@ -12,12 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  STORE_CITY_OPTIONS,
-  STORE_COUNTRY_OPTIONS,
-  STORE_STATUS_OPTIONS,
-} from "@/constants/store-management";
+
+import { STORE_STATUS_OPTIONS } from "@/constants/store-management";
 import { Filter, RotateCcw } from "lucide-react";
+import { Country, City } from "country-state-city";
+import { useMemo } from "react";
 
 interface StoreFiltersProps {
   fromDate: Date | undefined;
@@ -81,6 +80,27 @@ export function StoreFilters({
   onStatusFilterChange,
   onClearFilters,
 }: StoreFiltersProps) {
+  const countryOptions = useMemo(() => {
+    return [
+      { label: "All Countries", value: "All Countries" },
+      ...Country.getAllCountries().map((c) => ({ label: c.name, value: c.name })),
+    ];
+  }, []);
+
+  const cityOptions = useMemo(() => {
+    const selectedCountryObj = Country.getAllCountries().find((c) => c.name === country);
+    const cities = selectedCountryObj
+      ? City.getCitiesOfCountry(selectedCountryObj.isoCode) || []
+      : [];
+
+    const uniqueCityNames = Array.from(new Set(cities.map((c) => c.name))).sort();
+
+    return [
+      { label: "All Cities", value: "All Cities" },
+      ...uniqueCityNames.map((name) => ({ label: name, value: name })),
+    ];
+  }, [country]);
+
   return (
     <div className="from-primary/5/50 border-t bg-linear-to-br to-transparent p-4">
       <div className="mb-4 flex items-center gap-3">
@@ -104,15 +124,10 @@ export function StoreFilters({
             label="Country"
             value={country}
             onChange={onCountryChange}
-            options={STORE_COUNTRY_OPTIONS}
+            options={countryOptions}
           />
 
-          <FilterSelect
-            label="City"
-            value={city}
-            onChange={onCityChange}
-            options={STORE_CITY_OPTIONS}
-          />
+          <FilterSelect label="City" value={city} onChange={onCityChange} options={cityOptions} />
 
           <FilterSelect
             label="Status"

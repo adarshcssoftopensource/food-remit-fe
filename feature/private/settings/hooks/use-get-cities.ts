@@ -6,8 +6,6 @@ import { useMemo } from "react";
 import { normalizeCity } from "../lib/normalize-city";
 import type { CityData, GetCitiesResponse, UseGetCitiesArgs } from "../types/settings.types";
 
-const CACHE_PREFIX = API_CACHE_KEYS.SETTINGS_CITIES[0];
-
 interface RawGetCitiesResponse {
   message: string;
   data: Record<string, unknown>[];
@@ -31,7 +29,7 @@ export function useGetCities(args: UseGetCitiesArgs = {}) {
   cleanArgs.sortOrder = args.sortOrder ?? "asc";
 
   const url = buildUrl(SETTINGS_ENDPOINTS.GET_CITIES, cleanArgs);
-  const cacheKey = buildCacheKey(CACHE_PREFIX, cleanArgs);
+  const cacheKey = buildCacheKey(API_CACHE_KEYS.SETTINGS_CITIES[0], cleanArgs);
 
   const query = useApiQuery<RawGetCitiesResponse>(cacheKey, url, {});
 

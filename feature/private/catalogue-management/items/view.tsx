@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetItemById } from "./hooks/use-get-item-by-id";
+import { formatDate } from "@/lib/date";
 
 interface ItemViewProps {
   id: string;
@@ -197,16 +198,12 @@ export function ItemView({ id }: ItemViewProps) {
               <InfoCard
                 icon={<Calendar className="h-5 w-5" />}
                 label="Added On"
-                value={
-                  item.createdAt ? format(new Date(item.createdAt), "MMM d, yyyy 'at' h:mm a") : "-"
-                }
+                value={formatDate(item.createdAt)}
               />
               <InfoCard
                 icon={<Clock className="h-5 w-5" />}
                 label="Modified On"
-                value={
-                  item.updatedAt ? format(new Date(item.updatedAt), "MMM d, yyyy 'at' h:mm a") : "-"
-                }
+                value={formatDate(item.updatedAt)}
               />
             </div>
 

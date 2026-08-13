@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { normalizeUser } from "../lib/normalize-user";
 import type { GetUsersResponse, UseGetUsersArgs, UserData } from "../types/user.types";
 
-const CACHE_PREFIX = "users";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
 interface RawGetUsersResponse {
   message: string;
@@ -28,7 +28,7 @@ export function useGetUsers(args: UseGetUsersArgs = {}) {
     ...args,
     sortOrder: args.sortOrder ?? "asc",
   });
-  const cacheKey = buildCacheKey(CACHE_PREFIX, {
+  const cacheKey = buildCacheKey(API_CACHE_KEYS.USERS[0], {
     ...args,
     sortOrder: args.sortOrder ?? "asc",
   });

@@ -8,6 +8,7 @@ import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User, Users } fr
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetCategory } from "./hooks/use-get-category";
+import { formatDate } from "@/lib/date";
 
 interface CategoryViewProps {
   id: string;
@@ -158,31 +159,14 @@ export function CategoryView({ id }: CategoryViewProps) {
                 value={category.createdBy || "System"}
               />
               <InfoCard
-                icon={<Users className="h-5 w-5" />}
-                label="Sub-categories"
-                value={category.children?.length?.toString() || "0"}
-              />
-              <InfoCard
                 icon={<Calendar className="h-5 w-5" />}
                 label="Added On"
-                value={
-                  category.addedOn
-                    ? format(new Date(category.addedOn), "MMM d, yyyy 'at' h:mm a")
-                    : category.createdAt
-                      ? format(new Date(category.createdAt), "MMM d, yyyy 'at' h:mm a")
-                      : "-"
-                }
+                value={formatDate(category.addedOn)}
               />
               <InfoCard
                 icon={<Clock className="h-5 w-5" />}
                 label="Modified On"
-                value={
-                  category.modifiedOn
-                    ? format(new Date(category.modifiedOn), "MMM d, yyyy 'at' h:mm a")
-                    : category.updatedAt
-                      ? format(new Date(category.updatedAt), "MMM d, yyyy 'at' h:mm a")
-                      : "-"
-                }
+                value={formatDate(category.modifiedOn)}
               />
             </div>
           </CardContent>

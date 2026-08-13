@@ -7,8 +7,7 @@ import type {
   GetCategoriesResponse,
   UseGetCategoriesArgs,
 } from "../types/category.types";
-
-const CACHE_PREFIX = "categories";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
 interface RawGetCategoriesResponse {
   message: string;
@@ -31,7 +30,7 @@ export function useGetCategories(args: UseGetCategoriesArgs = {}) {
     ...args,
     sortOrder: args.sortOrder ?? "desc",
   });
-  const cacheKey = buildCacheKey(CACHE_PREFIX, {
+  const cacheKey = buildCacheKey(API_CACHE_KEYS.CATEGORIES[0], {
     ...args,
     sortOrder: args.sortOrder ?? "desc",
   });

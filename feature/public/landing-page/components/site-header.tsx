@@ -89,7 +89,7 @@ export function SiteHeader() {
               "bg-primary hover:bg-primary/80 h-10 rounded-full px-5 text-white",
             )}
           >
-            Become a Partner
+            Become a Vendor Partner
           </Link>
         </div>
 
@@ -139,7 +139,7 @@ export function SiteHeader() {
                 "h-12 rounded-full bg-[#f97316] text-white hover:bg-[#ea580c]",
               )}
             >
-              Become a Partner
+              Become a Vendor Partner
             </Link>
           </div>
         </div>

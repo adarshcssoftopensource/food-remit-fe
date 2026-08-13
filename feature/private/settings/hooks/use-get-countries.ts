@@ -10,8 +10,6 @@ import type {
   UseGetCountriesArgs,
 } from "../types/settings.types";
 
-const CACHE_PREFIX = API_CACHE_KEYS.SETTINGS_COUNTRIES[0];
-
 interface RawGetCountriesResponse {
   message: string;
   data: Record<string, unknown>[];
@@ -29,7 +27,7 @@ export function useGetCountries(args: UseGetCountriesArgs = {}) {
 
     sortOrder: args.sortOrder ?? "asc",
   });
-  const cacheKey = buildCacheKey(CACHE_PREFIX, {
+  const cacheKey = buildCacheKey(API_CACHE_KEYS.SETTINGS_COUNTRIES[0], {
     ...args,
 
     sortOrder: args.sortOrder ?? "asc",

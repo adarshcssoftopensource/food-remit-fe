@@ -94,11 +94,6 @@ export const storeColumns: ColumnDef<StoreData>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: "storeState",
-    header: "State",
-    cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.storeState}</span>,
-  },
-  {
     accessorKey: "storeCity",
     header: "City",
     cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.storeCity}</span>,

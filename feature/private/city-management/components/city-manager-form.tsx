@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { PhoneInputComponent } from "@/components/ui/phone-input";
 import {
   Select,
   SelectContent,
@@ -17,13 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  CITY_MANAGER_ASSIGNABLE_CITIES,
-  CITY_MANAGER_CITY_OPTIONS,
-  CITY_MANAGER_COUNTRY_OPTIONS,
-  CITY_MANAGER_PHONE_CODES,
-  CITY_MANAGER_STATE_OPTIONS,
-} from "@/constants/city-manager";
+import { Country, State, City } from "country-state-city";
+import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
+import { useGetCities } from "@/feature/private/settings/hooks/use-get-cities";
 import { cn } from "@/lib/utils";
 import { cityManagerSchema, type CityManagerFormValues } from "../schema/city-manager.schema";
 
@@ -111,11 +108,28 @@ export function CityManagerForm({
   const country = useWatch({ control, name: "country" });
   const assignedCities = useWatch({ control, name: "assignedCities" }) ?? [];
 
-  const stateOptions = residentialCountry
-    ? CITY_MANAGER_STATE_OPTIONS[residentialCountry] || []
+  const allWorldCountries = Country.getAllCountries();
+
+  const selectedResCountryObj = allWorldCountries.find((c) => c.name === residentialCountry);
+  const stateOptions = selectedResCountryObj
+    ? State.getStatesOfCountry(selectedResCountryObj.isoCode)
     : [];
-  const cityOptions = state ? CITY_MANAGER_CITY_OPTIONS[state] || [] : [];
-  const assignableCities = country ? CITY_MANAGER_ASSIGNABLE_CITIES[country] || [] : [];
+
+  const selectedStateObj = stateOptions.find((s) => s.name === state);
+  const cityOptions =
+    selectedResCountryObj && selectedStateObj
+      ? City.getCitiesOfState(selectedResCountryObj.isoCode, selectedStateObj.isoCode)
+      : [];
+
+  const { countries: countriesData } = useGetCountriesDropdown();
+  const assignmentCountryOptions = countriesData.map((c) => c.name);
+
+  const selectedAssignedCountryObjBackend = countriesData.find((c) => c.name === country);
+  const { data: citiesDataResponse } = useGetCities({
+    countryId: selectedAssignedCountryObjBackend?.id,
+    limit: 1000,
+  });
+  const assignableCities = citiesDataResponse?.data?.map((c) => c.name) || [];
 
   const fieldError = (message?: string) =>
     message ? <p className="mt-1 text-xs font-medium text-red-500">{message}</p> : null;
@@ -124,8 +138,8 @@ export function CityManagerForm({
     "h-11 rounded-xl border-slate-200 bg-slate-50/80 transition focus-visible:bg-white";
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      <div className="space-y-5 p-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col">
+      <div className="flex-1 space-y-5 overflow-y-auto p-6">
         <SectionShell
           icon={UserRound}
           title="Profile Photo"
@@ -227,40 +241,36 @@ export function CityManagerForm({
                 <FieldLabel className="mb-1.5 text-sm font-semibold">
                   Phone Number <span className="text-red-500">*</span>
                 </FieldLabel>
-                <div className="flex gap-2">
-                  <Controller
-                    name="phoneCode"
-                    control={control}
-                    render={({ field }) => (
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger className="h-11! w-36 rounded-xl border-slate-200 bg-slate-50/80">
-                          <SelectValue placeholder="Code" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {CITY_MANAGER_PHONE_CODES.map((code) => (
-                            <SelectItem key={code.value} value={code.value}>
-                              {code.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                  <Controller
-                    name="phoneNumber"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="relative min-w-0 flex-1">
-                        <Phone className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
-                        <Input
-                          {...field}
-                          placeholder="Phone number"
-                          className={cn(inputClass, "pl-10")}
+                <Controller
+                  name="phoneNumber"
+                  control={control}
+                  render={({ field: numberField }) => (
+                    <Controller
+                      name="phoneCode"
+                      control={control}
+                      render={({ field: codeField }) => (
+                        <PhoneInputComponent
+                          value={(codeField.value || "") + (numberField.value || "")}
+                          onChange={(val, data) => {
+                            if (data && data.dialCode) {
+                              const dialCode = data.dialCode;
+                              let nationalNumber = val;
+                              if (val.startsWith(dialCode)) {
+                                nationalNumber = val.slice(dialCode.length);
+                              }
+                              setValue("phoneCode", "+" + dialCode, { shouldValidate: true });
+                              setValue("phoneNumber", nationalNumber, { shouldValidate: true });
+                            } else {
+                              setValue("phoneNumber", val, { shouldValidate: true });
+                            }
+                          }}
+                          onBlur={numberField.onBlur}
+                          error={!!(errors.phoneCode || errors.phoneNumber)}
                         />
-                      </div>
-                    )}
-                  />
-                </div>
+                      )}
+                    />
+                  )}
+                />
                 {fieldError(errors.phoneCode?.message || errors.phoneNumber?.message)}
               </div>
             </div>
@@ -317,9 +327,9 @@ export function CityManagerForm({
                         <SelectValue placeholder="Select country" />
                       </SelectTrigger>
                       <SelectContent>
-                        {CITY_MANAGER_COUNTRY_OPTIONS.map((opt) => (
-                          <SelectItem key={opt} value={opt}>
-                            {opt}
+                        {allWorldCountries.map((c) => (
+                          <SelectItem key={c.isoCode} value={c.name}>
+                            {c.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -343,14 +353,19 @@ export function CityManagerForm({
                           field.onChange(v ?? "");
                           setValue("city", "");
                         }}
+                        disabled={!residentialCountry}
                       >
                         <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50/80">
-                          <SelectValue placeholder="Select state" />
+                          <SelectValue
+                            placeholder={
+                              residentialCountry ? "Select state" : "Select country first"
+                            }
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          {stateOptions.map((opt) => (
-                            <SelectItem key={opt} value={opt}>
-                              {opt}
+                          {stateOptions.map((s) => (
+                            <SelectItem key={s.isoCode} value={s.name}>
+                              {s.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -367,14 +382,14 @@ export function CityManagerForm({
                       <FieldLabel className="mb-1.5 text-sm font-semibold">
                         City <span className="text-red-500">*</span>
                       </FieldLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select value={field.value} onValueChange={field.onChange} disabled={!state}>
                         <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50/80">
-                          <SelectValue placeholder="Select city" />
+                          <SelectValue placeholder={state ? "Select city" : "Select state first"} />
                         </SelectTrigger>
                         <SelectContent>
-                          {cityOptions.map((opt) => (
-                            <SelectItem key={opt} value={opt}>
-                              {opt}
+                          {cityOptions.map((c) => (
+                            <SelectItem key={c.name} value={c.name}>
+                              {c.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -424,7 +439,7 @@ export function CityManagerForm({
                     <SelectValue placeholder="Select country to assign" />
                   </SelectTrigger>
                   <SelectContent>
-                    {CITY_MANAGER_COUNTRY_OPTIONS.map((opt) => (
+                    {assignmentCountryOptions.map((opt) => (
                       <SelectItem key={opt} value={opt}>
                         {opt}
                       </SelectItem>
@@ -460,7 +475,7 @@ export function CityManagerForm({
                     </p>
                   </div>
                 ) : (
-                  <div className="grid max-h-52 gap-2 overflow-y-auto rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid max-h-52 gap-2 overflow-y-auto rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-3 sm:grid-cols-2 lg:grid-cols-3">
                     {assignableCities.map((cityName) => {
                       const active = field.value.includes(cityName);
                       return (
@@ -496,11 +511,11 @@ export function CityManagerForm({
         </SectionShell>
       </div>
 
-      <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-slate-100 bg-white/95 px-6 py-4 backdrop-blur">
+      <div className="sticky bottom-0 z-10 flex justify-center border-t bg-white px-6 py-4 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
         <Button
           type="submit"
           isLoading={isSubmitting}
-          className="h-11 min-w-40 rounded-xl px-8 text-sm font-bold shadow-md"
+          className="h-12 rounded-xl px-12 text-base font-semibold shadow-md transition-all hover:scale-[1.02]"
         >
           {submitLabel}
         </Button>

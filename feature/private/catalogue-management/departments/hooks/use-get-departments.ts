@@ -8,7 +8,7 @@ import type {
   UseGetDepartmentsArgs,
 } from "../types/department.types";
 
-const CACHE_PREFIX = "departments";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
 interface RawGetDepartmentsResponse {
   message: string;
@@ -31,7 +31,7 @@ export function useGetDepartments(args: UseGetDepartmentsArgs = {}) {
     ...args,
     sortOrder: args.sortOrder ?? "desc",
   });
-  const cacheKey = buildCacheKey(CACHE_PREFIX, {
+  const cacheKey = buildCacheKey(API_CACHE_KEYS.DEPARTMENTS[0], {
     ...args,
     sortOrder: args.sortOrder ?? "desc",
   });

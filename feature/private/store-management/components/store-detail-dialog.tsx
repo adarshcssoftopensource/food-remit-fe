@@ -30,13 +30,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 export function StoreDetailDialog({ store, open, onOpenChange }: StoreDetailDialogProps) {
   const managerName = `${store.managerFirstName} ${store.managerLastName}`;
-  const storeFullAddress = [
-    store.storeAddress,
-    store.address2,
-    store.storeState,
-    store.storeCountry,
-    store.storeZipCode,
-  ]
+  const storeFullAddress = [store.storeAddress, store.address2, store.storeCountry]
     .filter(Boolean)
     .join(", ");
   const managerFullAddress = [
@@ -183,11 +177,7 @@ export function StoreDetailDialog({ store, open, onOpenChange }: StoreDetailDial
 
                 <InfoRow label="City" value={store.storeCity} />
 
-                <InfoRow label="State" value={store.storeState} />
-
                 <InfoRow label="Country" value={store.storeCountry} />
-
-                {store.storeZipCode && <InfoRow label="Zip Code" value={store.storeZipCode} />}
               </div>
             </div>
           </div>

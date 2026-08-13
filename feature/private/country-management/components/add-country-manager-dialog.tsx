@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, UserPlus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { type CountryManagerFormValues } from "../schema/country-manager.schema";
 import { CountryManagerForm } from "./country-manager-form";
@@ -39,23 +39,18 @@ export function AddCountryManagerDialog({ onSubmit }: AddCountryManagerDialogPro
         <Plus className="mr-2 h-4 w-4" />
         Add Country Manager
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto p-0">
-        <DialogHeader className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-6 pb-5">
-          <DialogTitle className="flex items-center justify-center gap-3 text-3xl font-bold text-slate-800">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 shadow-sm">
-              <UserPlus size={20} />
-            </div>
-
-            <span>Add Country Manager</span>
+      <DialogContent className="flex max-h-[90vh] max-w-5xl flex-col overflow-hidden p-0">
+        <DialogHeader className="shrink-0 border-b bg-linear-to-r from-slate-50 via-slate-100 to-slate-50 p-6 pb-5">
+          <DialogTitle className="text-center text-2xl font-extrabold tracking-tight text-slate-800">
+            Add Country Manager
           </DialogTitle>
-
-          <p className="mt-2 text-center text-sm text-slate-500">
+          <p className="mt-1 text-center text-sm font-medium text-slate-500">
             Create a new country manager and assign their details.
           </p>
         </DialogHeader>
         <CountryManagerForm
           onSubmit={handleSubmit}
-          submitLabel="Assign"
+          submitLabel="Assign Manager"
           isSubmitting={isSubmitting}
         />
       </DialogContent>

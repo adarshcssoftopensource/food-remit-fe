@@ -5,7 +5,7 @@ import "react-phone-input-2/lib/style.css";
 
 interface PhoneInputComponentProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string, data?: any) => void;
   onBlur?: () => void;
   error?: boolean;
   disabled?: boolean;
@@ -29,7 +29,7 @@ export function PhoneInputComponent({
       <PhoneInput
         country="in"
         value={value}
-        onChange={onChange}
+        onChange={(val, data) => onChange(val, data)}
         onBlur={onBlur}
         disabled={disabled}
         enableSearch
@@ -68,7 +68,7 @@ export function PhoneInputComponent({
           paddingInline: "10px",
         }}
         dropdownStyle={{
-          position: "fixed",
+          position: "absolute",
           borderRadius: "12px",
           boxShadow: "0 8px 30px rgba(0,0,0,0.14)",
           border: "1px solid #e2e8f0",

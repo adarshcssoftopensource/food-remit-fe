@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/incompatible-library */
 "use client";
 
 import {
@@ -30,7 +31,7 @@ import { DataTablePagination } from "./data-table-pagination";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey?: string; // e.g., 'name' to filter by name
+  searchKey?: string;
   loading?: boolean;
   searchValue?: string;
   onSearchChange?: (value: string) => void;

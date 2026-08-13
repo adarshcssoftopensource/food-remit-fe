@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import type { CityManagerData } from "@/constants/city-manager";
+import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pencil } from "lucide-react";
 import Image from "next/image";
@@ -97,7 +98,7 @@ export function getCityManagerColumns({
       accessorFn: (row) => `${row.phoneCode}${row.phoneNumber}`,
       cell: ({ row }) => (
         <span className="text-sm text-slate-700">
-          {`+${row.original.phoneCode} ${row.original.phoneNumber}`}
+          {`${row.original.phoneCode} ${row.original.phoneNumber}`}
         </span>
       ),
     },
@@ -110,7 +111,9 @@ export function getCityManagerColumns({
       accessorKey: "createdAt",
       header: "Created On",
       cell: ({ row }) => (
-        <span className="text-xs whitespace-nowrap text-slate-600">{row.original.createdAt}</span>
+        <span className="text-xs whitespace-nowrap text-slate-600">
+          {formatDate(row.original.createdAt)}
+        </span>
       ),
     },
     {

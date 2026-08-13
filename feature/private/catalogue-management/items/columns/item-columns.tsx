@@ -8,6 +8,7 @@ import {
   ItemAdminShareCell,
   ItemDiscountAvailabilityCell,
 } from "../components/item-actions-cell";
+import { formatDate } from "@/lib/date";
 
 function ItemNameCell({ row }: { row: { original: ItemData } }) {
   const { productName, productImageUrl } = row.original;
@@ -78,7 +79,7 @@ export function getItemColumns(
       enableSorting: true,
       cell: ({ row }) => (
         <span className="font-mono text-xs text-slate-500">
-          {new Date(row.original.createdAt).toLocaleDateString()}
+          {formatDate(row.original.createdAt)}
         </span>
       ),
     },

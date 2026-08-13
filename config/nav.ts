@@ -105,7 +105,7 @@ export const navigationItems = [
     icon: Globe,
     items: [
       {
-        title: "Countries",
+        title: "Country Managers",
         url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST,
       },
     ],

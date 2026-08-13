@@ -2,6 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { CategoryData } from "../types/category.types";
 import { CategoryActionsCell } from "../components/category-actions-cell";
+import { formatDate } from "@/lib/date";
 
 function StatusBadge({ status }: { status: string }) {
   const isActive = status === "ACTIVE";
@@ -71,9 +72,7 @@ export function getCategoryColumns(
       header: "Created On",
       enableSorting: true,
       cell: ({ row }) => {
-        const date = row.original.createdAt
-          ? new Date(row.original.createdAt).toLocaleDateString()
-          : "-";
+        const date = formatDate(row.original.createdAt);
         return <span className="font-mono text-xs text-slate-500">{date}</span>;
       },
     },
@@ -82,9 +81,7 @@ export function getCategoryColumns(
       header: "Updated On",
       enableSorting: true,
       cell: ({ row }) => {
-        const date = row.original.updatedAt
-          ? new Date(row.original.updatedAt).toLocaleDateString()
-          : "-";
+        const date = formatDate(row.original.updatedAt);
         return <span className="font-mono text-xs text-slate-500">{date}</span>;
       },
     },
