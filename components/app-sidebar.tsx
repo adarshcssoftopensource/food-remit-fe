@@ -348,7 +348,7 @@ export function AppSidebar() {
                               size="compact"
                               label="This page is coming soon"
                               showIcon
-                              className="border-violet-200 bg-linear-to-r from-violet-50 to-fuchsia-50 font-bold text-red-700 shadow-sm dark:border-violet-500/30 dark:from-violet-500/15 dark:to-fuchsia-500/10 dark:text-violet-200"
+                              className="border-primary/20 bg-primary/8 text-primary dark:border-primary/30 dark:bg-primary/15 dark:text-primary/80 font-bold shadow-sm"
                             />
                           )}
                           {item.isNewFeature && active && (

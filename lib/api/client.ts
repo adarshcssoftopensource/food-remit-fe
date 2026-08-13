@@ -110,7 +110,12 @@ axiosInstance.interceptors.response.use(
       error.message ||
       "Something went wrong";
 
-    if (error.response?.status !== 401 || originalRequest?._retry) {
+    // Suppress the generic toast for errors that are handled locally by the caller
+    // (e.g. MAX_SESSIONS_REACHED is handled by the login form's ConfirmationDialog)
+    const errorCode = (error.response?.data as any)?.errorCode;
+    const isHandledLocally = errorCode === "MAX_SESSIONS_REACHED";
+
+    if (!isHandledLocally && (error.response?.status !== 401 || originalRequest?._retry)) {
       errorToast({
         description: message,
       });

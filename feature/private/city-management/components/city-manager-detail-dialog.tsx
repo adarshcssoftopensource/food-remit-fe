@@ -119,7 +119,7 @@ export function CityManagerDetailDialog({
                           {manager.country}
                         </span>
 
-                        <span className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-4 py-2 text-xs font-semibold text-violet-700">
+                        <span className="bg-primary/15 text-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold">
                           <Building2 className="h-4 w-4" />
                           {manager.assignedCities.length} Cities
                         </span>

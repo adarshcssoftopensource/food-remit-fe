@@ -69,11 +69,11 @@ export function ChangePassword() {
   return (
     <div className="max-w-2xl space-y-4">
       {/* Security tips banner */}
-      <div className="flex items-start gap-3 rounded-xl border border-violet-200 bg-violet-50 px-4 py-3">
-        <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-violet-600" />
+      <div className="border-primary/20 bg-primary/10 flex items-start gap-3 rounded-xl border px-4 py-3">
+        <ShieldCheck className="text-primary mt-0.5 h-5 w-5 shrink-0" />
         <div>
-          <p className="text-sm font-semibold text-violet-800">Keep your account safe</p>
-          <p className="mt-0.5 text-xs text-violet-600">
+          <p className="text-primary text-sm font-semibold">Keep your account safe</p>
+          <p className="text-primary mt-0.5 text-xs">
             Use a unique password that you don&apos;t use for other websites.
           </p>
         </div>
@@ -81,8 +81,8 @@ export function ChangePassword() {
 
       <Card className="overflow-hidden rounded-2xl border border-slate-200/60 shadow-sm">
         <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100">
-            <KeyRound className="h-4 w-4 text-violet-600" />
+          <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-xl">
+            <KeyRound className="text-primary h-4 w-4" />
           </div>
           <div>
             <p className="text-sm font-bold text-slate-800">Change Password</p>

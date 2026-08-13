@@ -96,7 +96,7 @@ export function StoreDetailDialog({ store, open, onOpenChange }: StoreDetailDial
                     sizes="96px"
                   />
                 ) : (
-                  <div className="flex size-full items-center justify-center bg-linear-to-br from-violet-100 to-violet-200 text-xl font-bold text-violet-700">
+                  <div className="from-primary/10 to-primary/15 text-primary flex size-full items-center justify-center bg-linear-to-br text-xl font-bold">
                     {store.storeName
                       .split(" ")
                       .map((w) => w[0])
@@ -127,9 +127,9 @@ export function StoreDetailDialog({ store, open, onOpenChange }: StoreDetailDial
             </div>
 
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="flex items-center gap-3 border-b border-slate-100 bg-linear-to-r from-violet-50 to-white px-5 py-4">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-violet-100">
-                  <Building2 className="size-5 text-violet-600" />
+              <div className="from-primary/5 flex items-center gap-3 border-b border-slate-100 bg-linear-to-r to-white px-5 py-4">
+                <div className="bg-primary/15 flex size-9 items-center justify-center rounded-xl">
+                  <Building2 className="text-primary size-5" />
                 </div>
 
                 <div>
@@ -175,7 +175,7 @@ export function StoreDetailDialog({ store, open, onOpenChange }: StoreDetailDial
                 <InfoRow
                   label="Commission"
                   value={
-                    <span className="rounded-lg bg-violet-50 px-3 py-1 text-sm font-bold text-violet-600">
+                    <span className="bg-primary/10 text-primary rounded-lg px-3 py-1 text-sm font-bold">
                       {store.foodRemitCommission.toFixed(2)}%
                     </span>
                   }
@@ -204,7 +204,7 @@ export function StoreDetailDialog({ store, open, onOpenChange }: StoreDetailDial
                     sizes="96px"
                   />
                 ) : (
-                  <div className="flex size-full items-center justify-center bg-linear-to-br from-violet-100 to-violet-200 text-xl font-bold text-violet-700">
+                  <div className="from-primary/10 to-primary/15 text-primary flex size-full items-center justify-center bg-linear-to-br text-xl font-bold">
                     {`${store.managerFirstName[0]}${store.managerLastName[0]}`.toUpperCase()}
                   </div>
                 )}
@@ -217,8 +217,8 @@ export function StoreDetailDialog({ store, open, onOpenChange }: StoreDetailDial
             </div>
 
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="flex items-center gap-3 border-b border-slate-100 bg-linear-to-r from-violet-50 to-white px-4 px-5 py-4">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-violet-100">
+              <div className="from-primary/5 flex items-center gap-3 border-b border-slate-100 bg-linear-to-r to-white px-4 px-5 py-4">
+                <div className="bg-primary/15 flex size-9 items-center justify-center rounded-xl">
                   <UserCircle className="size-4 text-blue-500" />
                 </div>
 

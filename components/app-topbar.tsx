@@ -11,7 +11,10 @@ import { ROUTES } from "@/config/routes";
 import { getInitials } from "@/lib/get-initials";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { LogoutButton } from "./logout-button";
+import { useState } from "react";
+import { useLogout } from "@/hooks/use-logout";
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
+import { LogOut } from "lucide-react";
 
 export function AppTopBar() {
   const { profile } = useProfile();
@@ -20,10 +23,17 @@ export function AppTopBar() {
   const displayName = profile?.name || "Admin User";
   const initials = getInitials(displayName);
 
-  const displayRole = profile?.roleCode === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin";
-
   const isProfilePage = pathname === ROUTES.ADMIN.PROFILE;
   const isSettingsPage = pathname === ROUTES.ADMIN.SETTINGS;
+
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  const { handleLogout: performLogout, isPending: isLogoutPending } = useLogout();
+
+  const handleLogoutConfirm = async () => {
+    setIsLogoutConfirmOpen(false);
+    await performLogout();
+  };
 
   return (
     <header
@@ -81,7 +91,7 @@ export function AppTopBar() {
         </Button>
 
         <div className="bg-border/70 mx-1 h-7 w-px" />
-        <Popover>
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger
             className={cn(
               "group flex items-center gap-3 rounded-xl px-2 py-1.5 transition-all duration-200 outline-none",
@@ -127,6 +137,7 @@ export function AppTopBar() {
                 "",
                 isProfilePage && "bg-primary hover:bg-primary/80 rounded-lg text-white",
               )}
+              onClick={() => setIsPopoverOpen(false)}
             >
               <Button
                 variant={"ghost"}
@@ -148,6 +159,7 @@ export function AppTopBar() {
                 "",
                 isSettingsPage && "bg-primary hover:bg-primary/80 rounded-lg text-white",
               )}
+              onClick={() => setIsPopoverOpen(false)}
             >
               <Button
                 variant={"ghost"}
@@ -164,10 +176,35 @@ export function AppTopBar() {
                 Settings
               </Button>
             </Link>
-            <LogoutButton showConfirmation />
+            <Button
+              variant={"ghost"}
+              className="flex w-full justify-start text-start text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-500/10"
+              onClick={() => {
+                setIsPopoverOpen(false);
+                setIsLogoutConfirmOpen(true);
+              }}
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-500/20">
+                <LogOut className="h-4 w-4 text-red-500" />
+              </div>
+              Logout
+            </Button>
           </PopoverContent>
         </Popover>
       </div>
+
+      <ConfirmationDialog
+        open={isLogoutConfirmOpen}
+        onOpenChange={setIsLogoutConfirmOpen}
+        title="Confirm Logout"
+        description="Are you sure you want to logout from this device? You will need to sign in again to access your account."
+        confirmLabel="Yes, Logout"
+        cancelLabel="Stay Logged In"
+        onConfirm={handleLogoutConfirm}
+        isLoading={isLogoutPending}
+        variant="destructive"
+        icon={<LogOut className="h-5 w-5" />}
+      />
     </header>
   );
 }

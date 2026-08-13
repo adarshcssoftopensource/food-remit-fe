@@ -130,7 +130,7 @@ export function CityManagerForm({
           icon={UserRound}
           title="Profile Photo"
           subtitle="Upload a clear headshot for the city manager profile"
-          accent="bg-violet-100 text-violet-700"
+          accent="bg-primary/10 text-primary"
         >
           <Controller
             name="image"

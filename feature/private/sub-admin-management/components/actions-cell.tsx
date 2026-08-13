@@ -3,16 +3,16 @@
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { ROUTES } from "@/config/routes";
 import { Eye, Pencil } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { useUpdateSubAdminStatus } from "../hooks/use-update-sub-admin-status";
 import { SubAdminData } from "../types/sub-admin.types";
-import { SubAdminDetailDialog } from "./sub-admin-detail-dialog";
 import { SubAdminDialog } from "./sub-admin-dialog";
 
 export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
   const [isActive, setIsActive] = useState(admin.status === "Active");
-  const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 
   const { mutateAsync: updateStatus, isPending: isStatusUpdating } = useUpdateSubAdminStatus(
@@ -21,7 +21,6 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
 
   const handleStatusToggle = async (checked: boolean) => {
     setIsActive(checked);
-
     try {
       const response = await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
       successToast({
@@ -40,10 +39,12 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
           variant="ghost"
           size="icon"
           className="text-primary hover:bg-primary/10 size-8 rounded-lg transition-colors"
-          onClick={() => setViewOpen(true)}
           title="View details"
+          asChild
         >
-          <Eye className="size-4" />
+          <Link href={ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.DETAILS(admin.id)}>
+            <Eye className="size-4" />
+          </Link>
         </Button>
 
         <Button
@@ -64,7 +65,6 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
         />
       </div>
 
-      <SubAdminDetailDialog admin={admin} open={viewOpen} onOpenChange={setViewOpen} />
       <SubAdminDialog mode="edit" admin={admin} open={editOpen} onOpenChange={setEditOpen} />
     </>
   );

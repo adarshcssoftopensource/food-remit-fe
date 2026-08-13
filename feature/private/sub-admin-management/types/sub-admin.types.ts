@@ -21,6 +21,7 @@ export type SubAdminData = {
   contactNumber: string;
   status: "Active" | "Inactive";
   createdAt: string;
+  role: string;
   permissions: AssignedSubAdminPermission[];
 };
 

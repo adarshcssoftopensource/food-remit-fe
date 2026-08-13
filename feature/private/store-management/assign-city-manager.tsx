@@ -84,8 +84,8 @@ export function AssignCityManagerToStore() {
       <Card className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
         <CardHeader className="border-b border-slate-100 px-6 py-5">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-50">
-              <UserCheck className="size-5 text-violet-600" />
+            <div className="bg-primary/10 flex size-10 items-center justify-center rounded-xl">
+              <UserCheck className="text-primary size-5" />
             </div>
             <div>
               <CardTitle className="text-lg font-bold text-slate-800">

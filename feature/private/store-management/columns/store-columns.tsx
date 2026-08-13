@@ -18,7 +18,7 @@ function StoreNameCell({ store }: { store: StoreData }) {
             sizes="40px"
           />
         ) : (
-          <div className="flex size-full items-center justify-center bg-linear-to-br from-violet-100 to-violet-200 text-xs font-bold text-violet-700">
+          <div className="from-primary/10 to-primary/15 text-primary flex size-full items-center justify-center bg-linear-to-br text-xs font-bold">
             {store.storeName
               .split(" ")
               .map((w) => w[0])
@@ -54,7 +54,7 @@ function TaxCell({ value }: { value: number }) {
 
 function CommissionCell({ value }: { value: number }) {
   return (
-    <span className={`text-sm font-semibold ${value > 0 ? "text-violet-600" : "text-slate-400"}`}>
+    <span className={`text-sm font-semibold ${value > 0 ? "text-primary" : "text-slate-400"}`}>
       {value.toFixed(2)}%
     </span>
   );

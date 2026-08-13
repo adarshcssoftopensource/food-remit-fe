@@ -58,13 +58,13 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
       <DialogContent className="flex max-h-[92vh] w-[calc(100%-1rem)] max-w-6xl flex-col overflow-hidden rounded-[30px] border border-slate-200/80 bg-slate-50 p-0 shadow-[0_30px_100px_-30px_rgba(15,23,42,0.35)] sm:w-full dark:border-slate-800 dark:bg-slate-950">
         <div className="relative overflow-hidden border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950">
           <div className="bg-primary/6 pointer-events-none absolute -top-32 -right-20 h-72 w-72 rounded-full blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-violet-500/5 blur-3xl" />
+          <div className="bg-primary/100/5 pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full blur-3xl" />
 
           <DialogHeader className="relative px-5 py-7 sm:px-8 sm:py-8">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-4 sm:gap-5">
                 <div className="relative">
-                  <div className="from-primary/15 via-primary/10 text-primary ring-primary/10 flex h-18 w-18 items-center justify-center rounded-[22px] bg-linear-to-br to-violet-500/10 text-xl font-black ring-1 sm:h-20 sm:w-20 sm:text-2xl">
+                  <div className="from-primary/15 via-primary/10 text-primary ring-primary/10 to-primary/10 flex h-18 w-18 items-center justify-center rounded-[22px] bg-linear-to-br text-xl font-black ring-1 sm:h-20 sm:w-20 sm:text-2xl">
                     {getInitials(admin?.userName)}
                   </div>
 
@@ -154,7 +154,7 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
                 <CardContent className="p-5 sm:p-6">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                      <div className="bg-primary/10 text-primary dark:bg-primary/100/10 dark:text-primary/80 flex h-10 w-10 items-center justify-center rounded-xl">
                         <ShieldCheck className="h-4.5 w-4.5" />
                       </div>
 
@@ -167,7 +167,7 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
                       </div>
                     </div>
 
-                    <Badge className="rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-bold text-violet-600 shadow-none dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-400">
+                    <Badge className="border-primary/20 bg-primary/10 text-primary dark:border-primary/20 dark:bg-primary/100/10 dark:text-primary/80 rounded-lg border px-2.5 py-1 text-xs font-bold shadow-none">
                       {admin?.permissions?.length || 0}{" "}
                       {admin?.permissions?.length === 1 ? "Access" : "Accesses"}
                     </Badge>

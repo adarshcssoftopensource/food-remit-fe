@@ -82,7 +82,7 @@ export function StoreFilters({
   onClearFilters,
 }: StoreFiltersProps) {
   return (
-    <div className="border-t bg-linear-to-br from-violet-50/50 to-transparent p-4">
+    <div className="from-primary/5/50 border-t bg-linear-to-br to-transparent p-4">
       <div className="mb-4 flex items-center gap-3">
         <div className="bg-primary/10 flex size-8 items-center justify-center rounded-lg">
           <Filter className="text-primary size-4" />

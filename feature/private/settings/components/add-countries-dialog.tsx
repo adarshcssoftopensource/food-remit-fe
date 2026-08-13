@@ -13,7 +13,7 @@ import {
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit3, Globe, Loader2, Plus, X } from "lucide-react";
+import { Edit3, Loader2, Plus, X, FlagIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useCreateCountry } from "../hooks/use-create-country";
@@ -125,7 +125,7 @@ export function AddCountriesDialog({
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
               {mode === "add" ? (
-                <Globe className="h-5 w-5 text-blue-600" />
+                <FlagIcon className="h-5 w-5 text-blue-600" />
               ) : (
                 <Edit3 className="h-5 w-5 text-blue-600" />
               )}
@@ -153,7 +153,7 @@ export function AddCountriesDialog({
                   Country Name <span className="text-red-500">*</span>
                 </FieldLabel>
                 <div className="relative mt-2">
-                  <Globe className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <FlagIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <Input
                     {...field}
                     id="countryName"

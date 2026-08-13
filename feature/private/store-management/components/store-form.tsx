@@ -82,7 +82,7 @@ function ImageUploadField({
         {label}
         {required && <span className="ml-0.5 text-red-500">*</span>}
       </Label>
-      <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-3 transition-all hover:border-violet-400 hover:bg-violet-50/40">
+      <label className="group hover:border-primary/50 hover:bg-primary/10/40 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-3 transition-all">
         <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           {preview ? (
             <Image src={preview} alt="preview" fill className="object-cover" sizes="48px" />
@@ -93,7 +93,7 @@ function ImageUploadField({
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-slate-600 group-hover:text-violet-700">
+          <p className="group-hover:text-primary truncate text-sm font-medium text-slate-600">
             {value ? value.name : "Click to upload image"}
           </p>
           <p className="text-xs text-slate-400">PNG, JPG or WEBP</p>
@@ -306,8 +306,8 @@ export function StoreForm({
           <div className="grid gap-6 p-6 lg:grid-cols-2">
             <div className="rounded-2xl border border-slate-100 bg-white shadow-sm">
               <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-4">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-violet-50">
-                  <Building2 className="size-4 text-violet-600" />
+                <div className="bg-primary/10 flex size-9 items-center justify-center rounded-xl">
+                  <Building2 className="text-primary size-4" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-slate-800">Store Details</h3>

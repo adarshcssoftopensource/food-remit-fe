@@ -2,36 +2,22 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/config/routes";
-import { useApiMutation } from "@/hooks/useApi";
-import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
-import { clearAuthSession } from "@/lib/auth-client";
+import { useLogout } from "@/hooks/use-logout";
 import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { successToast } from "./toaster";
 
 type LogoutButtonProps = {
   showConfirmation?: boolean;
 };
 
 export function LogoutButton({ showConfirmation = false }: LogoutButtonProps) {
-  const router = useRouter();
-  const { mutateAsync, isPending } = useApiMutation("post", AUTH_ENDPOINTS.LOGOUT);
+  const { handleLogout: performLogout, isPending } = useLogout();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const handleLogout = async () => {
     setIsConfirmOpen(false);
-    try {
-      await mutateAsync({});
-      clearAuthSession();
-      router.push(ROUTES.AUTH.LOGIN);
-      router.refresh();
-      successToast({
-        description: "Session logout successfully",
-      });
-    } catch {}
+    await performLogout();
   };
 
   return (

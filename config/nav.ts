@@ -50,7 +50,7 @@ export const navigationItems = [
   },
   {
     title: "Sub-admin Management",
-    url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT,
+    url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT,
     icon: UserCog,
   },
   {

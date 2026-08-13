@@ -12,7 +12,10 @@ export const ROUTES = {
     PARTNER_LEADS: "/partner-leads",
     FOUNDATION_MANAGEMENT: "/foundation-management",
     PHILANTHROPIST_MANAGEMENT: "/philanthropist-management",
-    SUB_ADMIN_MANAGEMENT: "/sub-admin-management",
+    SUB_ADMIN_MANAGEMENT: {
+      ROOT: "/sub-admin-management",
+      DETAILS: (id: string) => `/sub-admin-management/${id}`,
+    },
     STORIES: {
       LIST: "/stories",
       ADD: "/stories/add",

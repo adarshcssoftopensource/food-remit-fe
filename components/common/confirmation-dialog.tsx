@@ -48,35 +48,50 @@ export function ConfirmationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md overflow-hidden rounded-3xl border-0 p-0 shadow-2xl">
-        <div>
-          <DialogHeader className="p-6 pb-5">
-            <div className="flex items-center gap-3">
+      <DialogContent className="max-w-md overflow-hidden rounded-3xl border-0 p-0 shadow-2xl sm:max-w-106.25">
+        <div className="relative">
+          {/* Subtle top background glow */}
+          <div
+            className={cn(
+              "absolute inset-x-0 -top-10 h-40 w-full rounded-t-3xl blur-3xl",
+              variant === "destructive"
+                ? "bg-red-500/10 dark:bg-red-500/20"
+                : "bg-primary/10 dark:bg-primary/20",
+            )}
+          />
+
+          <DialogHeader className="relative flex flex-col items-center space-y-4 px-6 pt-10 pb-6 text-center">
+            <div
+              className={cn(
+                "mb-2 flex h-20 w-20 shrink-0 items-center justify-center rounded-full ring-8",
+                variant === "destructive"
+                  ? "bg-red-100 text-red-600 ring-red-50 dark:bg-red-900/30 dark:text-red-500 dark:ring-red-900/20"
+                  : "bg-primary/10 text-primary ring-primary/5 dark:bg-primary/20 dark:ring-primary/10",
+              )}
+            >
               <div
                 className={cn(
-                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1",
-                  variant === "destructive"
-                    ? "bg-red-100 text-red-600 ring-red-200"
-                    : "bg-primary/10 text-primary ring-primary/20",
+                  "[&>svg]:h-10 [&>svg]:w-10",
+                  variant === "destructive" ? "[&>svg]:text-red-600" : "[&>svg]:text-primary",
                 )}
               >
-                {icon ?? <AlertTriangle className="h-6 w-6" />}
+                {icon ?? <AlertTriangle />}
               </div>
-
-              <DialogTitle className="text-xl leading-none font-semibold">{title}</DialogTitle>
             </div>
 
-            <DialogDescription className="text-muted-foreground pl-15 text-sm leading-6">
+            <DialogTitle className="text-2xl font-bold tracking-tight">{title}</DialogTitle>
+
+            <DialogDescription className="text-muted-foreground max-w-75 text-[15px] leading-relaxed">
               {description}
             </DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="bg-background/70 border-t px-6 py-4 backdrop-blur sm:justify-end">
+          <DialogFooter className="bg-muted/40 flex w-full flex-col gap-2 border-t p-4 sm:flex-row sm:gap-3">
             <Button
               variant="outline"
               onClick={handleCancel}
               disabled={isLoading}
-              className="rounded-xl"
+              className="hover:bg-accent h-11 flex-1 rounded-xl text-base font-medium shadow-sm transition-all"
             >
               {cancelLabel}
             </Button>
@@ -85,7 +100,7 @@ export function ConfirmationDialog({
               variant={variant}
               onClick={onConfirm}
               isLoading={isLoading}
-              className="rounded-xl"
+              className="h-11 flex-1 rounded-xl text-base font-medium shadow-md transition-all hover:brightness-110"
             >
               {confirmLabel}
             </Button>
