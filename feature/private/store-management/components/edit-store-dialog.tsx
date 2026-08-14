@@ -130,6 +130,7 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
           onSubmit={handleSubmit}
           submitLabel="Update"
           isSubmitting={isSubmitting}
+          mode="edit"
         />
       </DialogContent>
     </Dialog>

@@ -21,27 +21,14 @@ import { storeSchema, type StoreFormValues } from "../schema/store.schema";
 import { useGetCities } from "../../settings/hooks/use-get-cities";
 import { useGetCountriesDropdown } from "../../settings/hooks/use-get-countries-dropdown";
 import { ImageUpload } from "@/components/common/image-upload";
-import { useApiQuery } from "@/hooks/useApi";
-import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
-import React, { useMemo } from "react";
-import { useWatch } from "react-hook-form";
-
-interface RawCityManager {
-  id: string;
-  country: string;
-  firstName: string;
-  lastName: string;
-}
-
-interface ApiListResponse<T> {
-  data: T[];
-}
+import React from "react";
 
 interface StoreFormProps {
   initialValues?: Partial<StoreFormValues>;
   onSubmit: (values: StoreFormValues) => void;
   submitLabel?: string;
   isSubmitting?: boolean;
+  mode?: "add" | "edit";
 }
 
 interface FormFieldProps {
@@ -73,6 +60,7 @@ function PhoneField({
   numberError,
   label,
   required,
+  disabled,
 }: {
   codeValue: string;
   onCodeChange: (v: string) => void;
@@ -82,6 +70,7 @@ function PhoneField({
   numberError?: string;
   label: string;
   required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <div className="space-y-1.5">
@@ -104,6 +93,7 @@ function PhoneField({
             onNumberChange(val);
           }
         }}
+        disabled={disabled}
         error={!!(codeError || numberError)}
       />
       {(codeError || numberError) && (
@@ -325,8 +315,9 @@ function ManagerLocationFields({
 export function StoreForm({
   initialValues,
   onSubmit,
-  submitLabel = "Add",
+  submitLabel = "Submit",
   isSubmitting = false,
+  mode = "add",
 }: StoreFormProps) {
   const {
     control,
@@ -608,6 +599,7 @@ export function StoreForm({
                       type="email"
                       placeholder="Enter Email"
                       className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      disabled={mode === "edit"}
                     />
                   </FormField>
                 )}
@@ -622,14 +614,15 @@ export function StoreForm({
                     control={control}
                     render={({ field: numField }) => (
                       <PhoneField
-                        label="Manager Telephone Number"
-                        required
                         codeValue={codeField.value}
                         onCodeChange={codeField.onChange}
                         numberValue={numField.value}
                         onNumberChange={numField.onChange}
                         codeError={errors.managerPhoneCode?.message}
                         numberError={errors.managerPhoneNumber?.message}
+                        label="Phone Number"
+                        required
+                        disabled={mode === "edit"}
                       />
                     )}
                   />
