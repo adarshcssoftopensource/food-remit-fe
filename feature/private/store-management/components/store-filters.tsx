@@ -12,12 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  STORE_CITY_OPTIONS,
-  STORE_COUNTRY_OPTIONS,
-  STORE_STATUS_OPTIONS,
-} from "@/constants/store-management";
+
 import { Filter, RotateCcw } from "lucide-react";
+import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
+import { useGetCities } from "@/feature/private/settings/hooks/use-get-cities";
+import { useMemo } from "react";
 
 interface StoreFiltersProps {
   fromDate: Date | undefined;
@@ -39,15 +38,20 @@ interface FilterSelectProps {
   value: string;
   onChange: (value: string) => void;
   options: Array<{ label: string; value: string }>;
+  disabled?: boolean;
 }
 
-function FilterSelect({ label, value, onChange, options }: FilterSelectProps) {
+function FilterSelect({ label, value, onChange, options, disabled }: FilterSelectProps) {
   return (
     <div className="space-y-1.5">
       <Label className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
         {label}
       </Label>
-      <Select value={value} onValueChange={(v) => onChange(v ?? options[0].value)}>
+      <Select
+        value={value}
+        onValueChange={(v) => onChange(v ?? options[0].value)}
+        disabled={disabled}
+      >
         <SelectTrigger className="h-10! w-full rounded-lg border-gray-200">
           <SelectValue>
             {options.find((opt) => opt.value === value)?.label || options[0]?.label}
@@ -81,6 +85,43 @@ export function StoreFilters({
   onStatusFilterChange,
   onClearFilters,
 }: StoreFiltersProps) {
+  const STORE_STATUS_OPTIONS = [
+    { label: "All Status", value: "All" },
+    { label: "Active", value: "Active" },
+    { label: "Inactive", value: "Inactive" },
+  ];
+  const { countries: countriesData } = useGetCountriesDropdown();
+  const selectedCountryObj = useMemo(
+    () => countriesData?.find((c) => c.id === country),
+    [countriesData, country],
+  );
+
+  const { data: citiesDataResponse } = useGetCities({
+    countryId: selectedCountryObj?.id ?? "All",
+    limit: 1000,
+  });
+
+  const countryOptions = useMemo(() => {
+    const list = countriesData ?? [];
+    return [
+      { label: "All Countries", value: "All Countries" },
+      ...list.map((c) => ({ label: c.name, value: c.id })),
+    ];
+  }, [countriesData]);
+
+  const cityOptions = useMemo(() => {
+    const list = citiesDataResponse?.data ?? [];
+    // Ensure we don't have duplicate cities by ID if the API returns dupes
+    const uniqueCities = Array.from(new Map(list.map((c) => [c.id, c])).values()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+
+    return [
+      { label: "All Cities", value: "All Cities" },
+      ...uniqueCities.map((c) => ({ label: c.name, value: c.id })),
+    ];
+  }, [citiesDataResponse]);
+
   return (
     <div className="from-primary/5/50 border-t bg-linear-to-br to-transparent p-4">
       <div className="mb-4 flex items-center gap-3">
@@ -98,20 +139,22 @@ export function StoreFilters({
             onFromDateChange={onFromDateChange}
             onToDateChange={onToDateChange}
             wrapperClassName="contents"
+            maxDate={new Date()}
           />
 
           <FilterSelect
             label="Country"
             value={country}
             onChange={onCountryChange}
-            options={STORE_COUNTRY_OPTIONS}
+            options={countryOptions}
           />
 
           <FilterSelect
             label="City"
             value={city}
             onChange={onCityChange}
-            options={STORE_CITY_OPTIONS}
+            options={cityOptions}
+            disabled={country === "All Countries"}
           />
 
           <FilterSelect

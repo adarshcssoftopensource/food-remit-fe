@@ -10,10 +10,8 @@ import { getCategoryColumns } from "./columns/category-columns";
 import { CategoryFormDialog } from "./components/category-form-dialog";
 import { DepartmentSelect } from "@/components/common/department-select";
 import { CountrySelect } from "@/components/common/country-select";
-import { useDebounce } from "@/lib/debounce";
+import { ROUTES } from "@/config/routes";
 import { useRouter } from "next/navigation";
-import { SortingState } from "@tanstack/react-table";
-import { format } from "date-fns";
 import { useTableFilters } from "@/hooks/use-table-filters";
 
 import { DataTable } from "@/components/common/data-table/data-table";
@@ -46,7 +44,6 @@ export function CategoriesManagement() {
     setPageSize,
     searchQuery,
     setSearchQuery,
-    sorting,
     setSorting,
     debouncedSearch,
     formattedFromDate,
@@ -122,7 +119,7 @@ export function CategoriesManagement() {
   };
 
   const handleView = (dept: CategoryData) => {
-    router.push(`/catalogue-management/categories/${dept.id}`);
+    router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES}/${dept.id}`);
   };
 
   const columns = useMemo(

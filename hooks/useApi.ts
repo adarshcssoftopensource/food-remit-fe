@@ -49,14 +49,14 @@ export function useApiQuery<TResponse>(
 // POST / PUT / DELETE Hook
 export function useApiMutation<TResponse, TBody = unknown>(
   method: "post" | "put" | "patch" | "delete",
-  url: string,
+  url: string | ((body: TBody) => string),
   options?: UseMutationOptions<TResponse, Error, TBody>,
 ) {
   return useMutation<TResponse, Error, TBody>({
     mutationFn: (body: TBody) =>
       fetcher<TResponse, TBody>({
         method,
-        url,
+        url: typeof url === "function" ? url(body) : url,
         body,
         timeout: 120000,
       }),

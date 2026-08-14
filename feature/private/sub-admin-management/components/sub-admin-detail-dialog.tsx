@@ -14,6 +14,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { getInitials } from "@/lib/get-initials";
+import { formatDate } from "@/lib/date";
 import { SubAdminData } from "../types/sub-admin.types";
 import { InfoCard } from "./info-card";
 
@@ -42,13 +43,7 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
     },
     {
       label: "Joined On",
-      value: admin?.createdAt
-        ? new Date(admin.createdAt).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
-        : "-",
+      value: admin?.createdAt ? formatDate(admin.createdAt, { month: "short" }) : "-",
       icon: <CalendarDays className="h-5 w-5" />,
     },
   ];

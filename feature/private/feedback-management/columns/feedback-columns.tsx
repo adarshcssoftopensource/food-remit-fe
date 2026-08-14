@@ -1,5 +1,6 @@
 import { FEEDBACK_STATUS_STYLES, FeedbackData } from "@/constants/feedback";
 import { ColumnDef } from "@tanstack/react-table";
+import { formatDate } from "@/lib/date";
 
 export const feedbackColumns: ColumnDef<FeedbackData>[] = [
   {
@@ -53,12 +54,7 @@ export const feedbackColumns: ColumnDef<FeedbackData>[] = [
     accessorKey: "submittedOn",
     header: "Submitted On",
     cell: ({ row }) => {
-      const date = new Date(row.original.submittedOn);
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
+      return formatDate(row.original.submittedOn);
     },
   },
 ];

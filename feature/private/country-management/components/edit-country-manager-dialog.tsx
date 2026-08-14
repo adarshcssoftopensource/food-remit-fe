@@ -2,8 +2,7 @@
 
 import { successToast } from "@/components/toaster";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import type { CountryManagerData } from "@/constants/country-manager";
-import { UserPen } from "lucide-react";
+import type { CountryManagerData } from "@/feature/private/country-management/types/country-manager";
 import { useMemo, useState } from "react";
 import { type CountryManagerFormValues } from "../schema/country-manager.schema";
 import { CountryManagerForm } from "./country-manager-form";
@@ -12,7 +11,7 @@ type EditCountryManagerDialogProps = {
   manager: CountryManagerData | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (id: string, values: CountryManagerFormValues) => Promise<void> | void;
+  onSubmit: (id: string, formData: FormData) => Promise<void> | void;
 };
 
 export function EditCountryManagerDialog({
@@ -22,7 +21,6 @@ export function EditCountryManagerDialog({
   onSubmit,
 }: EditCountryManagerDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const initialValues = useMemo<Partial<CountryManagerFormValues>>(() => {
     if (!manager) return {};
     return {
@@ -38,7 +36,7 @@ export function EditCountryManagerDialog({
       state: manager.state,
       city: manager.city,
       zipcode: manager.zipcode,
-      assignedCountry: manager.assignedCountry,
+      assignedCountry: manager.assignCountryName ?? "",
     };
   }, [manager]);
 
@@ -46,7 +44,29 @@ export function EditCountryManagerDialog({
     if (!manager) return;
     setIsSubmitting(true);
     try {
-      await onSubmit(manager.id, values);
+      const formData = new FormData();
+      formData.append("firstName", values.firstName);
+      formData.append("lastName", values.lastName);
+      formData.append("email", values.email);
+      formData.append("countryCode", values.phoneCode);
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("address", values.address1);
+      if (values.address2) formData.append("address2", values.address2);
+      formData.append("country", values.residentialCountry);
+      formData.append("state", values.state);
+      formData.append("city", values.city);
+      formData.append("zipcode", values.zipcode);
+      formData.append("assignCountries", values.assignedCountry);
+
+      const imageFile =
+        Array.isArray(values.image) && values.image.length > 0 ? values.image[0] : values.image;
+      if (imageFile instanceof File) {
+        formData.append("image", imageFile);
+      } else if (typeof imageFile === "string" && imageFile !== manager.image) {
+        formData.append("image", imageFile);
+      }
+
+      await onSubmit(manager.id, formData);
       successToast({ title: "Country manager updated successfully" });
       onOpenChange(false);
     } finally {
@@ -59,10 +79,6 @@ export function EditCountryManagerDialog({
       <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto p-0">
         <DialogHeader className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-6 pb-5">
           <DialogTitle className="flex items-center justify-center gap-3 text-3xl font-bold text-slate-800">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 shadow-sm">
-              <UserPen className="h-6 w-6" />
-            </div>
-
             <span>Edit Country Manager</span>
           </DialogTitle>
 
@@ -72,9 +88,10 @@ export function EditCountryManagerDialog({
         </DialogHeader>
         {manager ? (
           <CountryManagerForm
+            mode="edit"
             onSubmit={handleSubmit}
             initialValues={initialValues}
-            previewImageUrl={manager.avatar}
+            previewImageUrl={manager.image ?? undefined}
             submitLabel="Update"
             isSubmitting={isSubmitting}
           />

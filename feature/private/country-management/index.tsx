@@ -18,16 +18,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { type CountryManagerData } from "@/feature/private/country-management/types/country-manager";
+import { getCountryManagerColumns } from "./columns/country-manager-columns";
+import { AddCountryManagerDialog } from "./components/add-country-manager-dialog";
+import { EditCountryManagerDialog } from "./components/edit-country-manager-dialog";
+import { useCountryManagerFilters } from "./hooks/use-country-manager-filters";
+import { ROUTES } from "@/config/routes";
+import { useRouter } from "next/navigation";
 import {
   COUNTRY_MANAGER_STATS_CONFIG,
   COUNTRY_MANAGER_STATUS_OPTIONS,
-  type CountryManagerData,
-} from "@/constants/country-manager";
-import { getCountryManagerColumns } from "./columns/country-manager-columns";
-import { AddCountryManagerDialog } from "./components/add-country-manager-dialog";
-import { CountryManagerDetailDialog } from "./components/country-manager-detail-dialog";
-import { EditCountryManagerDialog } from "./components/edit-country-manager-dialog";
-import { useCountryManagement } from "./hooks/use-country-management";
+} from "@/constants/country-management";
 
 export default function CountryManagementPage() {
   const {
@@ -44,10 +45,19 @@ export default function CountryManagementPage() {
     toDate,
     toggleManagerStatus,
     updateCountryManager,
-  } = useCountryManagement();
+    isLoading,
+    pagination,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    page,
+    setPage,
+    limit,
+    setLimit,
+  } = useCountryManagerFilters();
 
-  const [selectedManager, setSelectedManager] = useState<CountryManagerData | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const router = useRouter();
+
   const [editingManager, setEditingManager] = useState<CountryManagerData | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -55,8 +65,7 @@ export default function CountryManagementPage() {
     () =>
       getCountryManagerColumns({
         onView: (manager) => {
-          setSelectedManager(manager);
-          setIsDetailOpen(true);
+          router.push(`${ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT}/${manager.id}`);
         },
         onEdit: (manager) => {
           setEditingManager(manager);
@@ -64,7 +73,7 @@ export default function CountryManagementPage() {
         },
         onToggleStatus: toggleManagerStatus,
       }),
-    [toggleManagerStatus],
+    [router, toggleManagerStatus],
   );
 
   return (
@@ -110,6 +119,7 @@ export default function CountryManagementPage() {
               itemClassName="flex-1 space-y-1 min-w-0"
               pickerClassName="h-10 w-full"
               labelClassName="text-muted-foreground text-xs font-medium uppercase"
+              maxDate={new Date()}
             />
 
             <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
@@ -148,20 +158,30 @@ export default function CountryManagementPage() {
           <div>
             <CardTitle className="text-xl font-semibold">Country Manager List</CardTitle>
             <p className="text-muted-foreground mt-0.5 text-sm">
-              {filteredData.length} manager{filteredData.length !== 1 ? "s" : ""} found
+              {pagination?.total ?? 0} manager{pagination?.total !== 1 ? "s" : ""} found
             </p>
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={filteredData} searchKey="name" />
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            searchKey="name"
+            loading={isLoading}
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            manualSorting={true}
+            onSortingChange={setSorting}
+            currentPage={page}
+            totalPages={pagination?.totalPages ?? 1}
+            rowsPerPage={limit}
+            onPageChange={setPage}
+            onRowsPerPageChange={setLimit}
+            manualFiltering={true}
+          />
         </CardContent>
       </Card>
 
-      <CountryManagerDetailDialog
-        manager={selectedManager}
-        open={isDetailOpen}
-        onOpenChange={setIsDetailOpen}
-      />
       <EditCountryManagerDialog
         manager={editingManager}
         open={isEditOpen}

@@ -39,7 +39,9 @@ export function AppSidebar() {
 
   const [openGroup, setOpenGroup] = React.useState<string | null>(() => {
     const active = navigationItems.find(
-      (item) => item.items?.length && item.items.some((sub) => pathname?.startsWith(sub.url)),
+      (item) =>
+        item.items?.length &&
+        (pathname?.startsWith(item.url) || item.items.some((sub) => pathname?.startsWith(sub.url))),
     );
     return active?.title ?? null;
   });
@@ -149,7 +151,9 @@ export function AppSidebar() {
                   const active = isActive(item.url);
 
                   if (item.items?.length) {
-                    const hasActiveChild = item.items.some((sub) => pathname?.startsWith(sub.url));
+                    const hasActiveChild =
+                      pathname?.startsWith(item.url) ||
+                      item.items.some((sub) => pathname?.startsWith(sub.url));
                     const isOpen =
                       openGroup === item.title ||
                       (!!searchQuery &&
@@ -202,7 +206,9 @@ export function AppSidebar() {
                               <div className="flex flex-col gap-1">
                                 {item.items.map((sub) => {
                                   const isSubActive =
-                                    pathname === sub.url || pathname?.startsWith(sub.url);
+                                    pathname === sub.url ||
+                                    pathname?.startsWith(sub.url) ||
+                                    (pathname?.startsWith(item.url) && item.items.length === 1);
                                   return (
                                     <Link
                                       key={sub.title}
@@ -280,7 +286,9 @@ export function AppSidebar() {
                             <SidebarMenuSub className="border-border/50 mt-0.5 ml-3.5 border-l py-0.5 pr-0 pl-3">
                               {item.items.map((sub) => {
                                 const isSubActive =
-                                  pathname === sub.url || pathname?.startsWith(sub.url);
+                                  pathname === sub.url ||
+                                  pathname?.startsWith(sub.url) ||
+                                  (pathname?.startsWith(item.url) && item.items.length === 1);
                                 return (
                                   <SidebarMenuSubItem key={sub.title}>
                                     <Link

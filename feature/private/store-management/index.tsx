@@ -4,12 +4,12 @@ import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { STORE_STAT_CONFIG } from "@/constants/store-management";
 import { Store } from "lucide-react";
 import { storeColumns } from "./columns/store-columns";
 import { AddStoreDialog } from "./components/add-store-dialog";
 import { StoreFilters } from "./components/store-filters";
 import { useStoreFilters } from "./hooks/useStoreFilters";
+import { STORE_STAT_CONFIG } from "@/constants/store-management";
 
 export function StoreManagement() {
   const {
@@ -27,6 +27,15 @@ export function StoreManagement() {
     stats,
     hasFilters,
     clearFilters,
+    isLoading,
+    pagination,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    page,
+    setPage,
+    limit,
+    setLimit,
   } = useStoreFilters();
 
   return (
@@ -80,14 +89,29 @@ export function StoreManagement() {
               <CardTitle className="text-2xl font-bold tracking-tight">Stores</CardTitle>
 
               <p className="text-muted-foreground mt-1 text-sm">
-                Manage all store locations • {filteredData.length}{" "}
-                {filteredData.length === 1 ? "Store" : "Stores"}
+                Manage all store locations • {pagination?.total ?? 0}{" "}
+                {pagination?.total === 1 ? "Store" : "Stores"}
               </p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-4">
-          <DataTable columns={storeColumns} data={filteredData} searchKey="storeName" />
+          <DataTable
+            columns={storeColumns}
+            data={filteredData}
+            searchKey="storeName"
+            loading={isLoading}
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            manualSorting={true}
+            onSortingChange={setSorting}
+            currentPage={page}
+            totalPages={pagination?.totalPages ?? 1}
+            rowsPerPage={limit}
+            onPageChange={setPage}
+            onRowsPerPageChange={setLimit}
+            manualFiltering={true}
+          />
         </CardContent>
       </Card>
     </div>

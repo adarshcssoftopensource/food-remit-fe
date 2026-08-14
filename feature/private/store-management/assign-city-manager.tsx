@@ -1,14 +1,20 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Globe, UserCheck } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { Globe, UserCheck, MapPin, Store } from "lucide-react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { useMemo, useEffect } from "react";
 
 import { PageHeader } from "@/components/common/page-header";
-import { successToast } from "@/components/toaster";
+import { useApiMutation, useApiQuery } from "@/hooks/useApi";
+import { STORE_ENDPOINTS } from "@/lib/api/endpoints/store.endpoints";
+import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
+import { successToast, errorToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -17,61 +23,151 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { COUNTRY_SELECT_OPTIONS } from "@/constants/store-management";
+import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
 import {
   assignCityManagerSchema,
   type AssignCityManagerFormValues,
 } from "./schema/assign-city-manager.schema";
 
-const CITY_MANAGERS_BY_COUNTRY: Record<string, Array<{ id: string; name: string }>> = {
-  "United States": [
-    { id: "CM001", name: "James Wilson" },
-    { id: "CM002", name: "Sarah Johnson" },
-    { id: "CM003", name: "Michael Brown" },
-  ],
-  Canada: [
-    { id: "CM004", name: "Emily Davis" },
-    { id: "CM005", name: "Robert Taylor" },
-  ],
-  "United Kingdom": [
-    { id: "CM006", name: "Charlotte Moore" },
-    { id: "CM007", name: "Oliver Jackson" },
-  ],
-  Australia: [{ id: "CM008", name: "Liam Anderson" }],
-  Germany: [{ id: "CM009", name: "Hans Müller" }],
-  France: [{ id: "CM010", name: "Sophie Laurent" }],
-  India: [
-    { id: "CM011", name: "Arjun Sharma" },
-    { id: "CM012", name: "Priya Patel" },
-  ],
-};
+interface RawCityManager {
+  id: string;
+  country: string;
+  firstName: string;
+  lastName: string;
+  assignCities?: string;
+  assignCityNames?: string[];
+}
+
+interface RawStore {
+  id: string;
+  country: string;
+  storeName: string;
+  city: string;
+  cityName?: string;
+  assignedCityManager?: string | null;
+}
+
+interface ApiListResponse<T> {
+  data: T[];
+}
 
 export function AssignCityManagerToStore() {
+  const { countries: countriesData } = useGetCountriesDropdown();
+
+  const { data: rawCityManagers, isLoading: managersLoading } = useApiQuery<
+    ApiListResponse<RawCityManager>
+  >(["CITY_MANAGERS", "limit=1000"], `${CITY_MANAGER_ENDPOINTS.GET_CITY_MANAGERS}?limit=1000`);
+
+  const {
+    data: rawStores,
+    isLoading: storesLoading,
+    refetch: refetchStores,
+  } = useApiQuery<ApiListResponse<RawStore>>(
+    ["STORES", "limit=1000"],
+    `${STORE_ENDPOINTS.GET_STORES}?limit=1000`,
+  );
+
+  const assignMutation = useApiMutation<unknown, { id: string; assignedCityManager: string }>(
+    "patch",
+    (body) => STORE_ENDPOINTS.UPDATE_STORE(body.id),
+  );
+
   const {
     control,
     handleSubmit,
-    watch,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<AssignCityManagerFormValues>({
     resolver: zodResolver(assignCityManagerSchema),
     defaultValues: {
       country: "",
       cityManagerId: "",
+      storeIds: [],
     },
     mode: "onSubmit",
   });
 
-  const selectedCountry = watch("country");
-  const availableManagers = selectedCountry
-    ? (CITY_MANAGERS_BY_COUNTRY[selectedCountry] ?? [])
-    : [];
+  const selectedCountry = useWatch({ control, name: "country" });
+  const selectedCityManagerId = useWatch({ control, name: "cityManagerId" });
+
+  const availableManagers = useMemo(() => {
+    if (!rawCityManagers?.data) return [];
+    return rawCityManagers.data
+      .filter((m) => m.country === selectedCountry)
+      .map((m) => ({ ...m, name: `${m.firstName} ${m.lastName}` }));
+  }, [rawCityManagers, selectedCountry]);
+
+  const selectedManager = useMemo(() => {
+    return availableManagers.find((m) => m.id === selectedCityManagerId);
+  }, [availableManagers, selectedCityManagerId]);
+
+  const managerAssignedCities = useMemo(() => {
+    if (!selectedManager) return [];
+    if (selectedManager.assignCityNames && selectedManager.assignCityNames.length > 0) {
+      return selectedManager.assignCityNames;
+    }
+    // Fallback if assignCityNames is not available
+    if (!selectedManager.assignCities) return [];
+    try {
+      const parsed = JSON.parse(selectedManager.assignCities);
+      if (Array.isArray(parsed)) return parsed;
+      return [selectedManager.assignCities];
+    } catch {
+      return selectedManager.assignCities.split(",").map((s) => s.trim());
+    }
+  }, [selectedManager]);
+
+  const managerAssignedStores = useMemo(() => {
+    if (!rawStores?.data || !selectedCityManagerId) return [];
+    return rawStores.data.filter((s) => s.assignedCityManager === selectedCityManagerId);
+  }, [rawStores, selectedCityManagerId]);
+
+  const selectedCountryName = useMemo(() => {
+    return countriesData.find((c) => c.id === selectedCountry)?.name || selectedCountry;
+  }, [countriesData, selectedCountry]);
+
+  const storesInSelectedCountry = useMemo(() => {
+    if (!rawStores?.data || !selectedCountry) return [];
+    return rawStores.data.filter(
+      (s) => s.country?.trim().toLowerCase() === selectedCountry.trim().toLowerCase(),
+    );
+  }, [rawStores, selectedCountry]);
+
+  const unassignedStores = useMemo(() => {
+    return storesInSelectedCountry.filter((s) => {
+      return !s.assignedCityManager || s.assignedCityManager === "null";
+    });
+  }, [storesInSelectedCountry]);
+
+  // Reset dependent fields when country changes
+  useEffect(() => {
+    setValue("cityManagerId", "");
+    setValue("storeIds", []);
+  }, [selectedCountry, setValue]);
 
   const onSubmit = async (data: AssignCityManagerFormValues) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Assigned City Manager:", data);
-    successToast({ title: "City Manager assigned to stores successfully!" });
-    reset();
+    try {
+      if (data.storeIds.length === 0) {
+        errorToast({ title: "Please select at least one store." });
+        return;
+      }
+
+      await Promise.all(
+        data.storeIds.map((storeId) =>
+          assignMutation.mutateAsync({
+            id: storeId,
+            assignedCityManager: data.cityManagerId,
+          }),
+        ),
+      );
+
+      successToast({ title: "City Manager assigned to stores successfully!" });
+      reset();
+      refetchStores();
+    } catch {
+      errorToast({ title: "Failed to assign city manager." });
+    }
   };
 
   return (
@@ -92,114 +188,232 @@ export function AssignCityManagerToStore() {
                 Assign City Manager
               </CardTitle>
               <p className="text-sm text-slate-500">
-                Select a country and a city manager to assign
+                Select a country and a city manager to assign to unassigned stores
               </p>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="p-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg space-y-5">
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                <Globe className="size-3.5 text-slate-400" />
-                Select Country
-                <span className="text-red-500">*</span>
-              </Label>
-              <Controller
-                name="country"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(v) => {
-                      field.onChange(v);
-                    }}
-                  >
-                    <SelectTrigger
-                      id="assign-country"
-                      className="h-12! w-full rounded-xl border-slate-200 bg-slate-50"
-                    >
-                      <SelectValue placeholder="Select a country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {COUNTRY_SELECT_OPTIONS.map((c) => (
-                          <SelectItem key={c.value} value={c.value}>
-                            {c.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.country && (
-                <p className="text-xs font-medium text-red-500">{errors.country.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                <UserCheck className="size-3.5 text-slate-400" />
-                Select City Manager
-                <span className="text-red-500">*</span>
-              </Label>
-              <Controller
-                name="cityManagerId"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={!selectedCountry}
-                  >
-                    <SelectTrigger
-                      id="assign-city-manager"
-                      className="h-12! w-full rounded-xl border-slate-200 bg-slate-50"
-                    >
-                      <SelectValue
-                        placeholder={
-                          !selectedCountry
-                            ? "Select a country first"
-                            : availableManagers.length === 0
-                              ? "No City Manager in this country"
-                              : "Select a city manager"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {availableManagers.length === 0 ? (
-                          <SelectItem value="none" disabled>
-                            No City Manager in this country
-                          </SelectItem>
-                        ) : (
-                          availableManagers.map((m) => (
-                            <SelectItem key={m.id} value={m.id}>
-                              {m.name}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid max-w-2xl gap-6 sm:grid-cols-2">
+              {/* Country Selection */}
+              <div className="space-y-1.5">
+                <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                  <Globe className="size-3.5 text-slate-400" />
+                  Select Country
+                  <span className="text-red-500">*</span>
+                </Label>
+                <Controller
+                  name="country"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-12! w-full rounded-xl border-slate-200 bg-slate-50">
+                        <SelectValue placeholder="Select a country">
+                          {field.value
+                            ? countriesData.find((c) => c.id === field.value)?.name
+                            : "Select a country"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {countriesData.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              {c.name}
                             </SelectItem>
-                          ))
-                        )}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.country && (
+                  <p className="text-xs font-medium text-red-500">{errors.country.message}</p>
                 )}
-              />
-              {errors.cityManagerId && (
-                <p className="text-xs font-medium text-red-500">{errors.cityManagerId.message}</p>
-              )}
+              </div>
+
+              {/* City Manager Selection */}
+              <div className="space-y-1.5">
+                <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                  <UserCheck className="size-3.5 text-slate-400" />
+                  Select City Manager
+                  <span className="text-red-500">*</span>
+                </Label>
+                <Controller
+                  name="cityManagerId"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={!selectedCountry}
+                    >
+                      <SelectTrigger className="h-12! w-full rounded-xl border-slate-200 bg-slate-50">
+                        {/* We use field.value to explicitly display the name inside SelectValue by mapping it */}
+                        <SelectValue
+                          placeholder={
+                            !selectedCountry
+                              ? "Select a country first"
+                              : availableManagers.length === 0
+                                ? "No City Manager in this country"
+                                : "Select a city manager"
+                          }
+                        >
+                          {field.value
+                            ? availableManagers.find((m) => m.id === field.value)?.name
+                            : undefined}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {availableManagers.length === 0 ? (
+                            <SelectItem value="none" disabled>
+                              No City Manager in this country
+                            </SelectItem>
+                          ) : (
+                            availableManagers.map((m) => (
+                              <SelectItem key={m.id} value={m.id}>
+                                {m.name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.cityManagerId && (
+                  <p className="text-xs font-medium text-red-500">{errors.cityManagerId.message}</p>
+                )}
+              </div>
             </div>
 
-            <div className="pt-2">
-              <Button
-                type="submit"
-                isLoading={isSubmitting}
-                className="h-12 w-full rounded-xl font-semibold shadow-sm sm:w-auto sm:min-w-[160px]"
-              >
-                Assign
-              </Button>
-            </div>
+            {selectedCityManagerId && (
+              <div className="animate-in fade-in slide-in-from-top-2 space-y-6 duration-300">
+                {/* Display Manager's Assigned Cities */}
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+                  <Label className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                    <MapPin className="text-primary size-4" />
+                    Assigned Cities for {selectedManager?.name}
+                  </Label>
+                  {managerAssignedCities.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {managerAssignedCities.map((city, idx) => (
+                        <Badge
+                          key={idx}
+                          variant="secondary"
+                          className="border-slate-200 bg-white text-slate-700 shadow-sm"
+                        >
+                          {city}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500">No cities assigned to this manager.</p>
+                  )}
+                </div>
+
+                {/* Display Manager's Assigned Stores */}
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+                  <Label className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                    <Store className="text-primary size-4" />
+                    Assigned Stores for {selectedManager?.name}
+                  </Label>
+                  {managerAssignedStores.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {managerAssignedStores.map((store) => (
+                        <Badge
+                          key={store.id}
+                          variant="secondary"
+                          className="border-slate-200 bg-white text-slate-700 shadow-sm"
+                        >
+                          {store.storeName}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      No stores assigned to this manager yet.
+                    </p>
+                  )}
+                </div>
+
+                {/* Display Unassigned Stores */}
+                <div className="space-y-3">
+                  <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                    <Store className="text-primary size-4" />
+                    Unassigned Stores in {selectedCountryName}
+                    <span className="text-red-500">*</span>
+                  </Label>
+
+                  {unassignedStores.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+                      <p className="text-sm font-medium text-slate-600">
+                        {storesInSelectedCountry.length === 0
+                          ? "There are no stores registered in this country yet."
+                          : "All stores in this country already have a city manager assigned."}
+                      </p>
+                    </div>
+                  ) : (
+                    <Controller
+                      name="storeIds"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                          {unassignedStores.map((store) => (
+                            <label
+                              key={store.id}
+                              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all hover:bg-slate-50 ${
+                                field.value.includes(store.id)
+                                  ? "border-primary bg-primary/5 ring-primary/20 ring-1"
+                                  : "border-slate-200 bg-white"
+                              }`}
+                            >
+                              <Checkbox
+                                checked={field.value.includes(store.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...field.value, store.id]);
+                                  } else {
+                                    field.onChange(field.value.filter((id) => id !== store.id));
+                                  }
+                                }}
+                                className="mt-0.5"
+                              />
+                              <div className="space-y-1">
+                                <p className="text-sm leading-none font-semibold text-slate-800">
+                                  {store.storeName}
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                  {store.cityName || store.city || "No city specified"}
+                                </p>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    />
+                  )}
+                  {errors.storeIds && (
+                    <p className="text-xs font-medium text-red-500">{errors.storeIds.message}</p>
+                  )}
+                </div>
+
+                {unassignedStores.length > 0 && (
+                  <div className="border-t border-slate-100 pt-4">
+                    <Button
+                      type="submit"
+                      isLoading={isSubmitting || storesLoading || managersLoading}
+                      disabled={isSubmitting || storesLoading || managersLoading}
+                      className="h-12 w-full rounded-xl font-semibold shadow-sm sm:w-auto sm:min-w-40"
+                    >
+                      Assign Selected Stores
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>

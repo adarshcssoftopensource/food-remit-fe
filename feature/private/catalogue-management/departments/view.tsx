@@ -8,6 +8,7 @@ import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User, Users } fr
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetDepartment } from "./hooks/use-get-department";
+import { formatDate } from "@/lib/date";
 
 interface DepartmentViewProps {
   id: string;
@@ -167,24 +168,12 @@ export function DepartmentView({ id }: DepartmentViewProps) {
               <InfoCard
                 icon={<Calendar className="h-5 w-5" />}
                 label="Added On"
-                value={
-                  department.addedOn
-                    ? format(new Date(department.addedOn), "MMM d, yyyy 'at' h:mm a")
-                    : department.createdAt
-                      ? format(new Date(department.createdAt), "MMM d, yyyy 'at' h:mm a")
-                      : "-"
-                }
+                value={formatDate(department.addedOn)}
               />
               <InfoCard
                 icon={<Clock className="h-5 w-5" />}
                 label="Modified On"
-                value={
-                  department.modifiedOn
-                    ? format(new Date(department.modifiedOn), "MMM d, yyyy 'at' h:mm a")
-                    : department.updatedAt
-                      ? format(new Date(department.updatedAt), "MMM d, yyyy 'at' h:mm a")
-                      : "-"
-                }
+                value={formatDate(department.modifiedOn)}
               />
             </div>
           </CardContent>

@@ -10,8 +10,6 @@ import type {
   UseGetSubAdminsArgs,
 } from "../types/sub-admin.types";
 
-const CACHE_PREFIX = API_CACHE_KEYS.SUB_ADMINS[0];
-
 /** Raw shape returned by the API before normalisation. */
 interface RawGetSubAdminsResponse {
   message: string;
@@ -35,7 +33,7 @@ export function useGetSubAdmins(args: UseGetSubAdminsArgs = {}) {
     ...args,
     sortOrder: args.sortOrder ?? "asc",
   });
-  const cacheKey = buildCacheKey(CACHE_PREFIX, {
+  const cacheKey = buildCacheKey(API_CACHE_KEYS.SUB_ADMINS[0], {
     ...args,
     sortOrder: args.sortOrder ?? "asc",
   });

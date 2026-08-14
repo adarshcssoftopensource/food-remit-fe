@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   CalendarDays,
   CheckCircle2,
-  Eye,
   Mail,
   Phone,
   ShieldCheck,
@@ -14,13 +13,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/config/routes";
 import { getInitials } from "@/lib/get-initials";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/date";
 
 import { useGetSubAdminById } from "./hooks/use-get-sub-admin-by-id";
 
@@ -87,13 +86,7 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
     },
     {
       label: "Joined On",
-      value: admin.createdAt
-        ? new Date(admin.createdAt).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-          })
-        : "—",
+      value: admin.createdAt ? formatDate(admin.createdAt, { month: "long" }) : "—",
       icon: <CalendarDays className="h-4.5 w-4.5" />,
       color: "amber",
     },

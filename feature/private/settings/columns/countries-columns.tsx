@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { CountryActionsCell } from "../components/country-actions-cell";
 import type { CountryData } from "../types/settings.types";
+import { formatDate } from "@/lib/date";
 
 export const countriesColumns: ColumnDef<CountryData>[] = [
   {
@@ -16,14 +17,7 @@ export const countriesColumns: ColumnDef<CountryData>[] = [
     accessorKey: "addedOn",
     header: "Added On",
     cell: ({ row }) => {
-      if (!row.original.addedOn) return "-";
-      const date = new Date(row.original.addedOn);
-      if (isNaN(date.getTime())) return row.original.addedOn;
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
+      return formatDate(row.original.addedOn);
     },
   },
   {

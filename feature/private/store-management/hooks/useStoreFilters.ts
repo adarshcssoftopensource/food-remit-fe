@@ -1,35 +1,62 @@
 "use client";
 
-import { MOCK_STORES_DATA, type StoreData, type StoreStatus } from "@/constants/store-management";
-import { useMemo, useState } from "react";
+import { useGetStores } from "./use-get-stores";
+import { useTableFilters } from "@/hooks/use-table-filters";
+import type { StoreData } from "@/feature/private/store-management/types/store-management";
+import { useState } from "react";
 
 export function useStoreFilters() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
   const [country, setCountry] = useState("All Countries");
   const [city, setCity] = useState("All Cities");
-  const [statusFilter, setStatusFilter] = useState("All");
 
-  const filteredData = useMemo<StoreData[]>(
-    () =>
-      MOCK_STORES_DATA.filter((store) => {
-        if (country !== "All Countries" && store.storeCountry !== country) return false;
-        if (city !== "All Cities" && store.storeCity !== city) return false;
-        if (statusFilter !== "All" && store.status !== (statusFilter as StoreStatus)) return false;
+  const {
+    page,
+    limit,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    status: statusFilter,
+    setStatus: setStatusFilter,
+    resetBaseFilters,
+    debouncedSearch,
+    formattedFromDate,
+    formattedToDate,
+    sortBy,
+    sortOrder,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    setPage,
+    setLimit,
+  } = useTableFilters(10);
 
-        const date = new Date(store.createdAt);
-        if (fromDate && date < fromDate) return false;
-        if (toDate && date > toDate) return false;
-        return true;
-      }),
-    [country, city, statusFilter, fromDate, toDate],
-  );
+  const {
+    data: rawStores,
+    isLoading,
+    pagination,
+  } = useGetStores({
+    page,
+    limit,
+    search: debouncedSearch,
+    sortBy,
+    sortOrder,
+    status: statusFilter,
+    fromDate: formattedFromDate,
+    toDate: formattedToDate,
+    country: country !== "All Countries" ? country : undefined,
+    city: city !== "All Cities" ? city : undefined,
+  });
+
+  const stores: StoreData[] = rawStores || [];
+
+  const filteredData = stores;
 
   const stats = {
-    total: MOCK_STORES_DATA.length,
-    active: MOCK_STORES_DATA.filter((s) => s.status === "Active").length,
-    inactive: MOCK_STORES_DATA.filter((s) => s.status === "Inactive").length,
-    cities: new Set(MOCK_STORES_DATA.map((s) => s.storeCity)).size,
+    total: stores.length,
+    active: stores.filter((s: StoreData) => s.status === "Active").length,
+    inactive: stores.filter((s: StoreData) => s.status === "Inactive").length,
+    cities: new Set(stores.map((s: StoreData) => s.storeCity)).size,
   };
 
   const hasFilters = !!(
@@ -37,15 +64,18 @@ export function useStoreFilters() {
     toDate ||
     country !== "All Countries" ||
     city !== "All Cities" ||
-    statusFilter !== "All"
+    (statusFilter !== "All" && statusFilter !== "all")
   );
 
   const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
+    resetBaseFilters();
     setCountry("All Countries");
     setCity("All Cities");
-    setStatusFilter("All");
+  };
+
+  const handleCountryChange = (newCountry: string) => {
+    setCountry(newCountry);
+    setCity("All Cities");
   };
 
   return {
@@ -54,7 +84,7 @@ export function useStoreFilters() {
     toDate,
     setToDate,
     country,
-    setCountry,
+    setCountry: handleCountryChange,
     city,
     setCity,
     statusFilter,
@@ -63,5 +93,14 @@ export function useStoreFilters() {
     stats,
     hasFilters,
     clearFilters,
+    isLoading,
+    pagination,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    page,
+    setPage,
+    limit,
+    setLimit,
   };
 }

@@ -11,9 +11,7 @@ export const storeSchema = z.object({
   storeAddress: z.string().min(3, "Store address is required"),
   address2: z.string().optional(),
   storeCountry: z.string().min(1, "Country is required"),
-  storeState: z.string().min(1, "State is required"),
   storeCity: z.string().min(1, "City is required"),
-  storeZipCode: z.string().optional(),
   storeTax: z.coerce.number().min(0).max(100).optional(),
   foodRemitCommission: z.coerce.number().min(0).max(100).optional(),
 

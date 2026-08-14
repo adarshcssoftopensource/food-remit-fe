@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronDown, Flag, Globe, Loader2, Search } from "lucide-react";
+import { Check, ChevronDown, Flag, Loader2, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";

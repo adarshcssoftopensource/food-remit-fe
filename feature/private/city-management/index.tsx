@@ -18,17 +18,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  CITY_MANAGER_STATS_CONFIG,
-  CITY_MANAGER_STATUS_OPTIONS,
-  type CityManagerData,
-} from "@/constants/city-manager";
+import { type CityManagerData } from "@/feature/private/city-management/types/city-manager";
 import { getCityManagerColumns } from "./columns/city-manager-columns";
 import { AddCityManagerDialog } from "./components/add-city-manager-dialog";
 import { AssignedCitiesDialog } from "./components/assigned-cities-dialog";
-import { CityManagerDetailDialog } from "./components/city-manager-detail-dialog";
 import { EditCityManagerDialog } from "./components/edit-city-manager-dialog";
-import { useCityManagement } from "./hooks/use-city-management";
+import { useCityManagerFilters } from "./hooks/use-city-manager-filters";
+import { ROUTES } from "@/config/routes";
+import { useRouter } from "next/navigation";
+import {
+  CITY_MANAGER_STATS_CONFIG,
+  CITY_MANAGER_STATUS_OPTIONS,
+} from "@/constants/city-management";
 
 export default function CityManagementPage() {
   const {
@@ -45,10 +46,19 @@ export default function CityManagementPage() {
     toDate,
     toggleManagerStatus,
     updateCityManager,
-  } = useCityManagement();
+    isLoading,
+    pagination,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    page,
+    setPage,
+    limit,
+    setLimit,
+  } = useCityManagerFilters();
 
-  const [selectedManager, setSelectedManager] = useState<CityManagerData | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const router = useRouter();
+
   const [editingManager, setEditingManager] = useState<CityManagerData | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [citiesManager, setCitiesManager] = useState<CityManagerData | null>(null);
@@ -58,8 +68,7 @@ export default function CityManagementPage() {
     () =>
       getCityManagerColumns({
         onView: (manager) => {
-          setSelectedManager(manager);
-          setIsDetailOpen(true);
+          router.push(`${ROUTES.ADMIN.CITY_MANAGEMENT.ROOT}/${manager.id}`);
         },
         onEdit: (manager) => {
           setEditingManager(manager);
@@ -71,7 +80,7 @@ export default function CityManagementPage() {
         },
         onToggleStatus: toggleManagerStatus,
       }),
-    [toggleManagerStatus],
+    [router, toggleManagerStatus],
   );
 
   return (
@@ -117,6 +126,7 @@ export default function CityManagementPage() {
               itemClassName="flex-1 space-y-1 min-w-0"
               pickerClassName="h-10 w-full"
               labelClassName="text-muted-foreground text-xs font-medium uppercase"
+              maxDate={new Date()}
             />
 
             <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
@@ -155,20 +165,30 @@ export default function CityManagementPage() {
           <div>
             <CardTitle className="text-xl font-semibold">City Manager List</CardTitle>
             <p className="text-muted-foreground mt-0.5 text-sm">
-              {filteredData.length} manager{filteredData.length !== 1 ? "s" : ""} found
+              {pagination?.total ?? 0} manager{pagination?.total !== 1 ? "s" : ""} found
             </p>
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={filteredData} searchKey="name" />
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            searchKey="name"
+            loading={isLoading}
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            manualSorting={true}
+            onSortingChange={setSorting}
+            currentPage={page}
+            totalPages={pagination?.totalPages ?? 1}
+            rowsPerPage={limit}
+            onPageChange={setPage}
+            onRowsPerPageChange={setLimit}
+            manualFiltering={true}
+          />
         </CardContent>
       </Card>
 
-      <CityManagerDetailDialog
-        manager={selectedManager}
-        open={isDetailOpen}
-        onOpenChange={setIsDetailOpen}
-      />
       <EditCityManagerDialog
         manager={editingManager}
         open={isEditOpen}

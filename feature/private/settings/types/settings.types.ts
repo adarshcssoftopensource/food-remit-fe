@@ -88,6 +88,7 @@ export interface CityData {
   stateId?: string | null;
   addedOn: string;
   totalDepartments?: number;
+  isAssigned?: boolean;
 }
 
 export interface CityDropdownItem {
@@ -146,6 +147,8 @@ export interface UseGetCitiesArgs {
   limit?: number;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  unassignedOnly?: boolean;
+  excludeManagerId?: string;
 }
 
 export interface ChangePasswordPayload {

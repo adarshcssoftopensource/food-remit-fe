@@ -27,3 +27,29 @@ export function formatDateTime(
     return "-";
   }
 }
+
+export function formatDate(
+  value: string | Date | null | undefined,
+  options?: Intl.DateTimeFormatOptions,
+): string {
+  if (!value) return "-";
+
+  try {
+    const date = value instanceof Date ? value : new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "-";
+    }
+
+    return new Intl.DateTimeFormat("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      timeZone: "Asia/Kolkata",
+      ...options,
+    }).format(date);
+  } catch (error) {
+    console.error("Date formatting error:", error);
+    return "-";
+  }
+}

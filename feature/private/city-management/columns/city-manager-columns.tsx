@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import type { CityManagerData } from "@/constants/city-manager";
+import type { CityManagerData } from "@/feature/private/city-management/types/city-manager";
+import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pencil } from "lucide-react";
-import Image from "next/image";
+import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 
 type CityManagerColumnsConfig = {
   onView: (manager: CityManagerData) => void;
@@ -48,29 +49,7 @@ export function getCityManagerColumns({
       accessorFn: (row) => `${row.firstName} ${row.lastName}`.trim(),
       cell: ({ row }) => {
         const fullName = `${row.original.firstName} ${row.original.lastName}`.trim();
-        const initials = fullName
-          .split(" ")
-          .map((word) => word[0]?.toUpperCase())
-          .slice(0, 2)
-          .join("");
-        return (
-          <div className="flex items-center gap-2.5">
-            <div className="bg-primary/10 text-primary relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-bold">
-              {row.original.avatar ? (
-                <Image
-                  src={row.original.avatar}
-                  alt={fullName}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                initials
-              )}
-            </div>
-            <span className="text-sm font-medium text-slate-800 capitalize">{fullName}</span>
-          </div>
-        );
+        return <ImageNameCell name={fullName} image={row.original.image} type="profile" />;
       },
     },
     {
@@ -89,7 +68,7 @@ export function getCityManagerColumns({
     {
       accessorKey: "country",
       header: "Country",
-      cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.country}</span>,
+      cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.countryName}</span>,
     },
     {
       id: "phone",
@@ -97,7 +76,7 @@ export function getCityManagerColumns({
       accessorFn: (row) => `${row.phoneCode}${row.phoneNumber}`,
       cell: ({ row }) => (
         <span className="text-sm text-slate-700">
-          {`+${row.original.phoneCode} ${row.original.phoneNumber}`}
+          {`${row.original.phoneCode} ${row.original.phoneNumber}`}
         </span>
       ),
     },
@@ -110,7 +89,9 @@ export function getCityManagerColumns({
       accessorKey: "createdAt",
       header: "Created On",
       cell: ({ row }) => (
-        <span className="text-xs whitespace-nowrap text-slate-600">{row.original.createdAt}</span>
+        <span className="text-xs whitespace-nowrap text-slate-600">
+          {formatDate(row.original.createdAt)}
+        </span>
       ),
     },
     {

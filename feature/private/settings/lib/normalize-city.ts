@@ -19,5 +19,6 @@ export function normalizeCity(raw: Record<string, unknown>): CityData {
     stateId: raw.stateId ? String(raw.stateId) : null,
     addedOn: raw.addedOn ? String(raw.addedOn) : new Date().toISOString(),
     totalDepartments: Number(raw.totalDepartments ?? 0),
+    isAssigned: Boolean(raw.isAssigned),
   };
 }

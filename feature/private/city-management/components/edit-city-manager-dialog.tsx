@@ -2,7 +2,7 @@
 
 import { successToast } from "@/components/toaster";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import type { CityManagerData } from "@/constants/city-manager";
+import type { CityManagerData } from "@/feature/private/city-management/types/city-manager";
 import { PencilLine } from "lucide-react";
 import { useMemo, useState } from "react";
 import { type CityManagerFormValues } from "../schema/city-manager.schema";
@@ -12,7 +12,7 @@ type EditCityManagerDialogProps = {
   manager: CityManagerData | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (id: string, values: CityManagerFormValues) => Promise<void> | void;
+  onSubmit: (id: string, formData: FormData) => Promise<void> | void;
 };
 
 export function EditCityManagerDialog({
@@ -47,7 +47,30 @@ export function EditCityManagerDialog({
     if (!manager) return;
     setIsSubmitting(true);
     try {
-      await onSubmit(manager.id, values);
+      const formData = new FormData();
+      formData.append("firstName", values.firstName);
+      formData.append("lastName", values.lastName);
+      formData.append("email", values.email);
+      formData.append("countryCode", values.phoneCode);
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("address", values.address1);
+      if (values.address2) formData.append("address2", values.address2);
+      formData.append("residentialCountry", values.residentialCountry);
+      formData.append("state", values.state);
+      formData.append("city", values.city);
+      formData.append("country", values.country);
+      if (values.zipcode) formData.append("zipcode", values.zipcode);
+      formData.append("assignCities", values.assignedCities.join(","));
+
+      const imageFile =
+        Array.isArray(values.image) && values.image.length > 0 ? values.image[0] : values.image;
+      if (imageFile instanceof File) {
+        formData.append("image", imageFile);
+      } else if (typeof imageFile === "string" && imageFile !== manager.image) {
+        formData.append("image", imageFile);
+      }
+
+      await onSubmit(manager.id, formData);
       successToast({ title: "City manager updated successfully" });
       onOpenChange(false);
     } finally {
@@ -86,9 +109,10 @@ export function EditCityManagerDialog({
                 mode="edit"
                 onSubmit={handleSubmit}
                 initialValues={initialValues}
-                previewImageUrl={manager.avatar}
+                previewImageUrl={manager.image ?? undefined}
                 submitLabel="Save Changes"
                 isSubmitting={isSubmitting}
+                managerId={manager.id}
               />
             ) : null}
           </div>
