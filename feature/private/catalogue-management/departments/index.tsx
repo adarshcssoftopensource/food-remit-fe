@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 import { CountrySelect } from "@/components/common/country-select";
 import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
+import { ROUTES } from "@/config/routes";
 import { useRouter } from "next/navigation";
 import { useTableFilters } from "@/hooks/use-table-filters";
 import { getDepartmentColumns } from "./columns/department-columns";
@@ -42,7 +43,6 @@ export function DepartmentsManagement() {
     setPageSize,
     searchQuery,
     setSearchQuery,
-    sorting,
     setSorting,
     debouncedSearch,
     formattedFromDate,
@@ -107,14 +107,10 @@ export function DepartmentsManagement() {
   };
 
   const handleView = (dept: DepartmentData) => {
-    router.push(`/catalogue-management/departments/${dept.id}`);
+    router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.DEPARTMENTS}/${dept.id}`);
   };
 
-  const columns = useMemo(
-    () => getDepartmentColumns(handleEdit, handleView),
-
-    [],
-  );
+  const columns = useMemo(() => getDepartmentColumns(handleEdit, handleView), []);
 
   return (
     <div className="space-y-6">

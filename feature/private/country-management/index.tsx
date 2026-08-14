@@ -18,16 +18,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { type CountryManagerData } from "@/feature/private/country-management/types/country-manager";
+import { getCountryManagerColumns } from "./columns/country-manager-columns";
+import { AddCountryManagerDialog } from "./components/add-country-manager-dialog";
+import { EditCountryManagerDialog } from "./components/edit-country-manager-dialog";
+import { useCountryManagerFilters } from "./hooks/use-country-manager-filters";
+import { ROUTES } from "@/config/routes";
+import { useRouter } from "next/navigation";
 import {
   COUNTRY_MANAGER_STATS_CONFIG,
   COUNTRY_MANAGER_STATUS_OPTIONS,
-  type CountryManagerData,
-} from "@/constants/country-manager";
-import { getCountryManagerColumns } from "./columns/country-manager-columns";
-import { AddCountryManagerDialog } from "./components/add-country-manager-dialog";
-import { CountryManagerDetailDialog } from "./components/country-manager-detail-dialog";
-import { EditCountryManagerDialog } from "./components/edit-country-manager-dialog";
-import { useCountryManagement } from "./hooks/use-country-management";
+} from "@/constants/country-management";
 
 export default function CountryManagementPage() {
   const {
@@ -44,10 +45,10 @@ export default function CountryManagementPage() {
     toDate,
     toggleManagerStatus,
     updateCountryManager,
-  } = useCountryManagement();
+  } = useCountryManagerFilters();
 
-  const [selectedManager, setSelectedManager] = useState<CountryManagerData | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const router = useRouter();
+
   const [editingManager, setEditingManager] = useState<CountryManagerData | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -55,8 +56,7 @@ export default function CountryManagementPage() {
     () =>
       getCountryManagerColumns({
         onView: (manager) => {
-          setSelectedManager(manager);
-          setIsDetailOpen(true);
+          router.push(`${ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT}/${manager.id}`);
         },
         onEdit: (manager) => {
           setEditingManager(manager);
@@ -64,7 +64,7 @@ export default function CountryManagementPage() {
         },
         onToggleStatus: toggleManagerStatus,
       }),
-    [toggleManagerStatus],
+    [router, toggleManagerStatus],
   );
 
   return (
@@ -157,11 +157,6 @@ export default function CountryManagementPage() {
         </CardContent>
       </Card>
 
-      <CountryManagerDetailDialog
-        manager={selectedManager}
-        open={isDetailOpen}
-        onOpenChange={setIsDetailOpen}
-      />
       <EditCountryManagerDialog
         manager={editingManager}
         open={isEditOpen}

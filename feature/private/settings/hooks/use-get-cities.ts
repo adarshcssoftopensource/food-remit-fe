@@ -26,6 +26,8 @@ export function useGetCities(args: UseGetCitiesArgs = {}) {
     cleanArgs.countryId = args.countryId;
   }
   if (args.sortBy) cleanArgs.sortBy = args.sortBy;
+  if (args.unassignedOnly) cleanArgs.unassignedOnly = true;
+  if (args.excludeManagerId) cleanArgs.excludeManagerId = args.excludeManagerId;
   cleanArgs.sortOrder = args.sortOrder ?? "asc";
 
   const url = buildUrl(SETTINGS_ENDPOINTS.GET_CITIES, cleanArgs);

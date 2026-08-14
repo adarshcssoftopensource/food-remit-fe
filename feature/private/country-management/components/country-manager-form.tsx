@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Globe2, Home, Mail, Phone, UserRound } from "lucide-react";
+import { Globe2, Home, Mail, UserRound } from "lucide-react";
 import Image from "next/image";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
@@ -120,7 +120,6 @@ export function CountryManagerForm({
       : [];
 
   const { countries: countriesData } = useGetCountriesDropdown();
-  const countryOptions = countriesData.map((c) => c.name);
 
   const fieldError = (message?: string) =>
     message ? <p className="mt-1 text-xs font-medium text-red-500">{message}</p> : null;
@@ -142,17 +141,6 @@ export function CountryManagerForm({
             control={control}
             render={({ field }) => (
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                {previewImageUrl ? (
-                  <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl border-2 border-white shadow-lg ring-1 ring-slate-200">
-                    <Image
-                      src={previewImageUrl}
-                      alt="Current manager"
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  </div>
-                ) : null}
                 <div className="min-w-0 flex-1">
                   <ImageUpload
                     value={field.value}
@@ -161,6 +149,7 @@ export function CountryManagerForm({
                     maxFiles={1}
                     label={mode === "edit" ? "Replace photo" : "Upload manager photo"}
                     hint="PNG, JPG or WEBP · max 1 image"
+                    initialImages={previewImageUrl ? [previewImageUrl] : []}
                   />
                   {fieldError(errors.image?.message as string | undefined)}
                 </div>
@@ -220,6 +209,7 @@ export function CountryManagerForm({
                         {...field}
                         type="email"
                         placeholder="name@example.com"
+                        disabled={mode === "edit"}
                         className={cn(inputClass, "pl-10")}
                       />
                     </div>
@@ -241,6 +231,7 @@ export function CountryManagerForm({
                       control={control}
                       render={({ field: codeField }) => (
                         <PhoneInputComponent
+                          disabled={mode === "edit"}
                           value={(codeField.value || "") + (numberField.value || "")}
                           onChange={(val, data) => {
                             if (data && data.dialCode) {
@@ -293,7 +284,11 @@ export function CountryManagerForm({
                 render={({ field }) => (
                   <div>
                     <FieldLabel className="mb-1.5 text-sm font-semibold">Address 2</FieldLabel>
-                    <Input {...field} placeholder="Apt, suite (optional)" className={inputClass} />
+                    <Input
+                      {...field}
+                      placeholder="Street address 2 (optional)"
+                      className={inputClass}
+                    />
                     {fieldError(errors.address2?.message)}
                   </div>
                 )}
@@ -421,12 +416,15 @@ export function CountryManagerForm({
                 </FieldLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className={inputClass}>
-                    <SelectValue placeholder="Select country to assign" />
+                    <SelectValue placeholder="Select country to assign">
+                      {countriesData.find((c) => c.id === field.value)?.name ||
+                        "Select country to assign"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {countryOptions.map((country) => (
-                      <SelectItem key={country} value={country}>
-                        {country}
+                    {countriesData.map((country) => (
+                      <SelectItem key={country.id} value={country.id}>
+                        {country.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

@@ -1,39 +1,12 @@
 "use client";
 
-import { type StoreData, STORE_STATUS_STYLES } from "@/constants/store-management";
+import {
+  type StoreData,
+  type StoreStatus,
+} from "@/feature/private/store-management/types/store-management";
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
+import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { StoreActionsCell } from "../components/store-actions-cell";
-
-function StoreNameCell({ store }: { store: StoreData }) {
-  return (
-    <div className="flex flex-col items-center gap-1.5 py-1">
-      <div className="relative size-10 overflow-hidden rounded-full border border-slate-200 bg-slate-100 shadow-sm">
-        {store.storeImage ? (
-          <Image
-            src={store.storeImage}
-            alt={store.storeName}
-            fill
-            className="object-cover"
-            sizes="40px"
-          />
-        ) : (
-          <div className="from-primary/10 to-primary/15 text-primary flex size-full items-center justify-center bg-linear-to-br text-xs font-bold">
-            {store.storeName
-              .split(" ")
-              .map((w) => w[0])
-              .slice(0, 2)
-              .join("")
-              .toUpperCase()}
-          </div>
-        )}
-      </div>
-      <span className="max-w-27.5 text-center text-xs leading-tight font-semibold text-slate-700">
-        {store.storeName}
-      </span>
-    </div>
-  );
-}
 
 function StoreStatusBadge({ status }: { status: StoreData["status"] }) {
   return (
@@ -60,6 +33,11 @@ function CommissionCell({ value }: { value: number }) {
   );
 }
 
+const STORE_STATUS_STYLES: Record<StoreStatus, string> = {
+  Active: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  Inactive: "bg-red-100 text-red-700 border-red-200",
+};
+
 export const storeColumns: ColumnDef<StoreData>[] = [
   {
     accessorKey: "id",
@@ -72,7 +50,9 @@ export const storeColumns: ColumnDef<StoreData>[] = [
   {
     accessorKey: "storeName",
     header: "Store Name",
-    cell: ({ row }) => <StoreNameCell store={row.original} />,
+    cell: ({ row }) => (
+      <ImageNameCell name={row.original.storeName} image={row.original.storeImage} type="profile" />
+    ),
     enableSorting: true,
   },
   {
@@ -89,14 +69,14 @@ export const storeColumns: ColumnDef<StoreData>[] = [
     accessorKey: "storeCountry",
     header: "Country",
     cell: ({ row }) => (
-      <span className="text-sm font-medium text-blue-600">{row.original.storeCountry}</span>
+      <span className="text-sm font-medium text-blue-600">{row.original.storeCountryName}</span>
     ),
     enableSorting: true,
   },
   {
     accessorKey: "storeCity",
     header: "City",
-    cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.storeCity}</span>,
+    cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.storeCityName}</span>,
     enableSorting: true,
   },
   {

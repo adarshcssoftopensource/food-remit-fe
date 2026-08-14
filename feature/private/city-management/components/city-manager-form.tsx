@@ -1,8 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Globe2, Home, Mail, MapPin, Phone, UserRound } from "lucide-react";
-import Image from "next/image";
+import { Globe2, Home, Mail, MapPin, UserRound } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { ImageUpload } from "@/components/common/image-upload";
@@ -31,6 +30,7 @@ type CityManagerFormProps = {
   submitLabel?: string;
   isSubmitting?: boolean;
   mode?: "add" | "edit";
+  managerId?: string;
 };
 
 function SectionShell({
@@ -76,6 +76,7 @@ export function CityManagerForm({
   submitLabel = "Assign",
   isSubmitting = false,
   mode = "add",
+  managerId,
 }: CityManagerFormProps) {
   const {
     control,
@@ -122,14 +123,13 @@ export function CityManagerForm({
       : [];
 
   const { countries: countriesData } = useGetCountriesDropdown();
-  const assignmentCountryOptions = countriesData.map((c) => c.name);
-
-  const selectedAssignedCountryObjBackend = countriesData.find((c) => c.name === country);
   const { data: citiesDataResponse } = useGetCities({
-    countryId: selectedAssignedCountryObjBackend?.id,
+    countryId: country,
     limit: 1000,
+    unassignedOnly: true,
+    excludeManagerId: managerId,
   });
-  const assignableCities = citiesDataResponse?.data?.map((c) => c.name) || [];
+  const assignableCities = citiesDataResponse?.data || [];
 
   const fieldError = (message?: string) =>
     message ? <p className="mt-1 text-xs font-medium text-red-500">{message}</p> : null;
@@ -151,17 +151,6 @@ export function CityManagerForm({
             control={control}
             render={({ field }) => (
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                {previewImageUrl ? (
-                  <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl border-2 border-white shadow-lg ring-1 ring-slate-200">
-                    <Image
-                      src={previewImageUrl}
-                      alt="Current manager"
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  </div>
-                ) : null}
                 <div className="min-w-0 flex-1">
                   <ImageUpload
                     value={field.value}
@@ -170,6 +159,7 @@ export function CityManagerForm({
                     maxFiles={1}
                     label={mode === "edit" ? "Replace photo" : "Upload manager photo"}
                     hint="PNG, JPG or WEBP · max 1 image"
+                    initialImages={previewImageUrl ? [previewImageUrl] : []}
                   />
                   {fieldError(errors.image?.message as string | undefined)}
                 </div>
@@ -302,7 +292,11 @@ export function CityManagerForm({
                 render={({ field }) => (
                   <div>
                     <FieldLabel className="mb-1.5 text-sm font-semibold">Address 2</FieldLabel>
-                    <Input {...field} placeholder="Apt, suite (optional)" className={inputClass} />
+                    <Input
+                      {...field}
+                      placeholder="Street address 2 (optional)"
+                      className={inputClass}
+                    />
                     {fieldError(errors.address2?.message)}
                   </div>
                 )}
@@ -436,12 +430,15 @@ export function CityManagerForm({
                   }}
                 >
                   <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50/80">
-                    <SelectValue placeholder="Select country to assign" />
+                    <SelectValue placeholder="Select country to assign">
+                      {countriesData.find((c) => c.id === field.value)?.name ||
+                        "Select country to assign"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {assignmentCountryOptions.map((opt) => (
-                      <SelectItem key={opt} value={opt}>
-                        {opt}
+                    {countriesData.map((opt) => (
+                      <SelectItem key={opt.id} value={opt.id}>
+                        {opt.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -476,11 +473,11 @@ export function CityManagerForm({
                   </div>
                 ) : (
                   <div className="grid max-h-52 gap-2 overflow-y-auto rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {assignableCities.map((cityName) => {
-                      const active = field.value.includes(cityName);
+                    {assignableCities.map((city) => {
+                      const active = field.value.includes(city.id);
                       return (
                         <label
-                          key={cityName}
+                          key={city.id}
                           className={cn(
                             "flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm transition",
                             active
@@ -492,13 +489,14 @@ export function CityManagerForm({
                             checked={active}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                field.onChange([...field.value, cityName]);
+                                field.onChange([...field.value, city.id]);
                               } else {
-                                field.onChange(field.value.filter((c) => c !== cityName));
+                                field.onChange(field.value.filter((c) => c !== city.id));
                               }
                             }}
+                            className="size-4 rounded-[4px] data-[state=checked]:border-amber-600 data-[state=checked]:bg-amber-600"
                           />
-                          {cityName}
+                          <span className="flex-1 truncate">{city.name}</span>
                         </label>
                       );
                     })}

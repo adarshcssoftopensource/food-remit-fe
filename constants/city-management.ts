@@ -1,33 +1,10 @@
 import { Building2, MapPin, ShieldCheck, Users } from "lucide-react";
 
-export type CityManagerStatus = "Active" | "Inactive";
-
-export type CityManagerData = {
-  id: string;
-  userId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneCode: string;
-  phoneNumber: string;
-  address1: string;
-  address2?: string;
-  residentialCountry: string;
-  state: string;
-  city: string;
-  zipcode: string;
-  country: string;
-  assignedCities: string[];
-  createdAt: string;
-  status: CityManagerStatus;
-  avatar?: string;
-};
-
 export const CITY_MANAGER_STATUS_OPTIONS = [
   { label: "All", value: "All" },
   { label: "Active", value: "Active" },
   { label: "Inactive", value: "Inactive" },
-] as const;
+];
 
 export const CITY_MANAGER_STATS_CONFIG = [
   {

@@ -2,7 +2,7 @@
 
 import { ImageIcon, X } from "lucide-react";
 import Image from "next/image";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useId } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,7 @@ export interface ImageUploadProps {
   label?: string;
   hint?: string;
   initialImages?: string[];
+  id?: string;
 }
 
 export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
@@ -37,18 +38,23 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
       label = "Upload images",
       hint = "PNG, JPG or WEBP",
       initialImages = [],
+      id,
     },
     ref,
   ) => {
+    const defaultId = useId();
+    const inputId = id || defaultId;
     const inputRef = useRef<HTMLInputElement>(null);
 
     useImperativeHandle(ref, () => inputRef.current!, []);
 
     const [images, setImages] = useState<Preview[]>(() => initialImages.map((url) => ({ url })));
 
+    const initialImagesStr = initialImages.join(",");
+
     useEffect(() => {
-      setImages(initialImages.map((url) => ({ url })));
-    }, [initialImages.join(",")]);
+      setImages(initialImagesStr ? initialImagesStr.split(",").map((url) => ({ url })) : []);
+    }, [initialImagesStr]);
 
     useEffect(() => {
       return () => {
@@ -76,11 +82,10 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
       }
 
       setImages((prev) => {
+        const next = maxFiles === 1 ? [] : [...prev];
         const existing = new Set(
-          prev.map((i) => (i.file ? `${i.file.name}-${i.file.size}` : i.url)),
+          next.map((i) => (i.file ? `${i.file.name}-${i.file.size}` : i.url)),
         );
-
-        const next = [...prev];
 
         validFiles.forEach((file) => {
           const key = `${file.name}-${file.size}`;
@@ -125,7 +130,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
       <div className={cn("space-y-3", className)}>
         {images.length < maxFiles && (
           <label
-            htmlFor="image-upload"
+            htmlFor={inputId}
             className="border-primary/25 hover:border-primary hover:bg-primary/5 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed p-4 transition"
           >
             <span className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
@@ -138,7 +143,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
             </div>
 
             <input
-              id="image-upload"
+              id={inputId}
               ref={inputRef}
               type="file"
               accept={accept}

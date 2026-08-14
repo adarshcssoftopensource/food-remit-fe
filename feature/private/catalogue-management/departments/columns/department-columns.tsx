@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
+import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { DepartmentActionsCell } from "../components/department-actions-cell";
 import { DepartmentData } from "../types/department.types";
 import { formatDate } from "@/lib/date";
@@ -20,26 +20,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function DepartmentNameCell({ row }: { row: { original: DepartmentData } }) {
-  const name = row.original.departmentName;
-  const icon = row.original.departmentIcon;
-
-  return (
-    <div className="flex items-center gap-3">
-      <div className="bg-primary/5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-100">
-        {icon ? (
-          <Image src={icon} alt={name} className="h-6 w-6 object-contain" height={40} width={40} />
-        ) : (
-          <span className="text-primary font-bold">{name.charAt(0)}</span>
-        )}
-      </div>
-      <div className="flex flex-col">
-        <span className="font-semibold text-slate-900">{name}</span>
-      </div>
-    </div>
-  );
-}
-
 export function getDepartmentColumns(
   onEdit: (dept: DepartmentData) => void,
   onView: (dept: DepartmentData) => void,
@@ -55,7 +35,13 @@ export function getDepartmentColumns(
     {
       accessorKey: "departmentName",
       header: "Department Name",
-      cell: ({ row }) => <DepartmentNameCell row={row} />,
+      cell: ({ row }) => (
+        <ImageNameCell
+          name={row.original.departmentName}
+          image={row.original.departmentIcon}
+          type="logo"
+        />
+      ),
     },
     {
       accessorKey: "country",

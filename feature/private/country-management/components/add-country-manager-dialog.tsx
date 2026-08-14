@@ -15,7 +15,7 @@ import { type CountryManagerFormValues } from "../schema/country-manager.schema"
 import { CountryManagerForm } from "./country-manager-form";
 
 type AddCountryManagerDialogProps = {
-  onSubmit: (values: CountryManagerFormValues) => Promise<void> | void;
+  onSubmit: (formData: FormData) => Promise<void> | void;
 };
 
 export function AddCountryManagerDialog({ onSubmit }: AddCountryManagerDialogProps) {
@@ -25,7 +25,28 @@ export function AddCountryManagerDialog({ onSubmit }: AddCountryManagerDialogPro
   const handleSubmit = async (values: CountryManagerFormValues) => {
     setIsSubmitting(true);
     try {
-      await onSubmit(values);
+      const formData = new FormData();
+      formData.append("firstName", values.firstName);
+      formData.append("lastName", values.lastName);
+      formData.append("email", values.email);
+      formData.append("countryCode", values.phoneCode);
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("address", values.address1);
+      if (values.address2) formData.append("address2", values.address2);
+      formData.append("country", values.residentialCountry);
+      formData.append("state", values.state);
+      formData.append("city", values.city);
+      formData.append("zipcode", values.zipcode);
+      formData.append("assignCountries", values.assignedCountry);
+      formData.append("managerStatus", "ACTIVE");
+
+      const imageFile =
+        Array.isArray(values.image) && values.image.length > 0 ? values.image[0] : values.image;
+      if (imageFile instanceof File) {
+        formData.append("image", imageFile);
+      }
+
+      await onSubmit(formData);
       successToast({ title: "Country manager added successfully" });
       setOpen(false);
     } finally {

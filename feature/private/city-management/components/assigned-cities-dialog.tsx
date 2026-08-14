@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { CityManagerData } from "@/constants/city-manager";
+import { CityManagerData } from "@/feature/private/city-management/types/city-manager";
 import { MapPinned } from "lucide-react";
 
 type AssignedCitiesDialogProps = {
@@ -32,15 +32,15 @@ export function AssignedCitiesDialog({ manager, open, onOpenChange }: AssignedCi
             </DialogTitle>
             <DialogDescription className="mt-2 text-sm text-orange-100/90">
               {manager
-                ? `${manager.firstName} ${manager.lastName} · ${manager.country}`
+                ? `${manager.firstName} ${manager.lastName} · ${manager.countryName}`
                 : "City assignments"}
             </DialogDescription>
           </DialogHeader>
         </div>
         <div className="p-6">
-          {manager?.assignedCities.length ? (
+          {manager?.assignedCityNames?.length ? (
             <div className="flex flex-wrap gap-2">
-              {manager.assignedCities.map((city) => (
+              {manager.assignedCityNames.map((city) => (
                 <span
                   key={city}
                   className="rounded-full border border-orange-200 bg-orange-50 px-3.5 py-1.5 text-sm font-semibold text-orange-800"

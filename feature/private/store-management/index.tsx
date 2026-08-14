@@ -4,12 +4,12 @@ import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { STORE_STAT_CONFIG } from "@/constants/store-management";
 import { Store } from "lucide-react";
 import { storeColumns } from "./columns/store-columns";
 import { AddStoreDialog } from "./components/add-store-dialog";
 import { StoreFilters } from "./components/store-filters";
 import { useStoreFilters } from "./hooks/useStoreFilters";
+import { STORE_STAT_CONFIG } from "@/constants/store-management";
 
 export function StoreManagement() {
   const {

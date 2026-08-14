@@ -1,9 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, Camera, UserCircle } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
+import { Building2, UserCircle } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +20,7 @@ import { Country, State, City } from "country-state-city";
 import { storeSchema, type StoreFormValues } from "../schema/store.schema";
 import { useGetCities } from "../../settings/hooks/use-get-cities";
 import { useGetCountriesDropdown } from "../../settings/hooks/use-get-countries-dropdown";
+import { ImageUpload } from "@/components/common/image-upload";
 
 interface StoreFormProps {
   initialValues?: Partial<StoreFormValues>;
@@ -46,63 +45,6 @@ function FormField({ label, error, required, children }: FormFieldProps) {
       </Label>
       {children}
       {error && <p className="text-xs font-medium text-red-500">{error}</p>}
-    </div>
-  );
-}
-
-function ImageUploadField({
-  label,
-  value,
-  onChange,
-  required,
-}: {
-  label: string;
-  value?: File | null;
-  onChange: (file: File | null) => void;
-  required?: boolean;
-}) {
-  const [preview, setPreview] = useState<string | null>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-    onChange(file);
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setPreview(url);
-    } else {
-      setPreview(null);
-    }
-  };
-
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-sm font-semibold text-slate-700">
-        {label}
-        {required && <span className="ml-0.5 text-red-500">*</span>}
-      </Label>
-      <label className="group hover:border-primary/50 hover:bg-primary/10/40 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-3 transition-all">
-        <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          {preview ? (
-            <Image src={preview} alt="preview" fill className="object-cover" sizes="48px" />
-          ) : (
-            <div className="flex size-full items-center justify-center text-slate-300">
-              <Camera className="size-5" />
-            </div>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="group-hover:text-primary truncate text-sm font-medium text-slate-600">
-            {value ? value.name : "Click to upload image"}
-          </p>
-          <p className="text-xs text-slate-400">PNG, JPG or WEBP</p>
-        </div>
-        <input
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-      </label>
     </div>
   );
 }
@@ -172,16 +114,13 @@ function CountryCityFields({
   countryError?: string;
   cityError?: string;
   prefix: string;
-  // legacy unused props kept for call-site compatibility
   stateValue?: string;
   onStateChange?: (v: string) => void;
   stateError?: string;
 }) {
   const { countries: countriesData } = useGetCountriesDropdown();
-  const selectedCountryObj = countriesData.find((c) => c.name === countryValue);
-
   const { data: citiesDataResponse } = useGetCities({
-    countryId: selectedCountryObj?.id,
+    countryId: countryValue,
     limit: 1000,
   });
 
@@ -201,12 +140,14 @@ function CountryCityFields({
           }}
         >
           <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50">
-            <SelectValue placeholder="Select Country" />
+            <SelectValue placeholder="Select Country">
+              {countriesData.find((c) => c.id === countryValue)?.name || "Select Country"}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {countriesData.map((c) => (
-                <SelectItem key={c.id} value={c.name}>
+                <SelectItem key={c.id} value={c.id}>
                   {c.name}
                 </SelectItem>
               ))}
@@ -226,12 +167,15 @@ function CountryCityFields({
           disabled={!countryValue}
         >
           <SelectTrigger className="h-11! w-full min-w-full rounded-xl border-slate-200">
-            <SelectValue placeholder={countryValue ? "Select City" : "Select country first"} />
+            <SelectValue placeholder={countryValue ? "Select City" : "Select country first"}>
+              {cityOptions.find((c) => c.id === cityValue)?.name ||
+                (countryValue ? "Select City" : "Select country first")}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {cityOptions.map((c) => (
-                <SelectItem key={c.id} value={c.name}>
+                <SelectItem key={c.id} value={c.id}>
                   {c.name}
                 </SelectItem>
               ))}
@@ -376,7 +320,7 @@ export function StoreForm({
   } = useForm<StoreFormValues>({
     resolver: zodResolver(storeSchema),
     defaultValues: {
-      storeImage: undefined,
+      storeImage: initialValues?.storeImage ?? undefined,
       storeName: initialValues?.storeName ?? "",
       storePhoneCode: initialValues?.storePhoneCode ?? "+91",
       storePhoneNumber: initialValues?.storePhoneNumber ?? "",
@@ -386,7 +330,7 @@ export function StoreForm({
       storeCity: initialValues?.storeCity ?? "",
       storeTax: initialValues?.storeTax ?? undefined,
       foodRemitCommission: initialValues?.foodRemitCommission ?? undefined,
-      managerImage: undefined,
+      managerImage: initialValues?.managerImage ?? undefined,
       managerFirstName: initialValues?.managerFirstName ?? "",
       managerLastName: initialValues?.managerLastName ?? "",
       managerEmail: initialValues?.managerEmail ?? "",
@@ -421,11 +365,16 @@ export function StoreForm({
                 name="storeImage"
                 control={control}
                 render={({ field }) => (
-                  <ImageUploadField
-                    label="Store Image"
-                    value={field.value as File | null}
-                    onChange={field.onChange}
-                    required
+                  <ImageUpload
+                    label="Upload store image"
+                    hint="PNG, JPG or WEBP · max 1 image"
+                    maxFiles={1}
+                    multiple={false}
+                    onChange={(files) => field.onChange(files[0] || null)}
+                    value={
+                      field.value && typeof field.value !== "string" ? [field.value as File] : []
+                    }
+                    initialImages={initialValues?.storeImage ? [initialValues.storeImage] : []}
                   />
                 )}
               />
@@ -589,11 +538,16 @@ export function StoreForm({
                 name="managerImage"
                 control={control}
                 render={({ field }) => (
-                  <ImageUploadField
-                    label="Manager Image"
-                    value={field.value as File | null}
-                    onChange={field.onChange}
-                    required
+                  <ImageUpload
+                    label="Upload manager image"
+                    hint="PNG, JPG or WEBP · max 1 image"
+                    maxFiles={1}
+                    multiple={false}
+                    onChange={(files) => field.onChange(files[0] || null)}
+                    value={
+                      field.value && typeof field.value !== "string" ? [field.value as File] : []
+                    }
+                    initialImages={initialValues?.managerImage ? [initialValues.managerImage] : []}
                   />
                 )}
               />

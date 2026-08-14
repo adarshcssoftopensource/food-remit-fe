@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import type { CountryManagerData } from "@/constants/country-manager";
+import type { CountryManagerData } from "@/feature/private/country-management/types/country-manager";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pencil } from "lucide-react";
+import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 
 type CountryManagerColumnsConfig = {
   onView: (manager: CountryManagerData) => void;
@@ -44,24 +45,15 @@ export function getCountryManagerColumns({
       accessorFn: (row) => `${row.firstName} ${row.lastName}`.trim(),
       cell: ({ row }) => {
         const fullName = `${row.original.firstName} ${row.original.lastName}`.trim();
-        const initials = fullName
-          .split(" ")
-          .map((word) => word[0]?.toUpperCase())
-          .slice(0, 2)
-          .join("");
-        return (
-          <div className="flex items-center gap-2.5">
-            <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-full text-xs font-bold">
-              {initials}
-            </div>
-            <span className="text-sm font-medium text-slate-800">{fullName}</span>
-          </div>
-        );
+        return <ImageNameCell name={fullName} image={row.original.image} type="logo" />;
       },
     },
     {
       accessorKey: "assignedCountry",
       header: "Assigned Country",
+      cell: ({ row }) => (
+        <span className="text-sm text-slate-700">{row.original.assignCountryName}</span>
+      ),
     },
     {
       accessorKey: "email",

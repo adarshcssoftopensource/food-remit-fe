@@ -18,17 +18,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  CITY_MANAGER_STATS_CONFIG,
-  CITY_MANAGER_STATUS_OPTIONS,
-  type CityManagerData,
-} from "@/constants/city-manager";
+import { type CityManagerData } from "@/feature/private/city-management/types/city-manager";
 import { getCityManagerColumns } from "./columns/city-manager-columns";
 import { AddCityManagerDialog } from "./components/add-city-manager-dialog";
 import { AssignedCitiesDialog } from "./components/assigned-cities-dialog";
-import { CityManagerDetailDialog } from "./components/city-manager-detail-dialog";
 import { EditCityManagerDialog } from "./components/edit-city-manager-dialog";
-import { useCityManagement } from "./hooks/use-city-management";
+import { useCityManagerFilters } from "./hooks/use-city-manager-filters";
+import { ROUTES } from "@/config/routes";
+import { useRouter } from "next/navigation";
+import {
+  CITY_MANAGER_STATS_CONFIG,
+  CITY_MANAGER_STATUS_OPTIONS,
+} from "@/constants/city-management";
 
 export default function CityManagementPage() {
   const {
@@ -45,10 +46,10 @@ export default function CityManagementPage() {
     toDate,
     toggleManagerStatus,
     updateCityManager,
-  } = useCityManagement();
+  } = useCityManagerFilters();
 
-  const [selectedManager, setSelectedManager] = useState<CityManagerData | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const router = useRouter();
+
   const [editingManager, setEditingManager] = useState<CityManagerData | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [citiesManager, setCitiesManager] = useState<CityManagerData | null>(null);
@@ -58,8 +59,7 @@ export default function CityManagementPage() {
     () =>
       getCityManagerColumns({
         onView: (manager) => {
-          setSelectedManager(manager);
-          setIsDetailOpen(true);
+          router.push(`${ROUTES.ADMIN.CITY_MANAGEMENT.ROOT}/${manager.id}`);
         },
         onEdit: (manager) => {
           setEditingManager(manager);
@@ -71,7 +71,7 @@ export default function CityManagementPage() {
         },
         onToggleStatus: toggleManagerStatus,
       }),
-    [toggleManagerStatus],
+    [router, toggleManagerStatus],
   );
 
   return (
@@ -164,11 +164,6 @@ export default function CityManagementPage() {
         </CardContent>
       </Card>
 
-      <CityManagerDetailDialog
-        manager={selectedManager}
-        open={isDetailOpen}
-        onOpenChange={setIsDetailOpen}
-      />
       <EditCityManagerDialog
         manager={editingManager}
         open={isEditOpen}

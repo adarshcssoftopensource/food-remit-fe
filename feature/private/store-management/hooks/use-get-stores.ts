@@ -1,61 +1,15 @@
 import { useApiQuery } from "@/hooks/useApi";
 import { buildUrl } from "@/lib/build-query-string";
 import { useMemo } from "react";
-import type { StoreData } from "@/constants/store-management";
+import type {
+  RawStore,
+  SingleStoreResponse,
+  StoreData,
+  StoreListResponse,
+  UseGetStoresArgs,
+} from "@/feature/private/store-management/types/store-management";
 import { STORE_ENDPOINTS } from "@/lib/api/endpoints/store.endpoints";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
-
-// ── API response types ────────────────────────────────────────────────────────
-
-interface RawStoreManager {
-  image?: string;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  countryCode?: string;
-  phoneNumber?: string;
-  address?: string;
-  country?: string;
-  state?: string;
-  city?: string;
-  zipCode?: string;
-}
-
-interface RawStore {
-  id: string;
-  storeImage?: string;
-  storeName: string;
-  storeAddress?: string;
-  storeAddress2?: string;
-  country?: string;
-  city?: string;
-  storeCountryCode?: string;
-  storePhoneNumber?: string;
-  storeTax?: number;
-  foodRemitCommission?: number;
-  status?: string;
-  addedOn?: string;
-  storeManager?: RawStoreManager;
-}
-
-interface StoreListResponse {
-  data: RawStore[];
-  pagination?: unknown;
-  message: string;
-  status: boolean;
-}
-
-// ── Args ──────────────────────────────────────────────────────────────────────
-
-export interface UseGetStoresArgs {
-  page?: number;
-  limit?: number;
-  search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-}
-
-// ── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useGetStores(args?: UseGetStoresArgs) {
   const queryString = buildUrl("", {
@@ -83,7 +37,9 @@ export function useGetStores(args?: UseGetStoresArgs) {
       storeAddress: item.storeAddress ?? "",
       address2: item.storeAddress2 ?? "",
       storeCountry: item.country ?? "",
+      storeCountryName: item.countryName ?? item.country ?? "",
       storeCity: item.city ?? "",
+      storeCityName: item.cityName ?? item.city ?? "",
       storePhoneCode: item.storeCountryCode ?? "",
       storePhoneNumber: item.storePhoneNumber ?? "",
       storeTax: item.storeTax ?? 0,
@@ -91,6 +47,7 @@ export function useGetStores(args?: UseGetStoresArgs) {
       status: item.status === "ACTIVE" ? "Active" : "Inactive",
       createdAt: item.addedOn ?? new Date().toISOString(),
       // Manager data
+      managerId: item.storeManager?.id ?? "",
       managerImage: item.storeManager?.image ?? "",
       managerFirstName: item.storeManager?.firstName ?? "",
       managerLastName: item.storeManager?.lastName ?? "",
@@ -113,4 +70,49 @@ export function useGetStores(args?: UseGetStoresArgs) {
     error,
     refetch,
   };
+}
+
+export function useGetStore(id: string) {
+  const { data, isLoading, isError, error, refetch } = useApiQuery<SingleStoreResponse>(
+    [API_CACHE_KEYS.STORES[0], id],
+    STORE_ENDPOINTS.GET_STORES + `/${id}`,
+    { enabled: !!id },
+  );
+
+  const store = useMemo<StoreData | null>(() => {
+    if (!data?.data) return null;
+    const item = data.data;
+
+    return {
+      id: item.id,
+      storeImage: item.storeImage ?? "",
+      storeName: item.storeName ?? "",
+      storeAddress: item.storeAddress ?? "",
+      address2: item.storeAddress2 ?? "",
+      storeCountry: item.country ?? "",
+      storeCountryName: item.countryName ?? item.country ?? "",
+      storeCity: item.city ?? "",
+      storeCityName: item.cityName ?? item.city ?? "",
+      storePhoneCode: item.storeCountryCode ?? "",
+      storePhoneNumber: item.storePhoneNumber ?? "",
+      storeTax: item.storeTax ?? 0,
+      foodRemitCommission: item.foodRemitCommission ?? 0,
+      status: item.status === "ACTIVE" ? "Active" : "Inactive",
+      createdAt: item.addedOn ?? new Date().toISOString(),
+      managerId: item.storeManager?.id ?? "",
+      managerImage: item.storeManager?.image ?? "",
+      managerFirstName: item.storeManager?.firstName ?? "",
+      managerLastName: item.storeManager?.lastName ?? "",
+      managerEmail: item.storeManager?.email ?? "",
+      managerPhoneCode: item.storeManager?.countryCode ?? "",
+      managerPhoneNumber: item.storeManager?.phoneNumber ?? "",
+      managerAddress: item.storeManager?.address ?? "",
+      managerCountry: item.storeManager?.country ?? "",
+      managerState: item.storeManager?.state ?? "",
+      managerCity: item.storeManager?.city ?? "",
+      managerZipCode: item.storeManager?.zipCode ?? "",
+    };
+  }, [data]);
+
+  return { data: store, isLoading, isError, error, refetch };
 }

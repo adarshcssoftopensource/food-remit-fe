@@ -28,34 +28,52 @@ export function AddStoreDialog() {
 
   const handleSubmit = async (values: StoreFormValues) => {
     try {
+      const managerFormData = new FormData();
+      managerFormData.append("firstName", values.managerFirstName);
+      managerFormData.append("lastName", values.managerLastName);
+      managerFormData.append("email", values.managerEmail);
+      managerFormData.append("countryCode", values.managerPhoneCode);
+      managerFormData.append("phoneNumber", values.managerPhoneNumber);
+      managerFormData.append("address", values.managerAddress);
+      managerFormData.append("country", values.managerCountry);
+      managerFormData.append("state", values.managerState);
+      managerFormData.append("city", values.managerCity);
+      if (values.managerZipCode) managerFormData.append("zipCode", values.managerZipCode);
+      managerFormData.append("managerStatus", "ACTIVE");
+
+      const managerImageFile = Array.isArray(values.managerImage)
+        ? values.managerImage[0]
+        : values.managerImage;
+      if (managerImageFile instanceof File) {
+        managerFormData.append("image", managerImageFile);
+      }
+
       // 1. Create Store Manager
-      const managerRes = await createManagerMutation.mutateAsync({
-        firstName: values.managerFirstName,
-        lastName: values.managerLastName,
-        email: values.managerEmail,
-        countryCode: values.managerPhoneCode,
-        phoneNumber: values.managerPhoneNumber,
-        address: values.managerAddress,
-        country: values.managerCountry,
-        state: values.managerState,
-        city: values.managerCity,
-        managerStatus: "ACTIVE",
-      });
+      const managerRes = await createManagerMutation.mutateAsync(managerFormData as any);
+
+      const storeFormData = new FormData();
+      storeFormData.append("storeName", values.storeName);
+      storeFormData.append("storeCountryCode", values.storePhoneCode);
+      storeFormData.append("storePhoneNumber", values.storePhoneNumber);
+      storeFormData.append("storeAddress", values.storeAddress);
+      if (values.address2) storeFormData.append("storeAddress2", values.address2);
+      storeFormData.append("country", values.storeCountry);
+      storeFormData.append("city", values.storeCity);
+      if (values.storeTax !== undefined) storeFormData.append("storeTax", String(values.storeTax));
+      if (values.foodRemitCommission !== undefined)
+        storeFormData.append("foodRemitCommission", String(values.foodRemitCommission));
+      storeFormData.append("status", "ACTIVE");
+      if (managerRes.data?.id) storeFormData.append("assignedStoreManager", managerRes.data.id);
+
+      const storeImageFile = Array.isArray(values.storeImage)
+        ? values.storeImage[0]
+        : values.storeImage;
+      if (storeImageFile instanceof File) {
+        storeFormData.append("storeImage", storeImageFile);
+      }
 
       // 2. Create Store (linking the new manager)
-      await createStoreMutation.mutateAsync({
-        storeName: values.storeName,
-        storeCountryCode: values.storePhoneCode,
-        storePhoneNumber: values.storePhoneNumber,
-        storeAddress: values.storeAddress,
-        storeAddress2: values.address2,
-        country: values.storeCountry,
-        city: values.storeCity,
-        storeTax: values.storeTax,
-        foodRemitCommission: values.foodRemitCommission,
-        status: "ACTIVE",
-        assignedStoreManager: managerRes.data?.id,
-      });
+      await createStoreMutation.mutateAsync(storeFormData as any);
 
       successToast({ title: "Store added successfully!" });
       setOpen(false);

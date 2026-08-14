@@ -13,9 +13,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { STORE_STATUS_OPTIONS } from "@/constants/store-management";
 import { Filter, RotateCcw } from "lucide-react";
-import { Country, City } from "country-state-city";
+import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
+import { useGetCities } from "@/feature/private/settings/hooks/use-get-cities";
 import { useMemo } from "react";
 
 interface StoreFiltersProps {
@@ -38,15 +38,20 @@ interface FilterSelectProps {
   value: string;
   onChange: (value: string) => void;
   options: Array<{ label: string; value: string }>;
+  disabled?: boolean;
 }
 
-function FilterSelect({ label, value, onChange, options }: FilterSelectProps) {
+function FilterSelect({ label, value, onChange, options, disabled }: FilterSelectProps) {
   return (
     <div className="space-y-1.5">
       <Label className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
         {label}
       </Label>
-      <Select value={value} onValueChange={(v) => onChange(v ?? options[0].value)}>
+      <Select
+        value={value}
+        onValueChange={(v) => onChange(v ?? options[0].value)}
+        disabled={disabled}
+      >
         <SelectTrigger className="h-10! w-full rounded-lg border-gray-200">
           <SelectValue>
             {options.find((opt) => opt.value === value)?.label || options[0]?.label}
@@ -80,26 +85,38 @@ export function StoreFilters({
   onStatusFilterChange,
   onClearFilters,
 }: StoreFiltersProps) {
+  const STORE_STATUS_OPTIONS = [
+    { label: "All Status", value: "All" },
+    { label: "Active", value: "Active" },
+    { label: "Inactive", value: "Inactive" },
+  ];
+  const { countries: countriesData } = useGetCountriesDropdown();
+  const selectedCountryObj = useMemo(
+    () => countriesData?.find((c) => c.name === country),
+    [countriesData, country],
+  );
+
+  const { data: citiesDataResponse } = useGetCities({
+    countryId: selectedCountryObj?.id ?? "All",
+    limit: 1000,
+  });
+
   const countryOptions = useMemo(() => {
+    const list = countriesData ?? [];
     return [
       { label: "All Countries", value: "All Countries" },
-      ...Country.getAllCountries().map((c) => ({ label: c.name, value: c.name })),
+      ...list.map((c) => ({ label: c.name, value: c.name })),
     ];
-  }, []);
+  }, [countriesData]);
 
   const cityOptions = useMemo(() => {
-    const selectedCountryObj = Country.getAllCountries().find((c) => c.name === country);
-    const cities = selectedCountryObj
-      ? City.getCitiesOfCountry(selectedCountryObj.isoCode) || []
-      : [];
-
-    const uniqueCityNames = Array.from(new Set(cities.map((c) => c.name))).sort();
-
+    const list = citiesDataResponse?.data ?? [];
+    const uniqueCityNames = Array.from(new Set(list.map((c) => c.name))).sort();
     return [
       { label: "All Cities", value: "All Cities" },
       ...uniqueCityNames.map((name) => ({ label: name, value: name })),
     ];
-  }, [country]);
+  }, [citiesDataResponse]);
 
   return (
     <div className="from-primary/5/50 border-t bg-linear-to-br to-transparent p-4">
@@ -127,7 +144,13 @@ export function StoreFilters({
             options={countryOptions}
           />
 
-          <FilterSelect label="City" value={city} onChange={onCityChange} options={cityOptions} />
+          <FilterSelect
+            label="City"
+            value={city}
+            onChange={onCityChange}
+            options={cityOptions}
+            disabled={country === "All Countries"}
+          />
 
           <FilterSelect
             label="Status"

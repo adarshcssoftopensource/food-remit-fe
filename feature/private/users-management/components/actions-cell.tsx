@@ -3,6 +3,7 @@ import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Eye, Trash2 } from "lucide-react";
+import { ROUTES } from "@/config/routes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -52,7 +53,7 @@ export function ActionsCell({ user }: { user: UserData }) {
           variant="ghost"
           size="icon"
           className="text-primary hover:bg-primary/10 h-8 w-8 rounded-lg transition-colors"
-          onClick={() => router.push(`/users-management/${user.id}`)}
+          onClick={() => router.push(`${ROUTES.ADMIN.USERS_MANAGEMENT}/${user.id}`)}
           title="View user details"
         >
           <Eye className="h-4 w-4" />

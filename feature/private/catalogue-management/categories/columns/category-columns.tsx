@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
+import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { CategoryData } from "../types/category.types";
 import { CategoryActionsCell } from "../components/category-actions-cell";
 import { formatDate } from "@/lib/date";
@@ -20,26 +20,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function CategoryNameCell({ row }: { row: { original: CategoryData } }) {
-  const name = row.original.categoryName;
-  const icon = row.original.categoryIcon;
-
-  return (
-    <div className="flex items-center gap-3">
-      <div className="bg-primary/5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-100">
-        {icon ? (
-          <Image src={icon} alt={name} className="h-6 w-6 object-contain" height={40} width={40} />
-        ) : (
-          <span className="text-primary font-bold">{name.charAt(0)}</span>
-        )}
-      </div>
-      <div className="flex flex-col">
-        <span className="font-semibold text-slate-900">{name}</span>
-      </div>
-    </div>
-  );
-}
-
 export function getCategoryColumns(
   onEdit: (dept: CategoryData) => void,
   onView: (dept: CategoryData) => void,
@@ -55,7 +35,13 @@ export function getCategoryColumns(
     {
       accessorKey: "categoryName",
       header: "Category Name",
-      cell: ({ row }) => <CategoryNameCell row={row} />,
+      cell: ({ row }) => (
+        <ImageNameCell
+          name={row.original.categoryName}
+          image={row.original.categoryIcon}
+          type="logo"
+        />
+      ),
     },
     {
       accessorKey: "department",

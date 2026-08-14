@@ -1,33 +1,10 @@
-import { Globe2, MapPin, ShieldCheck, Users } from "lucide-react";
-
-export type CountryManagerStatus = "Active" | "Inactive";
-
-export type CountryManagerData = {
-  id: string;
-  userId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneCode: string;
-  phoneNumber: string;
-  address1: string;
-  address2?: string;
-  residentialCountry: string;
-  state: string;
-  city: string;
-  zipcode: string;
-  assignedCountry: string;
-  assignedCityManagers: string[];
-  createdAt: string;
-  status: CountryManagerStatus;
-  avatar?: string;
-};
+import { Globe2, ShieldCheck, Users, MapPin } from "lucide-react";
 
 export const COUNTRY_MANAGER_STATUS_OPTIONS = [
   { label: "All", value: "All" },
   { label: "Active", value: "Active" },
   { label: "Inactive", value: "Inactive" },
-] as const;
+];
 
 export const COUNTRY_MANAGER_STATS_CONFIG = [
   {

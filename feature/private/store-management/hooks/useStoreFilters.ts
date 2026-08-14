@@ -2,7 +2,7 @@
 
 import { useGetStores } from "./use-get-stores";
 import { useTableFilters } from "@/hooks/use-table-filters";
-import type { StoreData } from "@/constants/store-management";
+import type { StoreData } from "@/feature/private/store-management/types/store-management";
 import { useState } from "react";
 
 export function useStoreFilters() {
@@ -19,7 +19,7 @@ export function useStoreFilters() {
     status: statusFilter,
     setStatus: setStatusFilter,
     resetBaseFilters,
-  } = useTableFilters(100);
+  } = useTableFilters(10);
 
   const {
     data: rawStores,
@@ -69,13 +69,18 @@ export function useStoreFilters() {
     setCity("All Cities");
   };
 
+  const handleCountryChange = (newCountry: string) => {
+    setCountry(newCountry);
+    setCity("All Cities");
+  };
+
   return {
     fromDate,
     setFromDate,
     toDate,
     setToDate,
     country,
-    setCountry,
+    setCountry: handleCountryChange,
     city,
     setCity,
     statusFilter,
