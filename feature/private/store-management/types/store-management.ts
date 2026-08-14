@@ -6,14 +6,15 @@ export type StoreData = {
   storeName: string;
   storeAddress: string;
   address2?: string;
-  storeCountry: string;
+  storeCountry: string; // The backend maps this to countryId now
   storeCountryName: string;
-  storeCity: string;
+  storeCity: string; // The backend maps this to cityId now
   storeCityName: string;
   storePhoneCode: string;
   storePhoneNumber: string;
   storeTax: number;
   foodRemitCommission: number;
+  assignedCityManager?: string | null;
   status: StoreStatus;
   createdAt: string;
   managerId: string;
@@ -94,9 +95,9 @@ export interface RawStore {
   storeName: string;
   storeAddress?: string;
   storeAddress2?: string;
-  country?: string;
+  countryId?: string;
   countryName?: string | null;
-  city?: string;
+  cityId?: string;
   cityName?: string | null;
   storeCountryCode?: string;
   storePhoneNumber?: string;
@@ -104,12 +105,18 @@ export interface RawStore {
   foodRemitCommission?: number;
   status?: string;
   addedOn?: string;
+  assignedCityManager?: string | null;
   storeManager?: RawStoreManager;
 }
 
 export interface StoreListResponse {
   data: RawStore[];
-  pagination?: unknown;
+  pagination?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
   message: string;
   status: boolean;
 }
@@ -126,4 +133,9 @@ export interface UseGetStoresArgs {
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  status?: string;
+  fromDate?: string;
+  toDate?: string;
+  country?: string;
+  city?: string;
 }

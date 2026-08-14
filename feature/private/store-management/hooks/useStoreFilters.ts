@@ -19,6 +19,16 @@ export function useStoreFilters() {
     status: statusFilter,
     setStatus: setStatusFilter,
     resetBaseFilters,
+    debouncedSearch,
+    formattedFromDate,
+    formattedToDate,
+    sortBy,
+    sortOrder,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    setPage,
+    setLimit,
   } = useTableFilters(10);
 
   const {
@@ -28,25 +38,19 @@ export function useStoreFilters() {
   } = useGetStores({
     page,
     limit,
+    search: debouncedSearch,
+    sortBy,
+    sortOrder,
+    status: statusFilter,
+    fromDate: formattedFromDate,
+    toDate: formattedToDate,
+    country: country !== "All Countries" ? country : undefined,
+    city: city !== "All Cities" ? city : undefined,
   });
 
   const stores: StoreData[] = rawStores || [];
 
-  const filteredData = stores.filter((store: StoreData) => {
-    if (country !== "All Countries" && store.storeCountry !== country) return false;
-    if (city !== "All Cities" && store.storeCity !== city) return false;
-    if (
-      statusFilter !== "all" &&
-      statusFilter !== "All" &&
-      store.status?.toLowerCase() !== statusFilter.toLowerCase()
-    )
-      return false;
-
-    const date = new Date(store.createdAt);
-    if (fromDate && date < fromDate) return false;
-    if (toDate && date > toDate) return false;
-    return true;
-  });
+  const filteredData = stores;
 
   const stats = {
     total: stores.length,
@@ -91,5 +95,12 @@ export function useStoreFilters() {
     clearFilters,
     isLoading,
     pagination,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    page,
+    setPage,
+    limit,
+    setLimit,
   };
 }

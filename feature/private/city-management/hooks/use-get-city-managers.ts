@@ -17,6 +17,9 @@ export function useGetCityManagers(args?: UseGetCityManagersArgs) {
     search: args?.search,
     sortBy: args?.sortBy,
     sortOrder: args?.sortOrder,
+    status: args?.status,
+    fromDate: args?.fromDate,
+    toDate: args?.toDate,
   }).replace("?", "");
 
   const queryKey = [...API_CACHE_KEYS.CITY_MANAGERS, queryString];

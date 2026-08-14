@@ -3,7 +3,6 @@ import { useTableFilters } from "@/hooks/use-table-filters";
 import { useGetCityManagers } from "./use-get-city-managers";
 import { useCreateCityManager, useUpdateCityManager } from "./use-create-city-manager";
 import { successToast } from "@/components/toaster";
-import type { CityManagerData } from "../types/city-manager";
 
 export function useCityManagerFilters() {
   const {
@@ -16,34 +15,40 @@ export function useCityManagerFilters() {
     status: statusFilter,
     setStatus: setStatusFilter,
     resetBaseFilters,
+    debouncedSearch,
+    formattedFromDate,
+    formattedToDate,
+    sortBy,
+    sortOrder,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+
+    setPage,
+
+    setLimit,
   } = useTableFilters(10);
 
   const {
     data: cityManagers,
     isLoading,
     refetch,
+    pagination,
   } = useGetCityManagers({
     page,
     limit,
+    search: debouncedSearch,
+    sortBy,
+    sortOrder,
+    status: statusFilter,
+    fromDate: formattedFromDate,
+    toDate: formattedToDate,
   });
 
   const createMutation = useCreateCityManager();
   const updateMutation = useUpdateCityManager();
 
-  const filteredData = useMemo<CityManagerData[]>(() => {
-    return cityManagers.filter((manager) => {
-      if (
-        statusFilter !== "all" &&
-        statusFilter !== "All" &&
-        manager.status?.toLowerCase() !== statusFilter.toLowerCase()
-      )
-        return false;
-      const date = new Date(manager.createdAt);
-      if (fromDate && date < fromDate) return false;
-      if (toDate && date > toDate) return false;
-      return true;
-    });
-  }, [cityManagers, fromDate, statusFilter, toDate]);
+  const filteredData = cityManagers;
 
   const stats = useMemo(() => {
     const total = cityManagers.length;
@@ -91,5 +96,13 @@ export function useCityManagerFilters() {
     toggleManagerStatus,
     updateCityManager,
     isLoading,
+    pagination,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    page,
+    setPage,
+    limit,
+    setLimit,
   };
 }

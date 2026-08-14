@@ -35,6 +35,7 @@ interface RawCityManager {
   firstName: string;
   lastName: string;
   assignCities?: string;
+  assignCityNames?: string[];
 }
 
 interface RawStore {
@@ -42,6 +43,7 @@ interface RawStore {
   country: string;
   storeName: string;
   city: string;
+  cityName?: string;
   assignedCityManager?: string | null;
 }
 
@@ -54,7 +56,7 @@ export function AssignCityManagerToStore() {
 
   const { data: rawCityManagers, isLoading: managersLoading } = useApiQuery<
     ApiListResponse<RawCityManager>
-  >(["CITY_MANAGERS"], CITY_MANAGER_ENDPOINTS.GET_CITY_MANAGERS);
+  >(["CITY_MANAGERS", "limit=1000"], `${CITY_MANAGER_ENDPOINTS.GET_CITY_MANAGERS}?limit=1000`);
 
   const {
     data: rawStores,
@@ -101,7 +103,12 @@ export function AssignCityManagerToStore() {
   }, [availableManagers, selectedCityManagerId]);
 
   const managerAssignedCities = useMemo(() => {
-    if (!selectedManager || !selectedManager.assignCities) return [];
+    if (!selectedManager) return [];
+    if (selectedManager.assignCityNames && selectedManager.assignCityNames.length > 0) {
+      return selectedManager.assignCityNames;
+    }
+    // Fallback if assignCityNames is not available
+    if (!selectedManager.assignCities) return [];
     try {
       const parsed = JSON.parse(selectedManager.assignCities);
       if (Array.isArray(parsed)) return parsed;
@@ -110,6 +117,15 @@ export function AssignCityManagerToStore() {
       return selectedManager.assignCities.split(",").map((s) => s.trim());
     }
   }, [selectedManager]);
+
+  const managerAssignedStores = useMemo(() => {
+    if (!rawStores?.data || !selectedCityManagerId) return [];
+    return rawStores.data.filter((s) => s.assignedCityManager === selectedCityManagerId);
+  }, [rawStores, selectedCityManagerId]);
+
+  const selectedCountryName = useMemo(() => {
+    return countriesData.find((c) => c.id === selectedCountry)?.name || selectedCountry;
+  }, [countriesData, selectedCountry]);
 
   const storesInSelectedCountry = useMemo(() => {
     if (!rawStores?.data || !selectedCountry) return [];
@@ -194,12 +210,16 @@ export function AssignCityManagerToStore() {
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="h-12! w-full rounded-xl border-slate-200 bg-slate-50">
-                        <SelectValue placeholder="Select a country" />
+                        <SelectValue placeholder="Select a country">
+                          {field.value
+                            ? countriesData.find((c) => c.id === field.value)?.name
+                            : "Select a country"}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           {countriesData.map((c) => (
-                            <SelectItem key={c.id} value={c.name}>
+                            <SelectItem key={c.id} value={c.id}>
                               {c.name}
                             </SelectItem>
                           ))}
@@ -240,7 +260,9 @@ export function AssignCityManagerToStore() {
                                 : "Select a city manager"
                           }
                         >
-                          {field.value && availableManagers.find((m) => m.id === field.value)?.name}
+                          {field.value
+                            ? availableManagers.find((m) => m.id === field.value)?.name
+                            : undefined}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
@@ -292,11 +314,36 @@ export function AssignCityManagerToStore() {
                   )}
                 </div>
 
+                {/* Display Manager's Assigned Stores */}
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+                  <Label className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                    <Store className="text-primary size-4" />
+                    Assigned Stores for {selectedManager?.name}
+                  </Label>
+                  {managerAssignedStores.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {managerAssignedStores.map((store) => (
+                        <Badge
+                          key={store.id}
+                          variant="secondary"
+                          className="border-slate-200 bg-white text-slate-700 shadow-sm"
+                        >
+                          {store.storeName}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      No stores assigned to this manager yet.
+                    </p>
+                  )}
+                </div>
+
                 {/* Display Unassigned Stores */}
                 <div className="space-y-3">
                   <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
                     <Store className="text-primary size-4" />
-                    Unassigned Stores in {selectedCountry}
+                    Unassigned Stores in {selectedCountryName}
                     <span className="text-red-500">*</span>
                   </Label>
 
@@ -339,7 +386,7 @@ export function AssignCityManagerToStore() {
                                   {store.storeName}
                                 </p>
                                 <p className="text-xs text-slate-500">
-                                  {store.city || "No city specified"}
+                                  {store.cityName || store.city || "No city specified"}
                                 </p>
                               </div>
                             </label>

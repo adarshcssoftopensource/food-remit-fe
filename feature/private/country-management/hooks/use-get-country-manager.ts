@@ -31,7 +31,7 @@ export function useGetCountryManager(id: string) {
       city: item.city ?? "",
       zipcode: item.zipcode ?? "",
       assignCountryName: item.assignCountryName ?? "",
-      assignedCountry: item.assignCountryName ?? "",
+      assignedCountry: item.assignCountries ?? "",
       assignedCityManagers: [],
       cityManagers: item.cityManagers ?? [],
       createdAt: item.addedOn ?? new Date().toISOString(),

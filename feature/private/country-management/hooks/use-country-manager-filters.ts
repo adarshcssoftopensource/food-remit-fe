@@ -3,7 +3,6 @@ import { useTableFilters } from "@/hooks/use-table-filters";
 import { useGetCountryManagers } from "./use-get-country-managers";
 import { useCreateCountryManager, useUpdateCountryManager } from "./use-create-country-manager";
 import { successToast } from "@/components/toaster";
-import type { CountryManagerData } from "../types/country-manager";
 
 export function useCountryManagerFilters() {
   const {
@@ -16,34 +15,38 @@ export function useCountryManagerFilters() {
     status: statusFilter,
     setStatus: setStatusFilter,
     resetBaseFilters,
+    debouncedSearch,
+    formattedFromDate,
+    formattedToDate,
+    sortBy,
+    sortOrder,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    setPage,
+    setLimit,
   } = useTableFilters(10);
 
   const {
     data: countryManagers,
     isLoading,
     refetch,
+    pagination,
   } = useGetCountryManagers({
     page,
     limit,
+    search: debouncedSearch,
+    sortBy,
+    sortOrder,
+    status: statusFilter,
+    fromDate: formattedFromDate,
+    toDate: formattedToDate,
   });
 
   const createMutation = useCreateCountryManager();
   const updateMutation = useUpdateCountryManager();
 
-  const filteredData = useMemo<CountryManagerData[]>(() => {
-    return countryManagers.filter((manager) => {
-      if (
-        statusFilter !== "all" &&
-        statusFilter !== "All" &&
-        manager.status?.toLowerCase() !== statusFilter.toLowerCase()
-      )
-        return false;
-      const date = new Date(manager.createdAt);
-      if (fromDate && date < fromDate) return false;
-      if (toDate && date > toDate) return false;
-      return true;
-    });
-  }, [countryManagers, fromDate, statusFilter, toDate]);
+  const filteredData = countryManagers;
 
   const stats = useMemo(() => {
     const total = countryManagers.length;
@@ -95,5 +98,13 @@ export function useCountryManagerFilters() {
     toggleManagerStatus,
     updateCountryManager,
     isLoading,
+    pagination,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    page,
+    setPage,
+    limit,
+    setLimit,
   };
 }

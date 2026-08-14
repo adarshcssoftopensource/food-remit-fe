@@ -46,6 +46,15 @@ export default function CityManagementPage() {
     toDate,
     toggleManagerStatus,
     updateCityManager,
+    isLoading,
+    pagination,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+    page,
+    setPage,
+    limit,
+    setLimit,
   } = useCityManagerFilters();
 
   const router = useRouter();
@@ -117,6 +126,7 @@ export default function CityManagementPage() {
               itemClassName="flex-1 space-y-1 min-w-0"
               pickerClassName="h-10 w-full"
               labelClassName="text-muted-foreground text-xs font-medium uppercase"
+              maxDate={new Date()}
             />
 
             <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
@@ -155,12 +165,27 @@ export default function CityManagementPage() {
           <div>
             <CardTitle className="text-xl font-semibold">City Manager List</CardTitle>
             <p className="text-muted-foreground mt-0.5 text-sm">
-              {filteredData.length} manager{filteredData.length !== 1 ? "s" : ""} found
+              {pagination?.total ?? 0} manager{pagination?.total !== 1 ? "s" : ""} found
             </p>
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={filteredData} searchKey="name" />
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            searchKey="name"
+            loading={isLoading}
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            manualSorting={true}
+            onSortingChange={setSorting}
+            currentPage={page}
+            totalPages={pagination?.totalPages ?? 1}
+            rowsPerPage={limit}
+            onPageChange={setPage}
+            onRowsPerPageChange={setLimit}
+            manualFiltering={true}
+          />
         </CardContent>
       </Card>
 

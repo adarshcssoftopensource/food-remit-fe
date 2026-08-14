@@ -7,8 +7,10 @@ import { ArrowLeft, Mail, UserCircle, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetCityManager } from "@/feature/private/city-management/hooks/use-get-city-manager";
+import { useGetStores } from "@/feature/private/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
 import { CityManagerViewPageProps } from "@/app/(private)/city-management/[id]/page";
+import { Store } from "lucide-react";
 
 const DetailCard = ({ label, value }: { label: string; value?: string }) => (
   <div className="rounded-xl bg-slate-50 p-3 transition hover:bg-slate-100">
@@ -22,6 +24,9 @@ export default function CityManagerViewPage({ params }: CityManagerViewPageProps
   const { id } = use(params);
 
   const { data: manager, isLoading } = useGetCityManager(id);
+
+  const { data: storesResponse, isLoading: isStoresLoading } = useGetStores({ limit: 1000 });
+  const assignedStores = (storesResponse || []).filter((store) => store.assignedCityManager === id);
 
   if (isLoading) {
     return (
@@ -185,6 +190,31 @@ export default function CityManagerViewPage({ params }: CityManagerViewPageProps
                   <span className="text-sm text-slate-400">No cities assigned</span>
                 )}
               </div>
+            </div>
+
+            <div className="mt-6 border-t border-slate-100 pt-6">
+              <p className="mb-3 flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                <Store className="h-4 w-4" />
+                Assigned Stores
+              </p>
+              {isStoresLoading ? (
+                <Skeleton className="h-10 w-full rounded-xl" />
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {assignedStores.length ? (
+                    assignedStores.map((store) => (
+                      <span
+                        key={store.id}
+                        className="rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700 shadow-xs"
+                      >
+                        {store.storeName}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm text-slate-400">No stores assigned</span>
+                  )}
+                </div>
+              )}
             </div>
           </section>
         </div>

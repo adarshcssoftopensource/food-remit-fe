@@ -44,9 +44,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
 
   const managerName = `${store.managerFirstName} ${store.managerLastName}`;
 
-  const storeFullAddress = [store.storeAddress, store.address2, store.storeCountry]
-    .filter(Boolean)
-    .join(", ");
+  const storeFullAddress = [store.storeAddress].filter(Boolean).join(", ");
   const managerFullAddress = [
     store.managerAddress,
     store.managerState,

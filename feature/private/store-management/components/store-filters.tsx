@@ -92,7 +92,7 @@ export function StoreFilters({
   ];
   const { countries: countriesData } = useGetCountriesDropdown();
   const selectedCountryObj = useMemo(
-    () => countriesData?.find((c) => c.name === country),
+    () => countriesData?.find((c) => c.id === country),
     [countriesData, country],
   );
 
@@ -105,16 +105,20 @@ export function StoreFilters({
     const list = countriesData ?? [];
     return [
       { label: "All Countries", value: "All Countries" },
-      ...list.map((c) => ({ label: c.name, value: c.name })),
+      ...list.map((c) => ({ label: c.name, value: c.id })),
     ];
   }, [countriesData]);
 
   const cityOptions = useMemo(() => {
     const list = citiesDataResponse?.data ?? [];
-    const uniqueCityNames = Array.from(new Set(list.map((c) => c.name))).sort();
+    // Ensure we don't have duplicate cities by ID if the API returns dupes
+    const uniqueCities = Array.from(new Map(list.map((c) => [c.id, c])).values()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+
     return [
       { label: "All Cities", value: "All Cities" },
-      ...uniqueCityNames.map((name) => ({ label: name, value: name })),
+      ...uniqueCities.map((c) => ({ label: c.name, value: c.id })),
     ];
   }, [citiesDataResponse]);
 
@@ -135,6 +139,7 @@ export function StoreFilters({
             onFromDateChange={onFromDateChange}
             onToDateChange={onToDateChange}
             wrapperClassName="contents"
+            maxDate={new Date()}
           />
 
           <FilterSelect

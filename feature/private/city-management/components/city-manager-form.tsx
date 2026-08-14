@@ -423,6 +423,7 @@ export function CityManagerForm({
                   Country <span className="text-red-500">*</span>
                 </FieldLabel>
                 <Select
+                  disabled={mode === "edit"}
                   value={field.value}
                   onValueChange={(v) => {
                     field.onChange(v ?? "");

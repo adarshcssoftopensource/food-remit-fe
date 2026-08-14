@@ -3,7 +3,6 @@
 import { successToast } from "@/components/toaster";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { CountryManagerData } from "@/feature/private/country-management/types/country-manager";
-import { UserPen } from "lucide-react";
 import { useMemo, useState } from "react";
 import { type CountryManagerFormValues } from "../schema/country-manager.schema";
 import { CountryManagerForm } from "./country-manager-form";
@@ -22,7 +21,6 @@ export function EditCountryManagerDialog({
   onSubmit,
 }: EditCountryManagerDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const initialValues = useMemo<Partial<CountryManagerFormValues>>(() => {
     if (!manager) return {};
     return {
@@ -38,7 +36,7 @@ export function EditCountryManagerDialog({
       state: manager.state,
       city: manager.city,
       zipcode: manager.zipcode,
-      assignedCountry: manager.assignedCountry ?? "",
+      assignedCountry: manager.assignCountryName ?? "",
     };
   }, [manager]);
 

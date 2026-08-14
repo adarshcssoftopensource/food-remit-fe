@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Globe2, Home, Mail, UserRound } from "lucide-react";
-import Image from "next/image";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { ImageUpload } from "@/components/common/image-upload";
@@ -414,10 +413,14 @@ export function CountryManagerForm({
                 <FieldLabel className="mb-1.5 text-sm font-semibold">
                   Assign Country <span className="text-red-500">*</span>
                 </FieldLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={mode === "edit"}
+                >
                   <SelectTrigger className={inputClass}>
                     <SelectValue placeholder="Select country to assign">
-                      {countriesData.find((c) => c.id === field.value)?.name ||
+                      {countriesData.find((c) => c.name === field.value)?.name ||
                         "Select country to assign"}
                     </SelectValue>
                   </SelectTrigger>

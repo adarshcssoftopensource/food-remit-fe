@@ -84,7 +84,7 @@ export interface RawCountryManager {
   phoneNumber?: string | null;
   address?: string | null;
   address2?: string | null;
-  country?: string | null; // residential country name
+  country?: string | null;
   state?: string | null;
   city?: string | null;
   managerStatus?: string | null;
@@ -93,6 +93,7 @@ export interface RawCountryManager {
   addedOnTimestamp?: string | null;
   modifiedOn?: string | null;
   cityManagers?: RawCountryManagerCityManager[];
+  assignCountries?: string | null;
   assignCountryName?: string | null; // resolved from assignCountries ID
 }
 
@@ -120,4 +121,7 @@ export interface UseGetCountryManagersArgs {
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  status?: string;
+  fromDate?: string;
+  toDate?: string;
 }

@@ -106,4 +106,7 @@ export interface UseGetCityManagersArgs {
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  status?: string;
+  fromDate?: string;
+  toDate?: string;
 }

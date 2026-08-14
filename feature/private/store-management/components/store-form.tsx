@@ -21,6 +21,21 @@ import { storeSchema, type StoreFormValues } from "../schema/store.schema";
 import { useGetCities } from "../../settings/hooks/use-get-cities";
 import { useGetCountriesDropdown } from "../../settings/hooks/use-get-countries-dropdown";
 import { ImageUpload } from "@/components/common/image-upload";
+import { useApiQuery } from "@/hooks/useApi";
+import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
+import React, { useMemo } from "react";
+import { useWatch } from "react-hook-form";
+
+interface RawCityManager {
+  id: string;
+  country: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface ApiListResponse<T> {
+  data: T[];
+}
 
 interface StoreFormProps {
   initialValues?: Partial<StoreFormValues>;
