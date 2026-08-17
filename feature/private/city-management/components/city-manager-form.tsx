@@ -465,6 +465,16 @@ export function CityManagerForm({
                       City options will appear for that country
                     </p>
                   </div>
+                ) : assignableCities.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-10 text-center">
+                    <MapPin className="mb-2 size-8 text-slate-300" />
+                    <p className="text-sm font-medium text-slate-600">
+                      No city available for this country for assign
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      All cities might already be assigned or none exist for the selected country.
+                    </p>
+                  </div>
                 ) : (
                   <div className="grid max-h-52 gap-2 overflow-y-auto rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-3 sm:grid-cols-2 lg:grid-cols-3">
                     {assignableCities.map((city) => {
