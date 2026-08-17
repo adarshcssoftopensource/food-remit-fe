@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Country, State, City } from "country-state-city";
+import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
 import {
   countryManagerSchema,
@@ -300,25 +301,15 @@ export function CountryManagerForm({
                     <FieldLabel className="mb-1.5 text-sm font-semibold">
                       Residential Country <span className="text-red-500">*</span>
                     </FieldLabel>
-                    <Select
+                    <ResidentialCountrySelect
                       value={field.value}
-                      onValueChange={(v) => {
-                        field.onChange(v ?? "");
+                      onValueChange={(name) => {
+                        field.onChange(name);
                         setValue("state", "");
                         setValue("city", "");
                       }}
-                    >
-                      <SelectTrigger className={inputClass}>
-                        <SelectValue placeholder="Select country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allWorldCountries.map((c) => (
-                          <SelectItem key={c.isoCode} value={c.name}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      invalid={!!errors.residentialCountry}
+                    />
                     {fieldError(errors.residentialCountry?.message)}
                   </div>
                 )}

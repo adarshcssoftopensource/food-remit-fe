@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Country, State, City } from "country-state-city";
+import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { storeSchema, type StoreFormValues } from "../schema/store.schema";
 import { useGetCities } from "../../settings/hooks/use-get-cities";
 import { useGetCountriesDropdown } from "../../settings/hooks/use-get-countries-dropdown";
@@ -230,29 +231,17 @@ function ManagerLocationFields({
     <>
       <div className="space-y-1.5">
         <Label className="text-sm font-semibold text-slate-700">
-          Country <span className="text-red-500">*</span>
+          Residential Country <span className="text-red-500">*</span>
         </Label>
-        <Select
+        <ResidentialCountrySelect
           value={countryValue}
-          onValueChange={(v) => {
-            onCountryChange(v ?? "");
+          onValueChange={(name) => {
+            onCountryChange(name);
             onStateChange("");
             onCityChange("");
           }}
-        >
-          <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50">
-            <SelectValue placeholder="Select Country" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {allCountries.map((c) => (
-                <SelectItem key={c.isoCode} value={c.name}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          invalid={!!countryError}
+        />
         {countryError && <p className="text-xs font-medium text-red-500">{countryError}</p>}
       </div>
 

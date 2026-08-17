@@ -5,6 +5,7 @@ import { Globe2, Home, Mail, MapPin, UserRound } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { ImageUpload } from "@/components/common/image-upload";
+import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldLabel } from "@/components/ui/field";
@@ -311,25 +312,15 @@ export function CityManagerForm({
                     <FieldLabel className="mb-1.5 text-sm font-semibold">
                       Residential Country <span className="text-red-500">*</span>
                     </FieldLabel>
-                    <Select
+                    <ResidentialCountrySelect
                       value={field.value}
-                      onValueChange={(v) => {
-                        field.onChange(v ?? "");
+                      onValueChange={(name) => {
+                        field.onChange(name);
                         setValue("state", "");
                         setValue("city", "");
                       }}
-                    >
-                      <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50/80">
-                        <SelectValue placeholder="Select country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allWorldCountries.map((c) => (
-                          <SelectItem key={c.isoCode} value={c.name}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      invalid={!!errors.residentialCountry}
+                    />
                     {fieldError(errors.residentialCountry?.message)}
                   </div>
                 )}
