@@ -47,7 +47,7 @@ export function PartnerLeadsManagement() {
           <ComingSoonBadge
             label="New Feature"
             showIcon
-            className="border-emerald-200 bg-emerald-50 text-emerald-700"
+            className="border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400"
           />
         }
         description="Manage incoming partnership requests. Move leads through the pipeline from NEW to APPROVED."

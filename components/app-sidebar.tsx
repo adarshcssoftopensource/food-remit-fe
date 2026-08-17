@@ -11,7 +11,6 @@ import { useProfile } from "@/components/providers/profile-provider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Sidebar,
   SidebarContent,
@@ -24,6 +23,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { navigationItems } from "@/config/nav";
 import { hasPathPermission } from "@/config/permissions";
 import { cn } from "@/lib/utils";
@@ -356,7 +356,7 @@ export function AppSidebar() {
                               size="compact"
                               label="This page is coming soon"
                               showIcon
-                              className="border-primary/20 bg-primary/8 text-primary dark:border-primary/30 dark:bg-primary/15 dark:text-primary/80 font-bold shadow-sm"
+                              className="border-red-500/30 bg-red-500/10 font-bold text-red-600 shadow-sm dark:border-red-400/40 dark:bg-red-500/20 dark:text-red-400"
                             />
                           )}
                           {item.isNewFeature && active && (
@@ -364,7 +364,7 @@ export function AppSidebar() {
                               size="compact"
                               label="New Feature"
                               showIcon
-                              className="border-emerald-200 bg-linear-to-r from-emerald-50 to-teal-50 font-bold text-emerald-700 shadow-sm dark:border-emerald-500/30 dark:from-emerald-500/15 dark:to-teal-500/10 dark:text-emerald-200"
+                              className="border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400"
                             />
                           )}
                           <span className="w-full leading-snug wrap-break-word whitespace-normal">

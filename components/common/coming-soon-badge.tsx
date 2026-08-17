@@ -20,10 +20,10 @@ export function ComingSoonBadge({
     <Badge
       variant="outline"
       className={cn(
-        "border-primary/20 from-primary/5 to-primary/5 text-primary dark:border-primary/30 dark:from-primary/50/15 dark:to-primary/50/10 dark:text-primary/80 bg-linear-to-r font-bold shadow-sm",
+        "border-red-500/30 bg-linear-to-r from-red-500/10 to-red-500/5 font-bold text-red-500 shadow-sm dark:border-red-400/30 dark:from-red-500/15 dark:to-red-500/10 dark:text-red-400",
         size === "default"
           ? "px-1.5 text-[10px] tracking-[0.08em]"
-          : "border-primary bg-primary text-primary-foreground dark:border-primary dark:bg-primary dark:text-primary-foreground h-4 px-1.5 text-[9px] tracking-[0.04em]",
+          : "h-4 border-red-500 bg-red-500 px-1.5 text-[9px] tracking-[0.04em] text-white dark:border-red-500 dark:bg-red-500 dark:text-white",
         className,
       )}
     >
