@@ -1,6 +1,6 @@
 "use client";
 
-import { errorToast, successToast } from "@/components/toaster";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -91,15 +91,7 @@ export function AddCountriesDialog({
           description: response?.message || `"${data.countryName}" has been added successfully.`,
         });
       }
-    } catch (error: any) {
-      errorToast({
-        title: mode === "edit" ? "Failed to update country" : "Failed to add country",
-        description:
-          error?.response?.data?.message ||
-          error?.message ||
-          "Something went wrong. Please try again.",
-      });
-    }
+    } catch {}
   };
 
   const handleDialogOpenChange = (openState: boolean) => {

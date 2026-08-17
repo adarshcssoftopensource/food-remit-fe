@@ -64,29 +64,7 @@ export function ActionsCell({ user }: { user: UserData }) {
           disabled={updateUserStatus.isPending}
           className="data-[state=checked]:bg-green-500"
         />
-        {user.userStatus === "INACTIVE" && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-lg text-red-500 transition-colors hover:bg-red-50"
-            onClick={() => setIsDeleteDialogOpen(true)}
-            disabled={deleteUser.isPending}
-            title="Delete user"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        )}
       </div>
-
-      <ConfirmationDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        title="Delete User"
-        description={`Are you sure you want to delete ${user?.firstName} ${user?.lastName}? This action cannot be undone.`}
-        confirmLabel="Delete User"
-        onConfirm={handleDelete}
-        isLoading={deleteUser.isPending}
-      />
     </>
   );
 }

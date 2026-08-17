@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Mail, Phone, User } from "lucide-react";
+import { Check, Mail, User } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -11,34 +11,50 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { profileDetailsSchema, type ProfileDetailsValues } from "../schema/profile.schema";
 import { useProfile } from "@/components/providers/profile-provider";
-
+import { useUpdateProfile } from "../hooks/use-update-profile";
+import { successToast } from "@/components/toaster";
+import { useQueryClient } from "@tanstack/react-query";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { PhoneInputComponent } from "@/components/ui/phone-input";
 
 export function ProfileForm() {
   const { profile } = useProfile();
+  const queryClient = useQueryClient();
+  const updateProfileMutation = useUpdateProfile();
 
   const nameParts = (profile?.name || "").trim().split(" ");
-  const firstName = nameParts[0] || "Admin";
-  const lastName = nameParts.slice(1).join(" ") || "User";
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ") || "";
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { errors, isDirty },
+    reset,
   } = useForm<ProfileDetailsValues>({
     resolver: zodResolver(profileDetailsSchema),
     values: {
       firstName,
       lastName,
-      email: profile?.email || "admin@foodremit.com",
-      contactNumber: "919999999999", // Fallback mock number since profile endpoint does not return phone
+      email: profile?.email || "",
+      contactNumber: profile?.phoneNumber || "",
     },
     mode: "onChange",
   });
 
+  const isSubmitting = updateProfileMutation.isPending;
+
   const onSubmit = async (data: ProfileDetailsValues) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Profile update:", data);
+    try {
+      await updateProfileMutation.mutateAsync({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        contactNumber: data.contactNumber,
+      });
+      successToast({ title: "Profile updated successfully!" });
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE });
+      reset(data); // reset isDirty
+    } catch {}
   };
 
   return (

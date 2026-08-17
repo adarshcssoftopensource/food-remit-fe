@@ -24,9 +24,9 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -43,7 +43,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (!config.headers) config.headers = {} as AxiosRequestHeaders;
 
   if (token && !config.url?.includes(AUTH_ENDPOINTS.REFRESH_TOKEN)) {
-    (config.headers as any).Authorization = `Bearer ${token}`;
+    (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -112,7 +112,7 @@ axiosInstance.interceptors.response.use(
 
     // Suppress the generic toast for errors that are handled locally by the caller
     // (e.g. MAX_SESSIONS_REACHED is handled by the login form's ConfirmationDialog)
-    const errorCode = (error.response?.data as any)?.errorCode;
+    const errorCode = (error.response?.data as { errorCode?: string })?.errorCode;
     const isHandledLocally = errorCode === "MAX_SESSIONS_REACHED";
 
     if (!isHandledLocally && (error.response?.status !== 401 || originalRequest?._retry)) {

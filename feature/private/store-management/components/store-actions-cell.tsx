@@ -33,10 +33,8 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
         title: `${store.storeName} is now ${checked ? "Active" : "Inactive"}`,
       });
       queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.STORES });
-    } catch (error: any) {
+    } catch {
       setIsActive(previousState);
-      const message = error?.response?.data?.message ?? "Failed to update store status.";
-      errorToast({ title: message });
     }
   };
 

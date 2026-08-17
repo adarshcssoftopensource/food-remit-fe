@@ -1,27 +1,42 @@
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
+import { BreadcrumbItem, Breadcrumbs } from "./breadcrumbs";
+
 type PageHeaderProps = {
-  title: string;
+  title?: string;
   description?: string;
   badge?: ReactNode;
   action?: ReactNode;
   className?: string;
+  breadcrumbs?: BreadcrumbItem[];
 };
 
-export function PageHeader({ title, description, badge, action, className }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  badge,
+  action,
+  className,
+  breadcrumbs,
+}: PageHeaderProps) {
   return (
     <div
       className={cn(
-        "mb-6 flex flex-col gap-4 pb-5 md:flex-row md:items-center md:justify-between",
+        "flex flex-col gap-4 md:flex-row md:items-center md:justify-between",
         className,
       )}
     >
-      <div className="space-y-1">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <h1 className="text-foreground text-3xl font-bold tracking-tight">{title}</h1>
-          {badge}
-        </div>
+      <div className="space-y-2">
+        {breadcrumbs && breadcrumbs.length > 0 && (
+          <Breadcrumbs items={breadcrumbs} className="mb-2" />
+        )}
+        {title && (
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="text-foreground text-3xl font-bold tracking-tight">{title}</h1>
+            {badge}
+          </div>
+        )}
         {description && <p className="text-muted-foreground max-w-2xl text-sm">{description}</p>}
       </div>
 

@@ -3,6 +3,8 @@
 import { CityManagerViewPageProps } from "@/app/(private)/city-management/[id]/page";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PageHeader } from "@/components/common/page-header";
+import { ROUTES } from "@/config/routes";
 import { useGetCityManager } from "@/feature/private/city-management/hooks/use-get-city-manager";
 import { useGetStores } from "@/feature/private/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
@@ -55,16 +57,14 @@ export default function CityManagerViewPage({ params }: CityManagerViewPageProps
 
   return (
     <div>
-      <Button
-        variant="secondary"
-        onClick={() => router.back()}
-        className="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-800"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to City Managers
-      </Button>
+      <PageHeader
+        breadcrumbs={[
+          { label: "City Management", href: ROUTES.ADMIN.CITY_MANAGEMENT.LIST },
+          { label: "City Manager Details" },
+        ]}
+      />
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-8 pb-8">
           <div className="flex items-center gap-6">
             <div className="bg-primary/10 text-primary flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl text-2xl font-bold shadow-sm">

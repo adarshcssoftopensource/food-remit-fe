@@ -20,6 +20,7 @@ export interface AdminProfile {
   email: string;
   role: string;
   roleCode: string;
+  phoneNumber: string;
   permissions: ProfilePermissions;
 }
 

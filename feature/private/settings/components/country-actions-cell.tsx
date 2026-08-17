@@ -1,7 +1,7 @@
 "use client";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { errorToast, successToast } from "@/components/toaster";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -25,15 +25,7 @@ export function CountryActionsCell({ country }: { country: CountryData }) {
           response?.message ||
           `"${country.countryName || country.name}" has been deleted successfully.`,
       });
-    } catch (error: any) {
-      errorToast({
-        title: "Failed to delete country",
-        description:
-          error?.response?.data?.message ||
-          error?.message ||
-          "Could not delete this country. Make sure no cities or departments depend on it.",
-      });
-    }
+    } catch {}
   };
 
   const displayName = country.countryName || country.name || "this country";

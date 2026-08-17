@@ -17,6 +17,7 @@ import {
   RefreshCcw,
   Store,
   Ticket,
+  Trash2,
   User,
   UserCog,
   Users,
@@ -34,6 +35,11 @@ export const navigationItems = [
     title: "Users Management",
     url: ROUTES.ADMIN.USERS_MANAGEMENT,
     icon: User,
+  },
+  {
+    title: "Recycle Bin",
+    url: ROUTES.ADMIN.RECYCLE_BIN,
+    icon: Trash2,
   },
 
   {
@@ -91,7 +97,7 @@ export const navigationItems = [
     items: [
       {
         title: "Store",
-        url: ROUTES.ADMIN.STORE_MANAGEMENT.ALL,
+        url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
       },
       {
         title: "Assign City-Manager To Stores",

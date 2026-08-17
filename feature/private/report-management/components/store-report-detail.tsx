@@ -76,15 +76,13 @@ export function StoreReportDetail({ store }: StoreReportDetailProps) {
   return (
     <div className="space-y-6">
       <div>
-        <Button
-          variant="secondary"
-          onClick={() => router.push(ROUTES.ADMIN.REPORT_MANAGEMENT.STORE_REPORT)}
-          className="text-primary mb-4 gap-2 hover:bg-transparent"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Store Reports
-        </Button>
-        <PageHeader title="Store Management" description="Store report details and transactions." />
+        <PageHeader
+          breadcrumbs={[
+            { label: "Report Management" },
+            { label: "Store Reports", href: ROUTES.ADMIN.REPORT_MANAGEMENT.STORE_REPORT },
+            { label: "Store Report Details" },
+          ]}
+        />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">

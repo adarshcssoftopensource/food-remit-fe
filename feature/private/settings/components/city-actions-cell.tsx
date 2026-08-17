@@ -1,7 +1,7 @@
 "use client";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { errorToast, successToast } from "@/components/toaster";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -20,19 +20,10 @@ export function CityActionsCell({ city }: { city: CityData }) {
       const response = await deleteCity();
       setIsDeleteDialogOpen(false);
       successToast({
-        title: "City Deleted",
         description:
           response?.message || `"${city.cityName || city.name}" has been deleted successfully.`,
       });
-    } catch (error: any) {
-      errorToast({
-        title: "Failed to delete city",
-        description:
-          error?.response?.data?.message ||
-          error?.message ||
-          "Could not delete this city. Make sure no departments or stores are linked to it.",
-      });
-    }
+    } catch {}
   };
 
   const displayName = city.cityName || city.name || "this city";

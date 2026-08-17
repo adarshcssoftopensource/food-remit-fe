@@ -31,6 +31,7 @@ export function normalizeUser(item: Record<string, unknown>): UserData {
     userType: String(item.userType ?? item.type ?? "Normal"),
     email: String(item.email ?? ""),
     phoneNumber,
+    countryCode: String(item.countryCode ?? ""),
     createdAt,
     userStatus: isActive ? "ACTIVE" : "INACTIVE",
     profileImage: item.profileImage ? String(item.profileImage) : undefined,

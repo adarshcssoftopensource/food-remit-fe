@@ -1,7 +1,7 @@
 "use client";
 
 import { CountrySelect } from "@/components/common/country-select";
-import { errorToast, successToast } from "@/components/toaster";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -101,15 +101,7 @@ export function AddCityDialog({
           description: response?.message || `"${data.cityName}" has been added successfully.`,
         });
       }
-    } catch (error: any) {
-      errorToast({
-        title: mode === "edit" ? "Failed to update city" : "Failed to add city",
-        description:
-          error?.response?.data?.message ||
-          error?.message ||
-          "Something went wrong while saving the city.",
-      });
-    }
+    } catch {}
   };
 
   const handleDialogOpenChange = (openState: boolean) => {

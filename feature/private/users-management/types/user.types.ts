@@ -6,6 +6,7 @@ export type UserData = {
   userType: string;
   email: string;
   phoneNumber: string;
+  countryCode: string;
   createdAt: string;
   userStatus: "ACTIVE" | "INACTIVE";
   profileImage?: string;

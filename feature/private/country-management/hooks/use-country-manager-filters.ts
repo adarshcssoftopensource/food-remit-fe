@@ -4,6 +4,8 @@ import { useGetCountryManagers } from "./use-get-country-managers";
 import { useCreateCountryManager, useUpdateCountryManager } from "./use-create-country-manager";
 import { successToast } from "@/components/toaster";
 
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
+
 export function useCountryManagerFilters() {
   const {
     page,
@@ -25,7 +27,7 @@ export function useCountryManagerFilters() {
     setSorting,
     setPage,
     setLimit,
-  } = useTableFilters(10);
+  } = useTableFilters(DEFAULT_PAGE_SIZE);
 
   const {
     data: countryManagers,

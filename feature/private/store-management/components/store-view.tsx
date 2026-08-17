@@ -2,13 +2,15 @@
 
 import { use } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Mail, MapPin, Phone, UserCircle, ArrowLeft } from "lucide-react";
+import { Building2, Mail, MapPin, Phone, UserCircle } from "lucide-react";
 import Image from "next/image";
+import { ROUTES } from "@/config/routes";
 import { Button } from "@/components/ui/button";
 import { useGetStore } from "@/feature/private/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
 import { StoreViewPageProps } from "@/app/(private)/store-management/[id]/page";
 import StoreScaltonLoading from "./store-scalton-loading";
+import { PageHeader } from "@/components/common/page-header";
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -53,19 +55,16 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
   ]
     .filter(Boolean)
     .join(", ");
-
   return (
     <div>
-      <Button
-        variant="secondary"
-        onClick={() => router.back()}
-        className="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-800"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Stores
-      </Button>
+      <PageHeader
+        breadcrumbs={[
+          { label: "Store Management", href: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT },
+          { label: "Store Details" },
+        ]}
+      />
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="from-primary/5 via-background to-primary/5 border-b bg-linear-to-r px-8 py-8">
           <div className="flex items-center gap-6">
             <div className="bg-primary/10 ring-primary/5 relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl ring-4">

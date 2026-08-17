@@ -9,6 +9,7 @@ export const ROUTES = {
   ADMIN: {
     DASHBOARD: "/dashboard",
     USERS_MANAGEMENT: "/users-management",
+    RECYCLE_BIN: "/recycle-bin",
     PARTNER_LEADS: "/partner-leads",
     FOUNDATION_MANAGEMENT: "/foundation-management",
     PHILANTHROPIST_MANAGEMENT: "/philanthropist-management",
@@ -29,7 +30,6 @@ export const ROUTES = {
     },
     STORE_MANAGEMENT: {
       ROOT: "/store-management",
-      ALL: "/store-management/all",
       ASSIGN_CITY_MANAGER: "/store-management/assign-city-manager",
     },
     COUNTRY_MANAGEMENT: {

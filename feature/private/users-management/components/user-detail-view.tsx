@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowLeft, User } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { User } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -19,13 +18,13 @@ import {
   SENT_ORDER_COLUMNS,
 } from "../columns/order-columns";
 
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { formatDateTime } from "@/lib/date";
 import Image from "next/image";
+import { ROUTES } from "@/config/routes";
 
 type TabKey = "profile" | "requested" | "sent" | "received";
 
@@ -40,7 +39,6 @@ function InfoCard({ title, value }: { title: string; value?: string }) {
 }
 
 export function UserDetailView({ user: initialUser, id }: { user?: UserData; id: string }) {
-  const router = useRouter();
   const { data: userData, isLoading } = useGetUserById(id);
   const user = userData?.data || initialUser;
 
@@ -60,7 +58,7 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
       title: "Username",
     },
     {
-      value: user?.phoneNumber,
+      value: `${user?.countryCode} ${user?.phoneNumber}`,
       title: "Phone",
     },
     {
@@ -109,15 +107,12 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
   return (
     <div className="space-y-6">
       <div>
-        <Button
-          variant="secondary"
-          onClick={() => router.back()}
-          className="text-primary mb-4 gap-2 hover:bg-transparent"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Users
-        </Button>
-        <PageHeader title="User Management" description="Manage user details and order activity." />
+        <PageHeader
+          breadcrumbs={[
+            { label: "User Management", href: ROUTES.ADMIN.USERS_MANAGEMENT },
+            { label: "User Details" },
+          ]}
+        />
       </div>
 
       <div className="rounded-2xl border p-4 shadow-sm sm:p-6">

@@ -11,9 +11,8 @@ import {
   Users,
   XCircle,
 } from "lucide-react";
-import Link from "next/link";
+import { PageHeader } from "@/components/common/page-header";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/config/routes";
@@ -101,13 +100,14 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* ── Top bar: Back + Read-only badge ── */}
+      {/* ── Top bar: Breadcrumbs ── */}
       <div className="flex items-center justify-between">
-        <Button variant="outline" size="sm" asChild className="gap-2 rounded-xl font-medium">
-          <Link href={ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT}>
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </Button>
+        <PageHeader
+          breadcrumbs={[
+            { label: "Sub Admin Management", href: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT },
+            { label: "Sub Admin Details" },
+          ]}
+        />
       </div>
 
       {/* ── Hero Profile Card ── */}

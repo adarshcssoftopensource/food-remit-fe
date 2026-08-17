@@ -1,9 +1,9 @@
 "use client";
 
 import { PageHeader } from "@/components/common/page-header";
+import { ROUTES } from "@/config/routes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { format } from "date-fns";
 import {
   ArrowLeft,
   Building2,
@@ -73,18 +73,13 @@ export function ItemView({ id }: ItemViewProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.back()}
-          className="h-10 w-10 shrink-0 rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:scale-105 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
+      <div>
         <PageHeader
-          title="Item Details"
-          description="View comprehensive information about this catalogue item."
+          breadcrumbs={[
+            { label: "Catalogue Management" },
+            { label: "Items", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS },
+            { label: "Item Details" },
+          ]}
         />
       </div>
 

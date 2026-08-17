@@ -3,12 +3,12 @@
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { format } from "date-fns";
 import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User, Users } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetDepartment } from "./hooks/use-get-department";
 import { formatDate } from "@/lib/date";
+import { ROUTES } from "@/config/routes";
 
 interface DepartmentViewProps {
   id: string;
@@ -61,18 +61,13 @@ export function DepartmentView({ id }: DepartmentViewProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.back()}
-          className="h-10 w-10 shrink-0 rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:scale-105 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
+      <div>
         <PageHeader
-          title="Department Details"
-          description="View comprehensive information about this department."
+          breadcrumbs={[
+            { label: "Catalogue Management" },
+            { label: "Departments", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.DEPARTMENTS },
+            { label: "Department Details" },
+          ]}
         />
       </div>
 
@@ -80,7 +75,7 @@ export function DepartmentView({ id }: DepartmentViewProps) {
         {/* Profile Card */}
         <Card className="relative flex h-fit flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
           {/* Cover Background */}
-          <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-gradient-to-br opacity-90" />
+          <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-linear-to-br opacity-90" />
 
           <CardHeader className="relative flex flex-1 flex-col px-6 pt-2 pb-8 text-center">
             {/* Icon Container with overlap */}

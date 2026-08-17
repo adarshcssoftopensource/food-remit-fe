@@ -37,13 +37,6 @@ export function getCityManagerColumns({
 }: CityManagerColumnsConfig): ColumnDef<CityManagerData>[] {
   return [
     {
-      accessorKey: "userId",
-      header: "S.no",
-      cell: ({ row }) => (
-        <span className="pl-2 font-mono text-xs text-slate-500">{row.index + 1}</span>
-      ),
-    },
-    {
       id: "name",
       header: "Name",
       accessorFn: (row) => `${row.firstName} ${row.lastName}`.trim(),

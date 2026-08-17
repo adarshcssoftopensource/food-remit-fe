@@ -4,6 +4,8 @@ import { useMemo } from "react";
 import { useCreateCityManager, useUpdateCityManager } from "./use-create-city-manager";
 import { useGetCityManagers } from "./use-get-city-managers";
 
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
+
 export function useCityManagerFilters() {
   const {
     page,
@@ -27,7 +29,7 @@ export function useCityManagerFilters() {
     setPage,
 
     setLimit,
-  } = useTableFilters(10);
+  } = useTableFilters(DEFAULT_PAGE_SIZE);
 
   const {
     data: cityManagers,

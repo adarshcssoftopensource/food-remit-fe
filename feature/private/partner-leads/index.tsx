@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { getPartnerLeadColumns } from "./columns/partner-lead-columns";
 import { usePartnerLeads } from "./hooks/use-get-partner-leads";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 
 export function PartnerLeadsManagement() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export function PartnerLeadsManagement() {
   const debouncedSearch = useDebounce(searchValue, 500);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(DEFAULT_PAGE_SIZE);
 
   const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
   const sortOrder = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;

@@ -1,6 +1,6 @@
 "use client";
 
-import { successToast, errorToast } from "@/components/toaster";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -49,7 +49,9 @@ export function AddStoreDialog() {
       }
 
       // 1. Create Store Manager
-      const managerRes = await createManagerMutation.mutateAsync(managerFormData as any);
+      const managerRes = await createManagerMutation.mutateAsync(
+        managerFormData as unknown as Parameters<typeof createManagerMutation.mutateAsync>[0],
+      );
 
       const storeFormData = new FormData();
       storeFormData.append("storeName", values.storeName);
@@ -73,15 +75,14 @@ export function AddStoreDialog() {
       }
 
       // 2. Create Store (linking the new manager)
-      await createStoreMutation.mutateAsync(storeFormData as any);
+      await createStoreMutation.mutateAsync(
+        storeFormData as unknown as Parameters<typeof createStoreMutation.mutateAsync>[0],
+      );
 
       successToast({ title: "Store added successfully!" });
       setOpen(false);
       queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.STORES });
-    } catch (error: any) {
-      const message = error?.response?.data?.message ?? "Something went wrong. Please try again.";
-      errorToast({ title: message });
-    }
+    } catch {}
   };
 
   return (

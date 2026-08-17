@@ -28,6 +28,8 @@ import { Search } from "lucide-react";
 import { renderHeader } from "./data-table-column-header";
 import { DataTablePagination } from "./data-table-pagination";
 
+import { RowSelectionState } from "@tanstack/react-table";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -43,7 +45,14 @@ interface DataTableProps<TData, TValue> {
   onSortingChange?: (sorting: SortingState) => void;
   manualSorting?: boolean;
   manualFiltering?: boolean;
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: (
+    updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
+  ) => void;
+  getRowId?: (originalRow: TData, index: number, parent?: any) => string;
 }
+
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 
 export function DataTable<TData, TValue>({
   columns,
@@ -54,12 +63,15 @@ export function DataTable<TData, TValue>({
   onSearchChange,
   currentPage = 1,
   totalPages = 1,
-  rowsPerPage = 10,
+  rowsPerPage = DEFAULT_PAGE_SIZE,
   onPageChange,
   onRowsPerPageChange,
   onSortingChange,
   manualSorting = false,
   manualFiltering = false,
+  rowSelection = {},
+  onRowSelectionChange,
+  getRowId,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -86,9 +98,13 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     manualSorting,
     manualFiltering,
+    enableRowSelection: true,
+    onRowSelectionChange,
+    getRowId,
     state: {
       sorting,
       columnFilters,
+      rowSelection,
     },
   });
 
@@ -137,7 +153,7 @@ export function DataTable<TData, TValue>({
         ))}
       </TableRow>
     ));
-  }, [loading, rows, columns, table]);
+  }, [loading, rows, columns, table, rowSelection]);
 
   return (
     <div className="space-y-4">

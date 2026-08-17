@@ -23,9 +23,8 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
     try {
       await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
       successToast({ description: "Department status updated successfully" });
-    } catch (error) {
+    } catch {
       setIsActive(!checked);
-      errorToast({ description: "Failed to update department status" });
     }
   };
 

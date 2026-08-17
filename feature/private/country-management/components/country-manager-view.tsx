@@ -3,13 +3,14 @@
 import { use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeft, Mail, UserCircle, Globe2 } from "lucide-react";
+import { ROUTES } from "@/config/routes";
+import { UserCircle, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useGetCountryManager } from "@/feature/private/country-management/hooks/use-get-country-manager";
 import { formatDate } from "@/lib/date";
 import { CountryManagerViewPageProps } from "@/app/(private)/country-management/[id]/page";
 import ViewPageLoading from "./view-page-loading";
+import { PageHeader } from "@/components/common/page-header";
 
 const DetailCard = ({ label, value }: { label: string; value?: string }) => (
   <div className="rounded-xl bg-slate-50 p-3 transition hover:bg-slate-100">
@@ -51,16 +52,14 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
 
   return (
     <div>
-      <Button
-        variant="secondary"
-        onClick={() => router.back()}
-        className="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-800"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Country Managers
-      </Button>
+      <PageHeader
+        breadcrumbs={[
+          { label: "Country Management", href: ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST },
+          { label: "Country Manager Details" },
+        ]}
+      />
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-8 pb-8">
           <div className="flex items-center gap-6">
             <div className="bg-primary/10 text-primary flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl text-2xl font-bold shadow-sm">

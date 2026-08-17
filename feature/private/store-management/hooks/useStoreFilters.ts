@@ -4,6 +4,7 @@ import { useGetStores } from "./use-get-stores";
 import { useTableFilters } from "@/hooks/use-table-filters";
 import type { StoreData } from "@/feature/private/store-management/types/store-management";
 import { useState } from "react";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 
 export function useStoreFilters() {
   const [country, setCountry] = useState("All Countries");
@@ -29,7 +30,7 @@ export function useStoreFilters() {
     setSorting,
     setPage,
     setLimit,
-  } = useTableFilters(10);
+  } = useTableFilters(DEFAULT_PAGE_SIZE);
 
   const {
     data: rawStores,

@@ -35,11 +35,6 @@ export function getCountryManagerColumns({
 }: CountryManagerColumnsConfig): ColumnDef<CountryManagerData>[] {
   return [
     {
-      accessorKey: "userId",
-      header: "S.no",
-      cell: ({ row }) => row.index + 1,
-    },
-    {
       id: "name",
       header: "Name",
       accessorFn: (row) => `${row.firstName} ${row.lastName}`.trim(),

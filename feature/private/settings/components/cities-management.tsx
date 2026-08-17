@@ -11,13 +11,14 @@ import { citiesColumns } from "../columns/cities-columns";
 import { useGetCities } from "../hooks/use-get-cities";
 import type { CityData, UseGetCitiesArgs } from "../types/settings.types";
 import AddCityDialog from "./add-city-dialog";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 
 export function CitiesManagement() {
   const [selectedCountry, setSelectedCountry] = useState<string>("All");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const handleCountryChange = useCallback((value: string) => {

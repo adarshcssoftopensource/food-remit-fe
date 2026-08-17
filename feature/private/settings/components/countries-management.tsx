@@ -10,12 +10,13 @@ import { countriesColumns } from "../columns/countries-columns";
 import { useGetCountries } from "../hooks/use-get-countries";
 import type { CountryData, UseGetCountriesArgs } from "../types/settings.types";
 import AddCountriesDialog from "./add-countries-dialog";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 
 export function CountriesManagement() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const handleSearchChange = useCallback((value: string) => {

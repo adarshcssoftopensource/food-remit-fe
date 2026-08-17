@@ -165,17 +165,12 @@ export function AssignCityManagerToStore() {
       successToast({ title: "City Manager assigned to stores successfully!" });
       reset();
       refetchStores();
-    } catch {
-      errorToast({ title: "Failed to assign city manager." });
-    }
+    } catch {}
   };
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Assign City-Manager To Stores"
-        description="Assign a city manager to oversee stores in a specific country."
-      />
+      <PageHeader breadcrumbs={[{ label: "Store Management" }, { label: "Assign City-Manager" }]} />
 
       <Card className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
         <CardHeader className="border-b border-slate-100 px-6 py-5">

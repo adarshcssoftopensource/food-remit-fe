@@ -100,10 +100,7 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
       successToast({ title: "Store updated successfully!" });
       onOpenChange(false);
       queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.STORES });
-    } catch (error: any) {
-      const message = error?.response?.data?.message ?? "Failed to update store details.";
-      errorToast({ title: message });
-    }
+    } catch {}
   };
 
   return (

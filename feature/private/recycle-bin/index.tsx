@@ -1,18 +1,19 @@
 "use client";
 
-import Link from "next/link";
-import { ROUTES } from "@/config/routes";
-import { Filter, RotateCcw, UsersRound, Trash2 } from "lucide-react";
+import { Filter, RotateCcw, UsersRound } from "lucide-react";
 import { useCallback, useState, useMemo } from "react";
 import { toast } from "sonner";
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { useBulkDeleteUsers } from "./hooks/use-bulk-delete-users";
+import { useBulkRestoreUsers } from "../users-management/hooks/use-bulk-restore-users";
 import { RowSelectionState } from "@tanstack/react-table";
 
 import { STAT_CONFIG, USER_STATUS_OPTIONS } from "@/constants/users-management";
 import { useDebounce } from "@/lib/debounce";
-import { usersColumns } from "./columns/users-columns";
-import { useGetUsers, UseGetUsersArgs } from "./hooks/use-get-users";
+import { usersColumns } from "./columns/recycled-users-columns";
+import {
+  useGetRecycledUsers,
+  UseGetUsersArgs,
+} from "../users-management/hooks/use-get-recycled-users";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 
 import { DataTable } from "@/components/common/data-table/data-table";
@@ -31,7 +32,7 @@ import {
 } from "@/components/ui/select";
 import { SortingState } from "@tanstack/react-table";
 
-export function UserManagement() {
+export function RecycledUsersManagement() {
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
   const [toDate, setToDate] = useState<Date | undefined>(undefined);
   const [status, setStatus] = useState<string | null>(null);
@@ -41,8 +42,8 @@ export function UserManagement() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
-  const bulkDeleteUsers = useBulkDeleteUsers();
+  const [isBulkRestoreDialogOpen, setIsBulkRestoreDialogOpen] = useState(false);
+  const bulkRestoreUsers = useBulkRestoreUsers();
 
   const queryArgs: UseGetUsersArgs = {
     page: currentPage,
@@ -55,7 +56,7 @@ export function UserManagement() {
     sortOrder: sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined,
   };
 
-  const { data: res, isLoading } = useGetUsers(queryArgs);
+  const { data: res, isLoading } = useGetRecycledUsers(queryArgs);
   const allData = (res?.data ?? []) as any[];
   const stats = {
     total: res?.stats?.total ?? 0,
@@ -67,17 +68,17 @@ export function UserManagement() {
     return Object.keys(rowSelection).filter(Boolean);
   }, [rowSelection]);
 
-  const handleBulkDelete = () => {
-    bulkDeleteUsers.mutate(
+  const handleBulkRestore = () => {
+    bulkRestoreUsers.mutate(
       { ids: selectedUserIds },
       {
         onSuccess: () => {
-          toast.success(`${selectedUserIds.length} users have been deleted successfully.`);
+          toast.success(`${selectedUserIds.length} users have been restored successfully.`);
           setRowSelection({});
-          setIsBulkDeleteDialogOpen(false);
+          setIsBulkRestoreDialogOpen(false);
         },
         onError: () => {
-          toast.error("Failed to delete selected users.");
+          toast.error("Failed to restore selected users.");
         },
       },
     );
@@ -119,8 +120,8 @@ export function UserManagement() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Users Management"
-        description="Manage and monitor all registered users in the platform."
+        title="Recyle Bin"
+        description="Users who have been deleted but can be restored"
       />
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -253,7 +254,7 @@ export function UserManagement() {
               <div>
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
-                    All Users
+                    Deleted Users
                   </CardTitle>
 
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:bg-slate-800 dark:text-slate-400">
@@ -262,7 +263,7 @@ export function UserManagement() {
                 </div>
 
                 <p className="mt-1 text-xs font-medium text-slate-400 sm:text-sm dark:text-slate-500">
-                  Manage and monitor registered users
+                  Manage and monitor deleted users
                 </p>
               </div>
             </div>
@@ -284,16 +285,15 @@ export function UserManagement() {
                 <span className="hidden text-[11px] font-medium text-slate-400 sm:block">
                   Search, sort & manage users
                 </span>
-
                 {selectedUserIds.length > 0 && (
                   <Button
-                    variant="destructive"
+                    variant="default"
                     size="sm"
-                    className="h-8 text-xs"
-                    onClick={() => setIsBulkDeleteDialogOpen(true)}
+                    className="h-8 bg-emerald-600 text-xs text-white hover:bg-emerald-700"
+                    onClick={() => setIsBulkRestoreDialogOpen(true)}
                   >
-                    <Trash2 className="mr-2 h-3.5 w-3.5" />
-                    Delete Selected ({selectedUserIds.length})
+                    <RotateCcw className="mr-2 h-3.5 w-3.5" />
+                    Restore Selected ({selectedUserIds.length})
                   </Button>
                 )}
               </div>
@@ -323,13 +323,13 @@ export function UserManagement() {
       </Card>
 
       <ConfirmationDialog
-        open={isBulkDeleteDialogOpen}
-        onOpenChange={setIsBulkDeleteDialogOpen}
-        title="Delete Selected Users"
-        description={`Are you sure you want to delete ${selectedUserIds.length} selected users? This action cannot be undone.`}
-        confirmLabel="Delete Users"
-        onConfirm={handleBulkDelete}
-        isLoading={bulkDeleteUsers.isPending}
+        open={isBulkRestoreDialogOpen}
+        onOpenChange={setIsBulkRestoreDialogOpen}
+        title="Restore Selected Users"
+        description={`Are you sure you want to restore ${selectedUserIds.length} selected users? They will be active in the system again.`}
+        confirmLabel="Restore Users"
+        onConfirm={handleBulkRestore}
+        isLoading={bulkRestoreUsers.isPending}
       />
     </div>
   );

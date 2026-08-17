@@ -1,9 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ActionsCell } from "../components/actions-cell";
-import { UserData } from "../types/user.types";
-import { formatDate } from "@/lib/date";
+import { UserData } from "../../users-management/types/user.types";
 
 function UserStatusBadge({ status }: { status: UserData["userStatus"] }) {
   const isActive = status === "ACTIVE";
@@ -91,18 +89,14 @@ export const usersColumns: ColumnDef<UserData>[] = [
     accessorKey: "phoneNumber",
     header: "Contact",
     enableSorting: true,
-    cell: ({ row }) => (
-      <span className="text-sm text-slate-700">
-        {row.original.countryCode} {row.original.phoneNumber}
-      </span>
-    ),
+    cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.phoneNumber}</span>,
   },
   {
     accessorKey: "createdAt",
     header: "Registered On",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="pl-3 text-xs text-slate-500">{formatDate(row.original.createdAt)}</span>
+      <span className="pl-3 text-xs text-slate-500">{row.original.createdAt}</span>
     ),
   },
   {
@@ -110,10 +104,5 @@ export const usersColumns: ColumnDef<UserData>[] = [
     header: "Status",
     enableSorting: true,
     cell: ({ row }) => <UserStatusBadge status={row.original.userStatus} />,
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => <ActionsCell user={row.original} />,
   },
 ];

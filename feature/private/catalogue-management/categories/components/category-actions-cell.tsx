@@ -23,9 +23,8 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
     try {
       await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
       successToast({ description: "Category status updated successfully" });
-    } catch (error) {
+    } catch {
       setIsActive(!checked);
-      errorToast({ description: "Failed to update category status" });
     }
   };
 
