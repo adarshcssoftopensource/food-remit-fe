@@ -17,10 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Country, State, City } from "country-state-city";
-import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
 import { useGetCities } from "@/feature/private/settings/hooks/use-get-cities";
+import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
 import { cn } from "@/lib/utils";
+import { City, Country, State } from "country-state-city";
 import { cityManagerSchema, type CityManagerFormValues } from "../schema/city-manager.schema";
 
 type CityManagerFormProps = {

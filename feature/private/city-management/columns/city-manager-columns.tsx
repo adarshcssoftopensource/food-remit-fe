@@ -1,10 +1,10 @@
+import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import type { CityManagerData } from "@/feature/private/city-management/types/city-manager";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pencil } from "lucide-react";
-import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 
 type CityManagerColumnsConfig = {
   onView: (manager: CityManagerData) => void;

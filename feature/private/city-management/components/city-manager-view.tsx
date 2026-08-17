@@ -1,16 +1,16 @@
 "use client";
 
-import { use } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { ArrowLeft, Mail, UserCircle, Globe2 } from "lucide-react";
+import { CityManagerViewPageProps } from "@/app/(private)/city-management/[id]/page";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetCityManager } from "@/feature/private/city-management/hooks/use-get-city-manager";
 import { useGetStores } from "@/feature/private/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
-import { CityManagerViewPageProps } from "@/app/(private)/city-management/[id]/page";
-import { Store } from "lucide-react";
+import { ArrowLeft, Globe2, Store, UserCircle } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { use } from "react";
+import ViewDataLoading from "./view-data.loading";
 
 const DetailCard = ({ label, value }: { label: string; value?: string }) => (
   <div className="rounded-xl bg-slate-50 p-3 transition hover:bg-slate-100">
@@ -29,40 +29,7 @@ export default function CityManagerViewPage({ params }: CityManagerViewPageProps
   const assignedStores = (storesResponse || []).filter((store) => store.assignedCityManager === id);
 
   if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-10 w-40" />
-        </div>
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-8 pb-8">
-            <div className="flex items-center gap-6">
-              <Skeleton className="h-20 w-20 rounded-2xl" />
-              <div className="flex-1 space-y-3">
-                <Skeleton className="h-8 w-64" />
-                <Skeleton className="h-5 w-48" />
-              </div>
-              <div className="flex shrink-0 gap-3">
-                <div className="space-y-2 text-right">
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-5 w-20" />
-                </div>
-                <div className="w-px bg-slate-200" />
-                <div className="space-y-2 text-right">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-5 w-24" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-6 p-8">
-            <Skeleton className="h-40 w-full rounded-2xl" />
-            <Skeleton className="h-48 w-full rounded-2xl" />
-            <Skeleton className="h-32 w-full rounded-2xl" />
-          </div>
-        </div>
-      </div>
-    );
+    return <ViewDataLoading />;
   }
 
   if (!manager) {
