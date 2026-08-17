@@ -18,18 +18,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ROUTES } from "@/config/routes";
+import {
+  CITY_MANAGER_STATS_CONFIG,
+  CITY_MANAGER_STATUS_OPTIONS,
+} from "@/constants/city-management";
 import { type CityManagerData } from "@/feature/private/city-management/types/city-manager";
+import { useRouter } from "next/navigation";
 import { getCityManagerColumns } from "./columns/city-manager-columns";
 import { AddCityManagerDialog } from "./components/add-city-manager-dialog";
 import { AssignedCitiesDialog } from "./components/assigned-cities-dialog";
 import { EditCityManagerDialog } from "./components/edit-city-manager-dialog";
 import { useCityManagerFilters } from "./hooks/use-city-manager-filters";
-import { ROUTES } from "@/config/routes";
-import { useRouter } from "next/navigation";
-import {
-  CITY_MANAGER_STATS_CONFIG,
-  CITY_MANAGER_STATUS_OPTIONS,
-} from "@/constants/city-management";
 
 export default function CityManagementPage() {
   const {

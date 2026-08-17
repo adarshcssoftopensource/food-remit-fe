@@ -1,8 +1,8 @@
-import { useMemo } from "react";
-import { useTableFilters } from "@/hooks/use-table-filters";
-import { useGetCityManagers } from "./use-get-city-managers";
-import { useCreateCityManager, useUpdateCityManager } from "./use-create-city-manager";
 import { successToast } from "@/components/toaster";
+import { useTableFilters } from "@/hooks/use-table-filters";
+import { useMemo } from "react";
+import { useCreateCityManager, useUpdateCityManager } from "./use-create-city-manager";
+import { useGetCityManagers } from "./use-get-city-managers";
 
 export function useCityManagerFilters() {
   const {

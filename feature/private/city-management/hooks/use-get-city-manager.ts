@@ -1,8 +1,8 @@
 import { useApiQuery } from "@/hooks/useApi";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
 import { useMemo } from "react";
 import type { CityManagerData, SingleCityManagerResponse } from "../types/city-manager";
-import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
 export function useGetCityManager(id: string) {
   const { data, isLoading, isError, error, refetch } = useApiQuery<SingleCityManagerResponse>(

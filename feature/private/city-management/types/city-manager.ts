@@ -15,20 +15,15 @@ export type CityManagerData = {
   state: string;
   city: string;
   zipcode: string;
-  /** Resolved country name (from countryName BE field) */
   countryName: string;
-  /** Resolved city names (from assignCityNames BE field) */
   assignedCityNames: string[];
-  /** Raw country ID */
   country: string;
-  /** Raw city IDs */
   assignedCities: string[];
   createdAt: string;
   status: CityManagerStatus;
   countryManagerId: string;
 };
 
-// ── API payload types ─────────────────────────────────────────────────────────
 export interface CityManagerPayload {
   countryManagerId?: string;
   firstName?: string;
@@ -52,7 +47,6 @@ export interface UpdateCityManagerPayload extends CityManagerPayload {
   id: string;
 }
 
-// ── API response types ────────────────────────────────────────────────────────
 export interface RawCityManager {
   id: string;
   firstName: string;
@@ -66,13 +60,9 @@ export interface RawCityManager {
   state?: string | null;
   city?: string | null;
   zipcode?: string | null;
-  /** Raw country ID from BE */
   country?: string | null;
-  /** Resolved country name from BE */
   countryName?: string | null;
-  /** Raw city IDs from BE */
   assignCities?: string | null;
-  /** Resolved city names from BE */
   assignCityNames?: string[];
   managerStatus?: string | null;
   addedOn?: string | null;

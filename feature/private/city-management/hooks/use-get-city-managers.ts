@@ -1,4 +1,6 @@
 import { useApiQuery } from "@/hooks/useApi";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
 import { buildUrl } from "@/lib/build-query-string";
 import { useMemo } from "react";
 import type {
@@ -7,8 +9,6 @@ import type {
   RawCityManager,
   UseGetCityManagersArgs,
 } from "../types/city-manager";
-import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
 export function useGetCityManagers(args?: UseGetCityManagersArgs) {
   const queryString = buildUrl("", {
