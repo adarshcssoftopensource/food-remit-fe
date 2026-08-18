@@ -2,10 +2,12 @@ import { useApiQuery } from "@/hooks/useApi";
 import { USER_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/user-management.endpoints";
 import { buildCacheKey, buildUrl } from "@/lib/build-query-string";
 import { useMemo } from "react";
-import { normalizeUser } from "../lib/normalize-user";
-import type { GetUsersResponse, UseGetUsersArgs, UserData } from "../types/user.types";
-
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { normalizeUser } from "../../users-management/lib/normalize-user";
+import type {
+  GetUsersResponse,
+  UseGetUsersArgs,
+  UserData,
+} from "../../users-management/types/user.types";
 
 interface RawGetUsersResponse {
   message: string;

@@ -1,6 +1,7 @@
+import { Checkbox } from "@/components/ui/checkbox";
+import { formatDateTime } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
-import { Checkbox } from "@/components/ui/checkbox";
 import { UserData } from "../../users-management/types/user.types";
 
 function UserStatusBadge({ status }: { status: UserData["userStatus"] }) {
@@ -96,7 +97,7 @@ export const usersColumns: ColumnDef<UserData>[] = [
     header: "Registered On",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="pl-3 text-xs text-slate-500">{row.original.createdAt}</span>
+      <span className="pl-3 text-xs text-slate-500">{formatDateTime(row.original.createdAt)}</span>
     ),
   },
   {

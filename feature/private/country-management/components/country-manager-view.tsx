@@ -1,16 +1,16 @@
 "use client";
 
-import { use } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { ROUTES } from "@/config/routes";
-import { UserCircle, Globe2 } from "lucide-react";
+import { CountryManagerViewPageProps } from "@/app/(private)/country-management/[id]/page";
+import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
 import { useGetCountryManager } from "@/feature/private/country-management/hooks/use-get-country-manager";
 import { formatDate } from "@/lib/date";
-import { CountryManagerViewPageProps } from "@/app/(private)/country-management/[id]/page";
+import { Globe2, UserCircle } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { use } from "react";
 import ViewPageLoading from "./view-page-loading";
-import { PageHeader } from "@/components/common/page-header";
 
 const DetailCard = ({ label, value }: { label: string; value?: string }) => (
   <div className="rounded-xl bg-slate-50 p-3 transition hover:bg-slate-100">
