@@ -1,6 +1,7 @@
 "use client";
 
-import { Filter, RotateCcw } from "lucide-react";
+import { Filter, RotateCcw, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useMemo, useState } from "react";
 
 import { DataTable } from "@/components/common/data-table/data-table";
@@ -97,8 +98,6 @@ export default function CityManagementPage() {
             key={key}
             label={label}
             value={stats[key]}
-            trendLabel="updated today"
-            trendValue="+6%"
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}
@@ -106,59 +105,71 @@ export default function CityManagementPage() {
         ))}
       </div>
 
-      <Card className="rounded-xl border bg-white shadow-sm">
-        <CardHeader className="border-b py-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
-              <Filter className="text-primary h-4 w-4" />
-            </div>
-            <CardTitle className="text-lg font-semibold">Filter City Managers</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="p-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end lg:flex-nowrap">
-            <DateRangeFilter
-              fromDate={fromDate}
-              toDate={toDate}
-              onFromDateChange={setFromDate}
-              onToDateChange={setToDate}
-              wrapperClassName="flex flex-col sm:flex-row flex-1 gap-3"
-              itemClassName="flex-1 space-y-1 min-w-0"
-              pickerClassName="h-10 w-full"
-              labelClassName="text-muted-foreground text-xs font-medium uppercase"
-              maxDate={new Date()}
-            />
+      <Collapsible className="group">
+        <Card className="rounded-xl border bg-white shadow-sm">
+          <CollapsibleTrigger render={<div />}>
+            <CardHeader className="cursor-pointer border-b py-4 transition-colors hover:bg-slate-50/50">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
+                  <Filter className="text-primary h-4 w-4" />
+                </div>
+                <CardTitle className="text-lg font-semibold">Filter City Managers</CardTitle>
 
-            <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">Status</Label>
-              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
-                <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {CITY_MANAGER_STATUS_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+                <div className="flex items-center gap-3">
+                  <ChevronDown className="h-5 w-5 text-slate-500 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                </div>
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="p-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end lg:flex-nowrap">
+                <DateRangeFilter
+                  fromDate={fromDate}
+                  toDate={toDate}
+                  onFromDateChange={setFromDate}
+                  onToDateChange={setToDate}
+                  wrapperClassName="flex flex-col sm:flex-row flex-1 gap-3"
+                  itemClassName="flex-1 space-y-1 min-w-0"
+                  pickerClassName="h-10 w-full"
+                  labelClassName="text-muted-foreground text-xs font-medium uppercase"
+                  maxDate={new Date()}
+                />
 
-            <Button
-              variant="destructive"
-              onClick={clearFilters}
-              disabled={!hasFilters}
-              className="h-10 w-full shrink-0 sm:w-auto"
-            >
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Clear
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+                <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
+                  <Label className="text-muted-foreground text-xs font-medium uppercase">
+                    Status
+                  </Label>
+                  <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
+                    <SelectTrigger className="h-10! w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {CITY_MANAGER_STATUS_OPTIONS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button
+                  variant="destructive"
+                  onClick={clearFilters}
+                  disabled={!hasFilters}
+                  className="h-10 w-full shrink-0 sm:w-auto"
+                >
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  Clear
+                </Button>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       <Card className="rounded-xl shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between border-b">

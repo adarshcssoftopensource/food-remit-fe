@@ -1,6 +1,7 @@
 "use client";
 
-import { Building2, Filter, Plus, RotateCcw } from "lucide-react";
+import { Building2, Filter, Plus, RotateCcw, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useMemo, useState } from "react";
 
 import { CATALOGUE_STATUS_OPTIONS, CATEGORY_STAT_CONFIG } from "@/constants/catalogue-management";
@@ -160,125 +161,127 @@ export function CategoriesManagement() {
         ))}
       </div>
 
-      <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
-        <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
+      <Collapsible className="group">
+        <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
+          <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
 
-        <CardHeader className="border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/10 text-primary ring-primary/10 flex h-10 w-10 items-center justify-center rounded-xl ring-1">
-                <Filter className="h-4.5 w-4.5" />
+          <CollapsibleTrigger render={<div />}>
+            <CardHeader className="cursor-pointer border-b border-slate-100 px-5 py-4 transition-colors hover:bg-slate-50/50 sm:px-6 dark:border-slate-800">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/10 text-primary ring-primary/10 flex h-10 w-10 items-center justify-center rounded-xl ring-1">
+                    <Filter className="h-4.5 w-4.5" />
+                  </div>
+
+                  <div>
+                    <CardTitle className="text-base font-bold tracking-tight text-slate-900 sm:text-lg dark:text-white">
+                      Filter Categories
+                    </CardTitle>
+
+                    <p className="mt-0.5 text-xs font-medium text-slate-400 dark:text-slate-500">
+                      Narrow categories by date, country and status
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <ChevronDown className="h-5 w-5 text-slate-500 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                </div>
               </div>
+            </CardHeader>
+          </CollapsibleTrigger>
 
-              <div>
-                <CardTitle className="text-base font-bold tracking-tight text-slate-900 sm:text-lg dark:text-white">
-                  Filter Categories
-                </CardTitle>
+          <CollapsibleContent>
+            <CardContent className="p-5 sm:p-6">
+              <div className="relative rounded-2xl border border-white/40 bg-white/60 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)] dark:border-white/10 dark:bg-slate-950/50">
+                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/20 ring-inset dark:ring-white/5" />
 
-                <p className="mt-0.5 text-xs font-medium text-slate-400 dark:text-slate-500">
-                  Narrow categories by date, country and status
-                </p>
+                <div className="relative z-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="sm:col-span-2">
+                    <DateRangeFilter
+                      fromDate={fromDate}
+                      toDate={toDate}
+                      onFromDateChange={setFromDate}
+                      onToDateChange={setToDate}
+                      wrapperClassName="flex flex-col sm:flex-row gap-3"
+                      itemClassName="flex-1 min-w-0 space-y-1.5"
+                      pickerClassName="h-10 w-full rounded-lg border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                      labelClassName="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                      Country
+                    </Label>
+
+                    <CountrySelect
+                      value={country === "all" ? "" : country}
+                      onValueChange={(val) => {
+                        setCountry(val || "all");
+                        setDepartment("all");
+                      }}
+                      valueKey="id"
+                      includeAll
+                      allLabel="All Countries"
+                      className="h-10 rounded-lg px-3"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                      Department
+                    </Label>
+
+                    <DepartmentSelect
+                      countryId={country !== "all" ? country : undefined}
+                      value={department === "all" ? "" : department}
+                      onValueChange={(val) => setDepartment(val || "all")}
+                      placeholder="All Departments"
+                      disabled={country === "all"}
+                      className="h-10 rounded-lg px-3"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                      Status
+                    </Label>
+
+                    <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
+                      <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
+                        <SelectValue />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectGroup>
+                          {CATALOGUE_STATUS_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-end sm:col-span-2 lg:col-span-4">
+                    <Button
+                      variant="outline"
+                      onClick={clearFilters}
+                      disabled={!hasFilters}
+                      className="h-10 w-full rounded-xl border-slate-200 bg-white/80 font-bold tracking-wide text-slate-600 shadow-sm backdrop-blur-md transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-300 dark:hover:bg-slate-900"
+                    >
+                      <RotateCcw className="mr-2 h-3.5 w-3.5" />
+                      Reset Filters
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {hasFilters && (
-              <div className="border-primary/15 bg-primary/5 hidden items-center gap-2 rounded-full border px-3 py-1.5 sm:flex">
-                <span className="bg-primary h-1.5 w-1.5 rounded-full" />
-
-                <span className="text-primary text-[11px] font-semibold">Filters applied</span>
-              </div>
-            )}
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-5 sm:p-6">
-          <div className="relative rounded-2xl border border-white/40 bg-white/60 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)] dark:border-white/10 dark:bg-slate-950/50">
-            <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/20 ring-inset dark:ring-white/5" />
-
-            <div className="relative z-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="sm:col-span-2">
-                <DateRangeFilter
-                  fromDate={fromDate}
-                  toDate={toDate}
-                  onFromDateChange={setFromDate}
-                  onToDateChange={setToDate}
-                  wrapperClassName="flex flex-col sm:flex-row gap-3"
-                  itemClassName="flex-1 min-w-0 space-y-1.5"
-                  pickerClassName="h-10 w-full rounded-lg border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
-                  labelClassName="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                  Country
-                </Label>
-
-                <CountrySelect
-                  value={country === "all" ? "" : country}
-                  onValueChange={(val) => {
-                    setCountry(val || "all");
-                    setDepartment("all");
-                  }}
-                  valueKey="id"
-                  includeAll
-                  allLabel="All Countries"
-                  className="h-10 rounded-lg px-3"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                  Department
-                </Label>
-
-                <DepartmentSelect
-                  countryId={country !== "all" ? country : undefined}
-                  value={department === "all" ? "" : department}
-                  onValueChange={(val) => setDepartment(val || "all")}
-                  placeholder="All Departments"
-                  disabled={country === "all"}
-                  className="h-10 rounded-lg px-3"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                  Status
-                </Label>
-
-                <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
-                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
-                    <SelectValue />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {CATALOGUE_STATUS_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-end sm:col-span-2 lg:col-span-4">
-                <Button
-                  variant="outline"
-                  onClick={clearFilters}
-                  disabled={!hasFilters}
-                  className="h-10 w-full rounded-xl border-slate-200 bg-white/80 font-bold tracking-wide text-slate-600 shadow-sm backdrop-blur-md transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-300 dark:hover:bg-slate-900"
-                >
-                  <RotateCcw className="mr-2 h-3.5 w-3.5" />
-                  Reset Filters
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
       <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
         <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
 

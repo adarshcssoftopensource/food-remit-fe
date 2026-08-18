@@ -38,8 +38,6 @@ export function DonationLogs() {
             key={key}
             label={label}
             value={stats[key]}
-            trendLabel="vs last month"
-            trendValue="+12%"
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}

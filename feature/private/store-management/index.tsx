@@ -52,8 +52,6 @@ export function StoreManagement() {
             key={key}
             label={label}
             value={stats[key]}
-            trendLabel="vs last month"
-            trendValue="+5%"
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}

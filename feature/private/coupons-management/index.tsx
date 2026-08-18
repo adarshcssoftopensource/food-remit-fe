@@ -1,6 +1,7 @@
 "use client";
 
-import { Filter, Gift, RotateCcw, Sparkles, Ticket, TrendingUp } from "lucide-react";
+import { Filter, Gift, RotateCcw, Sparkles, Ticket, TrendingUp, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useMemo, useState } from "react";
 
 import { DataTable } from "@/components/common/data-table/data-table";
@@ -157,58 +158,70 @@ export function CouponsManagement() {
         ))}
       </div>
 
-      <Card className="rounded-3xl border bg-white shadow-sm">
-        <CardHeader className="border-b py-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 text-primary rounded-2xl p-3">
-              <Filter className="size-5" />
-            </div>
-            <CardTitle className="text-lg font-semibold">Filters</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="p-5">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <DateRangeFilter
-              fromDate={fromDate}
-              toDate={toDate}
-              onFromDateChange={setFromDate}
-              onToDateChange={setToDate}
-              wrapperClassName="contents"
-              itemClassName="space-y-1 min-w-0"
-              pickerClassName="h-10 w-full"
-              labelClassName="text-muted-foreground text-xs font-medium uppercase"
-            />
+      <Collapsible className="group">
+        <Card className="rounded-3xl border bg-white shadow-sm">
+          <CollapsibleTrigger render={<div />}>
+            <CardHeader className="cursor-pointer border-b py-4 transition-colors hover:bg-slate-50/50">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 text-primary rounded-2xl p-3">
+                  <Filter className="size-5" />
+                </div>
+                <CardTitle className="text-lg font-semibold">Filters</CardTitle>
 
-            <div className="space-y-1">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">Status</Label>
-              <Select value={statusFilter} onValueChange={() => setStatusFilter}>
-                <SelectTrigger className="h-11! w-full rounded-xl">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
+                <div className="flex items-center gap-3">
+                  <ChevronDown className="h-5 w-5 text-slate-500 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                </div>
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="p-5">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <DateRangeFilter
+                  fromDate={fromDate}
+                  toDate={toDate}
+                  onFromDateChange={setFromDate}
+                  onToDateChange={setToDate}
+                  wrapperClassName="contents"
+                  itemClassName="space-y-1 min-w-0"
+                  pickerClassName="h-10 w-full"
+                  labelClassName="text-muted-foreground text-xs font-medium uppercase"
+                />
 
-                <SelectContent>
-                  {statusOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <div className="space-y-1">
+                  <Label className="text-muted-foreground text-xs font-medium uppercase">
+                    Status
+                  </Label>
+                  <Select value={statusFilter} onValueChange={() => setStatusFilter}>
+                    <SelectTrigger className="h-11! w-full rounded-xl">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
 
-            <div className="mb-2 flex items-end">
-              <Button
-                variant="destructive"
-                onClick={handleClearFilters}
-                disabled={!hasFilters}
-                className="h-11 w-32 rounded-xl"
-              >
-                Clear
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                    <SelectContent>
+                      {statusOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="mb-2 flex items-end">
+                  <Button
+                    variant="destructive"
+                    onClick={handleClearFilters}
+                    disabled={!hasFilters}
+                    className="h-11 w-32 rounded-xl"
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       <Card className="rounded-3xl shadow-sm">
         <CardHeader className="flex flex-col gap-4 border-b bg-gray-50/50 py-5 sm:flex-row sm:items-center sm:justify-between">

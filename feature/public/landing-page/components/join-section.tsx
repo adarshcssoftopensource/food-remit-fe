@@ -19,7 +19,7 @@ export function JoinSection() {
           Join the Future of Global Food Commerce
         </p>
         <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">
-          Start selling to the world—right from your neighborhood
+          Start selling to the world - right from your neighborhood
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
           Thousands of families already support loved ones across borders. Become one of our trusted

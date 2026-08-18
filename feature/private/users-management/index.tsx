@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { ROUTES } from "@/config/routes";
 import { Filter, RotateCcw, UsersRound, Trash2 } from "lucide-react";
 import { useCallback, useState, useMemo } from "react";
 import { toast } from "sonner";

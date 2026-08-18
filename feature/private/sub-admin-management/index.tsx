@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/select";
 import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub-admin-management";
 import type { SortingState } from "@tanstack/react-table";
-import { Filter, RotateCcw, UserCheck, Users } from "lucide-react";
+import { Filter, RotateCcw, UserCheck, Users, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useCallback } from "react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
 import { SubAdminDialog } from "./components/sub-admin-dialog";
@@ -133,7 +134,7 @@ export function SubAdminManagement() {
       <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
         <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
 
-        <CardHeader className="border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800">
+        <CardHeader className="border-b border-slate-100 px-5 py-4 transition-colors hover:bg-slate-50/50 sm:px-6 dark:border-slate-800">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="bg-primary/10 text-primary ring-primary/10 flex h-10 w-10 items-center justify-center rounded-xl ring-1">
@@ -150,14 +151,6 @@ export function SubAdminManagement() {
                 </p>
               </div>
             </div>
-
-            {(fromDate || toDate || status) && (
-              <div className="border-primary/15 bg-primary/5 hidden items-center gap-2 rounded-full border px-3 py-1.5 sm:flex">
-                <span className="bg-primary h-1.5 w-1.5 rounded-full" />
-
-                <span className="text-primary text-[11px] font-semibold">Filters applied</span>
-              </div>
-            )}
           </div>
         </CardHeader>
 

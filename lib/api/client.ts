@@ -93,12 +93,12 @@ axiosInstance.interceptors.response.use(
         originalRequest.headers.Authorization = "Bearer " + access_token;
         return axiosInstance(originalRequest);
       } catch (err) {
-        processQueue(err, null);
-        clearAuthSession();
-        if (typeof window !== "undefined") {
-          window.location.href = ROUTES.AUTH.LOGIN;
-        }
-        return Promise.reject(err);
+        // processQueue(err, null);
+        // clearAuthSession();
+        // if (typeof window !== "undefined") {
+        //   window.location.href = ROUTES.AUTH.LOGIN;
+        // }
+        // return Promise.reject(err);
       } finally {
         isRefreshing = false;
       }
