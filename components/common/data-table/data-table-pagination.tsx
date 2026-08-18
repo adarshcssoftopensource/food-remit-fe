@@ -81,14 +81,16 @@ export function DataTablePagination<TData>({
 
   return (
     <div className="flex flex-col gap-3 border-t px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-2 whitespace-nowrap">
-        <span className="text-sm font-medium text-slate-700">Rows per page</span>
+      <div className="flex items-center gap-2.5 whitespace-nowrap">
+        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          Rows per page
+        </span>
 
         <Select
           value={`${pageSize}`}
           onValueChange={(value) => handleRowsPerPageChange(Number(value))}
         >
-          <SelectTrigger className="h-9 w-16">
+          <SelectTrigger className="h-9 w-auto min-w-18 px-3 text-xs font-semibold">
             <SelectValue />
           </SelectTrigger>
 
@@ -150,12 +152,12 @@ export function DataTablePagination<TData>({
       </Pagination>
 
       <div className="hidden items-center gap-2 whitespace-nowrap sm:flex">
-        <span className="text-sm text-slate-700">Jump to:</span>
+        <span className="text-sm text-slate-700 dark:text-slate-300">Jump to:</span>
 
         <Input
           type="number"
           placeholder="No."
-          className="h-9 w-16"
+          className="h-9 w-20 rounded-xl px-2.5 text-xs font-semibold"
           defaultValue={activePage}
           onChange={(e) => {
             const page = Number(e.target.value);

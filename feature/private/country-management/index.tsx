@@ -1,14 +1,10 @@
 "use client";
 
-import { Filter, RotateCcw, ChevronDown } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useMemo, useState } from "react";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
+import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -26,6 +22,7 @@ import {
 } from "@/constants/country-management";
 import { type CountryManagerData } from "@/feature/private/country-management/types/country-manager";
 import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { getCountryManagerColumns } from "./columns/country-manager-columns";
 import { AddCountryManagerDialog } from "./components/add-country-manager-dialog";
 import { EditCountryManagerDialog } from "./components/edit-country-manager-dialog";
@@ -35,6 +32,10 @@ export default function CountryManagementPage() {
   const {
     addCountryManager,
     clearFilters,
+    country,
+    setCountry,
+    city,
+    setCity,
     filteredData,
     fromDate,
     hasFilters,
@@ -77,6 +78,15 @@ export default function CountryManagementPage() {
     [router, toggleManagerStatus],
   );
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (fromDate || toDate) count++;
+    if (country && country !== "all" && country !== "All") count++;
+    if (city && city !== "all" && city !== "All") count++;
+    if (statusFilter && statusFilter !== "All" && statusFilter !== "all") count++;
+    return count;
+  }, [fromDate, toDate, country, city, statusFilter]);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -98,70 +108,60 @@ export default function CountryManagementPage() {
         ))}
       </div>
 
-      <Card className="rounded-xl border bg-white shadow-sm">
-        <CardHeader className="border-b py-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
-              <Filter className="text-primary h-4 w-4" />
-            </div>
-            <CardTitle className="text-lg font-semibold">Filter Country Managers</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="p-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end lg:flex-nowrap">
-            <DateRangeFilter
-              fromDate={fromDate}
-              toDate={toDate}
-              onFromDateChange={setFromDate}
-              onToDateChange={setToDate}
-              wrapperClassName="flex flex-col sm:flex-row flex-1 gap-3"
-              itemClassName="flex-1 space-y-1 min-w-0"
-              pickerClassName="h-10 w-full"
-              labelClassName="text-muted-foreground text-xs font-medium uppercase"
-              maxDate={new Date()}
-            />
+      <ModuleFilters
+        title="Filter Country Managers"
+        description="Refine country managers by date, country, and status"
+        countryId={country}
+        onCountryChange={setCountry}
+        cityId={city}
+        onCityChange={setCity}
+        hasFilters={hasFilters}
+        onClearFilters={clearFilters}
+        activeFilterCount={activeFilterCount}
+      >
+        <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+          <DateRangeFilter
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={setFromDate}
+            onToDateChange={setToDate}
+            maxDate={new Date()}
+          />
+        </div>
 
-            <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">Status</Label>
-              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
-                <SelectTrigger className="h-10! w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {COUNTRY_MANAGER_STATUS_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
+          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            Status
+          </Label>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
+            <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {COUNTRY_MANAGER_STATUS_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </ModuleFilters>
 
-            <Button
-              variant="destructive"
-              onClick={clearFilters}
-              disabled={!hasFilters}
-              className="h-10 w-full shrink-0 sm:w-auto"
-            >
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Clear
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="rounded-xl shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b">
+      <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <div>
-            <CardTitle className="text-xl font-semibold">Country Manager List</CardTitle>
-            <p className="text-muted-foreground mt-0.5 text-sm">
-              {pagination?.total ?? 0} manager{pagination?.total !== 1 ? "s" : ""} found
+            <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+              Country Manager List
+            </CardTitle>
+            <p className="text-muted-foreground mt-0.5 text-xs">
+              {filteredData.length} manager{filteredData.length !== 1 ? "s" : ""} found
             </p>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <DataTable
             columns={columns}
             data={filteredData}

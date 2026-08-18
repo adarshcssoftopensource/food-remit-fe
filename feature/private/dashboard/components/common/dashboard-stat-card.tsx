@@ -54,7 +54,7 @@ export function DashboardStatCard({
   const content = (
     <Card
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-slate-300/80 hover:shadow-lg dark:border-slate-800/80 dark:bg-slate-900/90",
+        "group relative overflow-hidden rounded-2xl border border-white/60 bg-white/75 p-4.5 shadow-xs backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/80",
         accentColor && `border-t-2 ${ACCENT_GLOW_MAP[accentColor]}`,
         href && "cursor-pointer",
         className,
@@ -64,16 +64,16 @@ export function DashboardStatCard({
       {accentColor && (
         <div
           className={cn(
-            "pointer-events-none absolute -top-10 -right-10 h-28 w-28 rounded-full bg-gradient-to-br opacity-40 blur-2xl transition-opacity duration-300 group-hover:opacity-70",
+            "pointer-events-none absolute -top-10 -right-10 h-28 w-28 rounded-full bg-linear-to-br opacity-40 blur-2xl transition-opacity duration-300 group-hover:opacity-70",
             ACCENT_GLOW_MAP[accentColor],
           )}
         />
       )}
 
-      <div className="relative flex items-start justify-between">
+      <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+            <span className="text-[11px] font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
               {title}
             </span>
             {href && (
@@ -81,12 +81,12 @@ export function DashboardStatCard({
             )}
           </div>
 
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-2 flex items-baseline gap-2">
             {isLoading ? (
-              <Skeleton className="h-10 w-28 rounded-xl" />
+              <Skeleton className="h-8 w-24 rounded-xl" />
             ) : (
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                <span className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
                   {typeof mainValue === "number" ? mainValue.toLocaleString() : mainValue}
                 </span>
                 {mainLabel && (
@@ -99,7 +99,7 @@ export function DashboardStatCard({
           </div>
 
           {trend && !isLoading && (
-            <div className="mt-2 flex items-center gap-1.5 text-xs font-medium">
+            <div className="mt-1.5 flex items-center gap-1.5 text-xs font-medium">
               <span
                 className={cn(
                   "font-bold",
@@ -119,7 +119,7 @@ export function DashboardStatCard({
 
         <div
           className={cn(
-            "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-xs transition-transform duration-300 group-hover:scale-110",
+            "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-xs transition-transform duration-300 group-hover:scale-105",
             iconBgClassName,
           )}
         >
@@ -128,19 +128,19 @@ export function DashboardStatCard({
       </div>
 
       {subStats.length > 0 && (
-        <div className="relative mt-5 grid grid-cols-2 gap-2 border-t border-slate-100/90 pt-4 sm:grid-cols-4 dark:border-slate-800/80">
+        <div className="relative mt-4 grid grid-cols-2 gap-2 border-t border-slate-100/90 pt-3 sm:grid-cols-4 dark:border-slate-800/80">
           {subStats.map((sub, idx) => (
             <div
               key={sub.label || idx}
-              className="flex flex-col rounded-xl bg-slate-50/80 p-2.5 transition-colors group-hover:bg-slate-100/70 dark:bg-slate-800/50 dark:group-hover:bg-slate-800/80"
+              className="flex flex-col rounded-xl bg-slate-50/70 p-2 transition-colors group-hover:bg-slate-100/60 dark:bg-slate-800/50 dark:group-hover:bg-slate-800/70"
             >
               <span className="truncate text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-400">
                 {sub.label}
               </span>
               {isLoading ? (
-                <Skeleton className="mt-1 h-4 w-12 rounded" />
+                <Skeleton className="mt-1 h-3.5 w-10 rounded" />
               ) : (
-                <span className="mt-0.5 truncate text-sm font-bold text-slate-800 dark:text-slate-100">
+                <span className="mt-0.5 truncate text-xs font-bold text-slate-800 dark:text-slate-100">
                   {typeof sub.value === "number" ? sub.value.toLocaleString() : sub.value}
                 </span>
               )}

@@ -19,14 +19,14 @@ export function ProfileHeader() {
     .slice(0, 2);
 
   return (
-    <div className="relative mb-6 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-      <div className="from-primary/20 via-primary/10 h-32 w-full bg-linear-to-r to-transparent" />
+    <div className="brand-glass-card relative mb-6 overflow-hidden rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
+      <div className="h-32 w-full bg-linear-to-r from-emerald-600/30 via-teal-600/20 to-emerald-500/10" />
 
       <div className="flex flex-col items-start gap-5 px-6 pb-6 sm:flex-row sm:items-end">
-        <div className="relative -mt-12 h-24 w-24 shrink-0 rounded-2xl ring-4 ring-white">
+        <div className="relative -mt-12 h-24 w-24 shrink-0 rounded-2xl shadow-md ring-4 ring-white dark:ring-slate-900">
           <Avatar className="h-full w-full rounded-2xl shadow-sm">
             <AvatarImage src="" alt={displayName} />
-            <AvatarFallback className="bg-primary/10 text-primary rounded-2xl text-2xl font-bold">
+            <AvatarFallback className="rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-2xl font-black text-white">
               {initials}
             </AvatarFallback>
           </Avatar>

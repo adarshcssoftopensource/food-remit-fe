@@ -32,10 +32,10 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
             >
               <div
                 className={cn(
-                  "flex h-full items-center justify-center text-sm font-medium transition-colors",
+                  "flex h-full items-center justify-center text-xs font-medium shadow-xs transition-all",
                   isActive
-                    ? "bg-[#1f8c1f] text-white"
-                    : "bg-[#f2f2f2] text-slate-700 hover:bg-[#e5e5e5]",
+                    ? "bg-linear-to-r from-emerald-600 to-teal-600 font-bold text-white shadow-emerald-600/20"
+                    : "bg-white/85 text-slate-600 hover:bg-white hover:text-slate-900 dark:bg-slate-900/80 dark:text-slate-400 dark:hover:bg-slate-800",
                 )}
                 style={{
                   clipPath: isFirst

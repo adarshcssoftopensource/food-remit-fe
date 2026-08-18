@@ -2,10 +2,12 @@
 
 import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 import { DataTable } from "@/components/common/data-table/data-table";
+import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { STATS_CONFIG } from "@/constants/partner.leads";
 import { useDebounce } from "@/lib/debounce";
 import { SortingState } from "@tanstack/react-table";
@@ -13,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { getPartnerLeadColumns } from "./columns/partner-lead-columns";
 import { usePartnerLeads } from "./hooks/use-get-partner-leads";
-import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 
 export function PartnerLeadsManagement() {
   const router = useRouter();
@@ -22,6 +23,8 @@ export function PartnerLeadsManagement() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(DEFAULT_PAGE_SIZE);
+  const [country, setCountry] = useState("all");
+  const [city, setCity] = useState("all");
 
   const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
   const sortOrder = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
@@ -33,6 +36,44 @@ export function PartnerLeadsManagement() {
     page,
     limit,
   );
+
+  const filteredLeads = useMemo(() => {
+    return leads.filter((lead) => {
+      if (
+        country !== "all" &&
+        country !== "All" &&
+        (lead as any).countryId &&
+        (lead as any).countryId !== country
+      ) {
+        return false;
+      }
+      if (
+        city !== "all" &&
+        city !== "All" &&
+        (lead as any).cityId &&
+        (lead as any).cityId !== city
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [leads, country, city]);
+
+  const hasFilters = Boolean(
+    (country !== "all" && country !== "All") || (city !== "all" && city !== "All") || searchValue,
+  );
+
+  const handleClearFilters = () => {
+    setCountry("all");
+    setCity("all");
+    setSearchValue("");
+    setPage(1);
+  };
+
+  const activeFilterCount =
+    (country !== "all" && country !== "All" ? 1 : 0) +
+    (city !== "all" && city !== "All" ? 1 : 0) +
+    (searchValue ? 1 : 0);
 
   const handleViewDetails = (id: string) => {
     router.push(`${ROUTES.ADMIN.PARTNER_LEADS}/${id}`);
@@ -68,40 +109,52 @@ export function PartnerLeadsManagement() {
         ))}
       </div>
 
-      <Card className="rounded-xl border bg-white shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b py-4">
+      <ModuleFilters
+        title="Filter Leads Pipeline"
+        description="Filter partnership leads by country and city"
+        countryId={country}
+        onCountryChange={setCountry}
+        cityId={city}
+        onCityChange={setCity}
+        hasFilters={hasFilters}
+        onClearFilters={handleClearFilters}
+        activeFilterCount={activeFilterCount}
+      />
+
+      <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <div>
-            <CardTitle className="text-xl font-semibold text-slate-900">Leads Pipeline</CardTitle>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {leads.length} lead{leads.length !== 1 ? "s" : ""} in pipeline
+            <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+              Leads Pipeline
+            </CardTitle>
+            <p className="text-muted-foreground mt-0.5 text-xs">
+              {filteredLeads.length} lead{filteredLeads.length !== 1 ? "s" : ""} in pipeline
             </p>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="p-4">
-            <DataTable
-              columns={columns}
-              data={leads}
-              loading={isLoading}
-              searchKey="businessName"
-              searchValue={searchValue}
-              onSearchChange={(val) => {
-                setSearchValue(val);
-                setPage(1);
-              }}
-              onSortingChange={setSorting}
-              manualSorting={true}
-              manualFiltering={true}
-              currentPage={pagination.page}
-              totalPages={pagination.totalPages}
-              rowsPerPage={pagination.limit}
-              onPageChange={setPage}
-              onRowsPerPageChange={(newLimit) => {
-                setLimit(newLimit);
-                setPage(1);
-              }}
-            />
-          </div>
+        <CardContent className="p-4">
+          <DataTable
+            columns={columns}
+            data={filteredLeads}
+            loading={isLoading}
+            searchKey="businessName"
+            searchValue={searchValue}
+            onSearchChange={(val) => {
+              setSearchValue(val);
+              setPage(1);
+            }}
+            onSortingChange={setSorting}
+            manualSorting={true}
+            manualFiltering={true}
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            rowsPerPage={pagination.limit}
+            onPageChange={setPage}
+            onRowsPerPageChange={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+          />
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,6 @@
 import { successToast } from "@/components/toaster";
 import { useTableFilters } from "@/hooks/use-table-filters";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useCreateCountryManager, useUpdateCountryManager } from "./use-create-country-manager";
 import { useGetCountryManagers } from "./use-get-country-managers";
 
@@ -29,6 +29,9 @@ export function useCountryManagerFilters() {
     setLimit,
   } = useTableFilters(DEFAULT_PAGE_SIZE);
 
+  const [country, setCountry] = useState("all");
+  const [city, setCity] = useState("all");
+
   const {
     data: countryManagers,
     isLoading,
@@ -48,7 +51,14 @@ export function useCountryManagerFilters() {
   const createMutation = useCreateCountryManager();
   const updateMutation = useUpdateCountryManager();
 
-  const filteredData = countryManagers;
+  const filteredData = useMemo(() => {
+    return countryManagers.filter((item) => {
+      if (country !== "all" && country !== "All") {
+        if (item.assignedCountry !== country && item.assignCountryName !== country) return false;
+      }
+      return true;
+    });
+  }, [countryManagers, country]);
 
   const stats = useMemo(() => {
     const total = countryManagers.length;
@@ -63,10 +73,18 @@ export function useCountryManagerFilters() {
   }, [countryManagers]);
 
   const hasFilters = Boolean(
-    fromDate || toDate || (statusFilter !== "All" && statusFilter !== "all"),
+    fromDate ||
+    toDate ||
+    (statusFilter !== "All" && statusFilter !== "all") ||
+    (country !== "all" && country !== "All") ||
+    (city !== "all" && city !== "All"),
   );
 
-  const clearFilters = () => resetBaseFilters();
+  const clearFilters = () => {
+    resetBaseFilters();
+    setCountry("all");
+    setCity("all");
+  };
 
   const addCountryManager = async (formData: FormData) => {
     await createMutation.mutateAsync(formData);
@@ -88,6 +106,10 @@ export function useCountryManagerFilters() {
   return {
     addCountryManager,
     clearFilters,
+    country,
+    setCountry,
+    city,
+    setCity,
     filteredData,
     fromDate,
     hasFilters,

@@ -1,5 +1,6 @@
 "use client";
 
+import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
@@ -8,7 +9,6 @@ import { DONATION_STAT_CONFIG } from "@/constants/donation-logs";
 import { donationColumns } from "./columns/donation-columns";
 import { DonationFilters } from "./components/donation-filters";
 import { useDonationLogs } from "./hooks/use-donation-logs";
-import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 
 export function DonationLogs() {
   const {
@@ -16,11 +16,15 @@ export function DonationLogs() {
     fromDate,
     toDate,
     statusFilter,
+    country,
+    city,
     stats,
     hasFilters,
     setFromDate,
     setToDate,
     setStatusFilter,
+    setCountry,
+    setCity,
     clearFilters,
   } = useDonationLogs();
 
@@ -45,30 +49,34 @@ export function DonationLogs() {
         ))}
       </div>
 
-      <Card className="rounded-xl border bg-white shadow-sm">
-        <DonationFilters
-          fromDate={fromDate}
-          toDate={toDate}
-          statusFilter={statusFilter}
-          hasFilters={hasFilters}
-          onFromDateChange={setFromDate}
-          onToDateChange={setToDate}
-          onStatusChange={setStatusFilter}
-          onClearFilters={clearFilters}
-        />
-      </Card>
+      <DonationFilters
+        fromDate={fromDate}
+        toDate={toDate}
+        country={country}
+        city={city}
+        statusFilter={statusFilter}
+        hasFilters={hasFilters}
+        onFromDateChange={setFromDate}
+        onToDateChange={setToDate}
+        onCountryChange={setCountry}
+        onCityChange={setCity}
+        onStatusChange={setStatusFilter}
+        onClearFilters={clearFilters}
+      />
 
-      <Card className="rounded-xl shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b">
+      <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <div>
-            <CardTitle className="text-xl font-semibold">All Donations</CardTitle>
-            <p className="text-muted-foreground mt-0.5 text-sm">
+            <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+              All Donations
+            </CardTitle>
+            <p className="text-muted-foreground mt-0.5 text-xs">
               {filteredData.length} donation{filteredData.length !== 1 ? "s" : ""} found
             </p>
           </div>
         </CardHeader>
-        <CardContent>
-          <DataTable columns={donationColumns} data={[]} searchKey="senderFirstName" />
+        <CardContent className="p-4">
+          <DataTable columns={donationColumns} data={filteredData} searchKey="senderFirstName" />
         </CardContent>
       </Card>
     </div>

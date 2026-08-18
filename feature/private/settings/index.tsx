@@ -12,7 +12,7 @@ import { useProfile } from "@/components/providers/profile-provider";
 import { useMemo } from "react";
 
 const triggerClass =
-  "data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground h-8 rounded-md";
+  "data-active:bg-linear-to-r data-active:from-emerald-600 data-active:to-teal-600 data-active:text-white hover:data-active:text-white h-9 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-xs";
 
 export function SettingsPage() {
   const { hasPermission } = useProfile();
@@ -59,7 +59,7 @@ export function SettingsPage() {
 
       <Tabs defaultValue={tabs[0]?.value} className="w-full">
         <TabsList
-          className="bg-muted grid h-10! w-full rounded-lg p-1"
+          className="brand-glass-card grid h-auto! w-full rounded-2xl dark:border-slate-800/60 dark:bg-slate-900/60"
           style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
         >
           {tabs.map((tab) => (

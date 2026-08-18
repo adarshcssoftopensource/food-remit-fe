@@ -83,19 +83,21 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       className={cn(
-        "relative z-10 w-full overflow-hidden rounded-[2.5rem] p-8 shadow-2xl shadow-black/40 sm:p-12",
+        "brand-glass-card relative z-10 w-full overflow-hidden rounded-3xl border border-white/80 p-8 shadow-2xl backdrop-blur-2xl sm:p-10 dark:border-slate-800/80",
         className,
       )}
       {...props}
     >
       <div>
-        <div className="mb-10 text-center">
-          <div className="from-primary/10 to-primary/20 ring-primary/20 mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br shadow-inner ring-1">
-            <User className="size-7" />
+        <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500/15 to-teal-500/20 shadow-inner ring-1 ring-emerald-500/30">
+            <User className="size-6 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Welcome Back</h1>
-          <p className="mt-2 text-sm font-medium text-gray-500/80">
-            Sign in to your Food Remit account
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
+            Welcome Back
+          </h1>
+          <p className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+            Sign in to access your Food Remit executive portal
           </p>
         </div>
 

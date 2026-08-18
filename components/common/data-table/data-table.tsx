@@ -182,10 +182,9 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       )}
-      <div className="w-full overflow-x-auto rounded-2xl border border-white/40 bg-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/50">
-        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/20 ring-inset dark:ring-white/5" />
+      <div className="w-full overflow-x-auto rounded-2xl border border-white/60 bg-white/75 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-900/60">
         <Table>
-          <TableHeader className="border-b border-slate-200/60 bg-slate-50/80 dark:border-slate-800/60 dark:bg-slate-900/50">
+          <TableHeader className="border-b border-slate-200/60 bg-slate-50/70 dark:border-slate-800/60 dark:bg-slate-900/60">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -196,7 +195,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="h-12 text-[11px] font-bold tracking-wide text-slate-500 uppercase dark:text-slate-400"
+                      className="h-11 text-[11px] font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                     >
                       {header.isPlaceholder ? null : renderHeader(header.column, renderedHeader)}
                     </TableHead>

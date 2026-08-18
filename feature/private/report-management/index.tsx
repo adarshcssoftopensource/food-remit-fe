@@ -1,6 +1,6 @@
 "use client";
 
-import { FileSpreadsheet, Globe, MapPin, TableProperties, UtensilsCrossed } from "lucide-react";
+import { FileSpreadsheet, TableProperties } from "lucide-react";
 import { useState } from "react";
 
 import { DataTable } from "@/components/common/data-table/data-table";
@@ -17,8 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  REPORT_CITY_OPTIONS,
-  REPORT_COUNTRY_OPTIONS,
   REPORT_FOOD_TYPE_OPTIONS,
   REPORT_SECTION_META,
   type CouponReportRow,
@@ -42,7 +40,7 @@ type ReportManagementPageProps = {
 
 function ExportButton() {
   return (
-    <Button className="h-10 gap-2 rounded-lg px-4">
+    <Button className="h-10 gap-2 rounded-xl px-4 font-semibold">
       <FileSpreadsheet className="h-4 w-4" />
       Export Excel
     </Button>
@@ -54,10 +52,14 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
   const { applyFilters, clearFilters, fromDate, hasFilters, setFromDate, setToDate, toDate } =
     useReportDateFilters();
   const [foodType, setFoodType] = useState("All");
+  const [country, setCountry] = useState("all");
+  const [city, setCity] = useState("all");
 
   const clearAll = () => {
     clearFilters();
     setFoodType("All");
+    setCountry("all");
+    setCity("all");
   };
 
   const table =
@@ -88,59 +90,61 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
       <ReportDateFilters
         fromDate={fromDate}
         toDate={toDate}
-        hasFilters={hasFilters || (section === "orders-report" && foodType !== "All")}
+        countryId={country}
+        cityId={city}
+        onCountryChange={setCountry}
+        onCityChange={setCity}
+        hasFilters={
+          hasFilters ||
+          (section === "orders-report" && foodType !== "All") ||
+          country !== "all" ||
+          city !== "all"
+        }
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
         onApply={applyFilters}
         onClear={clearAll}
-      />
+      >
+        {section === "orders-report" && (
+          <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
+            <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              Food Type
+            </Label>
+            <Select value={foodType} onValueChange={(v) => setFoodType(v ?? "All")}>
+              <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
+                <SelectValue placeholder="Select Food Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {REPORT_FOOD_TYPE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </ReportDateFilters>
 
-      <Card className="rounded-xl shadow-sm">
-        <CardHeader className="space-y-6 border-b pb-6">
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
-                <TableProperties className="text-primary h-5 w-5" />
-              </div>
-
-              <div>
-                <CardTitle className="text-xl font-semibold">{meta.title}</CardTitle>
-
-                <p className="text-muted-foreground text-sm">0 entries found</p>
-              </div>
+      <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 text-primary ring-primary/20 flex size-10 items-center justify-center rounded-xl ring-1">
+              <TableProperties className="h-5 w-5" />
             </div>
-
-            <ExportButton />
+            <div>
+              <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                {meta.title}
+              </CardTitle>
+              <p className="text-muted-foreground text-xs">0 entries found</p>
+            </div>
           </div>
 
-          {section === "orders-report" && (
-            <div className="bg-muted/40 rounded-xl border p-4">
-              <div className="max-w-sm space-y-2">
-                <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
-                  <UtensilsCrossed className="h-4 w-4" />
-                  Food Type
-                </Label>
-
-                <Select value={foodType} onValueChange={(v) => setFoodType(v ?? "All")}>
-                  <SelectTrigger className="h-10! w-full rounded-lg">
-                    <SelectValue placeholder="Select Food Type" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {REPORT_FOOD_TYPE_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          )}
+          <ExportButton />
         </CardHeader>
-        <CardContent>{table}</CardContent>
+        <CardContent className="p-4">{table}</CardContent>
       </Card>
     </div>
   );
@@ -170,87 +174,37 @@ function StoreReportsPage() {
       <ReportDateFilters
         fromDate={fromDate}
         toDate={toDate}
+        countryId={country === "All" ? "all" : country}
+        cityId={city === "All" ? "all" : city}
         hasFilters={hasFilters}
+        onCountryChange={(v) => setCountry(v === "all" ? "All" : v)}
+        onCityChange={(v) => setCity(v === "all" ? "All" : v)}
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
         onApply={applyFilters}
         onClear={clearFilters}
       />
 
-      <Card className="rounded-xl shadow-sm">
-        <CardHeader className="space-y-6 border-b pb-6">
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
-                  <TableProperties className="text-primary h-5 w-5" />
-                </div>
-
-                <div>
-                  <CardTitle className="text-xl font-semibold">{meta.title}</CardTitle>
-
-                  <p className="text-muted-foreground text-sm">
-                    {filteredData.length} entr
-                    {filteredData.length !== 1 ? "ies" : "y"} found
-                  </p>
-                </div>
-              </div>
+      <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 text-primary ring-primary/20 flex size-10 items-center justify-center rounded-xl ring-1">
+              <TableProperties className="h-5 w-5" />
             </div>
-
-            <ExportButton />
-          </div>
-
-          <div className="bg-muted/40 rounded-xl border p-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
-                  <Globe className="h-4 w-4" />
-                  Country
-                </Label>
-
-                <Select value={country} onValueChange={(v) => setCountry(v ?? "All")}>
-                  <SelectTrigger className="h-10! w-full rounded-lg">
-                    <SelectValue placeholder="Select Country" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {REPORT_COUNTRY_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wide uppercase">
-                  <MapPin className="h-4 w-4" />
-                  City
-                </Label>
-
-                <Select value={city} onValueChange={(v) => setCity(v ?? "All")}>
-                  <SelectTrigger className="h-10! w-full rounded-lg">
-                    <SelectValue placeholder="Select City" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {REPORT_CITY_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                {meta.title}
+              </CardTitle>
+              <p className="text-muted-foreground text-xs">
+                {filteredData.length} entr
+                {filteredData.length !== 1 ? "ies" : "y"} found
+              </p>
             </div>
           </div>
+
+          <ExportButton />
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <DataTable columns={storeReportColumns} data={filteredData} searchKey={meta.searchKey} />
         </CardContent>
       </Card>

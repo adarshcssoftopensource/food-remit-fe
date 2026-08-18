@@ -41,7 +41,14 @@ function PaginationLink({ className, isActive, size = "icon", ...props }: Pagina
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
       data-active={isActive}
-      className={cn(buttonVariants({ variant: isActive ? "outline" : "ghost", size }), className)}
+      className={cn(
+        buttonVariants({ variant: "ghost", size }),
+        isActive
+          ? "bg-linear-to-r from-emerald-600 to-teal-600 font-bold text-white shadow-xs hover:from-emerald-700 hover:to-teal-700 hover:text-white dark:text-white"
+          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800",
+        "rounded-xl transition-all duration-200",
+        className,
+      )}
       {...props}
     />
   );

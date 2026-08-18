@@ -1,21 +1,8 @@
 "use client";
 
-import { Building2, Filter, Plus, RotateCcw, ChevronDown } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useMemo, useState } from "react";
-
-import { CountrySelect } from "@/components/common/country-select";
-import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
-import { ROUTES } from "@/config/routes";
-import { useRouter } from "next/navigation";
-import { useTableFilters } from "@/hooks/use-table-filters";
-import { getDepartmentColumns } from "./columns/department-columns";
-import { DepartmentFormDialog } from "./components/department-form-dialog";
-import { useGetDepartments, type UseGetDepartmentsArgs } from "./hooks/use-get-departments";
-import type { DepartmentData } from "./types/department.types";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
+import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Button } from "@/components/ui/button";
@@ -29,6 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ROUTES } from "@/config/routes";
+import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
+import { useTableFilters } from "@/hooks/use-table-filters";
+import { Building2, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { getDepartmentColumns } from "./columns/department-columns";
+import { DepartmentFormDialog } from "./components/department-form-dialog";
+import { useGetDepartments, type UseGetDepartmentsArgs } from "./hooks/use-get-departments";
+import type { DepartmentData } from "./types/department.types";
 
 export function DepartmentsManagement() {
   const {
@@ -53,6 +50,7 @@ export function DepartmentsManagement() {
   } = useTableFilters();
 
   const [country, setCountry] = useState("all");
+  const [city, setCity] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDept, setEditingDept] = useState<DepartmentData | null>(null);
 
@@ -84,7 +82,15 @@ export function DepartmentsManagement() {
 
   const { data: res, isLoading } = useGetDepartments(queryArgs);
 
-  const departments = res?.data ?? [];
+  const rawDepartments = res?.data ?? [];
+  const departments = useMemo(() => {
+    return rawDepartments.filter((d) => {
+      if (city !== "all" && city !== "All" && (d as any).cityId && (d as any).cityId !== city) {
+        return false;
+      }
+      return true;
+    });
+  }, [rawDepartments, city]);
 
   const stats = {
     total: res?.stats?.total ?? 0,
@@ -92,15 +98,32 @@ export function DepartmentsManagement() {
     inactive: res?.stats?.inactive ?? 0,
   };
 
-  const hasFilters = !!(fromDate || toDate || status !== "all" || country !== "all" || searchQuery);
+  const hasFilters = !!(
+    fromDate ||
+    toDate ||
+    status !== "all" ||
+    country !== "all" ||
+    city !== "all" ||
+    searchQuery
+  );
 
   const clearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
     setStatus("all");
     setCountry("all");
+    setCity("all");
     setSearchQuery("");
   };
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (fromDate || toDate) count++;
+    if (country !== "all" && country !== "All") count++;
+    if (city !== "all" && city !== "All") count++;
+    if (status !== "all") count++;
+    return count;
+  }, [fromDate, toDate, country, city, status]);
 
   const handleEdit = (dept: DepartmentData) => {
     setEditingDept(dept);
@@ -145,155 +168,88 @@ export function DepartmentsManagement() {
         ))}
       </div>
 
-      <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
-        <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
+      <ModuleFilters
+        title="Filter Departments"
+        description="Refine departments by date, country, city, and status"
+        countryId={country}
+        onCountryChange={setCountry}
+        cityId={city}
+        onCityChange={setCity}
+        hasFilters={hasFilters}
+        onClearFilters={clearFilters}
+        activeFilterCount={activeFilterCount}
+      >
+        <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+          <DateRangeFilter
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={setFromDate}
+            onToDateChange={setToDate}
+            maxDate={new Date()}
+          />
+        </div>
 
-        <CardHeader className="cursor-pointer border-b border-slate-100 px-5 py-4 transition-colors hover:bg-slate-50/50 sm:px-6 dark:border-slate-800">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/10 text-primary ring-primary/10 flex h-10 w-10 items-center justify-center rounded-xl ring-1">
-                <Filter className="h-4.5 w-4.5" />
-              </div>
+        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
+          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            Status
+          </Label>
+          <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
+            <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {CATALOGUE_STATUS_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </ModuleFilters>
 
-              <div>
-                <CardTitle className="text-base font-bold tracking-tight text-slate-900 sm:text-lg dark:text-white">
-                  Filter Departments
-                </CardTitle>
-
-                <p className="mt-0.5 text-xs font-medium text-slate-400 dark:text-slate-500">
-                  Narrow departments by date, country and status
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-4 sm:p-5">
-          <div className="rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-900/40">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
-              <div className="min-w-0 flex-1 lg:min-w-70">
-                <DateRangeFilter
-                  fromDate={fromDate}
-                  toDate={toDate}
-                  onFromDateChange={setFromDate}
-                  onToDateChange={setToDate}
-                  wrapperClassName="flex flex-col sm:flex-row gap-3"
-                  itemClassName="flex-1 min-w-0 space-y-1.5"
-                  pickerClassName="h-10 w-full rounded-lg border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
-                  labelClassName="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                />
-              </div>
-
-              <div className="w-full lg:w-47.5">
-                <Label className="mb-1.5 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                  Country
-                </Label>
-
-                <CountrySelect
-                  value={country === "all" ? "" : country}
-                  onValueChange={(val) => setCountry(val || "all")}
-                  valueKey="id"
-                  includeAll
-                  allLabel="All Countries"
-                />
-              </div>
-
-              <div className="w-full lg:w-45">
-                <Label className="mb-1.5 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                  Status
-                </Label>
-
-                <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
-                  <SelectTrigger className="h-10 w-full rounded-lg border-slate-200 bg-white px-3 text-sm font-medium shadow-none dark:border-slate-700 dark:bg-slate-950">
-                    <SelectValue />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {CATALOGUE_STATUS_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Button
-                variant="outline"
-                onClick={clearFilters}
-                disabled={!hasFilters}
-                className="h-10 w-full shrink-0 rounded-lg border-slate-200 bg-white px-4 font-semibold text-slate-600 shadow-none hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 lg:w-auto dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
-              >
-                <RotateCcw className="mr-2 h-3.5 w-3.5" />
-                Reset
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80">
-        <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 h-0.5 bg-gray-100" />
-        <CardHeader className="border-b border-slate-100 px-5 py-5 sm:px-6 dark:border-slate-800">
+      <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+        <CardHeader className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3.5">
-              <div className="bg-primary/10 text-primary ring-primary/10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1">
-                <Building2 className="h-5.25 w-5.25" />
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 text-primary ring-primary/20 flex size-10 shrink-0 items-center justify-center rounded-xl ring-1">
+                <Building2 className="h-5 w-5" />
               </div>
-
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <CardTitle className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
+                  <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
                     Departments
                   </CardTitle>
-
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:bg-slate-800 dark:text-slate-400">
                     Directory
                   </span>
                 </div>
-
-                <p className="mt-1 text-xs font-medium text-slate-400 sm:text-sm dark:text-slate-500">
-                  View, search, and manage all departments
+                <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                  {departments.length} department{departments.length !== 1 ? "s" : ""} found
                 </p>
               </div>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="p-0">
-          <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-5 dark:border-slate-800 dark:bg-slate-900/30">
-            <div className="flex items-center gap-2">
-              <span className="bg-primary h-1.5 w-1.5 rounded-full" />
-
-              <span className="text-[10px] font-bold tracking-[0.14em] text-slate-400 uppercase">
-                Department Directory
-              </span>
-            </div>
-
-            <span className="hidden text-[11px] font-medium text-slate-400 sm:block">
-              Search & manage departments
-            </span>
-          </div>
-
-          <div className="px-3 pt-2 pb-4 sm:px-4">
-            <DataTable
-              columns={columns}
-              data={departments}
-              loading={isLoading}
-              searchKey="departmentName"
-              searchValue={searchQuery}
-              onSearchChange={setSearchQuery}
-              onSortingChange={setSorting}
-              manualSorting
-              currentPage={currentPage}
-              totalPages={res?.pagination?.totalPages ?? 1}
-              rowsPerPage={pageSize}
-              onPageChange={setCurrentPage}
-              onRowsPerPageChange={setPageSize}
-            />
-          </div>
+        <CardContent className="p-4">
+          <DataTable
+            columns={columns}
+            data={departments}
+            loading={isLoading}
+            searchKey="departmentName"
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            onSortingChange={setSorting}
+            manualSorting
+            currentPage={currentPage}
+            totalPages={res?.pagination?.totalPages ?? 1}
+            rowsPerPage={pageSize}
+            onPageChange={setCurrentPage}
+            onRowsPerPageChange={setPageSize}
+          />
         </CardContent>
       </Card>
 

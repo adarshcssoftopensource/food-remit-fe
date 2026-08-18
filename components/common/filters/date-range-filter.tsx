@@ -24,14 +24,14 @@ export function DateRangeFilter({
   toDate,
   onFromDateChange,
   onToDateChange,
-  fromLabel = "From date (YYYY-MM-DD)",
-  toLabel = "To date (YYYY-MM-DD)",
+  fromLabel = "From Date",
+  toLabel = "To Date",
   placeholder = "YYYY-MM-DD",
-  maxDate,
-  wrapperClassName = "grid grid-cols-1 gap-3 md:grid-cols-2",
-  itemClassName = "space-y-2",
-  pickerClassName = "h-10 w-full rounded-lg border-gray-200",
-  labelClassName = "text-muted-foreground text-xs font-semibold tracking-wide uppercase",
+  maxDate = new Date(),
+  wrapperClassName = "flex flex-col sm:flex-row gap-3 w-full",
+  itemClassName = "flex-1 min-w-0 space-y-1",
+  pickerClassName = "h-10 w-full rounded-xl border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900",
+  labelClassName = "text-[10px] font-bold uppercase tracking-wider text-slate-400 block truncate",
   loading = false,
 }: DateRangeFilterProps) {
   return (
@@ -39,7 +39,7 @@ export function DateRangeFilter({
       <div className={itemClassName}>
         <Label className={labelClassName}>{fromLabel}</Label>
         {loading ? (
-          <div className={`h-10 w-full rounded bg-slate-200 ${pickerClassName}`} />
+          <div className={`h-10 w-full animate-pulse rounded-xl bg-slate-200 ${pickerClassName}`} />
         ) : (
           <DatePicker
             date={fromDate}
@@ -54,7 +54,7 @@ export function DateRangeFilter({
       <div className={itemClassName}>
         <Label className={labelClassName}>{toLabel}</Label>
         {loading ? (
-          <div className={`h-10 w-full rounded bg-slate-200 ${pickerClassName}`} />
+          <div className={`h-10 w-full animate-pulse rounded-xl bg-slate-200 ${pickerClassName}`} />
         ) : (
           <DatePicker
             date={toDate}

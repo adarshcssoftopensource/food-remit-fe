@@ -1,14 +1,10 @@
 "use client";
 
-import { Filter, Gift, RotateCcw, Sparkles, Ticket, TrendingUp, ChevronDown } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useMemo, useState } from "react";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
+import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,6 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CouponRow, CouponStatus, INITIAL_COUPONS } from "@/constants/coupons-managemant";
+import { Gift, RotateCcw, Sparkles, Ticket, TrendingUp } from "lucide-react";
+import { useMemo, useState } from "react";
 import { couponColumns } from "./columns/coupon-columns";
 import { AddCouponDialog } from "./components/add-coupon-dialog";
 import { type CouponFormValues } from "./schema/coupon.schema";
@@ -45,6 +43,8 @@ export function CouponsManagement() {
   const [statusFilter, setStatusFilter] = useState<CouponStatus>("All");
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
   const [toDate, setToDate] = useState<Date | undefined>(undefined);
+  const [country, setCountry] = useState("all");
+  const [city, setCity] = useState("all");
 
   const stats = useMemo(() => {
     const activeCount = coupons.filter((item) => item.status === "Active").length;
@@ -64,26 +64,56 @@ export function CouponsManagement() {
       if (statusFilter !== "All" && coupon.status !== statusFilter) {
         return false;
       }
-
+      if (
+        country !== "all" &&
+        country !== "All" &&
+        (coupon as any).countryId &&
+        (coupon as any).countryId !== country
+      ) {
+        return false;
+      }
+      if (
+        city !== "all" &&
+        city !== "All" &&
+        (coupon as any).cityId &&
+        (coupon as any).cityId !== city
+      ) {
+        return false;
+      }
       if (fromDate && coupon.createdAt < fromDate) {
         return false;
       }
-
       if (toDate && coupon.createdAt > toDate) {
         return false;
       }
-
       return true;
     });
-  }, [coupons, fromDate, statusFilter, toDate]);
+  }, [coupons, country, city, fromDate, statusFilter, toDate]);
 
-  const hasFilters = Boolean(fromDate || toDate || statusFilter !== "All");
+  const hasFilters = Boolean(
+    fromDate ||
+    toDate ||
+    statusFilter !== "All" ||
+    (country !== "all" && country !== "All") ||
+    (city !== "all" && city !== "All"),
+  );
 
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
     setStatusFilter("All");
+    setCountry("all");
+    setCity("all");
   };
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (fromDate || toDate) count++;
+    if (country && country !== "all" && country !== "All") count++;
+    if (city && city !== "all" && city !== "All") count++;
+    if (statusFilter !== "All") count++;
+    return count;
+  }, [fromDate, toDate, country, city, statusFilter]);
 
   const handleAddCoupon = (values: CouponFormValues) => {
     const nextCoupon: CouponRow = {
@@ -113,7 +143,7 @@ export function CouponsManagement() {
       trendValue: "+12%",
       icon: Sparkles,
       iconClassName: "text-amber-600",
-      iconWrapperClassName: "bg-amber-100",
+      iconWrapperClassName: "bg-amber-100 dark:bg-amber-950/40",
     },
     {
       label: "Active Coupons",
@@ -122,7 +152,7 @@ export function CouponsManagement() {
       trendValue: "+8%",
       icon: Gift,
       iconClassName: "text-emerald-600",
-      iconWrapperClassName: "bg-emerald-100",
+      iconWrapperClassName: "bg-emerald-100 dark:bg-emerald-950/40",
     },
     {
       label: "Inactive Coupons",
@@ -130,8 +160,8 @@ export function CouponsManagement() {
       trendLabel: "Paused offers",
       trendValue: "-4%",
       icon: RotateCcw,
-      iconClassName: "text-slate-700",
-      iconWrapperClassName: "bg-slate-100",
+      iconClassName: "text-slate-700 dark:text-slate-300",
+      iconWrapperClassName: "bg-slate-100 dark:bg-slate-800",
     },
     {
       label: "Redeemed Coupons",
@@ -140,7 +170,7 @@ export function CouponsManagement() {
       trendValue: "+22%",
       icon: TrendingUp,
       iconClassName: "text-blue-600",
-      iconWrapperClassName: "bg-blue-100",
+      iconWrapperClassName: "bg-blue-100 dark:bg-blue-950/40",
     },
   ];
 
@@ -148,7 +178,7 @@ export function CouponsManagement() {
     <div className="space-y-6">
       <PageHeader
         title="Coupons Management"
-        description="Create, manage, and review coupons with active / inactive filters, date controls, and quick search."
+        description="Create, manage, and review coupons with active / inactive filters, country, city, and date controls."
         action={<AddCouponDialog onCreate={handleAddCoupon} />}
       />
 
@@ -158,87 +188,62 @@ export function CouponsManagement() {
         ))}
       </div>
 
-      <Collapsible className="group">
-        <Card className="rounded-3xl border bg-white shadow-sm">
-          <CollapsibleTrigger render={<div />}>
-            <CardHeader className="cursor-pointer border-b py-4 transition-colors hover:bg-slate-50/50">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 text-primary rounded-2xl p-3">
-                  <Filter className="size-5" />
-                </div>
-                <CardTitle className="text-lg font-semibold">Filters</CardTitle>
+      <ModuleFilters
+        title="Filter Coupons"
+        description="Refine coupon campaigns by date, country, city, and status"
+        countryId={country}
+        onCountryChange={setCountry}
+        cityId={city}
+        onCityChange={setCity}
+        hasFilters={hasFilters}
+        onClearFilters={handleClearFilters}
+        activeFilterCount={activeFilterCount}
+      >
+        <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+          <DateRangeFilter
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={setFromDate}
+            onToDateChange={setToDate}
+          />
+        </div>
 
-                <div className="flex items-center gap-3">
-                  <ChevronDown className="h-5 w-5 text-slate-500 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                </div>
-              </div>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="p-5">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                <DateRangeFilter
-                  fromDate={fromDate}
-                  toDate={toDate}
-                  onFromDateChange={setFromDate}
-                  onToDateChange={setToDate}
-                  wrapperClassName="contents"
-                  itemClassName="space-y-1 min-w-0"
-                  pickerClassName="h-10 w-full"
-                  labelClassName="text-muted-foreground text-xs font-medium uppercase"
-                />
+        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
+          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            Status
+          </Label>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as CouponStatus)}>
+            <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              {statusOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </ModuleFilters>
 
-                <div className="space-y-1">
-                  <Label className="text-muted-foreground text-xs font-medium uppercase">
-                    Status
-                  </Label>
-                  <Select value={statusFilter} onValueChange={() => setStatusFilter}>
-                    <SelectTrigger className="h-11! w-full rounded-xl">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      {statusOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="mb-2 flex items-end">
-                  <Button
-                    variant="destructive"
-                    onClick={handleClearFilters}
-                    disabled={!hasFilters}
-                    className="h-11 w-32 rounded-xl"
-                  >
-                    Clear
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
-
-      <Card className="rounded-3xl shadow-sm">
-        <CardHeader className="flex flex-col gap-4 border-b bg-gray-50/50 py-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex size-11 items-center justify-center rounded-xl bg-blue-100 shadow-sm">
-              <Ticket className="size-5 text-[#1B3A8C]" />
+      <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+        <CardHeader className="flex flex-col gap-4 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 text-primary ring-primary/20 flex size-10 items-center justify-center rounded-xl ring-1">
+              <Ticket className="size-5" />
             </div>
             <div>
-              <CardTitle className="text-lg font-semibold text-gray-900">Coupon Registry</CardTitle>
-
-              <p className="text-muted-foreground mt-1 text-sm">
-                Manage and track all coupon campaigns
+              <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                Coupon Registry
+              </CardTitle>
+              <p className="text-muted-foreground mt-0.5 text-xs">
+                {filteredData.length} coupon{filteredData.length !== 1 ? "s" : ""} found
               </p>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <DataTable columns={couponColumns} data={filteredData} searchKey="couponName" />
         </CardContent>
       </Card>

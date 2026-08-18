@@ -30,18 +30,20 @@ export function DatePicker({
           <Button
             variant={"outline"}
             className={cn(
-              "w-full justify-start text-left font-normal",
-              !date && "text-muted-foreground",
+              "flex h-10 w-full min-w-0 items-center justify-start rounded-xl border border-slate-200/80 bg-white/70 px-2.5 py-2 text-xs font-normal text-slate-800 shadow-xs backdrop-blur-md transition-all sm:px-3 sm:text-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-200",
+              !date && "text-slate-400 dark:text-slate-500",
               className,
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-            {date ? format(date, "yyyy-MM-dd") : <span>{placeholder}</span>}
+            <CalendarIcon className="mr-1.5 h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500" />
+            <span className="min-w-0 flex-1 truncate text-left">
+              {date ? format(date, "yyyy-MM-dd") : placeholder}
+            </span>
             {date && (
               <span
                 role="button"
                 tabIndex={0}
-                className="ring-offset-background ml-auto rounded-sm opacity-70 transition-opacity hover:opacity-100"
+                className="ring-offset-background ml-1.5 shrink-0 rounded-sm opacity-70 transition-opacity hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation();
                   setDate?.(undefined);

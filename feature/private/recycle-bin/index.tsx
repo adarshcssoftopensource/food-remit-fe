@@ -19,6 +19,8 @@ export function RecycledUsersManagement() {
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
   const [toDate, setToDate] = useState<Date | undefined>(undefined);
   const [status, setStatus] = useState<string | null>(null);
+  const [country, setCountry] = useState("all");
+  const [city, setCity] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -40,7 +42,20 @@ export function RecycledUsersManagement() {
   };
 
   const { data: res, isLoading } = useGetRecycledUsers(queryArgs);
-  const allData = (res?.data ?? []) as any[];
+  const rawData = (res?.data ?? []) as any[];
+
+  const allData = useMemo(() => {
+    return rawData.filter((user) => {
+      if (country !== "all" && country !== "All" && user.countryId && user.countryId !== country) {
+        return false;
+      }
+      if (city !== "all" && city !== "All" && user.cityId && user.cityId !== city) {
+        return false;
+      }
+      return true;
+    });
+  }, [rawData, country, city]);
+
   const stats = {
     total: res?.stats?.total ?? 0,
     active: res?.stats?.active ?? 0,
@@ -67,12 +82,20 @@ export function RecycledUsersManagement() {
     );
   };
 
-  const hasFilters = !!(fromDate || toDate || status);
+  const hasFilters = !!(
+    fromDate ||
+    toDate ||
+    status ||
+    (country !== "all" && country !== "All") ||
+    (city !== "all" && city !== "All")
+  );
 
   const clearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
     setStatus(null);
+    setCountry("all");
+    setCity("all");
     setSearch("");
     setCurrentPage(1);
     setSorting([]);
@@ -103,8 +126,8 @@ export function RecycledUsersManagement() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Recyle Bin"
-        description="Users who have been deleted but can be restored"
+        title="Recycle Bin"
+        description="Users who have been deleted but can be restored across countries and cities"
       />
 
       <RecycleBinStats stats={stats} isLoading={isLoading} />
@@ -113,8 +136,12 @@ export function RecycledUsersManagement() {
         fromDate={fromDate}
         toDate={toDate}
         status={status}
+        country={country}
+        city={city}
         isLoading={isLoading}
         hasFilters={hasFilters}
+        onCountryChange={setCountry}
+        onCityChange={setCity}
         onFromDateChange={(d) => {
           setFromDate(d);
           setCurrentPage(1);

@@ -156,9 +156,9 @@ export function AppSidebar() {
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="border-border/30 bg-background/80 supports-backdrop-filter:bg-background/60 border-r shadow-[8px_0_30px_-10px_rgba(0,0,0,0.1)] backdrop-blur-3xl transition-all duration-300 dark:bg-slate-950/80"
+      className="border-r border-slate-200/70 bg-linear-to-b from-white/95 via-slate-50/90 to-white/95 shadow-[4px_0_24px_-4px_rgba(14,42,75,0.06)] backdrop-blur-2xl transition-all duration-300 dark:border-slate-800/70 dark:from-slate-950/95 dark:via-slate-900/90 dark:to-slate-950/95"
     >
-      <SidebarHeader className="border-border/40 border-b px-0 py-0">
+      <SidebarHeader className="border-b border-slate-200/60 px-0 py-0 dark:border-slate-800/60">
         <div
           className={cn(
             "flex items-center justify-center transition-all duration-200",
@@ -166,8 +166,8 @@ export function AppSidebar() {
           )}
         >
           {isCollapsed ? (
-            <div className="from-primary to-primary/80 ring-primary/20 flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br shadow-lg ring-1 transition-all hover:scale-105">
-              <span className="text-primary-foreground text-sm font-bold tracking-wider">FR</span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-emerald-600 to-teal-700 shadow-md ring-1 shadow-emerald-600/20 ring-emerald-500/30 transition-all hover:scale-105">
+              <span className="text-sm font-black tracking-wider text-white">FR</span>
             </div>
           ) : (
             <div className="flex w-full items-center justify-center px-3 py-2.5">
@@ -176,7 +176,7 @@ export function AppSidebar() {
                 alt="Food Remit"
                 width={130}
                 height={44}
-                className="h-auto max-h-20 w-auto object-contain"
+                className="h-auto max-h-20 w-auto object-contain drop-shadow-xs"
                 style={{ width: "auto", height: "auto" }}
                 priority
               />
@@ -185,28 +185,28 @@ export function AppSidebar() {
         </div>
 
         {!isCollapsed && (
-          <div className="mt-3 px-4 pb-4">
-            <div className="border-border/40 focus-within:border-primary/80 focus-within:ring-primary/20 flex h-10 items-center gap-2 rounded-xl border bg-slate-50/50 px-3 backdrop-blur-md transition-all duration-300 focus-within:bg-white focus-within:shadow-[0_4px_20px_-5px_rgba(16,185,129,0.2)] focus-within:ring-2 hover:bg-slate-100/50 dark:bg-slate-900/50 dark:focus-within:bg-slate-900 dark:hover:bg-slate-800/50">
-              <Search className="text-muted-foreground/70 focus-within:text-primary h-4 w-4 shrink-0 transition-colors" />
+          <div className="mt-2 px-3 pb-3">
+            <div className="flex h-10 items-center gap-2 rounded-xl border border-slate-200/70 bg-white/70 px-3 shadow-xs backdrop-blur-md transition-all duration-200 focus-within:border-emerald-500 focus-within:bg-white focus-within:shadow-[0_4px_16px_-4px_rgba(16,185,129,0.25)] focus-within:ring-2 focus-within:ring-emerald-500/20 hover:border-slate-300 dark:border-slate-800/80 dark:bg-slate-900/60 dark:focus-within:bg-slate-900 dark:hover:border-slate-700">
+              <Search className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-focus-within:text-emerald-600" />
               <Input
                 placeholder="Search menu…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="placeholder:text-muted-foreground/50 h-full border-none bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
+                className="h-full border-none bg-transparent p-0 text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-0"
               />
             </div>
           </div>
         )}
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-2">
+      <SidebarContent className="px-2.5 py-2.5">
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
             <TooltipProvider delay={150}>
-              <SidebarMenu className="gap-0.5">
+              <SidebarMenu className="gap-1">
                 {!filteredNavItems.length && !isCollapsed && (
-                  <div className="text-muted-foreground py-5 text-center text-sm">
-                    No data found
+                  <div className="py-6 text-center text-xs font-medium text-slate-400">
+                    No menu items found
                   </div>
                 )}
                 {filteredNavItems.map((item) => {
@@ -229,19 +229,19 @@ export function AppSidebar() {
                               <TooltipTrigger render={<div className="w-full" />}>
                                 <PopoverTrigger
                                   className={cn(
-                                    "flex h-12 w-full items-center justify-center rounded-xl px-2 text-sm font-medium transition-all duration-300",
-                                    "focus-visible:ring-primary/50 border-none bg-transparent outline-none focus-visible:ring-2",
+                                    "flex h-11 w-full items-center justify-center rounded-xl px-2 text-sm font-medium transition-all duration-200",
+                                    "border-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                                     hasActiveChild
-                                      ? "from-primary ring-primary/30 scale-105 bg-linear-to-br to-emerald-600 text-white shadow-[0_4px_15px_-3px_rgba(var(--primary),0.4)] ring-1"
-                                      : "text-slate-500 hover:scale-105 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
+                                      ? "bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-md ring-1 shadow-emerald-600/25 ring-emerald-500/30"
+                                      : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-100",
                                   )}
                                 >
                                   <item.icon
                                     className={cn(
-                                      "h-4 w-4 shrink-0",
+                                      "h-4.5 w-4.5 shrink-0",
                                       hasActiveChild
-                                        ? "text-primary-foreground"
-                                        : "text-foreground/60",
+                                        ? "text-white"
+                                        : "text-slate-500 dark:text-slate-400",
                                     )}
                                   />
                                 </PopoverTrigger>
@@ -258,9 +258,9 @@ export function AppSidebar() {
                               side="right"
                               align="start"
                               sideOffset={8}
-                              className="w-56 p-2"
+                              className="w-56 rounded-2xl border border-slate-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-2xl dark:border-slate-800/80 dark:bg-slate-900/95"
                             >
-                              <div className="text-muted-foreground mb-2 px-2 text-xs font-semibold">
+                              <div className="mb-2 px-2 text-xs font-bold tracking-wide text-slate-400 uppercase">
                                 {item.title}
                               </div>
                               <div className="flex flex-col gap-1">
@@ -272,19 +272,19 @@ export function AppSidebar() {
                                       href={sub.url}
                                       onClick={handleMobileClose}
                                       className={cn(
-                                        "group/sublink flex h-9 items-center rounded-lg px-3 text-sm transition-all duration-300 hover:translate-x-1",
-                                        "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
+                                        "group/sublink flex h-9 items-center rounded-xl px-3 text-xs font-semibold transition-all duration-200",
+                                        "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                                         isSubActive
-                                          ? "bg-primary/10 text-primary font-semibold"
-                                          : "text-muted-foreground hover:text-foreground",
+                                          ? "bg-emerald-50 text-emerald-700 shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300"
+                                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
                                       )}
                                     >
                                       <span
                                         className={cn(
-                                          "mr-3 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-300",
+                                          "mr-2.5 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-200",
                                           isSubActive
-                                            ? "bg-primary scale-125 shadow-sm"
-                                            : "bg-muted-foreground/30",
+                                            ? "scale-125 bg-emerald-600 shadow-xs dark:bg-emerald-400"
+                                            : "bg-slate-300 dark:bg-slate-600",
                                         )}
                                       />
                                       <span className="truncate">{sub.title}</span>
@@ -308,30 +308,32 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                           <CollapsibleTrigger
                             className={cn(
-                              "group/trigger flex h-auto min-h-12 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
-                              "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
+                              "group/trigger flex h-auto min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
+                              "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                               hasActiveChild
-                                ? "from-primary/15 text-primary after:bg-primary relative overflow-hidden bg-linear-to-r to-transparent font-semibold after:absolute after:top-0 after:left-0 after:h-full after:w-1 after:rounded-r-full"
-                                : "text-foreground/70 hover:text-foreground hover:translate-x-1 hover:bg-slate-100 dark:hover:bg-slate-800",
+                                ? "bg-emerald-500/10 font-semibold text-emerald-700 shadow-xs dark:bg-emerald-950/30 dark:text-emerald-300"
+                                : "text-slate-700 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-slate-100",
                             )}
                           >
                             <item.icon
                               className={cn(
-                                "h-4 w-4 shrink-0 transition-colors duration-300",
+                                "h-4.5 w-4.5 shrink-0 transition-colors duration-200",
                                 hasActiveChild
-                                  ? "text-primary"
-                                  : "text-foreground/60 group-hover/trigger:text-primary/70",
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-slate-500 group-hover/trigger:text-slate-700 dark:text-slate-400 dark:group-hover/trigger:text-slate-200",
                               )}
                             />
                             {!isCollapsed && (
                               <>
-                                <span className="flex-1 text-left leading-snug wrap-break-word whitespace-normal">
+                                <span className="flex-1 text-left text-[13px] leading-snug wrap-break-word whitespace-normal">
                                   {item.title}
                                 </span>
                                 <ChevronRight
                                   className={cn(
-                                    "h-4 w-4 shrink-0 transition-transform duration-300",
-                                    hasActiveChild ? "text-primary/70" : "text-muted-foreground",
+                                    "h-4 w-4 shrink-0 transition-transform duration-200",
+                                    hasActiveChild
+                                      ? "text-emerald-600 dark:text-emerald-400"
+                                      : "text-slate-400",
                                     isOpen && "rotate-90",
                                   )}
                                 />
@@ -340,7 +342,7 @@ export function AppSidebar() {
                           </CollapsibleTrigger>
 
                           <CollapsibleContent className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
-                            <SidebarMenuSub className="border-border/50 mt-0.5 ml-3.5 border-l py-0.5 pr-0 pl-3">
+                            <SidebarMenuSub className="mt-1 ml-4 border-l-2 border-emerald-500/20 py-0.5 pr-0 pl-3 dark:border-emerald-500/30">
                               {item.items.map((sub) => {
                                 const isSubActive = isSubItemActive(item, sub, pathname);
                                 return (
@@ -349,19 +351,19 @@ export function AppSidebar() {
                                       href={sub.url}
                                       onClick={handleMobileClose}
                                       className={cn(
-                                        "group/sublink flex h-auto min-h-10 items-center rounded-lg px-3 py-2 text-sm transition-all duration-300 hover:translate-x-1",
-                                        "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
+                                        "group/sublink flex h-auto min-h-9 items-center rounded-xl px-2.5 py-1.5 text-xs transition-all duration-200",
+                                        "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                                         isSubActive
-                                          ? "bg-primary/10 text-primary font-semibold"
-                                          : "text-muted-foreground hover:text-foreground",
+                                          ? "bg-emerald-50 font-bold text-emerald-700 shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300"
+                                          : "font-medium text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200",
                                       )}
                                     >
                                       <span
                                         className={cn(
-                                          "mr-3 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-300",
+                                          "mr-2.5 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-200",
                                           isSubActive
-                                            ? "bg-primary scale-150 shadow-[0_0_8px_rgba(var(--primary),0.8)]"
-                                            : "bg-muted-foreground/30 group-hover/sublink:bg-primary/50 group-hover/sublink:scale-125",
+                                            ? "scale-125 bg-emerald-600 shadow-[0_0_8px_rgba(16,185,129,0.7)] dark:bg-emerald-400"
+                                            : "bg-slate-300 group-hover/sublink:bg-slate-400 dark:bg-slate-600",
                                         )}
                                       />
                                       <span className="leading-snug wrap-break-word whitespace-normal">
@@ -383,32 +385,30 @@ export function AppSidebar() {
                       onClick={handleMobileClose}
                       href={item.url}
                       className={cn(
-                        "group/link relative flex h-auto min-h-12 w-full items-center gap-3 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300",
-                        "focus-visible:ring-primary/50 outline-none focus-visible:ring-2",
+                        "group/link relative flex h-auto min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
+                        "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                         active
                           ? isCollapsed
-                            ? "from-primary ring-primary/30 scale-105 bg-linear-to-br to-emerald-600 text-white shadow-[0_4px_15px_-3px_rgba(var(--primary),0.4)] ring-1"
-                            : "from-primary/15 text-primary after:bg-primary overflow-hidden bg-linear-to-r to-transparent font-semibold shadow-[inset_1px_0_10px_rgba(var(--primary),0.05)] after:absolute after:top-0 after:left-0 after:h-full after:w-1 after:rounded-r-full"
-                          : "text-foreground/70 hover:text-foreground hover:translate-x-1 hover:bg-slate-100 dark:hover:bg-slate-800",
+                            ? "bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-md ring-1 shadow-emerald-600/25 ring-emerald-500/30"
+                            : "bg-linear-to-r from-emerald-600 to-teal-600 font-bold text-white shadow-md shadow-emerald-600/20"
+                          : "text-slate-700 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-slate-100",
                         isCollapsed && "justify-center px-2",
                       )}
                     >
                       <item.icon
                         className={cn(
-                          "h-4 w-4 shrink-0 transition-colors duration-300",
+                          "h-4.5 w-4.5 shrink-0 transition-colors duration-200",
                           active
-                            ? isCollapsed
-                              ? "text-white"
-                              : "text-primary"
-                            : "text-foreground/60 group-hover/link:text-primary/70",
+                            ? "text-white"
+                            : "text-slate-500 group-hover/link:text-slate-700 dark:text-slate-400 dark:group-hover/link:text-slate-200",
                         )}
                       />
                       {!isCollapsed && (
-                        <div className="flex min-w-0 flex-1 flex-col items-start justify-center gap-1">
+                        <div className="flex min-w-0 flex-1 flex-col items-start justify-center gap-0.5">
                           {item.isComingSoon && active && (
                             <ComingSoonBadge
                               size="compact"
-                              label="This page is coming soon"
+                              label="Coming Soon"
                               showIcon
                               className="border-red-500/30 bg-red-500/10 font-bold text-red-600 shadow-sm dark:border-red-400/40 dark:bg-red-500/20 dark:text-red-400"
                             />
@@ -421,7 +421,7 @@ export function AppSidebar() {
                               className="border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400"
                             />
                           )}
-                          <span className="w-full leading-snug wrap-break-word whitespace-normal">
+                          <span className="w-full text-[13px] leading-snug wrap-break-word whitespace-normal">
                             {item.title}
                           </span>
                         </div>

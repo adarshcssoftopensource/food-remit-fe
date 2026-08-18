@@ -58,12 +58,12 @@ export function ProfileForm() {
   };
 
   return (
-    <Card className="rounded-[2rem] border-0 shadow-2xl ring-1 shadow-black/5 ring-slate-200">
-      <CardHeader className="border-b bg-slate-50/50 px-8 py-6">
-        <CardTitle className="text-xl font-bold tracking-tight text-slate-800">
+    <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
+      <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-8 py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
+        <CardTitle className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
           Personal Information
         </CardTitle>
-        <CardDescription className="text-sm font-medium text-slate-500">
+        <CardDescription className="text-sm font-medium text-slate-500 dark:text-slate-400">
           Update your personal details and contact information.
         </CardDescription>
       </CardHeader>
@@ -80,7 +80,7 @@ export function ProfileForm() {
                     First Name
                   </FieldLabel>
                   <div className="relative">
-                    <User className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
+                    <User className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                     <Input
                       {...field}
                       id="firstName"
@@ -111,7 +111,7 @@ export function ProfileForm() {
                     Last Name
                   </FieldLabel>
                   <div className="relative">
-                    <User className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
+                    <User className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                     <Input
                       {...field}
                       id="lastName"

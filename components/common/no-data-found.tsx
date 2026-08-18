@@ -22,7 +22,12 @@ export function NoDataFound({
   className,
 }: NoDataFoundProps) {
   return (
-    <Empty className={className ?? "border-border border border-dashed bg-slate-50"}>
+    <Empty
+      className={
+        className ??
+        "rounded-2xl border border-dashed border-slate-200/90 bg-white/50 py-10 backdrop-blur-md dark:border-slate-800/90 dark:bg-slate-900/50"
+      }
+    >
       <EmptyHeader>
         <EmptyMedia variant="icon">{icon}</EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>
