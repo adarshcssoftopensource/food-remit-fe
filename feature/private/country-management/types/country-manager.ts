@@ -1,6 +1,5 @@
 export type CountryManagerStatus = "Active" | "Inactive";
 
-/** Shape of each city manager nested inside a country manager detail response */
 export type AssignedCityManagerItem = {
   id: string;
   firstName: string;
@@ -8,11 +7,10 @@ export type AssignedCityManagerItem = {
   email: string;
   image?: string | null;
   managerStatus: string;
-  country?: string | null; // country ID stored on the city manager
-  assignCities?: string | null; // comma-separated city IDs
+  country?: string | null;
+  assignCities?: string | null;
 };
 
-/** Normalised shape used across the frontend */
 export type CountryManagerData = {
   id: string;
   userId: string;
@@ -36,7 +34,6 @@ export type CountryManagerData = {
   status: CountryManagerStatus;
 };
 
-// ── API payload types ─────────────────────────────────────────────────────────
 export interface CountryManagerPayload {
   firstName?: string;
   lastName?: string;
@@ -58,7 +55,6 @@ export interface UpdateCountryManagerPayload extends CountryManagerPayload {
   id: string;
 }
 
-// ── API response types ────────────────────────────────────────────────────────
 export interface RawCountryManagerCityManager {
   id: string;
   firstName: string;
@@ -66,8 +62,8 @@ export interface RawCountryManagerCityManager {
   email: string;
   image?: string | null;
   managerStatus: string;
-  country?: string | null; // city manager's assigned country ID
-  assignCities?: string | null; // comma-separated city IDs
+  country?: string | null;
+  assignCities?: string | null;
 }
 
 export interface RawCountryManager {
@@ -94,7 +90,7 @@ export interface RawCountryManager {
   modifiedOn?: string | null;
   cityManagers?: RawCountryManagerCityManager[];
   assignCountries?: string | null;
-  assignCountryName?: string | null; // resolved from assignCountries ID
+  assignCountryName?: string | null;
 }
 
 export interface CountryManagerListResponse {

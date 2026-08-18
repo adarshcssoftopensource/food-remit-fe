@@ -1,20 +1,17 @@
 "use client";
 
-import { Filter, RotateCcw, UsersRound } from "lucide-react";
-import { useCallback, useState, useMemo } from "react";
-import { toast } from "sonner";
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { useBulkRestoreUsers } from "../users-management/hooks/use-bulk-restore-users";
 import { RowSelectionState } from "@tanstack/react-table";
+import { Filter, RotateCcw, UsersRound } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { useBulkRestoreUsers } from "../users-management/hooks/use-bulk-restore-users";
 
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { STAT_CONFIG, USER_STATUS_OPTIONS } from "@/constants/users-management";
 import { useDebounce } from "@/lib/debounce";
 import { usersColumns } from "./columns/recycled-users-columns";
-import {
-  useGetRecycledUsers,
-  UseGetUsersArgs,
-} from "../users-management/hooks/use-get-recycled-users";
-import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
+import { useGetRecycledUsers, UseGetUsersArgs } from "./hooks/use-get-recycled-users";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";

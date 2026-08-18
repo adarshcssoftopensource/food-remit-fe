@@ -5,6 +5,7 @@ import { Globe2, Home, Mail, UserRound } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { ImageUpload } from "@/components/common/image-upload";
+import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { Button } from "@/components/ui/button";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -16,14 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Country, State, City } from "country-state-city";
-import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
+import { cn } from "@/lib/utils";
+import { City, Country, State } from "country-state-city";
 import {
   countryManagerSchema,
   type CountryManagerFormValues,
 } from "../schema/country-manager.schema";
-import { cn } from "@/lib/utils";
 
 type CountryManagerFormProps = {
   initialValues?: Partial<CountryManagerFormValues>;

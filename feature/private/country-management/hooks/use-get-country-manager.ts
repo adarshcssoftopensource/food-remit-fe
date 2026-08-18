@@ -1,8 +1,8 @@
 import { useApiQuery } from "@/hooks/useApi";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { COUNTRY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/country-manager.endpoints";
 import { useMemo } from "react";
 import type { CountryManagerData, SingleCountryManagerResponse } from "../types/country-manager";
-import { COUNTRY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/country-manager.endpoints";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
 export function useGetCountryManager(id: string) {
   const { data, isLoading, isError, error, refetch } = useApiQuery<SingleCountryManagerResponse>(
