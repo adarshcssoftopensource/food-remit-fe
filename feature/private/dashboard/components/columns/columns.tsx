@@ -2,9 +2,9 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { Order } from "@/constants/dashboard";
+import type { DashboardRecentlyPlacedOrder } from "../../types/dashboard.types";
 
-export const orderColumns: ColumnDef<Order>[] = [
+export const orderColumns: ColumnDef<DashboardRecentlyPlacedOrder>[] = [
   {
     accessorKey: "id",
     header: "Order ID",
@@ -29,11 +29,12 @@ export const orderColumns: ColumnDef<Order>[] = [
     accessorKey: "status",
     header: "Order Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const status = (row.getValue("status") as string) || "Pending";
+      const isPaid = status.toLowerCase() === "paid" || status.toLowerCase() === "completed";
       return (
         <Badge
           className={
-            status.toLowerCase() === "paid"
+            isPaid
               ? "rounded-sm bg-[#2ECC71] px-4 font-medium text-white hover:bg-[#27ae60]"
               : "rounded-sm bg-amber-500 px-4 font-medium text-white hover:bg-amber-600"
           }

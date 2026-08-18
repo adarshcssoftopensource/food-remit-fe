@@ -1,8 +1,28 @@
 import { Card } from "@/components/ui/card";
-import { FINANCIAL_STATS } from "@/constants/dashboard";
-import { Banknote } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowUpRight, Banknote } from "lucide-react";
+import Link from "next/link";
+import type { DashboardFinancialStats } from "../types/dashboard.types";
 
-export function FinancialStats() {
+interface FinancialStatsProps {
+  stats?: DashboardFinancialStats;
+  isLoading?: boolean;
+}
+
+export function FinancialStats({ stats, isLoading }: FinancialStatsProps) {
+  const financialItems = [
+    {
+      title: "Amount Collected Today",
+      href: "/order-management/history",
+      value: stats?.amountCollectedToday ?? "0 USD",
+    },
+    {
+      title: "Count Of Items Sent Today",
+      href: "/order-management/sent-orders",
+      value: stats?.itemsSentToday ?? 0,
+    },
+  ];
+
   return (
     <Card className="rounded-2xl border border-slate-200/60 shadow-sm">
       <div className="flex items-center gap-2 border-b border-slate-100 px-6 py-4">
@@ -12,13 +32,22 @@ export function FinancialStats() {
         <h3 className="text-base font-bold text-slate-800">Financial Statistics</h3>
       </div>
       <div className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-        {FINANCIAL_STATS.map((stat, i) => (
-          <div key={i} className="flex flex-col justify-center px-6 py-8">
-            <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
-              {stat.title}
-            </p>
-            <div className="text-primary mt-3 text-4xl font-black tracking-tight">{stat.value}</div>
-          </div>
+        {financialItems.map((stat, i) => (
+          <Link
+            key={i}
+            href={stat.href}
+            className="group flex flex-col justify-center px-6 py-8 transition-colors hover:bg-slate-50/70"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                {stat.title}
+              </p>
+              <ArrowUpRight className="h-3.5 w-3.5 text-slate-300 opacity-0 transition-all group-hover:text-slate-600 group-hover:opacity-100" />
+            </div>
+            <div className="text-primary mt-3 text-4xl font-black tracking-tight">
+              {isLoading ? <Skeleton className="h-10 w-24 rounded-lg" /> : stat.value}
+            </div>
+          </Link>
         ))}
       </div>
     </Card>

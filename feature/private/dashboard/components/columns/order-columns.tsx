@@ -1,17 +1,9 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { DashboardOrderRequested } from "../../types/dashboard.types";
 
-export type Order = {
-  orderId: string;
-  customerName: string;
-  location: string;
-  orderStatus: string;
-  deliveredTime: string;
-  price: string;
-};
-
-export const orderColumnsRequest: ColumnDef<Order>[] = [
+export const orderColumnsRequest: ColumnDef<DashboardOrderRequested>[] = [
   {
     accessorKey: "orderId",
     header: "Order ID",

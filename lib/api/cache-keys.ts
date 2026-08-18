@@ -38,4 +38,7 @@ export const API_CACHE_KEYS = {
   CATEGORY_BY_ID: (id: string) => ["category", id],
   ITEMS: ["items"],
   ITEM_BY_ID: (id: string) => ["item", id],
+
+  // Dashboard
+  DASHBOARD: ["dashboard"],
 };

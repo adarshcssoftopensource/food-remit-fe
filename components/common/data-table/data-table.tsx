@@ -49,6 +49,7 @@ interface DataTableProps<TData, TValue> {
   onRowSelectionChange?: (
     updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
   ) => void;
+  hidePagination?: boolean;
   getRowId?: (originalRow: TData, index: number, parent?: any) => string;
 }
 
@@ -58,6 +59,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
+  hidePagination = false,
   loading = false,
   searchValue = "",
   onSearchChange,
@@ -206,14 +208,16 @@ export function DataTable<TData, TValue>({
           <TableBody>{renderedBody}</TableBody>
         </Table>
       </div>
-      <DataTablePagination
-        table={table}
-        currentPage={onPageChange ? currentPage : undefined}
-        totalPages={onPageChange ? totalPages : undefined}
-        rowsPerPage={onRowsPerPageChange ? rowsPerPage : undefined}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-      />
+      {!hidePagination && (
+        <DataTablePagination
+          table={table}
+          currentPage={onPageChange ? currentPage : undefined}
+          totalPages={onPageChange ? totalPages : undefined}
+          rowsPerPage={onRowsPerPageChange ? rowsPerPage : undefined}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
+        />
+      )}
     </div>
   );
 }
