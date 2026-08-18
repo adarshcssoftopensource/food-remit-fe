@@ -162,7 +162,7 @@ export function DataTable<TData, TValue>({
       {searchKey && (
         <div className="flex items-center">
           <div className="relative w-full sm:max-w-sm">
-            <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+            <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
             <Input
               placeholder="Search..."
               value={
@@ -177,7 +177,7 @@ export function DataTable<TData, TValue>({
                   table.getColumn(searchKey)?.setFilterValue(event.target.value);
                 }
               }}
-              className="pl-8 text-black"
+              className="pl-9 text-slate-900 dark:text-slate-100"
             />
           </div>
         </div>

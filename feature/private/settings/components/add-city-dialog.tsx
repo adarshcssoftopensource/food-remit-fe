@@ -182,7 +182,7 @@ export function AddCityDialog({
                   City Name <span className="text-red-500">*</span>
                 </FieldLabel>
                 <div className="relative">
-                  <MapPin className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <MapPin className="pointer-events-none absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <Input
                     {...field}
                     id="cityName"

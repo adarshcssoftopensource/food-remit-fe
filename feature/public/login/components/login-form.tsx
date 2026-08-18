@@ -112,7 +112,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     Email Address
                   </FieldLabel>
                   <div className="relative">
-                    <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
+                    <Mail className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-gray-400" />
                     <Input
                       {...field}
                       id="email"

@@ -86,7 +86,7 @@ export function MarkupManagement() {
                     Markup Percentage <span className="text-red-500">*</span>
                   </FieldLabel>
                   <div className="relative">
-                    <Percent className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Percent className="pointer-events-none absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <Input
                       {...field}
                       id="markupPercentage"
@@ -98,7 +98,7 @@ export function MarkupManagement() {
                       aria-invalid={!!errors.markupPercentage}
                       className="h-11 pr-12 pl-9"
                     />
-                    <span className="absolute top-1/2 right-3 -translate-y-1/2 text-sm font-semibold text-slate-400">
+                    <span className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 text-sm font-semibold text-slate-400">
                       %
                     </span>
                   </div>

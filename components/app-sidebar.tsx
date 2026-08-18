@@ -186,13 +186,13 @@ export function AppSidebar() {
 
         {!isCollapsed && (
           <div className="mt-2 px-3 pb-3">
-            <div className="flex h-10 items-center gap-2 rounded-xl border border-slate-200/70 bg-white/70 px-3 shadow-xs backdrop-blur-md transition-all duration-200 focus-within:border-emerald-500 focus-within:bg-white focus-within:shadow-[0_4px_16px_-4px_rgba(16,185,129,0.25)] focus-within:ring-2 focus-within:ring-emerald-500/20 hover:border-slate-300 dark:border-slate-800/80 dark:bg-slate-900/60 dark:focus-within:bg-slate-900 dark:hover:border-slate-700">
+            <div className="group relative flex h-10 items-center gap-2 rounded-xl border border-slate-200/70 bg-white/70 px-3 shadow-xs backdrop-blur-md transition-all duration-200 focus-within:border-emerald-500 focus-within:bg-white focus-within:shadow-[0_4px_16px_-4px_rgba(16,185,129,0.25)] focus-within:ring-2 focus-within:ring-emerald-500/20 hover:border-slate-300 dark:border-slate-800/80 dark:bg-slate-900/60 dark:focus-within:bg-slate-900 dark:hover:border-slate-700">
               <Search className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-focus-within:text-emerald-600" />
               <Input
                 placeholder="Search menu…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-full border-none bg-transparent p-0 text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-0"
+                className="h-full border-none bg-transparent p-0 text-sm shadow-none placeholder:text-slate-400 focus-visible:bg-transparent focus-visible:ring-0 dark:focus-visible:bg-transparent"
               />
             </div>
           </div>

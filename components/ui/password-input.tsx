@@ -26,7 +26,7 @@ function PasswordInput({
   return (
     <div className="relative">
       {leftIcon && (
-        <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-gray-400">
+        <span className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-slate-400">
           {leftIcon}
         </span>
       )}
@@ -54,7 +54,7 @@ function PasswordInput({
         aria-label={visible ? "Hide password" : "Show password"}
         aria-controls={id}
         onClick={() => setVisible((v) => !v)}
-        className="hover:text-primary absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer rounded text-gray-400 transition-colors focus-visible:ring-2 focus-visible:ring-[#1B3A8C]/40 focus-visible:outline-none"
+        className="hover:text-primary absolute top-1/2 right-3 z-10 -translate-y-1/2 cursor-pointer rounded text-slate-400 transition-colors focus-visible:ring-2 focus-visible:ring-[#1B3A8C]/40 focus-visible:outline-none"
       >
         {visible ? (
           <EyeOff className="size-4" aria-hidden />
