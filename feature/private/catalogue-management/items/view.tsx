@@ -202,29 +202,65 @@ export function ItemView({ id }: ItemViewProps) {
               />
             </div>
 
-            {/* Additional info images if present */}
-            {(item.productInfoImageUrl || item.nutritionInfoImageUrl) && (
-              <div className="mt-8">
-                <h3 className="mb-4 text-sm font-semibold text-slate-700">Additional Images</h3>
-                <div className="flex gap-4">
-                  {item.productInfoImageUrl && (
-                    <div className="relative h-32 w-32 overflow-hidden rounded-xl border">
+            {/* Product Images Gallery */}
+            {item.productImageUrls && item.productImageUrls.length > 1 && (
+              <div className="mt-8 border-t border-slate-100/80 pt-6 dark:border-slate-800/80">
+                <h3 className="mb-4 text-sm font-bold text-slate-700 dark:text-slate-300">
+                  Product Gallery ({item.productImageUrls.length} images)
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {item.productImageUrls.map((url, idx) => (
+                    <div
+                      key={idx}
+                      className="relative h-24 w-24 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-transform duration-200 hover:scale-105 dark:border-slate-700 dark:bg-slate-900"
+                    >
                       <Image
-                        src={item.productInfoImageUrl}
-                        alt="Product Info"
+                        src={url}
+                        alt={`${item.productName} ${idx + 1}`}
                         fill
                         className="object-cover"
                       />
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Additional info images if present */}
+            {(item.productInfoImageUrl || item.nutritionInfoImageUrl) && (
+              <div className="mt-8 border-t border-slate-100/80 pt-6 dark:border-slate-800/80">
+                <h3 className="mb-4 text-sm font-bold text-slate-700 dark:text-slate-300">
+                  Additional Information Images
+                </h3>
+                <div className="flex flex-wrap gap-4">
+                  {item.productInfoImageUrl && (
+                    <div className="space-y-1.5">
+                      <div className="relative h-32 w-32 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                        <Image
+                          src={item.productInfoImageUrl}
+                          alt="Product Info"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <p className="text-center text-[11px] font-medium text-slate-500">
+                        Product Info
+                      </p>
+                    </div>
                   )}
                   {item.nutritionInfoImageUrl && (
-                    <div className="relative h-32 w-32 overflow-hidden rounded-xl border">
-                      <Image
-                        src={item.nutritionInfoImageUrl}
-                        alt="Nutrition Info"
-                        fill
-                        className="object-cover"
-                      />
+                    <div className="space-y-1.5">
+                      <div className="relative h-32 w-32 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                        <Image
+                          src={item.nutritionInfoImageUrl}
+                          alt="Nutrition Info"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <p className="text-center text-[11px] font-medium text-slate-500">
+                        Nutrition Info
+                      </p>
                     </div>
                   )}
                 </div>

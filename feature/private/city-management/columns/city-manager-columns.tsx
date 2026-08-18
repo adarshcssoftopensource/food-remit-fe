@@ -9,7 +9,6 @@ import { Eye, Pencil } from "lucide-react";
 type CityManagerColumnsConfig = {
   onView: (manager: CityManagerData) => void;
   onEdit: (manager: CityManagerData) => void;
-  onShowCities: (manager: CityManagerData) => void;
   onToggleStatus: (id: string, checked: boolean) => void;
 };
 
@@ -32,7 +31,6 @@ function StatusBadge({ status }: { status: CityManagerData["status"] }) {
 export function getCityManagerColumns({
   onView,
   onEdit,
-  onShowCities,
   onToggleStatus,
 }: CityManagerColumnsConfig): ColumnDef<CityManagerData>[] {
   return [
@@ -44,19 +42,6 @@ export function getCityManagerColumns({
         const fullName = `${row.original.firstName} ${row.original.lastName}`.trim();
         return <ImageNameCell name={fullName} image={row.original.image} type="profile" />;
       },
-    },
-    {
-      id: "assignedCities",
-      header: "Assigned Cities",
-      cell: ({ row }) => (
-        <button
-          type="button"
-          onClick={() => onShowCities(row.original)}
-          className="text-primary text-sm font-semibold hover:underline"
-        >
-          Show Assigned Cities
-        </button>
-      ),
     },
     {
       accessorKey: "country",

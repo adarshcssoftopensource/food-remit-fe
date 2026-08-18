@@ -360,17 +360,28 @@ export function StoreForm({
                 name="storeImage"
                 control={control}
                 render={({ field }) => (
-                  <ImageUpload
-                    label="Upload store image"
-                    hint="PNG, JPG or WEBP · max 1 image"
-                    maxFiles={1}
-                    multiple={false}
-                    onChange={(files) => field.onChange(files[0] || null)}
-                    value={
-                      field.value && typeof field.value !== "string" ? [field.value as File] : []
-                    }
-                    initialImages={initialValues?.storeImage ? [initialValues.storeImage] : []}
-                  />
+                  <FormField
+                    label="Store Image"
+                    error={errors.storeImage?.message as string}
+                    required
+                  >
+                    <ImageUpload
+                      label="Upload store image"
+                      hint="PNG, JPG or WEBP"
+                      maxFiles={1}
+                      multiple={false}
+                      onChange={(files) => field.onChange(files[0] || null)}
+                      onAllImagesChange={(all) => {
+                        if (all.length === 0) {
+                          field.onChange(null);
+                        }
+                      }}
+                      value={
+                        field.value && typeof field.value !== "string" ? [field.value as File] : []
+                      }
+                      initialImages={initialValues?.storeImage ? [initialValues.storeImage] : []}
+                    />
+                  </FormField>
                 )}
               />
 
@@ -413,6 +424,30 @@ export function StoreForm({
               />
 
               <Controller
+                name="storeCountry"
+                control={control}
+                render={({ field: cField }) => (
+                  <Controller
+                    name="storeCity"
+                    control={control}
+                    render={({ field: cityField }) => (
+                      <CountryCityFields
+                        prefix="store"
+                        countryValue={cField.value}
+                        onCountryChange={cField.onChange}
+                        stateValue=""
+                        onStateChange={() => {}}
+                        cityValue={cityField.value}
+                        onCityChange={cityField.onChange}
+                        countryError={errors.storeCountry?.message}
+                        cityError={errors.storeCity?.message}
+                      />
+                    )}
+                  />
+                )}
+              />
+
+              <Controller
                 name="storeAddress"
                 control={control}
                 render={({ field }) => (
@@ -439,30 +474,6 @@ export function StoreForm({
                       className="h-11 rounded-xl border-slate-200 bg-slate-50"
                     />
                   </FormField>
-                )}
-              />
-
-              <Controller
-                name="storeCountry"
-                control={control}
-                render={({ field: cField }) => (
-                  <Controller
-                    name="storeCity"
-                    control={control}
-                    render={({ field: cityField }) => (
-                      <CountryCityFields
-                        prefix="store"
-                        countryValue={cField.value}
-                        onCountryChange={cField.onChange}
-                        stateValue=""
-                        onStateChange={() => {}}
-                        cityValue={cityField.value}
-                        onCityChange={cityField.onChange}
-                        countryError={errors.storeCountry?.message}
-                        cityError={errors.storeCity?.message}
-                      />
-                    )}
-                  />
                 )}
               />
 

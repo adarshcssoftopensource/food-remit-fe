@@ -169,11 +169,24 @@ export function CategoryFormDialog({
                         <div className="hover:border-primary/40 hover:bg-primary/2 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-2 transition-colors dark:border-slate-700 dark:bg-slate-900/40">
                           <ImageUpload
                             maxFiles={1}
+                            multiple={false}
                             value={field.value}
-                            onChange={field.onChange}
-                            label="Upload category icon"
+                            onChange={(files) => {
+                              field.onChange(files);
+                              if (files.length > 0) {
+                                form.setValue("hasExistingIcon", false);
+                              }
+                            }}
+                            onAllImagesChange={(all) => {
+                              form.setValue("hasExistingIcon", all.length > 0);
+                            }}
+                            label="Upload category logo"
                             hint="Click to browse or drag & drop"
-                            initialImages={category?.categoryIcon ? [category.categoryIcon] : []}
+                            initialImages={
+                              category?.categoryIconUrl || category?.categoryIcon
+                                ? [category.categoryIconUrl || category.categoryIcon!]
+                                : []
+                            }
                           />
                         </div>
                       </FormControl>

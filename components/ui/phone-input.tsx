@@ -20,11 +20,7 @@ export function PhoneInputComponent({
 }: PhoneInputComponentProps) {
   return (
     <div
-      className={`rounded-xl border bg-gray-50/50 transition-colors ${
-        error
-          ? "border-red-400 bg-red-50 focus-within:border-red-400"
-          : "border-gray-200/80 focus-within:border-[#1B3A8C] focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(27,58,140,0.1)]"
-      } ${disabled ? "pointer-events-none cursor-not-allowed opacity-60" : ""}`}
+      className={`rounded-xl border bg-gray-50/50 transition-colors ${"border-gray-200/80 focus-within:border-[#1B3A8C] focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(27,58,140,0.1)]"} ${disabled ? "pointer-events-none cursor-not-allowed opacity-60" : ""}`}
     >
       <PhoneInput
         country="in"

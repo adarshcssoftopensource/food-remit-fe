@@ -148,7 +148,7 @@ export function CountryManagerForm({
                     multiple={false}
                     maxFiles={1}
                     label={"Upload manager photo"}
-                    hint="PNG, JPG or WEBP · max 1 image"
+                    hint="PNG, JPG or WEBP"
                     initialImages={previewImageUrl ? [previewImageUrl] : []}
                   />
                   {fieldError(errors.image?.message as string | undefined)}
@@ -411,8 +411,10 @@ export function CountryManagerForm({
                 >
                   <SelectTrigger className={inputClass}>
                     <SelectValue placeholder="Select country to assign">
-                      {countriesData.find((c) => c.name === field.value)?.name ||
-                        "Select country to assign"}
+                      {field.value
+                        ? (countriesData.find((c) => c.id === field.value || c.name === field.value)
+                            ?.name ?? field.value)
+                        : undefined}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>

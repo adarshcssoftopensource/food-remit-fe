@@ -7,22 +7,46 @@ import { ItemData } from "../items/types/item.types";
 import { useCreateItem } from "../items/hooks/use-create-item";
 import { useUpdateItem } from "../items/hooks/use-update-item";
 
-const itemSchema = z.object({
-  productName: z.string().min(2, "Item name must be at least 2 characters"),
-  description: z.string().min(1, "Description is required"),
-  upcCode: z.string().optional(),
-  productInfo: z.string().min(1, "Product information is required"),
-  nutritionInfo: z.string().optional(),
-  discountPercentage: z.string().optional(),
-  baseQuantity: z.string().min(1, "Base quantity is required"),
-  unit: z.string().min(1, "Unit is required"),
-  countryId: z.string().min(1, "Country is required"),
-  departmentId: z.string().min(1, "Department is required"),
-  categoryId: z.string().min(1, "Category is required"),
-  productImageFile: z.array(z.instanceof(File)).optional(),
-  productInfoImageFile: z.array(z.instanceof(File)).optional(),
-  nutritionInfoImageFile: z.array(z.instanceof(File)).optional(),
-});
+const itemSchema = z
+  .object({
+    productName: z.string().min(2, "Item name must be at least 2 characters"),
+    description: z.string().min(1, "Description is required"),
+    upcCode: z.string().optional(),
+    productInfo: z.string().min(1, "Product information is required"),
+    nutritionInfo: z.string().optional(),
+    discountPercentage: z.string().optional(),
+    baseQuantity: z.string().min(1, "Base quantity is required"),
+    unit: z.string().min(1, "Unit is required"),
+    countryId: z.string().min(1, "Country is required"),
+    departmentId: z.string().min(1, "Department is required"),
+    categoryId: z.string().min(1, "Category is required"),
+    productImageFile: z
+      .array(z.instanceof(File))
+      .max(5, "Maximum 5 product images allowed")
+      .optional(),
+    productInfoImageFile: z.array(z.instanceof(File)).optional(),
+    nutritionInfoImageFile: z.array(z.instanceof(File)).optional(),
+    hasExistingProductImage: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      !data.hasExistingProductImage &&
+      (!data.productImageFile || data.productImageFile.length === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["productImageFile"],
+        message: "Product image is required (at least 1 image)",
+      });
+    }
+    if (data.productImageFile && data.productImageFile.length > 5) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["productImageFile"],
+        message: "Maximum 5 product images allowed",
+      });
+    }
+  });
 
 export type ItemFormValues = z.infer<typeof itemSchema>;
 
@@ -36,6 +60,12 @@ export function useItemForm(
   const { mutateAsync: updateItem, isPending: isUpdating } = useUpdateItem(item?.id ?? "");
 
   const isSubmitting = isCreating || isUpdating;
+
+  const hasExistingImages = !!(
+    item?.productImageUrl ||
+    item?.productImage ||
+    (item as any)?.productImageUrls?.length
+  );
 
   const form = useForm<ItemFormValues>({
     resolver: zodResolver(itemSchema),
@@ -54,11 +84,17 @@ export function useItemForm(
       productImageFile: [],
       productInfoImageFile: [],
       nutritionInfoImageFile: [],
+      hasExistingProductImage: hasExistingImages,
     },
   });
 
   useEffect(() => {
     if (open) {
+      const existing = !!(
+        item?.productImageUrl ||
+        item?.productImage ||
+        (item as any)?.productImageUrls?.length
+      );
       form.reset({
         productName: item?.productName ?? "",
         description: item?.description ?? "",
@@ -74,6 +110,7 @@ export function useItemForm(
         productImageFile: [],
         productInfoImageFile: [],
         nutritionInfoImageFile: [],
+        hasExistingProductImage: existing,
       });
     }
   }, [open, item, form]);
@@ -95,7 +132,9 @@ export function useItemForm(
       formData.append("unit", values.unit);
 
       if (values.productImageFile && values.productImageFile.length > 0) {
-        formData.append("productImageFile", values.productImageFile[0]);
+        values.productImageFile.forEach((file) => {
+          formData.append("productImageFile", file);
+        });
       }
       if (values.productInfoImageFile && values.productInfoImageFile.length > 0) {
         formData.append("productInfoImageFile", values.productInfoImageFile[0]);

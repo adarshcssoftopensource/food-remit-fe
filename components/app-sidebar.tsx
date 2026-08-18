@@ -37,11 +37,73 @@ export function AppSidebar() {
 
   const [searchQuery, setSearchQuery] = React.useState("");
 
+  const isSubItemActive = React.useCallback(
+    (
+      item: { url: string; items?: { title: string; url: string }[] },
+      sub: { title: string; url: string },
+      currentPath: string | null,
+    ) => {
+      if (!currentPath) return false;
+
+      // Exact match
+      if (currentPath === sub.url) return true;
+
+      // Single sub-item group where parent route matches (e.g. /country-management/123 -> /country-management/list)
+      if (
+        item.items?.length === 1 &&
+        (currentPath === item.url || currentPath.startsWith(item.url + "/"))
+      ) {
+        return true;
+      }
+
+      // Check if currentPath is a sub-path of sub.url (e.g. /report-management/store-report/123)
+      if (currentPath.startsWith(sub.url + "/")) {
+        // If another sibling sub-item is also matched and has a longer (more specific) URL, this sub is not active
+        const hasMoreSpecificMatch = item.items?.some(
+          (otherSub) =>
+            otherSub.url !== sub.url &&
+            otherSub.url.length > sub.url.length &&
+            (currentPath === otherSub.url || currentPath.startsWith(otherSub.url + "/")),
+        );
+        return !hasMoreSpecificMatch;
+      }
+
+      return false;
+    },
+    [],
+  );
+
+  const hasGroupActiveChild = React.useCallback(
+    (
+      item: { url: string; items?: { title: string; url: string }[] },
+      currentPath: string | null,
+    ) => {
+      if (!currentPath) return false;
+      if (item.items?.some((sub) => isSubItemActive(item, sub, currentPath))) return true;
+      return currentPath === item.url || currentPath.startsWith(item.url + "/");
+    },
+    [isSubItemActive],
+  );
+
   const [openGroup, setOpenGroup] = React.useState<string | null>(() => {
     const active = navigationItems.find(
       (item) =>
         item.items?.length &&
-        (pathname?.startsWith(item.url) || item.items.some((sub) => pathname?.startsWith(sub.url))),
+        (item.items.some(
+          (sub) =>
+            pathname === sub.url ||
+            (pathname?.startsWith(sub.url + "/") &&
+              !item.items.some(
+                (o) =>
+                  o.url !== sub.url &&
+                  o.url.length > sub.url.length &&
+                  (pathname === o.url || pathname?.startsWith(o.url + "/")),
+              )),
+        ) ||
+          (item.items.length === 1 &&
+            (pathname === item.url || pathname?.startsWith(item.url + "/"))) ||
+          pathname === item.url ||
+          pathname?.startsWith(item.url + "/")),
     );
     return active?.title ?? null;
   });
@@ -80,7 +142,7 @@ export function AppSidebar() {
 
   const isActive = (url: string) => {
     if (url === "/dashboard" && pathname === "/") return true;
-    return pathname?.startsWith(url);
+    return pathname === url || pathname?.startsWith(url + "/");
   };
 
   const handleGroupToggle = (title: string, open: boolean) => {
@@ -151,9 +213,7 @@ export function AppSidebar() {
                   const active = isActive(item.url);
 
                   if (item.items?.length) {
-                    const hasActiveChild =
-                      pathname?.startsWith(item.url) ||
-                      item.items.some((sub) => pathname?.startsWith(sub.url));
+                    const hasActiveChild = hasGroupActiveChild(item, pathname);
                     const isOpen =
                       openGroup === item.title ||
                       (!!searchQuery &&
@@ -205,10 +265,7 @@ export function AppSidebar() {
                               </div>
                               <div className="flex flex-col gap-1">
                                 {item.items.map((sub) => {
-                                  const isSubActive =
-                                    pathname === sub.url ||
-                                    pathname?.startsWith(sub.url) ||
-                                    (pathname?.startsWith(item.url) && item.items.length === 1);
+                                  const isSubActive = isSubItemActive(item, sub, pathname);
                                   return (
                                     <Link
                                       key={sub.title}
@@ -285,10 +342,7 @@ export function AppSidebar() {
                           <CollapsibleContent className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
                             <SidebarMenuSub className="border-border/50 mt-0.5 ml-3.5 border-l py-0.5 pr-0 pl-3">
                               {item.items.map((sub) => {
-                                const isSubActive =
-                                  pathname === sub.url ||
-                                  pathname?.startsWith(sub.url) ||
-                                  (pathname?.startsWith(item.url) && item.items.length === 1);
+                                const isSubActive = isSubItemActive(item, sub, pathname);
                                 return (
                                   <SidebarMenuSubItem key={sub.title}>
                                     <Link

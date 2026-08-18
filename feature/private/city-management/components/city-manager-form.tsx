@@ -159,7 +159,7 @@ export function CityManagerForm({
                     multiple={false}
                     maxFiles={1}
                     label={"Upload manager photo"}
-                    hint="PNG, JPG or WEBP · max 1 image"
+                    hint="PNG, JPG or WEBP"
                     initialImages={previewImageUrl ? [previewImageUrl] : []}
                   />
                   {fieldError(errors.image?.message as string | undefined)}
@@ -425,8 +425,10 @@ export function CityManagerForm({
                 >
                   <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50/80">
                     <SelectValue placeholder="Select country to assign">
-                      {countriesData.find((c) => c.id === field.value)?.name ||
-                        "Select country to assign"}
+                      {field.value
+                        ? (countriesData.find((c) => c.id === field.value || c.name === field.value)
+                            ?.name ?? field.value)
+                        : undefined}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>

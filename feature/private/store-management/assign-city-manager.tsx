@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Globe, UserCheck, MapPin, Store } from "lucide-react";
+import { Globe, UserCheck, MapPin, Store, X, CheckCircle2, Building2, Layers } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useMemo, useEffect } from "react";
 
@@ -32,19 +32,32 @@ import {
 interface RawCityManager {
   id: string;
   country: string;
+  countryName?: string | null;
   firstName: string;
   lastName: string;
   assignCities?: string;
   assignCityNames?: string[];
+  managerStatus?: string;
 }
 
 interface RawStore {
   id: string;
-  country: string;
   storeName: string;
-  city: string;
-  cityName?: string;
+  country?: string;
+  countryId?: string;
+  countryName?: string | null;
+  city?: string;
+  cityId?: string;
+  cityName?: string | null;
   assignedCityManager?: string | null;
+  cityManager?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  } | null;
+  storeAddress?: string;
+  status?: string;
 }
 
 interface ApiListResponse<T> {
@@ -75,7 +88,6 @@ export function AssignCityManagerToStore() {
   const {
     control,
     handleSubmit,
-    reset,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<AssignCityManagerFormValues>({
@@ -92,10 +104,15 @@ export function AssignCityManagerToStore() {
   const selectedCityManagerId = useWatch({ control, name: "cityManagerId" });
 
   const availableManagers = useMemo(() => {
-    if (!rawCityManagers?.data) return [];
+    if (!rawCityManagers?.data || !selectedCountry) return [];
     return rawCityManagers.data
-      .filter((m) => m.country === selectedCountry)
-      .map((m) => ({ ...m, name: `${m.firstName} ${m.lastName}` }));
+      .filter(
+        (m) => (m.country || "").trim().toLowerCase() === selectedCountry.trim().toLowerCase(),
+      )
+      .map((m) => ({
+        ...m,
+        name: `${m.firstName || ""} ${m.lastName || ""}`.trim() || "City Manager",
+      }));
   }, [rawCityManagers, selectedCountry]);
 
   const selectedManager = useMemo(() => {
@@ -107,7 +124,6 @@ export function AssignCityManagerToStore() {
     if (selectedManager.assignCityNames && selectedManager.assignCityNames.length > 0) {
       return selectedManager.assignCityNames;
     }
-    // Fallback if assignCityNames is not available
     if (!selectedManager.assignCities) return [];
     try {
       const parsed = JSON.parse(selectedManager.assignCities);
@@ -118,9 +134,24 @@ export function AssignCityManagerToStore() {
     }
   }, [selectedManager]);
 
+  const managerAssignedCityIds = useMemo(() => {
+    if (!selectedManager?.assignCities) return [];
+    try {
+      const parsed = JSON.parse(selectedManager.assignCities);
+      if (Array.isArray(parsed)) return parsed.map((s: string) => s.trim().toLowerCase());
+      return [selectedManager.assignCities.trim().toLowerCase()];
+    } catch {
+      return selectedManager.assignCities.split(",").map((s) => s.trim().toLowerCase());
+    }
+  }, [selectedManager]);
+
   const managerAssignedStores = useMemo(() => {
     if (!rawStores?.data || !selectedCityManagerId) return [];
-    return rawStores.data.filter((s) => s.assignedCityManager === selectedCityManagerId);
+    return rawStores.data.filter(
+      (s) =>
+        s.assignedCityManager === selectedCityManagerId ||
+        s.cityManager?.id === selectedCityManagerId,
+    );
   }, [rawStores, selectedCityManagerId]);
 
   const selectedCountryName = useMemo(() => {
@@ -129,14 +160,21 @@ export function AssignCityManagerToStore() {
 
   const storesInSelectedCountry = useMemo(() => {
     if (!rawStores?.data || !selectedCountry) return [];
-    return rawStores.data.filter(
-      (s) => s.country?.trim().toLowerCase() === selectedCountry.trim().toLowerCase(),
-    );
+    return rawStores.data.filter((s) => {
+      const storeCountry = s.countryId || s.country || "";
+      return storeCountry.trim().toLowerCase() === selectedCountry.trim().toLowerCase();
+    });
   }, [rawStores, selectedCountry]);
 
   const unassignedStores = useMemo(() => {
     return storesInSelectedCountry.filter((s) => {
-      return !s.assignedCityManager || s.assignedCityManager === "null";
+      const hasAssignedManager =
+        s.assignedCityManager &&
+        s.assignedCityManager !== "null" &&
+        s.assignedCityManager !== "" &&
+        s.assignedCityManager !== "0";
+      const hasCityManagerObj = Boolean(s.cityManager?.id);
+      return !hasAssignedManager && !hasCityManagerObj;
     });
   }, [storesInSelectedCountry]);
 
@@ -145,6 +183,17 @@ export function AssignCityManagerToStore() {
     setValue("cityManagerId", "");
     setValue("storeIds", []);
   }, [selectedCountry, setValue]);
+
+  const handleUnassignStore = async (storeId: string, storeName: string) => {
+    try {
+      await assignMutation.mutateAsync({
+        id: storeId,
+        assignedCityManager: "null",
+      });
+      successToast({ title: `"${storeName}" successfully!` });
+      await refetchStores();
+    } catch {}
+  };
 
   const onSubmit = async (data: AssignCityManagerFormValues) => {
     try {
@@ -162,10 +211,14 @@ export function AssignCityManagerToStore() {
         ),
       );
 
-      successToast({ title: "City Manager assigned to stores successfully!" });
-      reset();
-      refetchStores();
-    } catch {}
+      successToast({
+        title: `Assigned ${data.storeIds.length} store${data.storeIds.length > 1 ? "s" : ""} to ${selectedManager?.name || "City Manager"} successfully!`,
+      });
+      setValue("storeIds", []);
+      await refetchStores();
+    } catch {
+      errorToast({ title: "Failed to assign stores. Please try again." });
+    }
   };
 
   return (
@@ -180,10 +233,10 @@ export function AssignCityManagerToStore() {
             </div>
             <div>
               <CardTitle className="text-lg font-bold text-slate-800">
-                Assign City Manager
+                Assign City Manager to Store
               </CardTitle>
               <p className="text-sm text-slate-500">
-                Select a country and a city manager to assign to unassigned stores
+                Select a country and city manager to assign to unassigned stores
               </p>
             </div>
           </div>
@@ -245,7 +298,6 @@ export function AssignCityManagerToStore() {
                       disabled={!selectedCountry}
                     >
                       <SelectTrigger className="h-12! w-full rounded-xl border-slate-200 bg-slate-50">
-                        {/* We use field.value to explicitly display the name inside SelectValue by mapping it */}
                         <SelectValue
                           placeholder={
                             !selectedCountry
@@ -311,20 +363,33 @@ export function AssignCityManagerToStore() {
 
                 {/* Display Manager's Assigned Stores */}
                 <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-                  <Label className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                    <Store className="text-primary size-4" />
-                    Assigned Stores for {selectedManager?.name}
-                  </Label>
+                  <div className="mb-3 flex items-center justify-between">
+                    <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                      <Store className="text-primary size-4" />
+                      Assigned Stores for {selectedManager?.name} ({managerAssignedStores.length})
+                    </Label>
+                  </div>
                   {managerAssignedStores.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2.5">
                       {managerAssignedStores.map((store) => (
-                        <Badge
+                        <span
                           key={store.id}
-                          variant="secondary"
-                          className="border-slate-200 bg-white text-slate-700 shadow-sm"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white py-1.5 pr-2 pl-3 text-xs font-medium text-slate-700 shadow-xs"
                         >
-                          {store.storeName}
-                        </Badge>
+                          <Building2 className="text-primary size-3.5" />
+                          <span>{store.storeName}</span>
+                          <span className="text-slate-400">
+                            ({store.cityName || store.cityId || store.city || "N/A"})
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleUnassignStore(store.id, store.storeName)}
+                            title="Unassign this store"
+                            className="ml-1 rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-red-500"
+                          >
+                            <X className="size-3.5" />
+                          </button>
+                        </span>
                       ))}
                     </div>
                   ) : (
@@ -336,11 +401,41 @@ export function AssignCityManagerToStore() {
 
                 {/* Display Unassigned Stores */}
                 <div className="space-y-3">
-                  <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                    <Store className="text-primary size-4" />
-                    Unassigned Stores in {selectedCountryName}
-                    <span className="text-red-500">*</span>
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                      <Layers className="text-primary size-4" />
+                      Unassigned Stores in {selectedCountryName} ({unassignedStores.length})
+                      <span className="text-red-500">*</span>
+                    </Label>
+
+                    <Controller
+                      name="storeIds"
+                      control={control}
+                      render={({ field }) => {
+                        if (unassignedStores.length === 0) return <></>;
+                        const allSelected =
+                          unassignedStores.length > 0 &&
+                          field.value.length === unassignedStores.length;
+                        return (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              if (allSelected) {
+                                field.onChange([]);
+                              } else {
+                                field.onChange(unassignedStores.map((s) => s.id));
+                              }
+                            }}
+                            className="text-primary hover:text-primary/80 h-7 text-xs font-medium"
+                          >
+                            {allSelected ? "Deselect All" : "Select All"}
+                          </Button>
+                        );
+                      }}
+                    />
+                  </div>
 
                   {unassignedStores.length === 0 ? (
                     <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
@@ -356,36 +451,54 @@ export function AssignCityManagerToStore() {
                       control={control}
                       render={({ field }) => (
                         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                          {unassignedStores.map((store) => (
-                            <label
-                              key={store.id}
-                              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all hover:bg-slate-50 ${
-                                field.value.includes(store.id)
-                                  ? "border-primary bg-primary/5 ring-primary/20 ring-1"
-                                  : "border-slate-200 bg-white"
-                              }`}
-                            >
-                              <Checkbox
-                                checked={field.value.includes(store.id)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    field.onChange([...field.value, store.id]);
-                                  } else {
-                                    field.onChange(field.value.filter((id) => id !== store.id));
-                                  }
-                                }}
-                                className="mt-0.5"
-                              />
-                              <div className="space-y-1">
-                                <p className="text-sm leading-none font-semibold text-slate-800">
-                                  {store.storeName}
-                                </p>
-                                <p className="text-xs text-slate-500">
-                                  {store.cityName || store.city || "No city specified"}
-                                </p>
-                              </div>
-                            </label>
-                          ))}
+                          {unassignedStores.map((store) => {
+                            const isChecked = field.value.includes(store.id);
+                            const storeCityId = (store.cityId || store.city || "")
+                              .trim()
+                              .toLowerCase();
+                            const storeCityName = (store.cityName || "").trim().toLowerCase();
+                            const matchesManagerCity =
+                              managerAssignedCityIds.includes(storeCityId) ||
+                              managerAssignedCities.some(
+                                (c) => c.trim().toLowerCase() === storeCityName,
+                              );
+
+                            return (
+                              <label
+                                key={store.id}
+                                className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all hover:bg-slate-50 ${
+                                  isChecked
+                                    ? "border-primary bg-primary/5 ring-primary/20 ring-1"
+                                    : "border-slate-200 bg-white"
+                                }`}
+                              >
+                                <Checkbox
+                                  checked={isChecked}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      field.onChange([...field.value, store.id]);
+                                    } else {
+                                      field.onChange(field.value.filter((id) => id !== store.id));
+                                    }
+                                  }}
+                                  className="mt-0.5"
+                                />
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <p className="text-sm leading-none font-semibold text-slate-800">
+                                      {store.storeName}
+                                    </p>
+                                  </div>
+                                  <p className="text-xs text-slate-500">
+                                    {store.cityName ||
+                                      store.cityId ||
+                                      store.city ||
+                                      "No city specified"}
+                                  </p>
+                                </div>
+                              </label>
+                            );
+                          })}
                         </div>
                       )}
                     />
@@ -401,8 +514,9 @@ export function AssignCityManagerToStore() {
                       type="submit"
                       isLoading={isSubmitting || storesLoading || managersLoading}
                       disabled={isSubmitting || storesLoading || managersLoading}
-                      className="h-12 w-full rounded-xl font-semibold shadow-sm sm:w-auto sm:min-w-40"
+                      className="h-12 w-full rounded-xl font-semibold shadow-sm sm:w-auto sm:min-w-48"
                     >
+                      <CheckCircle2 className="mr-2 size-4" />
                       Assign Selected Stores
                     </Button>
                   </div>

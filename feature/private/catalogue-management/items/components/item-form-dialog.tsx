@@ -199,18 +199,40 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                           name="productImageFile"
                           render={({ field }) => (
                             <FormItem className="space-y-2">
-                              <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                Product Image <span className="text-destructive">*</span>
-                              </FormLabel>
+                              <div className="flex items-center justify-between">
+                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                  Product Images <span className="text-destructive">*</span>
+                                </FormLabel>
+                                <span className="text-[10px] font-medium text-slate-400">
+                                  Max 5 images
+                                </span>
+                              </div>
 
                               <FormControl>
                                 <div className="rounded-xl border border-dashed border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
                                   <ImageUpload
                                     maxFiles={5}
+                                    multiple={true}
                                     value={field.value}
-                                    onChange={field.onChange}
-                                    label="Upload product image"
-                                    hint="Click to browse or drag & drop"
+                                    onChange={(files) => {
+                                      field.onChange(files);
+                                      if (files.length > 0) {
+                                        form.setValue("hasExistingProductImage", false);
+                                      }
+                                    }}
+                                    onAllImagesChange={(all) => {
+                                      form.setValue("hasExistingProductImage", all.length > 0);
+                                    }}
+                                    label="Upload product images"
+                                    hint="PNG, JPG or WEBP (up to 5 images)"
+                                    initialImages={
+                                      (item as any)?.productImageUrls &&
+                                      (item as any).productImageUrls.length > 0
+                                        ? (item as any).productImageUrls
+                                        : item?.productImageUrl
+                                          ? [item.productImageUrl]
+                                          : []
+                                    }
                                   />
                                 </div>
                               </FormControl>

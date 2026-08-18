@@ -95,8 +95,10 @@ export interface RawStore {
   storeName: string;
   storeAddress?: string;
   storeAddress2?: string;
+  country?: string;
   countryId?: string;
   countryName?: string | null;
+  city?: string;
   cityId?: string;
   cityName?: string | null;
   storeCountryCode?: string;
@@ -106,6 +108,7 @@ export interface RawStore {
   status?: string;
   addedOn?: string;
   assignedCityManager?: string | null;
+  cityManager?: RawStoreManager | null;
   storeManager?: RawStoreManager;
 }
 

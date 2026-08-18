@@ -65,7 +65,7 @@ export default function CityManagerViewPage({ params }: CityManagerViewPageProps
       />
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-8 pb-8">
+        <div className="to-primary-50 border-b bg-linear-to-r from-slate-50 via-blue-50 p-8 pb-8">
           <div className="flex items-center gap-6">
             <div className="bg-primary/10 text-primary flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl text-2xl font-bold shadow-sm">
               {manager.image ? (
@@ -148,7 +148,7 @@ export default function CityManagerViewPage({ params }: CityManagerViewPageProps
                   manager.assignedCityNames.map((city) => (
                     <span
                       key={city}
-                      className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700"
+                      className="border-primary-100 bg-primary-50 text-primary-700 rounded-full border px-3 py-1 text-sm font-medium shadow-xs"
                     >
                       {city}
                     </span>
@@ -172,7 +172,8 @@ export default function CityManagerViewPage({ params }: CityManagerViewPageProps
                     assignedStores.map((store) => (
                       <span
                         key={store.id}
-                        className="rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700 shadow-xs"
+                        className="border-primary-100 bg-primary-50 text-primary-700 cursor-pointer rounded-full border px-3 py-1 text-sm font-medium shadow-xs"
+                        onClick={() => router.push(`${ROUTES.ADMIN.STORE_MANAGEMENT.ROOT}`)}
                       >
                         {store.storeName}
                       </span>

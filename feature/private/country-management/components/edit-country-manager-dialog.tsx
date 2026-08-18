@@ -36,7 +36,7 @@ export function EditCountryManagerDialog({
       state: manager.state,
       city: manager.city,
       zipcode: manager.zipcode,
-      assignedCountry: manager.assignCountryName ?? "",
+      assignedCountry: manager.assignedCountry || manager.assignCountryName || "",
     };
   }, [manager]);
 

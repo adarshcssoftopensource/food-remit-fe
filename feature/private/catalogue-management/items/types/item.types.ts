@@ -12,10 +12,12 @@ export interface ItemData {
   discountPercentage?: number | null;
 
   productImage?: string | null;
+  productImages?: string[];
   productInfoImage?: string | null;
   nutritionInfoImage?: string | null;
 
   productImageUrl?: string | null;
+  productImageUrls?: string[];
   productInfoImageUrl?: string | null;
   nutritionInfoImageUrl?: string | null;
 

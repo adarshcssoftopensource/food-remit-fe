@@ -28,7 +28,6 @@ import { type CityManagerData } from "@/feature/private/city-management/types/ci
 import { useRouter } from "next/navigation";
 import { getCityManagerColumns } from "./columns/city-manager-columns";
 import { AddCityManagerDialog } from "./components/add-city-manager-dialog";
-import { AssignedCitiesDialog } from "./components/assigned-cities-dialog";
 import { EditCityManagerDialog } from "./components/edit-city-manager-dialog";
 import { useCityManagerFilters } from "./hooks/use-city-manager-filters";
 
@@ -62,8 +61,6 @@ export default function CityManagementPage() {
 
   const [editingManager, setEditingManager] = useState<CityManagerData | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [citiesManager, setCitiesManager] = useState<CityManagerData | null>(null);
-  const [isCitiesOpen, setIsCitiesOpen] = useState(false);
 
   const columns = useMemo(
     () =>
@@ -74,10 +71,6 @@ export default function CityManagementPage() {
         onEdit: (manager) => {
           setEditingManager(manager);
           setIsEditOpen(true);
-        },
-        onShowCities: (manager) => {
-          setCitiesManager(manager);
-          setIsCitiesOpen(true);
         },
         onToggleStatus: toggleManagerStatus,
       }),
@@ -105,71 +98,59 @@ export default function CityManagementPage() {
         ))}
       </div>
 
-      <Collapsible className="group">
-        <Card className="rounded-xl border bg-white shadow-sm">
-          <CollapsibleTrigger render={<div />}>
-            <CardHeader className="cursor-pointer border-b py-4 transition-colors hover:bg-slate-50/50">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
-                  <Filter className="text-primary h-4 w-4" />
-                </div>
-                <CardTitle className="text-lg font-semibold">Filter City Managers</CardTitle>
+      <Card className="rounded-xl border bg-white shadow-sm">
+        <CardHeader className="border-b py-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
+              <Filter className="text-primary h-4 w-4" />
+            </div>
+            <CardTitle className="text-lg font-semibold">Filter City Managers</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end lg:flex-nowrap">
+            <DateRangeFilter
+              fromDate={fromDate}
+              toDate={toDate}
+              onFromDateChange={setFromDate}
+              onToDateChange={setToDate}
+              wrapperClassName="flex flex-col sm:flex-row flex-1 gap-3"
+              itemClassName="flex-1 space-y-1 min-w-0"
+              pickerClassName="h-10 w-full"
+              labelClassName="text-muted-foreground text-xs font-medium uppercase"
+              maxDate={new Date()}
+            />
 
-                <div className="flex items-center gap-3">
-                  <ChevronDown className="h-5 w-5 text-slate-500 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                </div>
-              </div>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="p-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end lg:flex-nowrap">
-                <DateRangeFilter
-                  fromDate={fromDate}
-                  toDate={toDate}
-                  onFromDateChange={setFromDate}
-                  onToDateChange={setToDate}
-                  wrapperClassName="flex flex-col sm:flex-row flex-1 gap-3"
-                  itemClassName="flex-1 space-y-1 min-w-0"
-                  pickerClassName="h-10 w-full"
-                  labelClassName="text-muted-foreground text-xs font-medium uppercase"
-                  maxDate={new Date()}
-                />
+            <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
+              <Label className="text-muted-foreground text-xs font-medium uppercase">Status</Label>
+              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
+                <SelectTrigger className="h-10! w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {CITY_MANAGER_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
 
-                <div className="min-w-0 flex-1 space-y-1 sm:min-w-40">
-                  <Label className="text-muted-foreground text-xs font-medium uppercase">
-                    Status
-                  </Label>
-                  <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
-                    <SelectTrigger className="h-10! w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {CITY_MANAGER_STATUS_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button
-                  variant="destructive"
-                  onClick={clearFilters}
-                  disabled={!hasFilters}
-                  className="h-10 w-full shrink-0 sm:w-auto"
-                >
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  Clear
-                </Button>
-              </div>
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
+            <Button
+              variant="destructive"
+              onClick={clearFilters}
+              disabled={!hasFilters}
+              className="h-10 w-full shrink-0 sm:w-auto"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Clear
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="rounded-xl shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between border-b">
@@ -205,11 +186,6 @@ export default function CityManagementPage() {
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
         onSubmit={updateCityManager}
-      />
-      <AssignedCitiesDialog
-        manager={citiesManager}
-        open={isCitiesOpen}
-        onOpenChange={setIsCitiesOpen}
       />
     </div>
   );

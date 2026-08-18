@@ -7,11 +7,22 @@ import { DepartmentData } from "../departments/types/department.types";
 import { useCreateDepartment } from "../departments/hooks/use-create-department";
 import { useUpdateDepartment } from "../departments/hooks/use-update-department";
 
-const departmentSchema = z.object({
-  countryId: z.string().min(1, "Country is required"),
-  departmentName: z.string().min(2, "Department name must be at least 2 characters"),
-  iconFile: z.array(z.instanceof(File)).optional(),
-});
+const departmentSchema = z
+  .object({
+    countryId: z.string().min(1, "Country is required"),
+    departmentName: z.string().min(2, "Department name must be at least 2 characters"),
+    iconFile: z.array(z.instanceof(File)).optional(),
+    hasExistingIcon: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.hasExistingIcon && (!data.iconFile || data.iconFile.length === 0)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["iconFile"],
+        message: "Department logo is required",
+      });
+    }
+  });
 
 export type DepartmentFormValues = z.infer<typeof departmentSchema>;
 
@@ -34,6 +45,7 @@ export function useDepartmentForm(
       countryId: department?.country?.id ?? "",
       departmentName: department?.departmentName ?? "",
       iconFile: [],
+      hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
     },
   });
 
@@ -43,6 +55,7 @@ export function useDepartmentForm(
         countryId: department?.country?.id ?? "",
         departmentName: department?.departmentName ?? "",
         iconFile: [],
+        hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
       });
     }
   }, [open, department, form]);

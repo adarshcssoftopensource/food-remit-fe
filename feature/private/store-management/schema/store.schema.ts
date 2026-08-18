@@ -1,7 +1,13 @@
 import { z } from "zod/v3";
 
 export const storeSchema = z.object({
-  storeImage: z.any().optional(),
+  storeImage: z
+    .any()
+    .refine(
+      (val) =>
+        val !== null && val !== undefined && val !== "" && (!Array.isArray(val) || val.length > 0),
+      { message: "Store image is required" },
+    ),
   storeName: z.string().min(2, "Store name must be at least 2 characters"),
   storePhoneCode: z.string().min(1, "Phone code is required"),
   storePhoneNumber: z

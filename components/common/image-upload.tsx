@@ -17,6 +17,7 @@ interface Preview {
 export interface ImageUploadProps {
   value?: File[];
   onChange?: (files: File[]) => void;
+  onAllImagesChange?: (images: Preview[]) => void;
   accept?: string;
   multiple?: boolean;
   maxFiles?: number;
@@ -31,6 +32,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
   (
     {
       onChange,
+      onAllImagesChange,
       accept = "image/png,image/jpeg,image/webp",
       multiple = true,
       maxFiles = 5,
@@ -53,7 +55,9 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
     const initialImagesStr = initialImages.join(",");
 
     useEffect(() => {
-      setImages(initialImagesStr ? initialImagesStr.split(",").map((url) => ({ url })) : []);
+      const initial = initialImagesStr ? initialImagesStr.split(",").map((url) => ({ url })) : [];
+      setImages(initial);
+      onAllImagesChange?.(initial);
     }, [initialImagesStr]);
 
     useEffect(() => {
@@ -100,6 +104,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
 
         const finalImages = next.slice(0, maxFiles);
         onChange?.(finalImages.map((i) => i.file).filter(Boolean) as File[]);
+        onAllImagesChange?.(finalImages);
 
         return finalImages;
       });
@@ -117,6 +122,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
 
         const next = prev.filter((_, i) => i !== index);
         onChange?.(next.map((i) => i.file).filter(Boolean) as File[]);
+        onAllImagesChange?.(next);
 
         return next;
       });
