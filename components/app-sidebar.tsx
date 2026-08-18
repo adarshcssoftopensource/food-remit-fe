@@ -410,7 +410,7 @@ export function AppSidebar() {
                               size="compact"
                               label="Coming Soon"
                               showIcon
-                              className="border-red-500/30 bg-red-500/10 font-bold text-red-600 shadow-sm dark:border-red-400/40 dark:bg-red-500/20 dark:text-red-400"
+                              className="border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400"
                             />
                           )}
                           {item.isNewFeature && active && (

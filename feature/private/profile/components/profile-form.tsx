@@ -4,18 +4,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Mail, User } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 
+import { useProfile } from "@/components/providers/profile-provider";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { profileDetailsSchema, type ProfileDetailsValues } from "../schema/profile.schema";
-import { useProfile } from "@/components/providers/profile-provider";
-import { useUpdateProfile } from "../hooks/use-update-profile";
-import { successToast } from "@/components/toaster";
-import { useQueryClient } from "@tanstack/react-query";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { PhoneInputComponent } from "@/components/ui/phone-input";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
+import { useUpdateProfile } from "../hooks/use-update-profile";
+import { profileDetailsSchema, type ProfileDetailsValues } from "../schema/profile.schema";
 
 export function ProfileForm() {
   const { profile } = useProfile();
@@ -88,7 +88,6 @@ export function ProfileForm() {
                       aria-invalid={!!errors.firstName}
                       className={cn(
                         "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
-                        "hover:border-gray-300 hover:bg-gray-50",
                         "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
                         errors.firstName &&
                           "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
@@ -119,7 +118,7 @@ export function ProfileForm() {
                       aria-invalid={!!errors.lastName}
                       className={cn(
                         "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
-                        "hover:border-gray-300 hover:bg-gray-50",
+
                         "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
                         errors.lastName &&
                           "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",

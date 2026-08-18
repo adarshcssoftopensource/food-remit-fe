@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-linear-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-md shadow-emerald-600/20 hover:from-emerald-700 hover:to-teal-700 hover:shadow-lg hover:shadow-emerald-600/25 active:shadow-xs",
+          "bg-linear-to-r from-emerald-600 to-teal-600 text-white font-semibold  active:shadow-xs",
         outline:
           "border border-slate-200/80 bg-white/70 text-slate-700 hover:bg-white hover:text-slate-900 shadow-xs backdrop-blur-md aria-expanded:bg-white aria-expanded:text-slate-900 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:bg-slate-800",
         secondary:
