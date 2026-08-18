@@ -69,7 +69,7 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
       label: "Full Name",
       value: admin.userName,
       icon: <User className="h-4.5 w-4.5" />,
-      color: "blue",
+      color: "emerald",
     },
     {
       label: "Email Address",
@@ -92,7 +92,6 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
   ];
 
   const colorMap: Record<string, string> = {
-    blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
     primary: "bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary/90",
     emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400",
     amber: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400",
@@ -207,7 +206,7 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
           <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
                   <Users className="h-4.5 w-4.5" />
                 </div>
                 <div>

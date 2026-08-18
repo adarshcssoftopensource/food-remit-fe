@@ -25,8 +25,8 @@ export const CITY_MANAGER_STATS_CONFIG = [
     key: "cities" as const,
     label: "Assigned Cities",
     Icon: MapPin,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
+    color: "text-teal-600",
+    bg: "bg-teal-50",
   },
   {
     key: "countries" as const,

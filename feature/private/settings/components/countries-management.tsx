@@ -55,8 +55,8 @@ export function CountriesManagement() {
       <Card className="overflow-hidden rounded-2xl border border-slate-200/60 shadow-sm">
         <div className="flex flex-col gap-4 border-b bg-slate-50/60 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100">
-              <Globe2 className="h-5 w-5 text-blue-600" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/20">
+              <Globe2 className="h-5 w-5 text-emerald-600" />
             </div>
 
             <div>
@@ -68,10 +68,10 @@ export function CountriesManagement() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2">
-              <Database className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-700">{totalCount}</span>
-              <span className="text-sm text-blue-600">Countries</span>
+            <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-4 py-2">
+              <Database className="h-4 w-4 text-emerald-600" />
+              <span className="text-sm font-semibold text-emerald-800">{totalCount}</span>
+              <span className="text-sm text-emerald-700">Countries</span>
             </div>
             <AddCountriesDialog />
           </div>

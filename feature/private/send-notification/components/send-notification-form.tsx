@@ -58,8 +58,8 @@ export function SendNotificationForm({ className, ...props }: React.ComponentPro
           title="Send Notifications"
           description="Send notifications to users"
           action={
-            <div className="flex size-12 items-center justify-center rounded-xl bg-blue-50">
-              <Bell className="size-6 text-[#1B3A8C]" />
+            <div className="flex size-12 items-center justify-center rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/20">
+              <Bell className="size-6 text-emerald-600" />
             </div>
           }
         />
@@ -89,7 +89,7 @@ export function SendNotificationForm({ className, ...props }: React.ComponentPro
                         placeholder="Enter notification title"
                         className={cn(
                           "h-12 rounded-xl border-gray-200 bg-gray-50",
-                          "focus:bg-white focus-visible:border-[#1B3A8C]",
+                          "focus:bg-white focus-visible:border-emerald-600",
                           errors.title && "border-red-400",
                         )}
                       />
@@ -111,7 +111,7 @@ export function SendNotificationForm({ className, ...props }: React.ComponentPro
                       </FieldLabel>
 
                       <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger className="h-12! w-full rounded-xl border-gray-200 bg-gray-50 focus:border-[#1B3A8C]">
+                        <SelectTrigger className="h-12! w-full rounded-xl border-gray-200 bg-gray-50 focus:border-emerald-600">
                           <SelectValue placeholder="Select user role" />
                         </SelectTrigger>
 
@@ -146,7 +146,7 @@ export function SendNotificationForm({ className, ...props }: React.ComponentPro
                           className={cn(
                             "rounded-xl border-gray-200",
                             "resize-none bg-gray-50",
-                            "focus:bg-white focus-visible:border-[#1B3A8C]",
+                            "focus:bg-white focus-visible:border-emerald-600",
                             errors.message && "border-red-400",
                           )}
                         />

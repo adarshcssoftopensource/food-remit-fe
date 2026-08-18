@@ -39,11 +39,10 @@ export function AppTopBar() {
     <header
       className={cn(
         "sticky top-0 z-40 flex h-16 shrink-0 items-center",
-        "border-b border-slate-200/70 dark:border-slate-800/70",
         "bg-white/85 backdrop-blur-xl dark:bg-slate-950/85",
         "px-4 lg:px-6",
-        "shadow-[0_4px_24px_-10px_rgba(14,42,75,0.06)]",
-        "transition-all duration-200",
+        "shadow-xs",
+        "bg-transparent transition-all duration-200",
       )}
     >
       <div className="flex items-center gap-3">

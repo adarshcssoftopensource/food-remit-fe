@@ -106,10 +106,10 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl p-0">
-        <DialogHeader className="rounded-t-xl border-b border-slate-100 bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-5">
+        <DialogHeader className="rounded-t-xl border-b border-emerald-100/60 bg-linear-to-r from-emerald-50/70 via-teal-50/30 to-emerald-50/40 px-6 py-5">
           <div className="flex items-center justify-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-blue-500 text-white">
-              <Pencil size={20} />
+            <div className="flex size-10 items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-xs shadow-emerald-600/20">
+              <Pencil size={18} />
             </div>
 
             <DialogTitle className="text-center text-2xl font-bold text-slate-800">

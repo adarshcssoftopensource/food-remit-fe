@@ -59,10 +59,10 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
         ]}
       />
 
-      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-8 pb-8">
+      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+        <div className="border-b border-emerald-100/60 bg-linear-to-r from-emerald-50/70 via-teal-50/30 to-emerald-50/40 p-8 pb-8">
           <div className="flex items-center gap-6">
-            <div className="bg-primary/10 text-primary flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl text-2xl font-bold shadow-sm">
+            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-emerald-500/10 text-2xl font-bold text-emerald-700 shadow-sm ring-1 ring-emerald-500/20">
               {manager.image ? (
                 <Image
                   src={manager.image}
@@ -103,7 +103,7 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
         <div className="space-y-6 p-8">
           <section className="rounded-2xl border bg-white p-6 shadow-sm">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-slate-500 uppercase">
-              <UserCircle className="h-4 w-4 text-blue-500" />
+              <UserCircle className="h-4 w-4 text-emerald-600" />
               Contact Information
             </h3>
             <div className="grid gap-4 md:grid-cols-2">
@@ -117,7 +117,7 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
 
           <section className="rounded-2xl border bg-white p-6 shadow-sm">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-slate-500 uppercase">
-              <UserCircle className="h-4 w-4 text-blue-500" />
+              <UserCircle className="h-4 w-4 text-emerald-600" />
               Personal Details
             </h3>
             <div className="grid gap-4 md:grid-cols-2">
@@ -132,7 +132,7 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
 
           <section className="rounded-2xl border bg-white p-6 shadow-sm">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-slate-500 uppercase">
-              <Globe2 className="h-4 w-4 text-blue-500" />
+              <Globe2 className="h-4 w-4 text-emerald-600" />
               Assignment
             </h3>
             <DetailCard label="Assigned Country" value={manager.assignCountryName} />

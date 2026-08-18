@@ -11,9 +11,6 @@ import { ProcessingFee } from "./components/processing-fee";
 import { useProfile } from "@/components/providers/profile-provider";
 import { useMemo } from "react";
 
-const triggerClass =
-  "data-active:bg-linear-to-r data-active:from-emerald-600 data-active:to-teal-600 data-active:text-white hover:data-active:text-white h-9 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-xs";
-
 export function SettingsPage() {
   const { hasPermission } = useProfile();
 
@@ -59,11 +56,15 @@ export function SettingsPage() {
 
       <Tabs defaultValue={tabs[0]?.value} className="w-full">
         <TabsList
-          className="brand-glass-card grid h-auto! w-full rounded-2xl dark:border-slate-800/60 dark:bg-slate-900/60"
+          className="grid h-auto! w-full gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/60"
           style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
         >
           {tabs.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} className={triggerClass}>
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="h-10 rounded-xl text-xs font-semibold sm:text-sm"
+            >
               {tab.label}
             </TabsTrigger>
           ))}

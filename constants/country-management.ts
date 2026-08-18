@@ -25,8 +25,8 @@ export const COUNTRY_MANAGER_STATS_CONFIG = [
     key: "countries" as const,
     label: "Assigned Countries",
     Icon: Globe2,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
+    color: "text-teal-600",
+    bg: "bg-teal-50",
   },
   {
     key: "cities" as const,

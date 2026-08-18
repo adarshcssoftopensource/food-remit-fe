@@ -115,11 +115,11 @@ export function AddCountriesDialog({
       <DialogContent>
         <DialogHeader className="pb-2">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/20">
               {mode === "add" ? (
-                <FlagIcon className="h-5 w-5 text-blue-600" />
+                <FlagIcon className="h-5 w-5 text-emerald-600" />
               ) : (
-                <Edit3 className="h-5 w-5 text-blue-600" />
+                <Edit3 className="h-5 w-5 text-emerald-600" />
               )}
             </div>
             <div>

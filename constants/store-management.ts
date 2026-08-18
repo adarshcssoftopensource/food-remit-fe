@@ -26,7 +26,7 @@ export const STORE_STAT_CONFIG = [
     key: "cities" as const,
     label: "Cities Covered",
     Icon: MapPin,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
+    color: "text-teal-600",
+    bg: "bg-teal-50",
   },
 ] as const;

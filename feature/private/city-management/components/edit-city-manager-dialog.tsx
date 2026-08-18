@@ -83,7 +83,7 @@ export function EditCityManagerDialog({
       <DialogContent className="max-w-5xl gap-0 overflow-hidden border-0 p-0 shadow-2xl sm:max-h-[90vh]">
         <div className="max-h-[90vh] overflow-y-auto overscroll-contain">
           <div className="relative overflow-hidden">
-            <DialogHeader className="border-b bg-linear-to-r from-slate-50 via-blue-50 to-indigo-50 p-6 pb-5">
+            <DialogHeader className="border-b border-emerald-100/60 bg-linear-to-r from-emerald-50/70 via-teal-50/30 to-emerald-50/40 p-6 pb-5">
               <DialogTitle className="flex items-center justify-center gap-3 text-3xl font-bold text-slate-800">
                 <span>Edit City Manager</span>
               </DialogTitle>

@@ -107,7 +107,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
           {/* Store Details Section */}
           <div className="border-r border-slate-100 p-8">
             <h3 className="mb-6 flex items-center gap-2 text-lg font-bold text-slate-800">
-              <Building2 className="h-5 w-5 text-blue-500" />
+              <Building2 className="h-5 w-5 text-emerald-600" />
               Store Information
             </h3>
             <div className="divide-y divide-slate-100">
@@ -141,7 +141,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
 
           <div className="p-8">
             <h3 className="mb-6 flex items-center gap-2 text-lg font-bold text-slate-800">
-              <UserCircle className="h-5 w-5 text-blue-500" />
+              <UserCircle className="h-5 w-5 text-emerald-600" />
               Manager Information
             </h3>
 
@@ -173,7 +173,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                 value={
                   <a
                     href={`mailto:${store.managerEmail}`}
-                    className="flex items-center gap-1.5 text-blue-600 hover:underline"
+                    className="flex items-center gap-1.5 text-emerald-700 hover:underline"
                   >
                     <Mail className="h-3 w-3 text-slate-400" />
                     {store.managerEmail}

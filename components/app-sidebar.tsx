@@ -156,7 +156,7 @@ export function AppSidebar() {
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="border-r border-slate-200/70 bg-linear-to-b from-white/95 via-slate-50/90 to-white/95 shadow-[4px_0_24px_-4px_rgba(14,42,75,0.06)] backdrop-blur-2xl transition-all duration-300 dark:border-slate-800/70 dark:from-slate-950/95 dark:via-slate-900/90 dark:to-slate-950/95"
+      className="shadow backdrop-blur-2xl transition-all duration-300 dark:border-slate-800/70"
     >
       <SidebarHeader className="border-b border-slate-200/60 px-0 py-0 dark:border-slate-800/60">
         <div
@@ -203,9 +203,9 @@ export function AppSidebar() {
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
             <TooltipProvider delay={150}>
-              <SidebarMenu className="gap-1">
+              <SidebarMenu className="gap-1.5">
                 {!filteredNavItems.length && !isCollapsed && (
-                  <div className="py-6 text-center text-xs font-medium text-slate-400">
+                  <div className="py-6 text-center font-medium text-slate-400">
                     No menu items found
                   </div>
                 )}
@@ -229,7 +229,7 @@ export function AppSidebar() {
                               <TooltipTrigger render={<div className="w-full" />}>
                                 <PopoverTrigger
                                   className={cn(
-                                    "flex h-11 w-full items-center justify-center rounded-xl px-2 text-sm font-medium transition-all duration-200",
+                                    "flex h-11 w-full items-center justify-center rounded-xl px-2 text-[14.5px] font-medium transition-all duration-200",
                                     "border-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                                     hasActiveChild
                                       ? "bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-md ring-1 shadow-emerald-600/25 ring-emerald-500/30"
@@ -238,7 +238,7 @@ export function AppSidebar() {
                                 >
                                   <item.icon
                                     className={cn(
-                                      "h-4.5 w-4.5 shrink-0",
+                                      "h-5 w-5 shrink-0",
                                       hasActiveChild
                                         ? "text-white"
                                         : "text-slate-500 dark:text-slate-400",
@@ -249,7 +249,7 @@ export function AppSidebar() {
                               <TooltipContent
                                 side="right"
                                 sideOffset={14}
-                                className="border-none bg-slate-900 px-3 py-1.5 font-medium text-white shadow-xl"
+                                className="border-none bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-xl"
                               >
                                 {item.title}
                               </TooltipContent>
@@ -272,10 +272,10 @@ export function AppSidebar() {
                                       href={sub.url}
                                       onClick={handleMobileClose}
                                       className={cn(
-                                        "group/sublink flex h-9 items-center rounded-xl px-3 text-xs font-semibold transition-all duration-200",
+                                        "group/sublink flex h-9 items-center rounded-xl px-3 text-[13.5px] font-medium transition-all duration-200",
                                         "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                                         isSubActive
-                                          ? "bg-emerald-50 text-emerald-700 shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300"
+                                          ? "bg-emerald-50 font-semibold text-emerald-700 shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300"
                                           : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
                                       )}
                                     >
@@ -308,7 +308,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                           <CollapsibleTrigger
                             className={cn(
-                              "group/trigger flex h-auto min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
+                              "group/trigger flex h-auto min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-[14.5px] font-medium transition-all duration-200",
                               "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                               hasActiveChild
                                 ? "bg-emerald-500/10 font-semibold text-emerald-700 shadow-xs dark:bg-emerald-950/30 dark:text-emerald-300"
@@ -317,7 +317,7 @@ export function AppSidebar() {
                           >
                             <item.icon
                               className={cn(
-                                "h-4.5 w-4.5 shrink-0 transition-colors duration-200",
+                                "h-5 w-5 shrink-0 transition-colors duration-200",
                                 hasActiveChild
                                   ? "text-emerald-600 dark:text-emerald-400"
                                   : "text-slate-500 group-hover/trigger:text-slate-700 dark:text-slate-400 dark:group-hover/trigger:text-slate-200",
@@ -325,7 +325,7 @@ export function AppSidebar() {
                             />
                             {!isCollapsed && (
                               <>
-                                <span className="flex-1 text-left text-[13px] leading-snug wrap-break-word whitespace-normal">
+                                <span className="flex-1 text-left text-[14.5px] leading-snug wrap-break-word whitespace-normal">
                                   {item.title}
                                 </span>
                                 <ChevronRight
@@ -351,7 +351,7 @@ export function AppSidebar() {
                                       href={sub.url}
                                       onClick={handleMobileClose}
                                       className={cn(
-                                        "group/sublink flex h-auto min-h-9 items-center rounded-xl px-2.5 py-1.5 text-xs transition-all duration-200",
+                                        "group/sublink flex h-auto min-h-9 items-center rounded-xl px-2.5 py-1.5 text-[13.5px] transition-all duration-200",
                                         "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                                         isSubActive
                                           ? "bg-emerald-50 font-bold text-emerald-700 shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300"
@@ -366,7 +366,7 @@ export function AppSidebar() {
                                             : "bg-slate-300 group-hover/sublink:bg-slate-400 dark:bg-slate-600",
                                         )}
                                       />
-                                      <span className="leading-snug wrap-break-word whitespace-normal">
+                                      <span className="text-[13.5px] leading-snug wrap-break-word whitespace-normal">
                                         {sub.title}
                                       </span>
                                     </Link>
@@ -385,7 +385,7 @@ export function AppSidebar() {
                       onClick={handleMobileClose}
                       href={item.url}
                       className={cn(
-                        "group/link relative flex h-auto min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
+                        "group/link relative flex h-auto min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-[14.5px] font-medium transition-all duration-200",
                         "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                         active
                           ? isCollapsed
@@ -397,7 +397,7 @@ export function AppSidebar() {
                     >
                       <item.icon
                         className={cn(
-                          "h-4.5 w-4.5 shrink-0 transition-colors duration-200",
+                          "h-5 w-5 shrink-0 transition-colors duration-200",
                           active
                             ? "text-white"
                             : "text-slate-500 group-hover/link:text-slate-700 dark:text-slate-400 dark:group-hover/link:text-slate-200",
@@ -421,7 +421,7 @@ export function AppSidebar() {
                               className="border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400"
                             />
                           )}
-                          <span className="w-full text-[13px] leading-snug wrap-break-word whitespace-normal">
+                          <span className="w-full text-[13.5px] leading-snug wrap-break-word whitespace-normal">
                             {item.title}
                           </span>
                         </div>
@@ -439,7 +439,7 @@ export function AppSidebar() {
                           <TooltipContent
                             side="right"
                             sideOffset={14}
-                            className="z-50 border-none bg-slate-900 px-3 py-1.5 font-medium text-white shadow-xl"
+                            className="z-50 border-none bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-xl"
                           >
                             {item.title}
                           </TooltipContent>
