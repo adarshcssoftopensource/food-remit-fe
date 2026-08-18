@@ -1,11 +1,15 @@
+"use client";
+
 import { DataTable } from "@/components/common/data-table/data-table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
-import { orderColumnsRequest } from "./columns/order-columns";
+import { Clock, Inbox, LifeBuoy, ShoppingBag } from "lucide-react";
+import { DASHBOARD_ROUTES } from "../constants/dashboard.constants";
 import type { DashboardOrderRequested, DashboardTicketItem } from "../types/dashboard.types";
+import { requestedOrdersColumns } from "./columns/requested-orders-columns";
+import { DashboardActionButton } from "./common/dashboard-action-button";
+import { DashboardCard } from "./common/dashboard-card";
+import { DashboardEmptyState } from "./common/dashboard-empty-state";
+import { DashboardStatusBadge } from "./common/dashboard-status-badge";
 
 interface DataTablesSectionProps {
   recentOrdersRequested?: DashboardOrderRequested[];
@@ -16,90 +20,99 @@ interface DataTablesSectionProps {
 export function DataTablesSection({
   recentOrdersRequested = [],
   recentTickets = [],
-  isLoading,
+  isLoading = false,
 }: DataTablesSectionProps) {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Card className="overflow-hidden rounded-xl border border-slate-200/60 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100/70 px-6 py-5">
-          <CardTitle className="text-sm font-bold tracking-wider text-slate-800 uppercase">
-            Recent Orders Requested
-          </CardTitle>
-
-          <Button asChild size="sm" className="h-8 rounded-full px-5 text-xs font-semibold">
-            <Link href="/order-management/requested-orders">View All</Link>
-          </Button>
-        </CardHeader>
-
-        <CardContent className="p-0 px-2">
+    <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Recent Orders Requested */}
+      <DashboardCard
+        title="Recent Orders Requested"
+        subtitle="Incoming requisition requests across communities"
+        accentColor="cyan"
+        className="min-w-0 overflow-hidden"
+        icon={
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400">
+            <ShoppingBag className="h-4.5 w-4.5" />
+          </div>
+        }
+        action={<DashboardActionButton href={DASHBOARD_ROUTES.REQUESTED_ORDERS} label="View All" />}
+        contentClassName="p-0 overflow-x-auto"
+      >
+        <div className="w-full min-w-0 overflow-x-auto">
           <DataTable
-            columns={orderColumnsRequest}
+            columns={requestedOrdersColumns}
             data={recentOrdersRequested}
             loading={isLoading}
             hidePagination={true}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </DashboardCard>
 
-      <Card className="flex flex-col overflow-hidden rounded-xl border border-slate-200/60 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100/70 px-6 pt-6 pb-5">
-          <CardTitle className="text-sm font-bold tracking-wider text-slate-800 uppercase">
-            Recent Support Tickets
-          </CardTitle>
-          <Button
-            asChild
-            variant="default"
-            className="h-8 rounded-full px-6 text-xs font-semibold shadow-sm transition-all hover:scale-105"
-          >
-            <Link href="/ticket-management/active-requests">View All</Link>
-          </Button>
-        </CardHeader>
-        <CardContent className="flex min-h-40 flex-1 flex-col justify-center bg-slate-50/30 p-4">
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between rounded-lg bg-white p-3 shadow-xs"
-                >
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-6 w-16 rounded-full" />
+      {/* Recent Support Tickets */}
+      <DashboardCard
+        title="Recent Support Tickets"
+        subtitle="Active user and partner issues requiring triage"
+        accentColor="violet"
+        className="min-w-0 overflow-hidden"
+        icon={
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+            <LifeBuoy className="h-4.5 w-4.5" />
+          </div>
+        }
+        action={<DashboardActionButton href={DASHBOARD_ROUTES.TICKETS} label="View All" />}
+        contentClassName="p-5 sm:p-6"
+      >
+        {isLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/40"
+              >
+                <div className="flex-1 space-y-2 pr-4">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/4" />
                 </div>
-              ))}
-            </div>
-          ) : recentTickets.length > 0 ? (
-            <div className="divide-y divide-slate-100 rounded-lg border border-slate-100 bg-white">
-              {recentTickets.map((ticket) => (
-                <div
-                  key={ticket.id}
-                  className="flex items-center justify-between p-3.5 hover:bg-slate-50/50"
-                >
-                  <div className="min-w-0 flex-1 pr-4">
-                    <p className="truncate text-sm font-semibold text-slate-800">
-                      {ticket.subject}
-                    </p>
-                    {ticket.addedOn && (
-                      <p className="mt-0.5 text-xs text-slate-400">
-                        {new Date(ticket.addedOn).toLocaleDateString()}
-                      </p>
-                    )}
+                <Skeleton className="h-6 w-16 rounded-full" />
+              </div>
+            ))}
+          </div>
+        ) : recentTickets.length > 0 ? (
+          <div className="space-y-2.5">
+            {recentTickets.map((ticket) => (
+              <div
+                key={ticket.id}
+                className="group flex items-center justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800"
+              >
+                <div className="min-w-0 flex-1 pr-4">
+                  <p className="truncate text-sm font-bold text-slate-800 dark:text-slate-200">
+                    {ticket.subject || "Support Request"}
+                  </p>
+                  <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                    <Clock className="h-3 w-3" />
+                    <span>
+                      {ticket.addedOn
+                        ? new Date(ticket.addedOn).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : "Recently generated"}
+                    </span>
                   </div>
-                  <Badge
-                    variant={ticket.status.toUpperCase() === "RESOLVED" ? "secondary" : "default"}
-                    className="shrink-0 text-xs font-medium uppercase"
-                  >
-                    {ticket.status}
-                  </Badge>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-8 text-center">
-              <p className="text-sm font-semibold text-slate-400">No Tickets Generated Yet</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                <DashboardStatusBadge status={ticket.status} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <DashboardEmptyState
+            icon={Inbox}
+            title="No Tickets Generated"
+            description="Active support requests will appear here once submitted."
+          />
+        )}
+      </DashboardCard>
     </div>
   );
 }

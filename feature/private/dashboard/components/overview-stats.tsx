@@ -1,21 +1,24 @@
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowUpRight, HandPlatter, Package, Users } from "lucide-react";
-import Link from "next/link";
+"use client";
+
+import { HandPlatter, Package, Users } from "lucide-react";
+import { DASHBOARD_ROUTES } from "../constants/dashboard.constants";
 import type { DashboardOverviewStats } from "../types/dashboard.types";
+import { DashboardStatCard } from "./common/dashboard-stat-card";
 
 interface OverviewStatsProps {
   stats?: DashboardOverviewStats;
   isLoading?: boolean;
 }
 
-export function OverviewStats({ stats, isLoading }: OverviewStatsProps) {
+export function OverviewStats({ stats, isLoading = false }: OverviewStatsProps) {
   const cards = [
     {
       title: "Food Sent",
-      href: "/order-management/sent-orders",
+      href: DASHBOARD_ROUTES.SENT_ORDERS,
       icon: Package,
-      iconBg: "bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100",
+      accentColor: "emerald" as const,
+      iconBgClassName:
+        "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
       mainValue: stats?.foodSent.today ?? 0,
       mainLabel: "Today",
       subStats: [
@@ -26,9 +29,10 @@ export function OverviewStats({ stats, isLoading }: OverviewStatsProps) {
     },
     {
       title: "Food Requested",
-      href: "/order-management/requested-orders",
+      href: DASHBOARD_ROUTES.REQUESTED_ORDERS,
       icon: HandPlatter,
-      iconBg: "bg-blue-50 text-blue-600 group-hover:bg-blue-100",
+      accentColor: "cyan" as const,
+      iconBgClassName: "bg-cyan-500/10 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400",
       mainValue: stats?.foodRequested.today ?? 0,
       mainLabel: "Today",
       subStats: [
@@ -39,65 +43,37 @@ export function OverviewStats({ stats, isLoading }: OverviewStatsProps) {
     },
     {
       title: "Registered Users",
-      href: "/users-management",
+      href: DASHBOARD_ROUTES.USERS,
       icon: Users,
-      iconBg: "bg-violet-50 text-violet-600 group-hover:bg-violet-100",
+      accentColor: "indigo" as const,
+      iconBgClassName:
+        "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400",
       mainValue: stats?.registeredUsers.users ?? 0,
-      mainLabel: "Users",
+      mainLabel: "Total Accounts",
       subStats: [
         { label: "Active", value: stats?.registeredUsers.activeUsers ?? 0 },
         { label: "Inactive", value: stats?.registeredUsers.inactiveUsers ?? 0 },
+        { label: "Philanthropists", value: stats?.registeredUsers.philanthropists ?? 0 },
+        { label: "Foundations", value: stats?.registeredUsers.foundations ?? 0 },
       ],
     },
   ];
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      {cards.map(({ title, href, icon: Icon, iconBg, mainValue, mainLabel, subStats }) => (
-        <Link key={title} href={href} className="group block">
-          <Card className="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-1">
-                  <p className="text-sm font-medium text-slate-500">{title}</p>
-                  <ArrowUpRight className="h-3.5 w-3.5 text-slate-300 transition-colors group-hover:text-slate-600" />
-                </div>
-                <div className="mt-2 flex items-baseline gap-2">
-                  {isLoading ? (
-                    <Skeleton className="h-10 w-20 rounded-lg" />
-                  ) : (
-                    <>
-                      <span className="text-primary text-4xl font-black tracking-tight">
-                        {mainValue}
-                      </span>
-                      <span className="text-sm font-medium text-slate-500">{mainLabel}</span>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div
-                className={`flex h-12 w-12 items-center justify-center rounded-full transition-colors ${iconBg}`}
-              >
-                <Icon size={24} />
-              </div>
-            </div>
-
-            <div className="mt-6 flex items-center gap-6 border-t border-slate-100 pt-4">
-              {subStats.map((sub) => (
-                <div key={sub.label} className="flex flex-col">
-                  {isLoading ? (
-                    <Skeleton className="my-0.5 h-6 w-12 rounded" />
-                  ) : (
-                    <span className="text-lg font-bold text-slate-800">{sub.value}</span>
-                  )}
-                  <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                    {sub.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </Link>
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {cards.map((card) => (
+        <DashboardStatCard
+          key={card.title}
+          title={card.title}
+          href={card.href}
+          icon={card.icon}
+          accentColor={card.accentColor}
+          iconBgClassName={card.iconBgClassName}
+          mainValue={card.mainValue}
+          mainLabel={card.mainLabel}
+          subStats={card.subStats}
+          isLoading={isLoading}
+        />
       ))}
     </div>
   );

@@ -38,24 +38,25 @@ export function AppTopBar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 flex h-16 shrink-0 items-center",
-        "border-border/50 border-b",
-        "bg-background/80 backdrop-blur-xl",
+        "sticky top-0 z-40 flex h-16 shrink-0 items-center",
+        "border-b border-slate-200/80 dark:border-slate-800/80",
+        "bg-white/95 backdrop-blur-md dark:bg-slate-950/95",
         "px-4 lg:px-6",
-        "shadow-[0_4px_20px_-12px_rgba(0,0,0,0.15)]",
+        "shadow-[0_4px_20px_-12px_rgba(15,23,42,0.08)]",
+        "transition-all duration-200",
       )}
     >
       <div className="flex items-center gap-3">
         <SidebarTrigger
           className={cn(
             "h-10 w-10 rounded-xl",
-            "text-muted-foreground",
-            "hover:bg-accent hover:text-foreground",
+            "text-slate-600 dark:text-slate-400",
+            "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100",
             "transition-all duration-200",
           )}
         />
 
-        <div className="bg-border/70 h-6 w-px" />
+        <div className="h-6 w-px bg-slate-200/80 dark:bg-slate-800" />
       </div>
 
       <div className="flex-1" />
@@ -67,8 +68,8 @@ export function AppTopBar() {
           aria-label="Notifications"
           className={cn(
             "relative h-10 w-10 rounded-xl",
-            "text-muted-foreground",
-            "hover:bg-accent hover:text-foreground",
+            "text-slate-600 dark:text-slate-400",
+            "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100",
             "transition-all duration-200",
           )}
         >
@@ -79,49 +80,68 @@ export function AppTopBar() {
               "absolute -top-0.5 -right-0.5",
               "flex h-5 min-w-5 items-center justify-center",
               "rounded-full",
-              "bg-primary",
+              "bg-emerald-600 dark:bg-emerald-500",
               "px-1",
-              "text-[11px] font-semibold text-white",
-              "shadow-sm",
-              "ring-background ring-2",
+              "text-[11px] font-bold text-white",
+              "shadow-xs",
+              "ring-2 ring-white dark:ring-slate-950",
             )}
           >
             0
           </span>
         </Button>
 
-        <div className="bg-border/70 mx-1 h-7 w-px" />
+        <div className="mx-1 h-7 w-px bg-slate-200/80 dark:bg-slate-800" />
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger
             className={cn(
-              "group flex items-center gap-3 rounded-xl px-2 py-1.5 transition-all duration-200 outline-none",
-              isProfilePage || isSettingsPage ? "bg-primary text-white" : "hover:bg-accent/60",
+              "group flex items-center gap-3 rounded-xl px-2.5 py-1.5 transition-all duration-200 outline-none",
+              isProfilePage || isSettingsPage
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "hover:bg-slate-100 dark:hover:bg-slate-800/80",
             )}
           >
             <div
               className={cn(
                 "flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl",
-                "from-primary to-primary/70 bg-linear-to-br",
-                "text-primary-foreground",
+                "bg-linear-to-br from-emerald-600 to-teal-700",
+                "text-white",
                 "text-xs font-bold",
-                "shadow-sm",
+                "shadow-xs ring-2 ring-emerald-500/20",
               )}
             >
               {initials}
             </div>
 
-            <div className="hidden flex-col items-start sm:flex">
-              <span className="max-w-32 truncate text-sm leading-none font-semibold">
+            <div className="hidden flex-col items-start text-left sm:flex">
+              <span
+                className={cn(
+                  "max-w-36 truncate text-sm leading-tight font-semibold",
+                  isProfilePage || isSettingsPage
+                    ? "text-white"
+                    : "text-slate-900 dark:text-slate-100",
+                )}
+              >
                 {displayName}
+              </span>
+              <span
+                className={cn(
+                  "text-[11px] leading-tight font-medium",
+                  isProfilePage || isSettingsPage
+                    ? "text-emerald-100"
+                    : "text-slate-500 dark:text-slate-400",
+                )}
+              >
+                System Admin
               </span>
             </div>
 
             <ChevronDown
               className={cn(
-                "text-muted-foreground h-4 w-4",
+                "h-4 w-4",
+                isProfilePage || isSettingsPage ? "text-white" : "text-slate-400",
                 "transition-transform duration-200",
                 "group-data-[state=open]:rotate-180",
-                isProfilePage || isSettingsPage ? "text-white" : "",
               )}
             />
           </PopoverTrigger>

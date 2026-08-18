@@ -1,55 +1,85 @@
-import { Card } from "@/components/ui/card";
+"use client";
+
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowUpRight, Banknote } from "lucide-react";
+import { ArrowUpRight, Banknote, Coins, PackageCheck } from "lucide-react";
 import Link from "next/link";
+import { DASHBOARD_ROUTES } from "../constants/dashboard.constants";
 import type { DashboardFinancialStats } from "../types/dashboard.types";
+import { DashboardCard } from "./common/dashboard-card";
 
 interface FinancialStatsProps {
   stats?: DashboardFinancialStats;
   isLoading?: boolean;
 }
 
-export function FinancialStats({ stats, isLoading }: FinancialStatsProps) {
+export function FinancialStats({ stats, isLoading = false }: FinancialStatsProps) {
   const financialItems = [
     {
       title: "Amount Collected Today",
-      href: "/order-management/history",
+      href: DASHBOARD_ROUTES.ORDER_HISTORY,
       value: stats?.amountCollectedToday ?? "0 USD",
+      icon: Coins,
+      iconBg: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
+      accentBorder: "group-hover:border-emerald-500/30",
     },
     {
-      title: "Count Of Items Sent Today",
-      href: "/order-management/sent-orders",
+      title: "Items Sent Today",
+      href: DASHBOARD_ROUTES.SENT_ORDERS,
       value: stats?.itemsSentToday ?? 0,
+      icon: PackageCheck,
+      iconBg: "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400",
+      accentBorder: "group-hover:border-blue-500/30",
     },
   ];
 
   return (
-    <Card className="rounded-2xl border border-slate-200/60 shadow-sm">
-      <div className="flex items-center gap-2 border-b border-slate-100 px-6 py-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-          <Banknote size={22} />
+    <DashboardCard
+      title="Financial Statistics"
+      subtitle="Today's financial inflow and shipment velocity"
+      accentColor="emerald"
+      icon={
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+          <Banknote className="h-4.5 w-4.5" />
         </div>
-        <h3 className="text-base font-bold text-slate-800">Financial Statistics</h3>
+      }
+      contentClassName="p-5 sm:p-6"
+    >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {financialItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.title}
+              href={item.href}
+              className={`group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 ${item.accentBorder}`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg shadow-2xs ${item.iconBg}`}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <p className="text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                    {item.title}
+                  </p>
+                </div>
+                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-4 w-4 text-slate-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
+              </div>
+
+              <div className="mt-4">
+                {isLoading ? (
+                  <Skeleton className="h-9 w-24 rounded-lg" />
+                ) : (
+                  <span className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                    {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
+                  </span>
+                )}
+              </div>
+            </Link>
+          );
+        })}
       </div>
-      <div className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-        {financialItems.map((stat, i) => (
-          <Link
-            key={i}
-            href={stat.href}
-            className="group flex flex-col justify-center px-6 py-8 transition-colors hover:bg-slate-50/70"
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
-                {stat.title}
-              </p>
-              <ArrowUpRight className="h-3.5 w-3.5 text-slate-300 opacity-0 transition-all group-hover:text-slate-600 group-hover:opacity-100" />
-            </div>
-            <div className="text-primary mt-3 text-4xl font-black tracking-tight">
-              {isLoading ? <Skeleton className="h-10 w-24 rounded-lg" /> : stat.value}
-            </div>
-          </Link>
-        ))}
-      </div>
-    </Card>
+    </DashboardCard>
   );
 }

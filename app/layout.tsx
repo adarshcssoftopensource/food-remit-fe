@@ -35,13 +35,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="flex min-h-full flex-col" suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} antialiased`} suppressHydrationWarning>
+      <body
+        className="bg-background text-foreground flex min-h-screen flex-col"
+        suppressHydrationWarning
+      >
         <NuqsAdapter>
           <QueryProvider>
             <TooltipProvider>{children}</TooltipProvider>
             <AppToaster />
-            <NextTopLoader color="#219113" />
+            <NextTopLoader color="#219113" showSpinner={false} />
           </QueryProvider>
         </NuqsAdapter>
       </body>

@@ -117,3 +117,8 @@ export interface DashboardStatsApiResponse {
   data: DashboardData;
   error: Record<string, unknown>;
 }
+
+export interface DashboardFiltersState {
+  countryId?: string;
+  cityId?: string;
+}
