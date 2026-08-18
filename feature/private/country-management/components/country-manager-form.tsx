@@ -147,7 +147,7 @@ export function CountryManagerForm({
                     onChange={field.onChange}
                     multiple={false}
                     maxFiles={1}
-                    label={mode === "edit" ? "Replace photo" : "Upload manager photo"}
+                    label={"Upload manager photo"}
                     hint="PNG, JPG or WEBP · max 1 image"
                     initialImages={previewImageUrl ? [previewImageUrl] : []}
                   />

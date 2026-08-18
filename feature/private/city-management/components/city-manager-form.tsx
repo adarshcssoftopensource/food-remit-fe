@@ -158,7 +158,7 @@ export function CityManagerForm({
                     onChange={field.onChange}
                     multiple={false}
                     maxFiles={1}
-                    label={mode === "edit" ? "Replace photo" : "Upload manager photo"}
+                    label={"Upload manager photo"}
                     hint="PNG, JPG or WEBP · max 1 image"
                     initialImages={previewImageUrl ? [previewImageUrl] : []}
                   />
@@ -498,7 +498,7 @@ export function CityManagerForm({
                                 field.onChange(field.value.filter((c) => c !== city.id));
                               }
                             }}
-                            className="size-4 rounded-[4px] data-[state=checked]:border-amber-600 data-[state=checked]:bg-amber-600"
+                            className="size-4 rounded-lg data-[state=checked]:border-amber-600 data-[state=checked]:bg-amber-600"
                           />
                           <span className="flex-1 truncate">{city.name}</span>
                         </label>

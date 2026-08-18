@@ -148,7 +148,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                           render={({ field }) => (
                             <FormItem className="space-y-2">
                               <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                UPC Code <span className="text-destructive">*</span>
+                                UPC Code
                               </FormLabel>
 
                               <div className="flex gap-2">
@@ -206,11 +206,11 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                               <FormControl>
                                 <div className="rounded-xl border border-dashed border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
                                   <ImageUpload
-                                    maxFiles={1}
+                                    maxFiles={5}
                                     value={field.value}
                                     onChange={field.onChange}
                                     label="Upload product image"
-                                    hint="PNG, JPG or WEBP · Max 1 file"
+                                    hint="Click to browse or drag & drop"
                                   />
                                 </div>
                               </FormControl>

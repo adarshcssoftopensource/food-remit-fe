@@ -146,7 +146,7 @@ export function DepartmentFormDialog({
                             value={field.value}
                             onChange={field.onChange}
                             label="Upload department icon"
-                            hint="Click to browse or drag & drop · Max 1 file"
+                            hint="Click to browse or drag & drop"
                             initialImages={
                               department?.departmentIcon ? [department.departmentIcon] : []
                             }

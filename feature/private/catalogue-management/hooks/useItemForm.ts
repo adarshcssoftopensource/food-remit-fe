@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -10,7 +10,7 @@ import { useUpdateItem } from "../items/hooks/use-update-item";
 const itemSchema = z.object({
   productName: z.string().min(2, "Item name must be at least 2 characters"),
   description: z.string().min(1, "Description is required"),
-  upcCode: z.string().min(1, "UPC Code is required"),
+  upcCode: z.string().optional(),
   productInfo: z.string().min(1, "Product information is required"),
   nutritionInfo: z.string().optional(),
   discountPercentage: z.string().optional(),
@@ -86,7 +86,7 @@ export function useItemForm(
       formData.append("categoryId", values.categoryId);
       formData.append("productName", values.productName);
       formData.append("description", values.description);
-      formData.append("upcCode", values.upcCode);
+      if (values.upcCode) formData.append("upcCode", values.upcCode);
       formData.append("productInfo", values.productInfo);
       if (values.nutritionInfo) formData.append("nutritionInfo", values.nutritionInfo);
       if (values.discountPercentage)

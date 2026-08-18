@@ -172,7 +172,7 @@ export function CategoryFormDialog({
                             value={field.value}
                             onChange={field.onChange}
                             label="Upload category icon"
-                            hint="Click to browse or drag & drop · Max 1 file"
+                            hint="Click to browse or drag & drop"
                             initialImages={category?.categoryIcon ? [category.categoryIcon] : []}
                           />
                         </div>
