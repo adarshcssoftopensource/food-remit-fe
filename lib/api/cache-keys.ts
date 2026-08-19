@@ -8,6 +8,7 @@ export const API_CACHE_KEYS = {
   // Users
   USERS: ["users"],
   USER_BY_ID: (id: string) => ["user", id],
+  RECYCLED_USERS: ["RECYCLED_USERS"],
 
   // Partner Leads
   PARTNER_LEADS_LIST: ["partner-leads"],

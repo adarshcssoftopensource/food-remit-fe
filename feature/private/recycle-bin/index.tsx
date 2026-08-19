@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/common/page-header";
 import { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useBulkPermanentDeleteUsers } from "../users-management/hooks/use-bulk-permanent-delete-users";
 import { useBulkRestoreUsers } from "../users-management/hooks/use-bulk-restore-users";
 
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
@@ -28,7 +29,10 @@ export function RecycledUsersManagement() {
   const debouncedSearch = useDebounce(search, 500);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isBulkRestoreDialogOpen, setIsBulkRestoreDialogOpen] = useState(false);
+  const [isBulkPermanentDeleteDialogOpen, setIsBulkPermanentDeleteDialogOpen] = useState(false);
+
   const bulkRestoreUsers = useBulkRestoreUsers();
+  const bulkPermanentDeleteUsers = useBulkPermanentDeleteUsers();
 
   const queryArgs: UseGetUsersArgs = {
     page: currentPage,
@@ -77,6 +81,22 @@ export function RecycledUsersManagement() {
         },
         onError: () => {
           toast.error("Failed to restore selected users.");
+        },
+      },
+    );
+  };
+
+  const handleBulkPermanentDelete = () => {
+    bulkPermanentDeleteUsers.mutate(
+      { ids: selectedUserIds },
+      {
+        onSuccess: () => {
+          toast.success(`${selectedUserIds.length} users have been permanently deleted.`);
+          setRowSelection({});
+          setIsBulkPermanentDeleteDialogOpen(false);
+        },
+        onError: () => {
+          toast.error("Failed to permanently delete selected users.");
         },
       },
     );
@@ -172,6 +192,7 @@ export function RecycledUsersManagement() {
         onSortingChange={handleSortingChange}
         onRowSelectionChange={setRowSelection}
         onBulkRestoreClick={() => setIsBulkRestoreDialogOpen(true)}
+        onBulkPermanentDeleteClick={() => setIsBulkPermanentDeleteDialogOpen(true)}
       />
 
       <ConfirmationDialog
@@ -182,6 +203,17 @@ export function RecycledUsersManagement() {
         confirmLabel="Restore Users"
         onConfirm={handleBulkRestore}
         isLoading={bulkRestoreUsers.isPending}
+      />
+
+      <ConfirmationDialog
+        open={isBulkPermanentDeleteDialogOpen}
+        onOpenChange={setIsBulkPermanentDeleteDialogOpen}
+        title="Permanently Delete Selected Users"
+        description={`Are you sure you want to permanently delete ${selectedUserIds.length} selected users? This action cannot be undone and all associated data will be erased forever.`}
+        confirmLabel="Delete Permanently"
+        variant="destructive"
+        onConfirm={handleBulkPermanentDelete}
+        isLoading={bulkPermanentDeleteUsers.isPending}
       />
     </div>
   );

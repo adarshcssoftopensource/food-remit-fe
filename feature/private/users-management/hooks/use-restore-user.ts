@@ -15,6 +15,7 @@ export function useRestoreUser() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["RECYCLED_USERS"] });
+        queryClient.invalidateQueries({ queryKey: ["users"] });
       },
     },
   );

@@ -15,6 +15,7 @@ export function useBulkDeleteUsers() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["users"] });
+        queryClient.invalidateQueries({ queryKey: ["RECYCLED_USERS"] });
       },
     },
   );

@@ -3,7 +3,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RotateCcw, UsersRound } from "lucide-react";
+import { RotateCcw, Trash2, UsersRound } from "lucide-react";
 import { usersColumns } from "../columns/recycled-users-columns";
 import { RecycleBinTableProps } from "../types/recycle-bin.types";
 
@@ -22,6 +22,7 @@ export function RecycleBinTable({
   onSortingChange,
   onRowSelectionChange,
   onBulkRestoreClick,
+  onBulkPermanentDeleteClick,
 }: RecycleBinTableProps) {
   return (
     <Card className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_35px_-15px_rgba(15,23,42,0.14)] dark:border-slate-800 dark:bg-slate-950">
@@ -69,15 +70,26 @@ export function RecycleBinTable({
                 Search, sort & manage users
               </span>
               {selectedCount > 0 && (
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="h-8 bg-emerald-600 text-xs text-white hover:bg-emerald-700"
-                  onClick={onBulkRestoreClick}
-                >
-                  <RotateCcw className="mr-2 h-3.5 w-3.5" />
-                  Restore Selected ({selectedCount})
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="h-8 bg-emerald-600 text-xs text-white hover:bg-emerald-700"
+                    onClick={onBulkRestoreClick}
+                  >
+                    <RotateCcw className="mr-2 h-3.5 w-3.5" />
+                    Restore Selected ({selectedCount})
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-8 text-xs font-semibold"
+                    onClick={onBulkPermanentDeleteClick}
+                  >
+                    <Trash2 className="mr-2 h-3.5 w-3.5" />
+                    Delete Permanently ({selectedCount})
+                  </Button>
+                </div>
               )}
             </div>
           </div>

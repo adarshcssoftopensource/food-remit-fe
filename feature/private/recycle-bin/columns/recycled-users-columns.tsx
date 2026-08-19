@@ -2,6 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { formatDateTime } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
+import { RecycledActionsCell } from "../components/recycled-actions-cell";
 import { UserData } from "../../users-management/types/user.types";
 
 function UserStatusBadge({ status }: { status: UserData["userStatus"] }) {
@@ -105,5 +106,10 @@ export const usersColumns: ColumnDef<UserData>[] = [
     header: "Status",
     enableSorting: true,
     cell: ({ row }) => <UserStatusBadge status={row.original.userStatus} />,
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => <RecycledActionsCell user={row.original} />,
   },
 ];

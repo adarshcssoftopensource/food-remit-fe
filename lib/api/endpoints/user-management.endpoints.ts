@@ -9,4 +9,6 @@ export const USER_MANAGEMENT_ENDPOINTS = {
   GET_RECYCLED_USERS: `${ADMIN}/users/recycle-bin`,
   BULK_RESTORE_USERS: () => `${ADMIN}/users/recycle-bin/bulk-restore`,
   RESTORE_USER: (id: string) => `${ADMIN}/users/recycle-bin/${id}/restore`,
+  PERMANENT_DELETE_USER: (id: string) => `${ADMIN}/users/${id}/permanent`,
+  BULK_PERMANENT_DELETE_USERS: () => `${ADMIN}/users/bulk-permanent-delete`,
 } as const;

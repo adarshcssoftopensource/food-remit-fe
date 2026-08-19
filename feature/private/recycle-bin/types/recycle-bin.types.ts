@@ -38,4 +38,5 @@ export interface RecycleBinTableProps {
     selection: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
   ) => void;
   onBulkRestoreClick: () => void;
+  onBulkPermanentDeleteClick?: () => void;
 }

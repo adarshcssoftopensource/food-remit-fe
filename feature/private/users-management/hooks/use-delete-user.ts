@@ -15,6 +15,7 @@ export function useDeleteUser(userId: string) {
     {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["users"] });
+        queryClient.invalidateQueries({ queryKey: ["RECYCLED_USERS"] });
       },
     },
   );
