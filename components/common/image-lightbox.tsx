@@ -52,7 +52,7 @@ export function ImageLightbox({ src, onClose, alt = "Full size" }: ImageLightbox
         <Button
           onClick={onClose}
           variant={"ghost"}
-          className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full text-white backdrop-blur-md transition-all hover:scale-110"
+          className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full text-white backdrop-blur-md transition-colors transition-transform hover:scale-110"
           style={{
             background: "rgba(0,0,0,0.35)",
             border: "1px solid rgba(255,255,255,0.2)",

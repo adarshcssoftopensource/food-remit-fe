@@ -1,23 +1,23 @@
 "use client";
 
+import { ArrowLeft, Lock } from "lucide-react";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
-import { Lock, ArrowLeft } from "lucide-react";
 
+import { PasswordStrengthIndicator } from "@/components/common/password-strength-indicator";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { FieldLabel } from "@/components/ui/field";
 import OrDivider from "@/components/ui/or-divider";
-import { cn } from "@/lib/utils";
 import { PasswordInput } from "@/components/ui/password-input";
-import { ChangePasswordFormValues, changePasswordSchema } from "../schema/change-password.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { ROUTES } from "@/config/routes";
 import { useApiMutation } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
-import { successToast } from "@/components/toaster";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { PasswordStrengthIndicator } from "@/components/common/password-strength-indicator";
+import { ChangePasswordFormValues, changePasswordSchema } from "../schema/change-password.schema";
 
 type ResetPasswordPayload = {
   token: string;
@@ -153,7 +153,7 @@ export function ChangePasswordForm({ className, ...props }: React.ComponentProps
         <Link href={ROUTES.AUTH.LOGIN} className="group mt-4 block">
           <Button
             variant="secondary"
-            className="h-12 w-full rounded-xl text-[15px] font-semibold transition-all duration-300 group-hover:bg-gray-100"
+            className="h-12 w-full rounded-xl text-[15px] font-semibold transition-colors duration-300 group-hover:bg-gray-100"
           >
             <ArrowLeft className="mr-2 size-4 transition-transform duration-200 group-hover:-translate-x-1" />
             Back to Sign In

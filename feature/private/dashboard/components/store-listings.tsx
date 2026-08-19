@@ -27,7 +27,7 @@ function StoreCard({ store }: { store: DashboardStoreListing }) {
       href={`${DASHBOARD_ROUTES.STORES}/${store.id}`}
       className="group block focus:outline-hidden"
     >
-      <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg dark:border-slate-800/80 dark:bg-slate-900/90">
+      <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-colors transition-shadow transition-transform duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg dark:border-slate-800/80 dark:bg-slate-900/90">
         <div className="relative flex h-40 w-full items-center justify-center overflow-hidden bg-slate-100 dark:bg-slate-800">
           {hasImage ? (
             <Image

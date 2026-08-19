@@ -141,7 +141,7 @@ export function StoreReportDetail({ store }: StoreReportDetailProps) {
                 return (
                   <div
                     key={row.label}
-                    className="group from-muted/40 to-background hover:border-primary/30 relative overflow-hidden rounded-2xl border bg-linear-to-br p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                    className="group from-muted/40 to-background hover:border-primary/30 relative overflow-hidden rounded-2xl border bg-linear-to-br p-4 transition-colors transition-shadow transition-transform duration-300 hover:-translate-y-1 hover:shadow-md"
                   >
                     <div className="mb-3 flex items-center justify-between">
                       <div className="bg-primary/10 text-primary group-hover:bg-primary flex h-11 w-11 items-center justify-center rounded-xl">

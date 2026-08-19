@@ -46,13 +46,12 @@ export function DashboardStatCard({
   const content = (
     <Card
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-white/60 bg-white/75 p-4.5 shadow-xs backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/80",
+        "group relative overflow-hidden rounded-2xl border border-white/60 bg-white/75 p-4.5 shadow-xs backdrop-blur-xl transition-colors transition-shadow transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/80",
         accentColor && `border-t-2 ${ACCENT_GLOW_MAP[accentColor]}`,
         href && "cursor-pointer",
         className,
       )}
     >
-      {/* Ambient background glow */}
       {accentColor && (
         <div
           className={cn(
@@ -69,7 +68,7 @@ export function DashboardStatCard({
               {title}
             </span>
             {href && (
-              <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-3.5 w-3.5 text-slate-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
+              <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-3.5 w-3.5 text-slate-300 transition-colors transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
             )}
           </div>
 
@@ -121,9 +120,9 @@ export function DashboardStatCard({
 
       {subStats.length > 0 && (
         <div className="relative mt-4 grid grid-cols-2 gap-2 border-t border-slate-100/90 pt-3 sm:grid-cols-4 dark:border-slate-800/80">
-          {subStats.map((sub, idx) => (
+          {subStats.map((sub) => (
             <div
-              key={sub.label || idx}
+              key={sub.label}
               className="flex flex-col rounded-xl bg-slate-50/70 p-2 transition-colors group-hover:bg-slate-100/60 dark:bg-slate-800/50 dark:group-hover:bg-slate-800/70"
             >
               <span className="truncate text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-400">

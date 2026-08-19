@@ -121,7 +121,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                       autoComplete="email"
                       aria-invalid={!!errors.email}
                       className={cn(
-                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
+                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
                         "hover:border-gray-300 hover:bg-gray-50",
                         "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
                         errors.email &&
@@ -170,7 +170,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             <Button
               type="submit"
               isLoading={isPending}
-              className="mt-4 h-14 w-full rounded-xl text-base font-bold shadow-sm transition-all"
+              className="mt-4 h-14 w-full rounded-xl text-base font-bold shadow-sm transition-colors"
             >
               Sign In
             </Button>

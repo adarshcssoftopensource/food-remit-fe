@@ -79,7 +79,7 @@ export function ManagementStats({ stats, isLoading = false }: ManagementStatsPro
             <Link
               key={item.title}
               href={item.href}
-              className={`group relative flex min-w-0 flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 ${item.accentBg}`}
+              className={`group relative flex min-w-0 flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 transition-colors transition-shadow transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 ${item.accentBg}`}
             >
               <div className="flex items-center justify-between">
                 <div
@@ -87,7 +87,7 @@ export function ManagementStats({ stats, isLoading = false }: ManagementStatsPro
                 >
                   <Icon className="h-4 w-4" />
                 </div>
-                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-4 w-4 text-slate-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
+                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-4 w-4 text-slate-300 transition-colors transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
               </div>
 
               <div className="mt-4">

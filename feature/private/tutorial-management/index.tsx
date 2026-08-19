@@ -1,21 +1,21 @@
 "use client";
 
 import { PageHeader } from "@/components/common/page-header";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { BookOpen, Edit, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { FlashImageDialog } from "./components/edit-tutorial-dialog";
-import { Badge } from "@/components/ui/badge";
 
-import { useGetFlashImages, FlashImageData } from "./hooks/use-get-flash-images";
-import { useDeleteFlashImage } from "./hooks/use-delete-flash-image";
-import { NoDataFound } from "@/components/common/no-data-found";
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { useQueryClient } from "@tanstack/react-query";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { NoDataFound } from "@/components/common/no-data-found";
 import { successToast } from "@/components/toaster";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { useQueryClient } from "@tanstack/react-query";
+import { useDeleteFlashImage } from "./hooks/use-delete-flash-image";
+import { FlashImageData, useGetFlashImages } from "./hooks/use-get-flash-images";
 
 export function TutorialManagement() {
   const { data, isLoading } = useGetFlashImages();
@@ -77,7 +77,7 @@ export function TutorialManagement() {
           {data?.data.map((tutorial) => (
             <Card
               key={tutorial.id}
-              className="group overflow-hidden rounded-2xl border-2 border-gray-100 bg-white shadow-sm transition-all duration-300 hover:border-orange-200 hover:shadow-lg"
+              className="group overflow-hidden rounded-2xl border-2 border-gray-100 bg-white shadow-sm transition-colors transition-shadow duration-300 hover:border-orange-200 hover:shadow-lg"
             >
               <CardHeader>
                 <div className="relative h-60 w-full">

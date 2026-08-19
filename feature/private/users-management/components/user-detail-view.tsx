@@ -158,8 +158,8 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
               </div>
 
               <div className="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3">
-                {infoCardArray?.map((item, index) => (
-                  <InfoCard key={index} title={item?.title} value={item?.value} />
+                {infoCardArray?.map((item) => (
+                  <InfoCard key={item?.title} title={item?.title} value={item?.value} />
                 ))}
               </div>
             </div>

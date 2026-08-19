@@ -1,21 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Mail } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { ForgotPasswordFormValues, forgotPasswordSchema } from "../schema/forgot-password.schema";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
-import OrDivider from "@/components/ui/or-divider";
 import { FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import OrDivider from "@/components/ui/or-divider";
 import { ROUTES } from "@/config/routes";
 import { useApiMutation } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS, AuthTokenResponse } from "@/lib/api/endpoints/auth.endpoints";
-import { successToast } from "@/components/toaster";
+import { cn } from "@/lib/utils";
+import { ForgotPasswordFormValues, forgotPasswordSchema } from "../schema/forgot-password.schema";
 
 export function ForgotPasswordForm({ className, ...props }: React.ComponentProps<"div">) {
   const [submittedEmail, setSubmittedEmail] = useState("");
@@ -87,7 +87,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                           autoComplete="email"
                           aria-invalid={!!errors.email}
                           className={cn(
-                            "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
+                            "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
                             "hover:border-gray-300 hover:bg-gray-50",
                             "focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)]",
                             errors.email &&
@@ -147,7 +147,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
         <Link href={ROUTES.AUTH.LOGIN} id="back-to-login-link" className="group mt-4 block">
           <Button
             type="button"
-            className="h-12 w-full rounded-xl text-[15px] font-semibold transition-all duration-300 group-hover:bg-gray-100"
+            className="h-12 w-full rounded-xl text-[15px] font-semibold transition-colors duration-300 group-hover:bg-gray-100"
             variant={"secondary"}
           >
             <ArrowLeft className="mr-2 size-4 transition-transform duration-200 group-hover:-translate-x-1" />

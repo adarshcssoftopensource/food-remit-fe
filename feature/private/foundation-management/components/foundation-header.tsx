@@ -32,7 +32,7 @@ export function FoundationHeader({ activeTab, filteredCount, onTabChange }: Foun
             key={tab.value}
             value={tab.value}
             onClick={() => onTabChange(tab.value as typeof activeTab)}
-            className="data-[state=active]:text-primary rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            className="data-[state=active]:text-primary rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200 data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
             {tab.label}
           </TabsTrigger>

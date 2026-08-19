@@ -21,9 +21,9 @@ export function OperationalPreferencesCard({ lead }: { lead: PartnerLeadData }) 
             </h4>
             <div className="flex flex-wrap gap-2">
               {lead.workPreferences.length > 0 ? (
-                lead.workPreferences.map((pref, idx) => (
+                lead.workPreferences.map((pref) => (
                   <Badge
-                    key={idx}
+                    key={pref}
                     variant="secondary"
                     className="border-emerald-200/60 bg-emerald-50 px-3 py-1 font-bold text-emerald-700 hover:bg-emerald-100"
                   >

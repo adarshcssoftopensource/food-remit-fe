@@ -103,7 +103,7 @@ export function UpdateStatusDialog({
                       id="remark"
                       placeholder="E.g. Spoke with the owner, they are ready for registration..."
                       aria-invalid={!!errors.remark}
-                      className={`min-h-30 resize-none rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium transition-all duration-300 placeholder:text-slate-400 hover:border-slate-300 hover:bg-slate-50 focus-visible:border-blue-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(37,99,235,0.1)] focus-visible:ring-blue-600/20 ${
+                      className={`min-h-30 resize-none rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium transition-colors duration-300 placeholder:text-slate-400 hover:border-slate-300 hover:bg-slate-50 focus-visible:border-blue-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(37,99,235,0.1)] focus-visible:ring-blue-600/20 ${
                         errors.remark
                           ? "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15"
                           : ""
@@ -131,7 +131,7 @@ export function UpdateStatusDialog({
             <Button
               type="submit"
               disabled={isUpdatingStatus || !isValid}
-              className="h-12 rounded-xl bg-blue-600 px-6 font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0"
+              className="h-12 rounded-xl bg-blue-600 px-6 font-bold text-white shadow-md transition-colors transition-shadow transition-transform hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0"
             >
               {isUpdatingStatus ? "Saving..." : "Save Status"}
             </Button>

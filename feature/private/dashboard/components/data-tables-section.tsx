@@ -11,6 +11,9 @@ import { DashboardCard } from "./common/dashboard-card";
 import { DashboardEmptyState } from "./common/dashboard-empty-state";
 import { DashboardStatusBadge } from "./common/dashboard-status-badge";
 
+const EMPTY_ORDERS: DashboardOrderRequested[] = [];
+const EMPTY_TICKETS: DashboardTicketItem[] = [];
+
 interface DataTablesSectionProps {
   recentOrdersRequested?: DashboardOrderRequested[];
   recentTickets?: DashboardTicketItem[];
@@ -18,8 +21,8 @@ interface DataTablesSectionProps {
 }
 
 export function DataTablesSection({
-  recentOrdersRequested = [],
-  recentTickets = [],
+  recentOrdersRequested = EMPTY_ORDERS,
+  recentTickets = EMPTY_TICKETS,
   isLoading = false,
 }: DataTablesSectionProps) {
   return (
@@ -80,7 +83,7 @@ export function DataTablesSection({
             {recentTickets.map((ticket) => (
               <div
                 key={ticket.id}
-                className="group flex items-center justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800"
+                className="group flex items-center justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 transition-colors transition-shadow transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800"
               >
                 <div className="min-w-0 flex-1 pr-4">
                   <p className="truncate text-sm font-bold text-slate-800 dark:text-slate-200">

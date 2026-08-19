@@ -30,6 +30,8 @@ import { DataTablePagination } from "./data-table-pagination";
 
 import { RowSelectionState } from "@tanstack/react-table";
 
+const EMPTY_ROW_SELECTION: RowSelectionState = {};
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -71,7 +73,7 @@ export function DataTable<TData, TValue>({
   onSortingChange,
   manualSorting = false,
   manualFiltering = false,
-  rowSelection = {},
+  rowSelection = EMPTY_ROW_SELECTION,
   onRowSelectionChange,
   getRowId,
 }: DataTableProps<TData, TValue>) {
@@ -143,7 +145,7 @@ export function DataTable<TData, TValue>({
       <TableRow
         key={row.id}
         data-state={row.getIsSelected() && "selected"}
-        className="group hover:bg-primary/5 dark:hover:bg-primary/10 border-b border-slate-100/50 transition-all duration-200 last:border-0 hover:shadow-sm dark:border-slate-800/50"
+        className="group hover:bg-primary/5 dark:hover:bg-primary/10 border-b border-slate-100/50 transition-colors transition-shadow duration-200 last:border-0 hover:shadow-sm dark:border-slate-800/50"
       >
         {row.getVisibleCells().map((cell) => (
           <TableCell

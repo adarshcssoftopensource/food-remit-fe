@@ -146,7 +146,7 @@ export function AppSidebar() {
     <Sidebar
       variant="inset"
       collapsible="icon"
-      className="shadow backdrop-blur-2xl transition-all duration-300 dark:border-slate-800/70"
+      className="shadow backdrop-blur-2xl transition-colors duration-300 dark:border-slate-800/70"
     >
       <SidebarHeader className="border-b border-slate-200/60 px-0 py-0 dark:border-slate-800/60">
         <AppSidebarHeader

@@ -52,12 +52,12 @@ export function DataTablePagination<TData>({
       return Array.from({ length: maxPages }, (_, i) => i + 1);
     }
     if (current <= 3) {
-      return [1, 2, 3, "ellipsis", maxPages];
+      return [1, 2, 3, "ellipsis-end", maxPages];
     }
     if (current >= maxPages - 2) {
-      return [1, "ellipsis", maxPages - 2, maxPages - 1, maxPages];
+      return [1, "ellipsis-start", maxPages - 2, maxPages - 1, maxPages];
     }
-    return [1, "ellipsis", current - 1, current, current + 1, "ellipsis", maxPages];
+    return [1, "ellipsis-start", current - 1, current, current + 1, "ellipsis-end", maxPages];
   };
 
   const handlePageChange = (page: number) => {
@@ -117,13 +117,13 @@ export function DataTablePagination<TData>({
             />
           </PaginationItem>
 
-          {getPages().map((page, index) =>
-            page === "ellipsis" ? (
-              <PaginationItem key={index}>
+          {getPages().map((page) =>
+            typeof page === "string" && page.startsWith("ellipsis") ? (
+              <PaginationItem key={page}>
                 <PaginationEllipsis />
               </PaginationItem>
             ) : (
-              <PaginationItem key={index}>
+              <PaginationItem key={`page-${page}`}>
                 <PaginationLink
                   href="#"
                   isActive={page === activePage}

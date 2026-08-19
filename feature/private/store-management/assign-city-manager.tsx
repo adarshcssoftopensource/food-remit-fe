@@ -337,8 +337,7 @@ export function AssignCityManagerToStore() {
             </div>
 
             {selectedCityManagerId && (
-              <div className="animate-in fade-in slide-in-from-top-2 space-y-6 duration-300">
-                {/* Display Manager's Assigned Cities */}
+              <div className="animate-in fade-in slide-in-from-top-2 space-y-6 transition-colors duration-300">
                 <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
                   <Label className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
                     <MapPin className="text-primary size-4" />
@@ -346,9 +345,9 @@ export function AssignCityManagerToStore() {
                   </Label>
                   {managerAssignedCities.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {managerAssignedCities.map((city, idx) => (
+                      {managerAssignedCities.map((city) => (
                         <Badge
-                          key={idx}
+                          key={city}
                           variant="secondary"
                           className="border-slate-200 bg-white text-slate-700 shadow-sm"
                         >
@@ -361,7 +360,6 @@ export function AssignCityManagerToStore() {
                   )}
                 </div>
 
-                {/* Display Manager's Assigned Stores */}
                 <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
                   <div className="mb-3 flex items-center justify-between">
                     <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
@@ -399,7 +397,6 @@ export function AssignCityManagerToStore() {
                   )}
                 </div>
 
-                {/* Display Unassigned Stores */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <Label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
@@ -453,20 +450,11 @@ export function AssignCityManagerToStore() {
                         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                           {unassignedStores.map((store) => {
                             const isChecked = field.value.includes(store.id);
-                            const storeCityId = (store.cityId || store.city || "")
-                              .trim()
-                              .toLowerCase();
-                            const storeCityName = (store.cityName || "").trim().toLowerCase();
-                            const matchesManagerCity =
-                              managerAssignedCityIds.includes(storeCityId) ||
-                              managerAssignedCities.some(
-                                (c) => c.trim().toLowerCase() === storeCityName,
-                              );
 
                             return (
                               <label
                                 key={store.id}
-                                className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all hover:bg-slate-50 ${
+                                className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors hover:bg-slate-50 ${
                                   isChecked
                                     ? "border-primary bg-primary/5 ring-primary/20 ring-1"
                                     : "border-slate-200 bg-white"

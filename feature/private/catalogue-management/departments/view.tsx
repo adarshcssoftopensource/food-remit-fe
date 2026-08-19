@@ -87,7 +87,7 @@ export function DepartmentView({ id }: DepartmentViewProps) {
           />
         </div>
 
-        <div className="animate-in fade-in slide-in-from-bottom-4 grid gap-6 duration-700 lg:grid-cols-3">
+        <div className="animate-in fade-in slide-in-from-bottom-4 grid gap-6 transition-colors duration-700 lg:grid-cols-3">
           <Card className="relative flex h-fit flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
             <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-linear-to-br opacity-90" />
 
@@ -106,7 +106,7 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                       <Button
                         variant={"ghost"}
                         onClick={() => setLightboxSrc(department.departmentIcon || "")}
-                        className="absolute right-2 bottom-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
+                        className="absolute right-2 bottom-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-colors transition-opacity transition-transform duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
                         title="View full screen"
                       >
                         <Expand className="h-4 w-4" />
@@ -203,7 +203,7 @@ export function DepartmentView({ id }: DepartmentViewProps) {
 
 function InfoCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="group hover:border-primary/20 hover:shadow-primary/5 relative flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/30 dark:hover:bg-slate-900">
+    <div className="group hover:border-primary/20 hover:shadow-primary/5 relative flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-colors transition-shadow transition-transform duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/30 dark:hover:bg-slate-900">
       <div className="group-hover:bg-primary/10 group-hover:text-primary group-hover:ring-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-colors dark:bg-slate-800 dark:ring-slate-700">
         <div className="group-hover:text-primary text-slate-500 transition-colors dark:text-slate-400">
           {icon}

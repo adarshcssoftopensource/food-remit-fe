@@ -51,7 +51,7 @@ export function FinancialStats({ stats, isLoading = false }: FinancialStatsProps
             <Link
               key={item.title}
               href={item.href}
-              className={`group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 ${item.accentBorder}`}
+              className={`group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-5 transition-colors transition-shadow transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 ${item.accentBorder}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
@@ -64,7 +64,7 @@ export function FinancialStats({ stats, isLoading = false }: FinancialStatsProps
                     {item.title}
                   </p>
                 </div>
-                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-4 w-4 text-slate-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
+                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-4 w-4 text-slate-300 transition-colors transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
               </div>
 
               <div className="mt-4">

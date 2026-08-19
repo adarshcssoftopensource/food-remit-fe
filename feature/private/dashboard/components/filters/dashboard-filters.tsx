@@ -29,7 +29,7 @@ export function DashboardFilters({
   isFetching = false,
 }: DashboardFiltersProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-4.5 shadow-xs backdrop-blur-md transition-all sm:p-5 dark:border-slate-800/80 dark:bg-slate-900/90">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-4.5 shadow-xs backdrop-blur-md transition-colors sm:p-5 dark:border-slate-800/80 dark:bg-slate-900/90">
       <div className="bg-primary/5 pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full blur-2xl" />
       <div className="pointer-events-none absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-indigo-500/5 blur-2xl" />
 
@@ -104,7 +104,7 @@ export function DashboardFilters({
               size="sm"
               onClick={onRefresh}
               disabled={isFetching}
-              className="group h-10 gap-2 rounded-xl border-slate-200/90 bg-white px-4 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="group h-10 gap-2 rounded-xl border-slate-200/90 bg-white px-4 text-xs font-semibold text-slate-700 shadow-xs transition-colors hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               <RefreshCw
                 className={`h-3.5 w-3.5 transition-transform duration-500 ${

@@ -87,7 +87,7 @@ export function ProfileForm() {
                       placeholder="Enter your first name"
                       aria-invalid={!!errors.firstName}
                       className={cn(
-                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
+                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
                         "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
                         errors.firstName &&
                           "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
@@ -117,7 +117,7 @@ export function ProfileForm() {
                       placeholder="Enter your last name"
                       aria-invalid={!!errors.lastName}
                       className={cn(
-                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-all duration-300 placeholder:text-gray-400/80",
+                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
 
                         "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
                         errors.lastName &&
@@ -184,7 +184,7 @@ export function ProfileForm() {
               type="submit"
               disabled={!isDirty || isSubmitting}
               isLoading={isSubmitting}
-              className="h-14 w-full rounded-xl text-base font-bold shadow-sm transition-all sm:w-auto sm:px-10"
+              className="h-14 w-full rounded-xl text-base font-bold shadow-sm transition-colors sm:w-auto sm:px-10"
             >
               <Check className="mr-2 h-5 w-5" />
               Save Changes

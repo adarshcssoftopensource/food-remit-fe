@@ -168,7 +168,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     }
                   }}
                   className={cn(
-                    "relative z-10 flex size-9 items-center justify-center rounded-full text-xs font-bold transition-all duration-300",
+                    "relative z-10 flex size-9 items-center justify-center rounded-full text-xs font-bold transition-colors duration-300",
                     isCompleted && "bg-emerald-600 text-white shadow-sm",
                     isActive && "scale-110 bg-emerald-700 text-white ring-4 ring-emerald-100",
                     !isCompleted &&
@@ -226,7 +226,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       placeholder="Enter business name"
                       aria-invalid={!!errors.businessName}
                       className={cn(
-                        "h-11 rounded-xl border-slate-200 bg-white text-sm transition-all focus-visible:border-emerald-600 focus-visible:ring-emerald-600/20",
+                        "h-11 rounded-xl border-slate-200 bg-white text-sm transition-colors focus-visible:border-emerald-600 focus-visible:ring-emerald-600/20",
                         errors.businessName && "border-red-400 bg-red-50/30",
                       )}
                     />
@@ -572,7 +572,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                             <label
                               key={opt}
                               className={cn(
-                                "flex min-h-16 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 shadow-sm transition-all",
+                                "flex min-h-16 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 shadow-sm transition-colors",
                                 isChecked
                                   ? "border-emerald-500 bg-emerald-50 font-medium text-emerald-950 shadow-emerald-100"
                                   : "border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30",
@@ -727,7 +727,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 <div className="mt-2 flex flex-col gap-1.5">
                   <label
                     className={cn(
-                      "flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-all",
+                      "flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors",
                       field.value
                         ? "border-emerald-500 bg-emerald-50/40"
                         : "border-slate-200 bg-white hover:border-slate-300",
@@ -782,7 +782,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             <Button
               type="submit"
               isLoading={isPending}
-              className="h-12 rounded-xl bg-emerald-700 px-7 text-sm font-bold text-white shadow-md transition-all hover:bg-emerald-800"
+              className="h-12 rounded-xl bg-emerald-700 px-7 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-800"
             >
               I’m Interested — Join Food Remit
             </Button>

@@ -43,7 +43,7 @@ export function ItemMediaCard({
           {mainImage?.src && (
             <button
               onClick={() => setLightboxSrc(mainImage.src)}
-              className="absolute right-2 bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
+              className="absolute right-2 bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-colors transition-opacity transition-transform duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
               title="View full screen"
             >
               <Expand className="h-3.5 w-3.5" />
@@ -98,7 +98,7 @@ export function ItemMediaCard({
                 variant={"ghost"}
                 key={src}
                 onClick={() => swapWithMain(originalIndex)}
-                className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:scale-[1.06] hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors transition-shadow transition-transform duration-200 hover:scale-[1.06] hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
               >
                 <Image
                   src={src}
@@ -111,7 +111,7 @@ export function ItemMediaCard({
                     {label}
                   </p>
                 </div>
-                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/30 group-hover:opacity-100">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-colors transition-opacity duration-200 group-hover:bg-black/30 group-hover:opacity-100">
                   <span className="rounded-full bg-white/90 px-1.5 py-0.5 text-[9px] font-bold text-slate-700 shadow">
                     View
                   </span>
@@ -133,7 +133,7 @@ export function ItemMediaCard({
                 key={src}
                 variant={"ghost"}
                 onClick={() => swapWithMain(originalIndex)}
-                className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:scale-[1.06] hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors transition-shadow transition-transform duration-200 hover:scale-[1.06] hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
               >
                 <Image
                   src={src}
@@ -146,7 +146,7 @@ export function ItemMediaCard({
                     {label}
                   </p>
                 </div>
-                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/30 group-hover:opacity-100">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-colors transition-opacity duration-200 group-hover:bg-black/30 group-hover:opacity-100">
                   <span className="rounded-full bg-white/90 px-1.5 py-0.5 text-[9px] font-bold text-slate-700 shadow">
                     View
                   </span>

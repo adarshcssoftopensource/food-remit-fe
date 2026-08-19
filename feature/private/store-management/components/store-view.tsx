@@ -178,7 +178,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                     <Button
                       variant="ghost"
                       onClick={() => setLightboxSrc(store.managerImage || null)}
-                      className="absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
+                      className="absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-colors transition-opacity transition-transform duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
                       title="View full screen"
                     >
                       <Expand className="h-2.5 w-2.5" />
