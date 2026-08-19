@@ -1,3 +1,4 @@
+import { APP_ASSETS } from "@/config/assets.config";
 import { ROUTES } from "@/config/routes";
 import { AUTH_FEATURES } from "@/constants/auth.constants";
 import Image from "next/image";
@@ -7,9 +8,8 @@ import React from "react";
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="brand-mesh-canvas relative flex min-h-screen w-full overflow-y-auto">
-      {/* Decorative ambient background glows */}
-      <div className="pointer-events-none absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-linear-to-br from-emerald-500/10 to-teal-500/0 blur-3xl" />
-      <div className="pointer-events-none absolute -right-40 -bottom-40 h-[500px] w-[500px] rounded-full bg-linear-to-tl from-emerald-600/10 to-transparent blur-3xl" />
+      <div className="pointer-events-none absolute -top-40 -left-40 h-125 w-125 rounded-full bg-linear-to-br from-emerald-500/10 to-teal-500/0 blur-3xl" />
+      <div className="pointer-events-none absolute -right-40 -bottom-40 h-125 w-125 rounded-full bg-linear-to-tl from-emerald-600/10 to-transparent blur-3xl" />
 
       <div className="pointer-events-none absolute bottom-0 left-0 z-0 h-96 w-96 opacity-40">
         <Image
@@ -26,8 +26,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="flex max-w-md flex-col items-center">
           <Link href={ROUTES.ROOT} className="transition-transform duration-200 hover:scale-105">
             <Image
-              src="/food_remid_logo.png"
-              alt="Food Remit"
+              src={APP_ASSETS.LOGO.PATH}
+              alt={APP_ASSETS.LOGO.ALT}
               width={250}
               height={250}
               priority

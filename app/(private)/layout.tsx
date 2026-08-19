@@ -1,6 +1,6 @@
-import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopBar } from "@/components/app-topbar";
 import { ProfileProvider } from "@/components/providers/profile-provider";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {

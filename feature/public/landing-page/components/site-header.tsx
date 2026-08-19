@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { APP_ASSETS } from "@/config/assets.config";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { VENDOR_NAV_LINKS } from "../../../../constants/landing.constants";
@@ -46,8 +47,8 @@ export function SiteHeader() {
           )}
         >
           <Image
-            src="/food_remid_logo.png"
-            alt="Food Remit"
+            src={APP_ASSETS.LOGO.PATH}
+            alt={APP_ASSETS.LOGO.ALT}
             width={140}
             height={40}
             priority

@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
+import { APP_ASSETS } from "@/config/assets.config";
 import { ROUTES } from "@/config/routes";
 import { VENDOR_NAV_LINKS } from "../../../../constants/landing.constants";
 
@@ -10,8 +13,8 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 sm:px-8 md:flex-row md:items-center md:justify-between">
         <div>
           <Image
-            src="/food_remid_logo.png"
-            alt="Food Remit"
+            src={APP_ASSETS.LOGO.PATH}
+            alt={APP_ASSETS.LOGO.ALT}
             width={120}
             height={36}
             className="h-8 w-auto object-contain"

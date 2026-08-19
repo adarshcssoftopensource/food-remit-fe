@@ -1,5 +1,6 @@
 "use client";
 
+import { APP_ASSETS } from "@/config/assets.config";
 import Image from "next/image";
 
 export function ProfileLoadingScreen() {
@@ -14,8 +15,8 @@ export function ProfileLoadingScreen() {
 
           <div className="relative rounded-3xl">
             <Image
-              src="/food_remid_logo.png"
-              alt="Food Remit"
+              src={APP_ASSETS.LOGO.PATH}
+              alt={APP_ASSETS.LOGO.ALT}
               width={150}
               height={50}
               className="h-auto w-auto object-contain"
