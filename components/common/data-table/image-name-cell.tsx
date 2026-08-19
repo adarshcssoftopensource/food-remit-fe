@@ -14,7 +14,6 @@ export function ImageNameCell({ name, image, type = "logo" }: ImageNameCellProps
     .join("");
 
   const isProfile = type === "profile";
-  console.log({ image });
 
   return (
     <div className={`flex items-center ${isProfile ? "gap-2.5" : "gap-3"}`}>

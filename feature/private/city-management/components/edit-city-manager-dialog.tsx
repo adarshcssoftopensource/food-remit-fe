@@ -3,7 +3,6 @@
 import { successToast } from "@/components/toaster";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { CityManagerData } from "@/feature/private/city-management/types/city-manager";
-import { PencilLine } from "lucide-react";
 import { useMemo, useState } from "react";
 import { type CityManagerFormValues } from "../schema/city-manager.schema";
 import { CityManagerForm } from "./city-manager-form";

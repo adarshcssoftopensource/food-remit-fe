@@ -3,13 +3,12 @@
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { format } from "date-fns";
-import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User, Users } from "lucide-react";
-import Image from "next/image";
 import { ROUTES } from "@/config/routes";
+import { formatDate } from "@/lib/date";
+import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetCategory } from "./hooks/use-get-category";
-import { formatDate } from "@/lib/date";
 
 interface CategoryViewProps {
   id: string;

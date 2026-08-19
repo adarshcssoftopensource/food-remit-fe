@@ -1,22 +1,26 @@
-import { ColumnDef } from "@tanstack/react-table";
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { formatDate } from "@/lib/date";
+import { ColumnDef } from "@tanstack/react-table";
 import { DepartmentActionsCell } from "../components/department-actions-cell";
 import { DepartmentData } from "../types/department.types";
-import { formatDate } from "@/lib/date";
+
+import { Badge } from "@/components/ui/badge";
 
 function StatusBadge({ status }: { status: string }) {
   const isActive = status === "ACTIVE";
+
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-        isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"
-      }`}
+    <Badge
+      variant="outline"
+      className={
+        isActive
+          ? "border-green-200 bg-green-50 text-green-700"
+          : "border-red-200 bg-red-50 text-red-600"
+      }
     >
-      <span
-        className={`inline-block size-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-red-500"}`}
-      />
+      <span className={`size-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-red-500"}`} />
       {isActive ? "Active" : "Inactive"}
-    </span>
+    </Badge>
   );
 }
 

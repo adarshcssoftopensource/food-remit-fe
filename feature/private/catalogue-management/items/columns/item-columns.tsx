@@ -1,34 +1,13 @@
+import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
-import { Package } from "lucide-react";
-import { ItemData } from "../types/item.types";
 import {
   ItemActionsCell,
-  ItemAvailabilityCell,
   ItemAdminShareCell,
+  ItemAvailabilityCell,
   ItemDiscountAvailabilityCell,
 } from "../components/item-actions-cell";
-import { formatDate } from "@/lib/date";
-
-function ItemNameCell({ row }: { row: { original: ItemData } }) {
-  const { productName, productImageUrl } = row.original;
-  return (
-    <div className="flex items-center gap-2.5">
-      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border bg-slate-50">
-        {productImageUrl ? (
-          <Image src={productImageUrl} alt={productName} fill className="object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <Package className="h-5 w-5 text-slate-300" />
-          </div>
-        )}
-      </div>
-      <div>
-        <p className="text-sm font-medium text-slate-800">{productName}</p>
-      </div>
-    </div>
-  );
-}
+import { ItemData } from "../types/item.types";
 
 export function getItemColumns(
   onEdit: (item: ItemData) => void,
@@ -45,7 +24,9 @@ export function getItemColumns(
     {
       accessorKey: "productName",
       header: "Product Name",
-      cell: ({ row }) => <ItemNameCell row={row} />,
+      cell: ({ row }) => (
+        <ImageNameCell name={row.original.productName} image={row.original.productImage} />
+      ),
     },
     {
       id: "storeName",

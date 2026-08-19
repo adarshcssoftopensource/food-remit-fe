@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { getInitials } from "@/lib/get-initials";
 import { formatDate } from "@/lib/date";
+import { getInitials } from "@/lib/get-initials";
 import { SubAdminData } from "../types/sub-admin.types";
 import { InfoCard } from "./info-card";
 

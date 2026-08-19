@@ -1,9 +1,9 @@
+import { Checkbox } from "@/components/ui/checkbox";
+import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ActionsCell } from "../components/actions-cell";
 import { UserData } from "../types/user.types";
-import { formatDate } from "@/lib/date";
 
 function UserStatusBadge({ status }: { status: UserData["userStatus"] }) {
   const isActive = status === "ACTIVE";

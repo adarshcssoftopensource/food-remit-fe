@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { SortingState } from "@tanstack/react-table";
-import { useDebounce } from "@/lib/debounce";
-import { format } from "date-fns";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
+import { useDebounce } from "@/lib/debounce";
+import { SortingState } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { useState } from "react";
 
 export function useTableFilters(defaultPageSize = DEFAULT_PAGE_SIZE) {
   const [fromDate, setFromDate] = useState<Date>();

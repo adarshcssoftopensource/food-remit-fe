@@ -22,9 +22,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
+import { ROUTES } from "@/config/routes";
 import { formatDateTime } from "@/lib/date";
 import Image from "next/image";
-import { ROUTES } from "@/config/routes";
 
 type TabKey = "profile" | "requested" | "sent" | "received";
 

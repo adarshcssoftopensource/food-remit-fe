@@ -10,7 +10,6 @@ import type {
   UseGetSubAdminsArgs,
 } from "../types/sub-admin.types";
 
-/** Raw shape returned by the API before normalisation. */
 interface RawGetSubAdminsResponse {
   message: string;
   stats?: {

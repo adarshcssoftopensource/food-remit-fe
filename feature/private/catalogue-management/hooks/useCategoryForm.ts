@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { toast } from "sonner";
-import { CategoryData } from "../categories/types/category.types";
+import { z } from "zod";
 import { useCreateCategory } from "../categories/hooks/use-create-category";
 import { useUpdateCategory } from "../categories/hooks/use-update-category";
+import { CategoryData } from "../categories/types/category.types";
 
 const categorySchema = z
   .object({

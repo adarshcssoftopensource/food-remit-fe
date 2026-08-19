@@ -12,19 +12,23 @@ type CityManagerColumnsConfig = {
   onToggleStatus: (id: string, checked: boolean) => void;
 };
 
+import { Badge } from "@/components/ui/badge";
+
 function StatusBadge({ status }: { status: CityManagerData["status"] }) {
   const isActive = status === "Active";
+
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-        isActive ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
-      }`}
+    <Badge
+      variant="outline"
+      className={
+        isActive
+          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+          : "border-red-200 bg-red-50 text-red-600"
+      }
     >
-      <span
-        className={`inline-block size-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`}
-      />
+      <span className={`size-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
       {status}
-    </span>
+    </Badge>
   );
 }
 

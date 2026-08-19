@@ -1,4 +1,4 @@
-import { APP_ASSETS } from "@/config/assets.config";
+import { APP_ASSETS } from "@/config/assets";
 import { ROUTES } from "@/config/routes";
 import { AUTH_FEATURES } from "@/constants/auth.constants";
 import Image from "next/image";
@@ -13,8 +13,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       <div className="pointer-events-none absolute bottom-0 left-0 z-0 h-96 w-96 opacity-40">
         <Image
-          src="/login_background_image.png"
-          alt="Food Decor"
+          src={APP_ASSETS.IMAGES.LOGIN_BACKGROUND.PATH}
+          alt={APP_ASSETS.IMAGES.LOGIN_BACKGROUND.ALT}
           fill
           sizes="(max-width: 1024px) 0px, 400px"
           priority

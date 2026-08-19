@@ -1,16 +1,16 @@
 "use client";
 
-import { use } from "react";
-import { useRouter } from "next/navigation";
-import { Building2, Mail, MapPin, Phone, UserCircle } from "lucide-react";
-import Image from "next/image";
-import { ROUTES } from "@/config/routes";
+import { StoreViewPageProps } from "@/app/(private)/store-management/[id]/page";
+import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
 import { useGetStore } from "@/feature/private/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
-import { StoreViewPageProps } from "@/app/(private)/store-management/[id]/page";
+import { Building2, Mail, MapPin, Phone, UserCircle } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { use } from "react";
 import StoreScaltonLoading from "./store-scalton-loading";
-import { PageHeader } from "@/components/common/page-header";
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (

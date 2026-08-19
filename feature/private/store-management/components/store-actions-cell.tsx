@@ -3,16 +3,15 @@
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { type StoreData } from "@/feature/private/store-management/types/store-management";
-import { ExternalLink, Eye, Pencil } from "lucide-react";
-import { useState } from "react";
-import { EditStoreDialog } from "./edit-store-dialog";
-import { useUpdateStore } from "../hooks/use-update-store";
-import { useQueryClient } from "@tanstack/react-query";
-import { errorToast } from "@/components/toaster";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { ROUTES } from "@/config/routes";
+import { type StoreData } from "@/feature/private/store-management/types/store-management";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { useQueryClient } from "@tanstack/react-query";
+import { Eye, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useUpdateStore } from "../hooks/use-update-store";
+import { EditStoreDialog } from "./edit-store-dialog";
 
 export function StoreActionsCell({ store }: { store: StoreData }) {
   const router = useRouter();

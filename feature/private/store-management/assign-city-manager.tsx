@@ -1,20 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Globe, UserCheck, MapPin, Store, X, CheckCircle2, Building2, Layers } from "lucide-react";
+import { Building2, CheckCircle2, Globe, Layers, MapPin, Store, UserCheck, X } from "lucide-react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { useMemo, useEffect } from "react";
 
 import { PageHeader } from "@/components/common/page-header";
-import { useApiMutation, useApiQuery } from "@/hooks/useApi";
-import { STORE_ENDPOINTS } from "@/lib/api/endpoints/store.endpoints";
-import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
-import { successToast, errorToast } from "@/components/toaster";
+import { errorToast, successToast } from "@/components/toaster";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -24,6 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
+import { useApiMutation, useApiQuery } from "@/hooks/useApi";
+import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
+import { STORE_ENDPOINTS } from "@/lib/api/endpoints/store.endpoints";
 import {
   assignCityManagerSchema,
   type AssignCityManagerFormValues,

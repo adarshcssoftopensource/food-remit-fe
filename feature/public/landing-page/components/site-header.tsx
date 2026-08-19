@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { buttonVariants } from "@/components/ui/button";
-import { APP_ASSETS } from "@/config/assets.config";
+import { APP_ASSETS } from "@/config/assets";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { VENDOR_NAV_LINKS } from "../../../../constants/landing.constants";

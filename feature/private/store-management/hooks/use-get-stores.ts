@@ -1,6 +1,3 @@
-import { useApiQuery } from "@/hooks/useApi";
-import { buildUrl } from "@/lib/build-query-string";
-import { useMemo } from "react";
 import type {
   RawStore,
   SingleStoreResponse,
@@ -8,8 +5,11 @@ import type {
   StoreListResponse,
   UseGetStoresArgs,
 } from "@/feature/private/store-management/types/store-management";
-import { STORE_ENDPOINTS } from "@/lib/api/endpoints/store.endpoints";
+import { useApiQuery } from "@/hooks/useApi";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { STORE_ENDPOINTS } from "@/lib/api/endpoints/store.endpoints";
+import { buildUrl } from "@/lib/build-query-string";
+import { useMemo } from "react";
 
 export function useGetStores(args?: UseGetStoresArgs) {
   const queryString = buildUrl("", {

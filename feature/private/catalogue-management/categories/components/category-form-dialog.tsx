@@ -2,6 +2,8 @@
 
 import { Building2, Loader2 } from "lucide-react";
 
+import { CountrySelect } from "@/components/common/country-select";
+import { DepartmentSelect } from "@/components/common/department-select";
 import { ImageUpload } from "@/components/common/image-upload";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,10 +22,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { DepartmentSelect } from "@/components/common/department-select";
-import { CountrySelect } from "@/components/common/country-select";
-import type { CategoryData } from "../types/category.types";
 import { CategoryFormValues, useCategoryForm } from "../../hooks/useCategoryForm";
+import type { CategoryData } from "../types/category.types";
 
 interface CategoryFormDialogProps {
   open: boolean;

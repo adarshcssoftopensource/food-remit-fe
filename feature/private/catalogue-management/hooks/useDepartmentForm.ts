@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { toast } from "sonner";
-import { DepartmentData } from "../departments/types/department.types";
+import { z } from "zod";
 import { useCreateDepartment } from "../departments/hooks/use-create-department";
 import { useUpdateDepartment } from "../departments/hooks/use-update-department";
+import { DepartmentData } from "../departments/types/department.types";
 
 const departmentSchema = z
   .object({

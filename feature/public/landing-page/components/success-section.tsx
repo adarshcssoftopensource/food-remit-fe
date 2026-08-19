@@ -1,3 +1,4 @@
+import { APP_ASSETS } from "@/config/assets";
 import { HandCoins, Headphones, Shield } from "lucide-react";
 import Image from "next/image";
 
@@ -9,10 +10,10 @@ export function SuccessSection() {
   return (
     <section className="bg-[#f8faf8] py-20 sm:py-28">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
-        <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem]">
+        <div className="relative aspect-5/4 overflow-hidden rounded-[2rem]">
           <Image
-            src="/vendor/payment.jpg"
-            alt="Secure payment and business settlement"
+            src={APP_ASSETS.IMAGES.VENDOR_PAYMENT.PATH}
+            alt={APP_ASSETS.IMAGES.VENDOR_PAYMENT.ALT}
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover"

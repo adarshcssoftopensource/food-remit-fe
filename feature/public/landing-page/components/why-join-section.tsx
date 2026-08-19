@@ -1,3 +1,4 @@
+import { APP_ASSETS } from "@/config/assets";
 import { Check } from "lucide-react";
 import Image from "next/image";
 
@@ -43,8 +44,8 @@ export function WhyJoinSection() {
 
         <div className="relative aspect-4/5 overflow-hidden rounded-[2rem] sm:aspect-5/4 lg:aspect-4/5">
           <Image
-            src="/vendor/grocery.jpg"
-            alt="Fresh groceries prepared for local pickup"
+            src={APP_ASSETS.IMAGES.VENDOR_GROCERY.PATH}
+            alt={APP_ASSETS.IMAGES.VENDOR_GROCERY.ALT}
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover"

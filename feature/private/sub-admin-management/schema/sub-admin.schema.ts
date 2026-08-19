@@ -12,8 +12,6 @@ export const subAdminSchema = z.object({
     .min(1, "Email is required")
     .email("Enter a valid email address (e.g. user@example.com)"),
 
-  // Stored as the full international number e.g. "919876543210"
-  // react-phone-input-2 returns digits only (no +), min 10 digits after country code
   phone: z
     .string()
     .min(1, "Phone number is required")

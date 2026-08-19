@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { APP_ASSETS } from "@/config/assets.config";
+import { APP_ASSETS } from "@/config/assets";
 import { ROUTES } from "@/config/routes";
 import { VENDOR_NAV_LINKS } from "../../../../constants/landing.constants";
 

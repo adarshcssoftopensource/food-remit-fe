@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { APP_ASSETS } from "@/config/assets.config";
+import { APP_ASSETS } from "@/config/assets";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import Image from "next/image";

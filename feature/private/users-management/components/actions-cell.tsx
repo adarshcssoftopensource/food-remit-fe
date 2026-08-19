@@ -1,22 +1,18 @@
 "use client";
-import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Eye, Trash2 } from "lucide-react";
 import { ROUTES } from "@/config/routes";
+import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useDeleteUser } from "../hooks/use-delete-user";
 import { useUpdateUserStatus } from "../hooks/use-update-user-status";
 import { UserData } from "../types/user.types";
 
 export function ActionsCell({ user }: { user: UserData }) {
   const router = useRouter();
   const [isActive, setIsActive] = useState(user.userStatus === "ACTIVE");
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const updateUserStatus = useUpdateUserStatus(user.id);
-  const deleteUser = useDeleteUser(user.id);
 
   const handleStatusChange = (checked: boolean) => {
     setIsActive(checked);
@@ -32,18 +28,6 @@ export function ActionsCell({ user }: { user: UserData }) {
         },
       },
     );
-  };
-
-  const handleDelete = () => {
-    deleteUser.mutate(undefined, {
-      onSuccess: () => {
-        setIsDeleteDialogOpen(false);
-        toast.success("User has been deleted successfully");
-      },
-      onError: () => {
-        toast.error("Failed to delete user");
-      },
-    });
   };
 
   return (

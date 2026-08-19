@@ -1,8 +1,11 @@
 "use client";
 
-import { Boxes, ImageIcon, Layers3, Package2, Save, Wrench } from "lucide-react";
 import { generateUpcCode } from "@/lib/utils/generate-upc";
+import { Boxes, ImageIcon, Layers3, Package2, Save, Wrench } from "lucide-react";
 
+import { CategorySelect } from "@/components/common/category-select";
+import { CountrySelect } from "@/components/common/country-select";
+import { DepartmentSelect } from "@/components/common/department-select";
 import { ImageUpload } from "@/components/common/image-upload";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,11 +33,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ItemData } from "../types/item.types";
 import { ItemFormValues, useItemForm } from "../../hooks/useItemForm";
-import { CountrySelect } from "@/components/common/country-select";
-import { DepartmentSelect } from "@/components/common/department-select";
-import { CategorySelect } from "@/components/common/category-select";
+import { ItemData } from "../types/item.types";
 
 interface ItemFormDialogProps {
   open: boolean;

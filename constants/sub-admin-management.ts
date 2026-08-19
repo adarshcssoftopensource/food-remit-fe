@@ -44,3 +44,9 @@ export const COUNTRY_CODES = [
   { value: "61", label: "+61 (Australia)" },
   { value: "93", label: "+93 (Afghanistan)" },
 ];
+
+export const colorMap: Record<string, string> = {
+  primary: "bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary/90",
+  emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400",
+  amber: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400",
+};

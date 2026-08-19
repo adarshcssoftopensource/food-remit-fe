@@ -58,7 +58,7 @@ export function RecycleBinFilters({
       onClearFilters={onClearFilters}
       activeFilterCount={activeFilterCount}
     >
-      <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+      <div className="min-w-70 flex-1 sm:min-w-[320px]">
         <DateRangeFilter
           fromDate={fromDate}
           toDate={toDate}

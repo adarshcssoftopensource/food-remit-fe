@@ -1,6 +1,6 @@
 "use client";
 
-import { APP_ASSETS } from "@/config/assets.config";
+import { APP_ASSETS } from "@/config/assets";
 import Image from "next/image";
 
 export function ProfileLoadingScreen() {

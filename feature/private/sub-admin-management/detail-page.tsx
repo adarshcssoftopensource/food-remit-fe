@@ -1,7 +1,7 @@
 "use client";
 
+import { PageHeader } from "@/components/common/page-header";
 import {
-  ArrowLeft,
   CalendarDays,
   CheckCircle2,
   Mail,
@@ -11,47 +11,19 @@ import {
   Users,
   XCircle,
 } from "lucide-react";
-import { PageHeader } from "@/components/common/page-header";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/config/routes";
+import { formatDate } from "@/lib/date";
 import { getInitials } from "@/lib/get-initials";
 import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/date";
 
+import { colorMap } from "@/constants/sub-admin-management";
+import { DetailSkeleton } from "./components/detail-skeleton";
 import { useGetSubAdminById } from "./hooks/use-get-sub-admin-by-id";
 
 interface SubAdminDetailPageProps {
   id: string;
-}
-
-function DetailSkeleton() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Skeleton className="h-9 w-24 rounded-xl" />
-        <Skeleton className="h-6 w-40" />
-      </div>
-      <div className="rounded-3xl border p-8">
-        <div className="flex items-center gap-6">
-          <Skeleton className="h-24 w-24 rounded-[22px]" />
-          <div className="space-y-3">
-            <Skeleton className="h-8 w-56" />
-            <Skeleton className="h-4 w-40" />
-            <div className="flex gap-2">
-              <Skeleton className="h-7 w-24 rounded-full" />
-              <Skeleton className="h-7 w-20 rounded-full" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-        <Skeleton className="h-56 rounded-3xl" />
-        <Skeleton className="h-56 rounded-3xl" />
-      </div>
-    </div>
-  );
 }
 
 export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
@@ -91,15 +63,8 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
     },
   ];
 
-  const colorMap: Record<string, string> = {
-    primary: "bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary/90",
-    emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400",
-    amber: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400",
-  };
-
   return (
     <div className="space-y-6">
-      {/* ── Top bar: Breadcrumbs ── */}
       <div className="flex items-center justify-between">
         <PageHeader
           breadcrumbs={[
@@ -109,22 +74,17 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
         />
       </div>
 
-      {/* ── Hero Profile Card ── */}
       <Card className="relative overflow-hidden rounded-3xl border-0 shadow-lg">
-        {/* Gradient blobs */}
         <div className="bg-primary/8 pointer-events-none absolute -top-24 -right-16 h-80 w-80 rounded-full blur-3xl" />
         <div className="bg-primary/5 pointer-events-none absolute -bottom-20 left-1/3 h-64 w-64 rounded-full blur-3xl" />
 
         <CardContent className="relative p-6 sm:p-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            {/* Avatar + Info */}
             <div className="flex items-center gap-5">
-              {/* Avatar */}
               <div className="relative shrink-0">
                 <div className="from-primary/20 via-primary/10 to-primary/5 text-primary ring-primary/15 flex h-20 w-20 items-center justify-center rounded-[22px] bg-linear-to-br text-2xl font-black shadow-sm ring-1 sm:h-24 sm:w-24 sm:text-3xl">
                   {initials}
                 </div>
-                {/* Active/Inactive status dot */}
                 <span
                   className={cn(
                     "absolute -right-1.5 -bottom-1.5 flex h-6 w-6 items-center justify-center rounded-full border-[3px] border-white shadow-sm dark:border-slate-950",
@@ -135,7 +95,6 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
                 </span>
               </div>
 
-              {/* Text info */}
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="truncate text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
@@ -147,9 +106,7 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
                   {admin.email}
                 </p>
 
-                {/* Status + Permissions count badges */}
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  {/* Status — read-only indicator */}
                   <div
                     className={cn(
                       "flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold",
@@ -175,7 +132,6 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
               </div>
             </div>
 
-            {/* Right side — read-only status panel */}
             <div className="flex shrink-0 flex-col items-end gap-2">
               <div
                 className={cn(
@@ -199,9 +155,7 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
         </CardContent>
       </Card>
 
-      {/* ── Info Grid ── */}
       <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-        {/* Personal Information */}
         <Card className="overflow-hidden rounded-3xl border border-slate-200/80 shadow-sm dark:border-slate-800">
           <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
             <div className="flex items-center justify-between">
@@ -248,7 +202,6 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
           </CardContent>
         </Card>
 
-        {/* Permissions */}
         <Card className="overflow-hidden rounded-3xl border border-slate-200/80 shadow-sm dark:border-slate-800">
           <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
             <div className="flex items-center justify-between">

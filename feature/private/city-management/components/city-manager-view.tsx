@@ -1,14 +1,14 @@
 "use client";
 
 import { CityManagerViewPageProps } from "@/app/(private)/city-management/[id]/page";
+import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/config/routes";
 import { useGetCityManager } from "@/feature/private/city-management/hooks/use-get-city-manager";
 import { useGetStores } from "@/feature/private/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
-import { ArrowLeft, Globe2, Store, UserCircle } from "lucide-react";
+import { Globe2, Store, UserCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { use } from "react";

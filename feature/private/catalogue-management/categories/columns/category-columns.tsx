@@ -1,8 +1,8 @@
-import { ColumnDef } from "@tanstack/react-table";
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
-import { CategoryData } from "../types/category.types";
-import { CategoryActionsCell } from "../components/category-actions-cell";
 import { formatDate } from "@/lib/date";
+import { ColumnDef } from "@tanstack/react-table";
+import { CategoryActionsCell } from "../components/category-actions-cell";
+import { CategoryData } from "../types/category.types";
 
 function StatusBadge({ status }: { status: string }) {
   const isActive = status === "ACTIVE";

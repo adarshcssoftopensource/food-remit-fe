@@ -1,26 +1,25 @@
 "use client";
 
+import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import {
   type StoreData,
   type StoreStatus,
 } from "@/feature/private/store-management/types/store-management";
 import { ColumnDef } from "@tanstack/react-table";
-import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { StoreActionsCell } from "../components/store-actions-cell";
+
+import { Badge } from "@/components/ui/badge";
 
 function StoreStatusBadge({ status }: { status: StoreData["status"] }) {
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${STORE_STATUS_STYLES[status]}`}
-    >
+    <Badge variant="outline" className={STORE_STATUS_STYLES[status]}>
       <span
         className={`size-1.5 rounded-full ${status === "Active" ? "bg-emerald-500" : "bg-red-500"}`}
       />
       {status}
-    </span>
+    </Badge>
   );
 }
-
 function TaxCell({ value }: { value: number }) {
   return <span className="text-sm font-medium text-slate-700">{value.toFixed(2)}%</span>;
 }

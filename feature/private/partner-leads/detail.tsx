@@ -1,12 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
 import { format } from "date-fns";
 import { Activity, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ROUTES } from "@/config/routes";
 import { useState } from "react";
 
+import { PageHeader } from "@/components/common/page-header";
 import {
   Select,
   SelectContent,
@@ -21,7 +22,6 @@ import { ContactInformationCard } from "./components/cards/contact-information-c
 import { LocationDetailsCard } from "./components/cards/location-details-card";
 import { OperationalPreferencesCard } from "./components/cards/operational-preferences-card";
 import { PartnerLeadDetailSkeleton } from "./components/partner-lead-detail-skeleton";
-import { PageHeader } from "@/components/common/page-header";
 import { UpdateStatusDialog } from "./components/update-status-dialog";
 import { usePartnerLead } from "./hooks/use-get-partner-lead";
 import { useUpdateLeadStatus } from "./hooks/use-update-lead-status";

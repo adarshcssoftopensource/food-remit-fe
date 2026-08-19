@@ -1,4 +1,5 @@
 import { buttonVariants } from "@/components/ui/button";
+import { APP_ASSETS } from "@/config/assets";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
@@ -9,8 +10,8 @@ export function HeroSection() {
   return (
     <section className="relative isolate flex min-h-svh items-end overflow-hidden pt-28 pb-16 sm:items-center sm:pt-32 sm:pb-24">
       <Image
-        src="/vendor/hero-store.jpg"
-        alt="Grocery store owner welcoming customers"
+        src={APP_ASSETS.IMAGES.HERO_STORE.PATH}
+        alt={APP_ASSETS.IMAGES.HERO_STORE.ALT}
         fill
         priority
         sizes="100vw"

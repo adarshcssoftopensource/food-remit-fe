@@ -1,25 +1,25 @@
 "use client";
 
 import { PageHeader } from "@/components/common/page-header";
-import { ROUTES } from "@/config/routes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ROUTES } from "@/config/routes";
+import { formatDate } from "@/lib/date";
 import {
   ArrowLeft,
+  Barcode,
   Building2,
   Calendar,
   Clock,
   Layers,
   MapPin,
   Package,
-  Barcode,
-  Scale,
   Percent,
+  Scale,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetItemById } from "./hooks/use-get-item-by-id";
-import { formatDate } from "@/lib/date";
 
 interface ItemViewProps {
   id: string;

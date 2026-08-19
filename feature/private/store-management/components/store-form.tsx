@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, UserCircle } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 
+import { ImageUpload } from "@/components/common/image-upload";
+import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,13 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Country, State, City } from "country-state-city";
-import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
-import { storeSchema, type StoreFormValues } from "../schema/store.schema";
+import { City, Country, State } from "country-state-city";
+import React from "react";
 import { useGetCities } from "../../settings/hooks/use-get-cities";
 import { useGetCountriesDropdown } from "../../settings/hooks/use-get-countries-dropdown";
-import { ImageUpload } from "@/components/common/image-upload";
-import React from "react";
+import { storeSchema, type StoreFormValues } from "../schema/store.schema";
 
 interface StoreFormProps {
   initialValues?: Partial<StoreFormValues>;

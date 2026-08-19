@@ -1,13 +1,12 @@
 "use client";
 
-// Select component removed
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
 import { Eye } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-import { PartnerLeadData } from "../types/partner-lead.types";
-import { ColumnDef } from "@tanstack/react-table";
 import { getStatusColor } from "@/constants/partner.leads";
+import { ColumnDef } from "@tanstack/react-table";
+import { PartnerLeadData } from "../types/partner-lead.types";
 
 export const getPartnerLeadColumns = (
   onView: (id: string) => void,

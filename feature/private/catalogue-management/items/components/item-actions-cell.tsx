@@ -1,12 +1,11 @@
 "use client";
 
+import { errorToast, successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Eye, Pencil } from "lucide-react";
-import { useState } from "react";
-import { ItemData } from "../types/item.types";
 import { useUpdateItemStatus } from "../hooks/use-update-item-status";
-import { successToast, errorToast } from "@/components/toaster";
+import { ItemData } from "../types/item.types";
 
 interface ItemActionsCellProps {
   item: ItemData;

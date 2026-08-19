@@ -1,12 +1,12 @@
 "use client";
 
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { CategoryData } from "../types/category.types";
-import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
 import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
-import { successToast, errorToast } from "@/components/toaster";
+import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
+import { CategoryData } from "../types/category.types";
 
 interface CategoryActionsCellProps {
   category: CategoryData;

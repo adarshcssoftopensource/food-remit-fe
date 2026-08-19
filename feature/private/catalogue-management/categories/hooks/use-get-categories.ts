@@ -1,4 +1,5 @@
 import { useApiQuery } from "@/hooks/useApi";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-management.endpoints";
 import { buildCacheKey, buildUrl } from "@/lib/build-query-string";
 import { useMemo } from "react";
@@ -7,7 +8,6 @@ import type {
   GetCategoriesResponse,
   UseGetCategoriesArgs,
 } from "../types/category.types";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
 interface RawGetCategoriesResponse {
   message: string;

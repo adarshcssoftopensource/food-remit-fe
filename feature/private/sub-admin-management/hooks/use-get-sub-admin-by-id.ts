@@ -1,5 +1,5 @@
-import { SUB_ADMIN_ENDPOINTS } from "@/lib/api/endpoints/sub-admin.endpoints";
 import { fetcher } from "@/hooks/useApi";
+import { SUB_ADMIN_ENDPOINTS } from "@/lib/api/endpoints/sub-admin.endpoints";
 import { useQuery } from "@tanstack/react-query";
 import type { SubAdminData } from "../types/sub-admin.types";
 

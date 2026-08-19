@@ -1,8 +1,8 @@
 "use client";
 
 import { DataTable } from "@/components/common/data-table/data-table";
-import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { DepartmentSelect } from "@/components/common/department-select";
+import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";

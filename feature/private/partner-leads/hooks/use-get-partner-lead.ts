@@ -1,6 +1,6 @@
 import { useApiQuery } from "@/hooks/useApi";
-import { PARTNER_LEAD_ENDPOINTS } from "@/lib/api/endpoints/partner-lead.endpoints";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { PARTNER_LEAD_ENDPOINTS } from "@/lib/api/endpoints/partner-lead.endpoints";
 import { PartnerLeadData } from "../types/partner-lead.types";
 
 export function usePartnerLead(id: string) {

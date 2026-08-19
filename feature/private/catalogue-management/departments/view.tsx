@@ -3,12 +3,12 @@
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ROUTES } from "@/config/routes";
+import { formatDate } from "@/lib/date";
 import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User, Users } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetDepartment } from "./hooks/use-get-department";
-import { formatDate } from "@/lib/date";
-import { ROUTES } from "@/config/routes";
 
 interface DepartmentViewProps {
   id: string;

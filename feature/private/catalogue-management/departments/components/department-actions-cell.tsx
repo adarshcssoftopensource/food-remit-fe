@@ -1,10 +1,10 @@
 "use client";
 
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Eye, Pencil } from "lucide-react";
 import { useState } from "react";
-import { successToast, errorToast } from "@/components/toaster";
 import { useUpdateDepartmentStatus } from "../hooks/use-update-department-status";
 import { DepartmentData } from "../types/department.types";
 
