@@ -1,4 +1,5 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import type { CityManagerData } from "@/feature/private/city-management/types/city-manager";
@@ -11,26 +12,6 @@ type CityManagerColumnsConfig = {
   onEdit: (manager: CityManagerData) => void;
   onToggleStatus: (id: string, checked: boolean) => void;
 };
-
-import { Badge } from "@/components/ui/badge";
-
-function StatusBadge({ status }: { status: CityManagerData["status"] }) {
-  const isActive = status === "Active";
-
-  return (
-    <Badge
-      variant="outline"
-      className={
-        isActive
-          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-          : "border-red-200 bg-red-50 text-red-600"
-      }
-    >
-      <span className={`size-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`} />
-      {status}
-    </Badge>
-  );
-}
 
 export function getCityManagerColumns({
   onView,

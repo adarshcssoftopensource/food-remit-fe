@@ -1,28 +1,9 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { StatusBadge } from "@/components/common/status-badge";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { DepartmentActionsCell } from "../components/department-actions-cell";
 import { DepartmentData } from "../types/department.types";
-
-import { Badge } from "@/components/ui/badge";
-
-function StatusBadge({ status }: { status: string }) {
-  const isActive = status === "ACTIVE";
-
-  return (
-    <Badge
-      variant="outline"
-      className={
-        isActive
-          ? "border-green-200 bg-green-50 text-green-700"
-          : "border-red-200 bg-red-50 text-red-600"
-      }
-    >
-      <span className={`size-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-red-500"}`} />
-      {isActive ? "Active" : "Inactive"}
-    </Badge>
-  );
-}
 
 export function getDepartmentColumns(
   onEdit: (dept: DepartmentData) => void,
@@ -78,7 +59,12 @@ export function getDepartmentColumns(
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: ({ row }) => (
+        <StatusBadge
+          status={row.original.status === "ACTIVE" ? "Active" : "Inactive"}
+          activeLabel="Active"
+        />
+      ),
     },
     {
       id: "actions",

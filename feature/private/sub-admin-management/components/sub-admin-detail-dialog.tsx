@@ -2,6 +2,7 @@
 
 import { CalendarDays, CheckCircle2, Mail, Phone, ShieldCheck, User, Users } from "lucide-react";
 
+import { StatusBadge } from "@/components/common/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -89,20 +90,11 @@ export function SubAdminDetailDialog({ admin, open, onOpenChange }: SubAdminDeta
                 </div>
               </div>
 
-              <Badge
-                className={`w-fit rounded-full border px-4 py-2 text-xs font-bold shadow-none ${
-                  admin?.status === "Active"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
-                    : "border-red-200 bg-red-50 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400"
-                }`}
-              >
-                <span
-                  className={`mr-2 h-1.5 w-1.5 rounded-full ${
-                    admin?.status === "Active" ? "bg-emerald-500" : "bg-red-500"
-                  }`}
-                />
-                {admin?.status === "Active" ? "Active Account" : "Inactive Account"}
-              </Badge>
+              <StatusBadge
+                status={admin?.status || ""}
+                displayLabel={admin?.status === "Active" ? "Active Account" : "Inactive Account"}
+                className="w-fit rounded-full border px-4 py-2 text-xs font-bold shadow-none"
+              />
             </div>
           </DialogHeader>
         </div>

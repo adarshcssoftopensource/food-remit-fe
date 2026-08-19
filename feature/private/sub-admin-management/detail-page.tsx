@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/common/page-header";
+import { StatusBadge } from "@/components/common/status-badge";
 import {
   CalendarDays,
   CheckCircle2,
@@ -107,22 +108,10 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
                 </p>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <div
-                    className={cn(
-                      "flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold",
-                      isActive
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
-                        : "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "h-1.5 w-1.5 rounded-full",
-                        isActive ? "bg-emerald-500" : "bg-rose-500",
-                      )}
-                    />
-                    {isActive ? "Active" : "Inactive"}
-                  </div>
+                  <StatusBadge
+                    status={isActive ? "Active" : "Inactive"}
+                    className="flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold"
+                  />
 
                   <div className="border-primary/20 bg-primary/10 text-primary dark:border-primary/20 dark:bg-primary/15 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold">
                     <ShieldCheck className="h-3 w-3" />
