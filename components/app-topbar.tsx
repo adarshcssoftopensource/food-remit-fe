@@ -6,15 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { useProfile } from "@/components/providers/profile-provider";
 import { ROUTES } from "@/config/routes";
+import { useLogout } from "@/hooks/use-logout";
 import { getInitials } from "@/lib/get-initials";
 import { cn } from "@/lib/utils";
+import { LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { useLogout } from "@/hooks/use-logout";
-import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { LogOut } from "lucide-react";
 
 export function AppTopBar() {
   const { profile } = useProfile();

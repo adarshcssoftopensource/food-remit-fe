@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ACCENT_BORDER_MAP } from "@/constants/dashboard";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -16,16 +17,6 @@ interface DashboardCardProps {
   contentClassName?: string;
   accentColor?: "emerald" | "indigo" | "amber" | "rose" | "cyan" | "violet" | "none";
 }
-
-const ACCENT_BORDER_MAP = {
-  emerald: "before:bg-emerald-500",
-  indigo: "before:bg-indigo-500",
-  amber: "before:bg-amber-500",
-  rose: "before:bg-rose-500",
-  cyan: "before:bg-cyan-500",
-  violet: "before:bg-violet-500",
-  none: "",
-};
 
 export function DashboardCard({
   title,

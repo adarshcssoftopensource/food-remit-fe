@@ -2,6 +2,7 @@
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
+import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { ShoppingBag } from "lucide-react";
 import {
   DashboardActionButton,
@@ -18,19 +19,18 @@ import {
   StoreListings,
   TrendingOrders,
 } from "./components";
-import { DASHBOARD_ROUTES } from "./constants/dashboard.constants";
 import { useDashboardFilters } from "./hooks/use-dashboard-filters";
 import { useGetDashboardStats } from "./hooks/use-get-dashboard-stats";
 
 export function Dashboard() {
   const { filters, hasFilters, activeFilterCount, setCountryId, setCityId, resetFilters } =
     useDashboardFilters();
+
   const { dashboardData, isLoading, isFetching, isError, error, refetch } =
     useGetDashboardStats(filters);
 
   return (
     <div className="relative min-h-[calc(100vh-8rem)] space-y-6">
-      {/* Header */}
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader
           title="Dashboard Overview"
@@ -38,7 +38,6 @@ export function Dashboard() {
         />
       </div>
 
-      {/* Filter Toolbar */}
       <DashboardFilters
         filters={filters}
         hasFilters={hasFilters}
@@ -50,7 +49,6 @@ export function Dashboard() {
         isFetching={isFetching}
       />
 
-      {/* Error state */}
       {isError && (
         <DashboardErrorState
           message={
@@ -61,31 +59,23 @@ export function Dashboard() {
         />
       )}
 
-      {/* Main Dashboard Grid */}
       <div className="relative max-w-full min-w-0 space-y-6">
-        {/* KPI Overview (Food Sent, Food Requested, Registered Users) */}
         <OverviewStats stats={dashboardData.overviewStats} isLoading={isLoading} />
-
-        {/* Management Counts (Country, City, Store Managers, Sub-Admins, Employees) */}
         <ManagementStats stats={dashboardData.managementStats} isLoading={isLoading} />
 
-        {/* Financial and Sales Overview */}
         <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-2">
           <FinancialStats stats={dashboardData.financialStats} isLoading={isLoading} />
           <SalesOverview stats={dashboardData.salesOverview} isLoading={isLoading} />
         </div>
 
-        {/* Recent Requested Orders & Support Tickets */}
         <DataTablesSection
           recentOrdersRequested={dashboardData.recentOrdersRequested}
           recentTickets={dashboardData.recentTickets}
           isLoading={isLoading}
         />
 
-        {/* Trending Items / Orders */}
         <TrendingOrders orders={dashboardData.trendingOrders} isLoading={isLoading} />
 
-        {/* Recently Placed Orders & Monthly Revenue */}
         <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="col-span-full min-w-0 lg:col-span-2">
             <DashboardCard
@@ -119,7 +109,6 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* New Store Listings */}
         <StoreListings
           stores={dashboardData.storesSummary?.newStoreListings}
           isLoading={isLoading}

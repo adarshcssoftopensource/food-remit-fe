@@ -2,11 +2,11 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { MapPin, Store as StoreIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { DASHBOARD_ROUTES } from "../constants/dashboard.constants";
 import type { DashboardStoreListing } from "../types/dashboard.types";
 import { DashboardActionButton } from "./common/dashboard-action-button";
 import { DashboardCard } from "./common/dashboard-card";

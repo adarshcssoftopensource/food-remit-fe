@@ -1,8 +1,8 @@
 "use client";
 
 import { Progress } from "@/components/ui/progress";
-import { ArrowUpRight, TrendingUp } from "lucide-react";
-import { DEFAULT_MONTHLY_REVENUE } from "../constants/dashboard.constants";
+import { DEFAULT_MONTHLY_REVENUE } from "@/constants/dashboard";
+import { TrendingUp } from "lucide-react";
 import { DashboardCard } from "./common/dashboard-card";
 
 interface MonthlyRevenueProps {

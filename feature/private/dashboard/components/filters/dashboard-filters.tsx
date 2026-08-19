@@ -4,7 +4,7 @@ import { CitySelect } from "@/components/common/city-select";
 import { CountrySelect } from "@/components/common/country-select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Filter, RefreshCw, RotateCcw, SlidersHorizontal, Sparkles } from "lucide-react";
+import { RefreshCw, RotateCcw, SlidersHorizontal } from "lucide-react";
 import type { DashboardFiltersState } from "../../types/dashboard.types";
 
 interface DashboardFiltersProps {
@@ -30,12 +30,10 @@ export function DashboardFilters({
 }: DashboardFiltersProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-4.5 shadow-xs backdrop-blur-md transition-all sm:p-5 dark:border-slate-800/80 dark:bg-slate-900/90">
-      {/* Subtle background glow effect */}
       <div className="bg-primary/5 pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full blur-2xl" />
       <div className="pointer-events-none absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-indigo-500/5 blur-2xl" />
 
       <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        {/* Left: Filter Controls */}
         <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2.5">
             <div className="bg-primary/10 text-primary dark:bg-primary/20 flex h-9 w-9 items-center justify-center rounded-xl shadow-xs">
@@ -58,7 +56,6 @@ export function DashboardFilters({
 
           <div className="hidden h-5 w-px bg-slate-200 sm:block dark:bg-slate-800" />
 
-          {/* Country Select */}
           <div className="w-full sm:w-60">
             <CountrySelect
               value={filters.countryId || "All"}
@@ -72,7 +69,6 @@ export function DashboardFilters({
             />
           </div>
 
-          {/* City Select */}
           <div className="w-full sm:w-60">
             <CitySelect
               countryId={filters.countryId}
@@ -88,7 +84,6 @@ export function DashboardFilters({
             />
           </div>
 
-          {/* Clear / Reset Filters */}
           {hasFilters && (
             <Button
               variant="outline"
@@ -102,7 +97,6 @@ export function DashboardFilters({
           )}
         </div>
 
-        {/* Right: Actions (Refresh) */}
         {onRefresh && (
           <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-2 sm:border-0 sm:pt-0 dark:border-slate-800">
             <Button

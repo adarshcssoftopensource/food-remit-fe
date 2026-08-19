@@ -1,8 +1,8 @@
+import { DEFAULT_DASHBOARD_DATA } from "@/constants/dashboard";
 import { useApiQuery } from "@/hooks/useApi";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { DASHBOARD_ENDPOINTS } from "@/lib/api/endpoints/dashboard.endpoints";
 import { buildCacheKey, buildUrl } from "@/lib/build-query-string";
-import { DEFAULT_DASHBOARD_DATA } from "../constants/dashboard.constants";
 import type {
   DashboardData,
   DashboardFiltersState,

@@ -2,6 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ACCENT_GLOW_MAP } from "@/constants/dashboard";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -28,15 +29,6 @@ export interface DashboardStatCardProps {
   };
   accentColor?: "emerald" | "indigo" | "amber" | "rose" | "cyan" | "violet";
 }
-
-const ACCENT_GLOW_MAP = {
-  emerald: "from-emerald-500/10 via-transparent to-transparent border-t-emerald-500/40",
-  indigo: "from-indigo-500/10 via-transparent to-transparent border-t-indigo-500/40",
-  amber: "from-amber-500/10 via-transparent to-transparent border-t-amber-500/40",
-  rose: "from-rose-500/10 via-transparent to-transparent border-t-rose-500/40",
-  cyan: "from-cyan-500/10 via-transparent to-transparent border-t-cyan-500/40",
-  violet: "from-violet-500/10 via-transparent to-transparent border-t-violet-500/40",
-};
 
 export function DashboardStatCard({
   title,

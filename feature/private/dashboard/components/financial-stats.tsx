@@ -1,9 +1,9 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { ArrowUpRight, Banknote, Coins, PackageCheck } from "lucide-react";
 import Link from "next/link";
-import { DASHBOARD_ROUTES } from "../constants/dashboard.constants";
 import type { DashboardFinancialStats } from "../types/dashboard.types";
 import { DashboardCard } from "./common/dashboard-card";
 

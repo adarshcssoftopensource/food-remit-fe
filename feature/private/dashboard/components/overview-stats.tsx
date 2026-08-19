@@ -1,7 +1,7 @@
 "use client";
 
+import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { HandPlatter, Package, Users } from "lucide-react";
-import { DASHBOARD_ROUTES } from "../constants/dashboard.constants";
 import type { DashboardOverviewStats } from "../types/dashboard.types";
 import { DashboardStatCard } from "./common/dashboard-stat-card";
 

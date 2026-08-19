@@ -45,7 +45,6 @@ export function AppSidebar() {
     ) => {
       if (!currentPath) return false;
 
-      // Exact match
       if (currentPath === sub.url) return true;
 
       // Single sub-item group where parent route matches (e.g. /country-management/123 -> /country-management/list)
@@ -56,7 +55,6 @@ export function AppSidebar() {
         return true;
       }
 
-      // Check if currentPath is a sub-path of sub.url (e.g. /report-management/store-report/123)
       if (currentPath.startsWith(sub.url + "/")) {
         // If another sibling sub-item is also matched and has a longer (more specific) URL, this sub is not active
         const hasMoreSpecificMatch = item.items?.some(

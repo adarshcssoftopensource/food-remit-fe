@@ -2,8 +2,8 @@
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { Clock, Inbox, LifeBuoy, ShoppingBag } from "lucide-react";
-import { DASHBOARD_ROUTES } from "../constants/dashboard.constants";
 import type { DashboardOrderRequested, DashboardTicketItem } from "../types/dashboard.types";
 import { requestedOrdersColumns } from "./columns/requested-orders-columns";
 import { DashboardActionButton } from "./common/dashboard-action-button";
@@ -24,7 +24,6 @@ export function DataTablesSection({
 }: DataTablesSectionProps) {
   return (
     <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-2">
-      {/* Recent Orders Requested */}
       <DashboardCard
         title="Recent Orders Requested"
         subtitle="Incoming requisition requests across communities"
@@ -48,7 +47,6 @@ export function DataTablesSection({
         </div>
       </DashboardCard>
 
-      {/* Recent Support Tickets */}
       <DashboardCard
         title="Recent Support Tickets"
         subtitle="Active user and partner issues requiring triage"
