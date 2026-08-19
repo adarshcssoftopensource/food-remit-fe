@@ -133,18 +133,6 @@ export const MOCK_FOUNDATION_REQUESTS: FoundationData[] = [
   },
 ];
 
-export const COUNTRY_OPTIONS = [
-  { label: "All Countries", value: "All Countries" },
-  { label: "USA", value: "USA" },
-  { label: "Canada", value: "Canada" },
-];
-
-export const CITY_OPTIONS = [
-  { label: "All Cities", value: "All Cities" },
-  { label: "Mumbai", value: "Mumbai" },
-  { label: "Delhi", value: "Delhi" },
-];
-
 export const FOUNDATION_STATS_CONFIG = [
   {
     key: "total",

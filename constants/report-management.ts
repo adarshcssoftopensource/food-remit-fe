@@ -81,18 +81,6 @@ export type CouponReportRow = {
   discount: string;
 };
 
-export const REPORT_COUNTRY_OPTIONS = [
-  { label: "All", value: "All" },
-  { label: "United States", value: "United States" },
-  { label: "India", value: "India" },
-] as const;
-
-export const REPORT_CITY_OPTIONS = [
-  { label: "All", value: "All" },
-  { label: "Abboussie", value: "Abboussie" },
-  { label: "Columbus", value: "Columbus" },
-] as const;
-
 export const REPORT_FOOD_TYPE_OPTIONS = [
   { label: "All Food Types", value: "All" },
   { label: "Grocery", value: "Grocery" },

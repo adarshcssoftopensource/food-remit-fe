@@ -60,18 +60,11 @@ export type ItemData = {
   unit?: string;
 };
 
-// ─── Filter & Select Options ──────────────────────────────────────────────────
 export const CATALOGUE_STATUS_OPTIONS = [
   { label: "All Status", value: "all" },
   { label: "Active", value: "Active" },
   { label: "Inactive", value: "Inactive" },
 ] as const;
-
-export const CATALOGUE_DEPARTMENT_OPTIONS = [{ label: "All Departments", value: "all" }];
-
-export const CATALOGUE_CATEGORY_OPTIONS = [{ label: "All Categories", value: "all" }];
-
-// ─── Stat Configs ─────────────────────────────────────────────────────────────
 
 export const DEPARTMENT_STAT_CONFIG = [
   {
@@ -144,10 +137,3 @@ export const ITEM_STAT_CONFIG = [
     bg: "bg-red-50",
   },
 ];
-
-// ─── Status Style Map ─────────────────────────────────────────────────────────
-
-export const CATALOGUE_STATUS_STYLES: Record<CatalogueStatus, string> = {
-  Active: "bg-green-100 text-green-700 border-green-200",
-  Inactive: "bg-red-100 text-red-700 border-red-200",
-};

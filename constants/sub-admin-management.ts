@@ -37,14 +37,6 @@ export const SUB_ADMIN_STATUS_OPTIONS = [
   { label: "Inactive", value: "INACTIVE" },
 ] as const;
 
-export const COUNTRY_CODES = [
-  { value: "91", label: "+91 (India)" },
-  { value: "1", label: "+1 (USA)" },
-  { value: "44", label: "+44 (UK)" },
-  { value: "61", label: "+61 (Australia)" },
-  { value: "93", label: "+93 (Afghanistan)" },
-];
-
 export const colorMap: Record<string, string> = {
   primary: "bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary/90",
   emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400",

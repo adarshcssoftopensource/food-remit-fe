@@ -11,14 +11,6 @@ export type OrderRow = {
   country: string;
 };
 
-export const ORDER_COUNTRY_OPTIONS = [
-  { label: "All Countries", value: "All" },
-  { label: "India", value: "India" },
-  { label: "United States", value: "United States" },
-  { label: "United Kingdom", value: "United Kingdom" },
-  { label: "Canada", value: "Canada" },
-] as const;
-
 export type OrderSectionKey =
   "sent-orders" | "requested-orders" | "partial-orders" | "completed-orders" | "history";
 

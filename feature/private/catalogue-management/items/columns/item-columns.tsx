@@ -25,7 +25,10 @@ export function getItemColumns(
       accessorKey: "productName",
       header: "Product Name",
       cell: ({ row }) => (
-        <ImageNameCell name={row.original.productName} image={row.original.productImage} />
+        <ImageNameCell
+          name={row.original.productName}
+          image={row.original.productImage?.split(",")[0]?.trim()}
+        />
       ),
     },
     {

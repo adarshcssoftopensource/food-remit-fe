@@ -62,13 +62,6 @@ export const MOCK_FEEDBACK: FeedbackData[] = [
   },
 ];
 
-export const FEEDBACK_STATUS_OPTIONS = [
-  { label: "All", value: "all" },
-  { label: "Pending", value: "Pending" },
-  { label: "Reviewed", value: "Reviewed" },
-  { label: "Resolved", value: "Resolved" },
-];
-
 export const FEEDBACK_STATUS_STYLES: Record<FeedbackData["status"], string> = {
   Pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
   Reviewed: "bg-blue-100 text-blue-700 border-blue-200",

@@ -12,6 +12,3 @@ export type Philanthrophist = {
 };
 
 export const PHILANTHROPHISTS: Philanthrophist[] = [];
-
-export const PHILANTHROPIST_COUNTRIES = ["India", "United States", "United Kingdom"];
-export const PHILANTHROPIST_CITIES = ["Mumbai", "Delhi", "London", "New York"];

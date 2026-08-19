@@ -41,20 +41,6 @@ export const INVENTORY_MANAGEMENT_OPTIONS = [
   "Not Sure",
 ] as const;
 
-export const COUNTRY_OPTIONS = [
-  "United States",
-  "Canada",
-  "United Kingdom",
-  "Mexico",
-  "Jamaica",
-  "Dominican Republic",
-  "Philippines",
-  "India",
-  "Ghana",
-  "Nigeria",
-  "Other",
-] as const;
-
 export const STEPS = [
   { id: 1, title: "Business Info", icon: Building2 },
   { id: 2, title: "Your Info", icon: User },
