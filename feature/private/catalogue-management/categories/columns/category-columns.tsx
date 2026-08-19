@@ -1,24 +1,9 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { StatusBadge } from "@/components/common/status-badge";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { CategoryActionsCell } from "../components/category-actions-cell";
 import { CategoryData } from "../types/category.types";
-
-function StatusBadge({ status }: { status: string }) {
-  const isActive = status === "ACTIVE";
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-        isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"
-      }`}
-    >
-      <span
-        className={`inline-block size-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-red-500"}`}
-      />
-      {isActive ? "Active" : "Inactive"}
-    </span>
-  );
-}
 
 export function getCategoryColumns(
   onEdit: (dept: CategoryData) => void,
@@ -74,7 +59,13 @@ export function getCategoryColumns(
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: ({ row }) => (
+        <StatusBadge
+          status={row.original.status}
+          activeLabel="ACTIVE"
+          displayLabel={row.original.status === "ACTIVE" ? "Active" : "Inactive"}
+        />
+      ),
     },
     {
       id: "actions",

@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { CouponRow } from "@/constants/coupons-managemant";
 import { ColumnDef } from "@tanstack/react-table";
@@ -44,7 +44,7 @@ export const couponColumns: ColumnDef<CouponRow>[] = [
     header: "Status",
     cell: ({ getValue }) => {
       const value = getValue<string>();
-      return <Badge variant={value === "Active" ? "secondary" : "destructive"}>{value}</Badge>;
+      return <StatusBadge status={value} />;
     },
   },
   {

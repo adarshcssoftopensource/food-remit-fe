@@ -1,22 +1,7 @@
+import { StatusBadge } from "@/components/common/status-badge";
 import { AmountLimitData } from "@/constants/amount-limit-management";
 import { ColumnDef } from "@tanstack/react-table";
 import { AmountLimitActionsCell } from "../components/actions-buttons";
-
-function StatusBadge({ status }: { status: "Active" | "Inactive" }) {
-  const isActive = status === "Active";
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-        isActive ? "bg-emerald-100 text-emerald-600" : "bg-red-100 text-red-600"
-      }`}
-    >
-      <span
-        className={`inline-block size-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-red-500"}`}
-      />
-      {status}
-    </span>
-  );
-}
 
 export const amountLimitColumns: ColumnDef<AmountLimitData>[] = [
   {

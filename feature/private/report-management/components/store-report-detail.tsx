@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ArrowLeft,
   BadgeDollarSign,
   Building2,
   CreditCard,
@@ -19,12 +18,10 @@ import {
   User,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/common/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
 import type { StoreReportRow, StoreTransactionRow } from "@/constants/report-management";
@@ -36,21 +33,7 @@ type StoreReportDetailProps = {
   store: StoreReportRow;
 };
 
-function ManagerRow({ label, value, striped }: { label: string; value: string; striped: boolean }) {
-  return (
-    <div
-      className={`grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-3 px-4 py-2.5 text-sm ${
-        striped ? "bg-sky-50/70" : "bg-amber-50/60"
-      }`}
-    >
-      <span className="font-semibold text-slate-700">{label}</span>
-      <span className="text-slate-600">{value}</span>
-    </div>
-  );
-}
-
 export function StoreReportDetail({ store }: StoreReportDetailProps) {
-  const router = useRouter();
   const { applyFilters, clearFilters, fromDate, hasFilters, setFromDate, setToDate, toDate } =
     useReportDateFilters();
 
@@ -104,10 +87,10 @@ export function StoreReportDetail({ store }: StoreReportDetailProps) {
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="text-3xl font-bold tracking-tight">{store.storeName}</h2>
 
-                    <Badge className="rounded-full bg-green-100 px-3 py-1 text-green-700 hover:bg-green-100">
-                      <span className="mr-2 h-2 w-2 rounded-full bg-green-500" />
-                      Active
-                    </Badge>
+                    <StatusBadge
+                      status="Active"
+                      className="rounded-full border-0 px-3 py-1 shadow-none"
+                    />
                   </div>
 
                   <p className="text-muted-foreground mt-2">Store Information & Overview</p>

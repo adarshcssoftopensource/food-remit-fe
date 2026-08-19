@@ -1,25 +1,11 @@
 "use client";
 
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
-import {
-  type StoreData,
-  type StoreStatus,
-} from "@/feature/private/store-management/types/store-management";
+import { StatusBadge } from "@/components/common/status-badge";
+import { type StoreData } from "@/feature/private/store-management/types/store-management";
 import { ColumnDef } from "@tanstack/react-table";
 import { StoreActionsCell } from "../components/store-actions-cell";
 
-import { Badge } from "@/components/ui/badge";
-
-function StoreStatusBadge({ status }: { status: StoreData["status"] }) {
-  return (
-    <Badge variant="outline" className={STORE_STATUS_STYLES[status]}>
-      <span
-        className={`size-1.5 rounded-full ${status === "Active" ? "bg-emerald-500" : "bg-red-500"}`}
-      />
-      {status}
-    </Badge>
-  );
-}
 function TaxCell({ value }: { value: number }) {
   return <span className="text-sm font-medium text-slate-700">{value.toFixed(2)}%</span>;
 }
@@ -31,11 +17,6 @@ function CommissionCell({ value }: { value: number }) {
     </span>
   );
 }
-
-const STORE_STATUS_STYLES: Record<StoreStatus, string> = {
-  Active: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  Inactive: "bg-red-100 text-red-700 border-red-200",
-};
 
 export const storeColumns: ColumnDef<StoreData>[] = [
   {
@@ -91,7 +72,7 @@ export const storeColumns: ColumnDef<StoreData>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <StoreStatusBadge status={row.original.status} />,
+    cell: ({ row }) => <StatusBadge status={row.original.status} />,
   },
   {
     id: "actions",

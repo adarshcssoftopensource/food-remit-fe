@@ -1,6 +1,7 @@
 import { Building2, Calendar, MapPin, Tag } from "lucide-react";
 import Image from "next/image";
 
+import { StatusBadge } from "@/components/common/status-badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import type { DepartmentData } from "../types/department.types";
@@ -43,20 +44,12 @@ export function DepartmentViewDialog({
                 {department.departmentName}
               </DialogTitle>
               <div className="mt-2 flex items-center gap-2">
-                <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    department.status === "ACTIVE"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-600"
-                  }`}
-                >
-                  <span
-                    className={`inline-block size-1.5 rounded-full ${
-                      department.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
-                    }`}
-                  />
-                  {department.status === "ACTIVE" ? "Active" : "Inactive"}
-                </span>
+                <StatusBadge
+                  status={department.status}
+                  activeLabel="ACTIVE"
+                  displayLabel={department.status === "ACTIVE" ? "Active" : "Inactive"}
+                  className="border-0 px-2.5 py-0.5 text-xs shadow-none"
+                />
               </div>
             </div>
           </div>

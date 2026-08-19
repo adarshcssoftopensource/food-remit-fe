@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { RotateCcw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { usePermanentDeleteUser } from "../../users-management/hooks/use-permanent-delete-user";
 import { useRestoreUser } from "../../users-management/hooks/use-restore-user";
 import { UserData } from "../../users-management/types/user.types";
+import { usePermanentDeleteUser } from "../hooks/use-permanent-delete-user";
 
 export function RecycledActionsCell({ user }: { user: UserData }) {
   const [isPermanentDeleteDialogOpen, setIsPermanentDeleteDialogOpen] = useState(false);

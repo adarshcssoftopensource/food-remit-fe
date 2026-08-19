@@ -1,25 +1,10 @@
+import { StatusBadge } from "@/components/common/status-badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatDateTime } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
-import { RecycledActionsCell } from "../components/recycled-actions-cell";
 import { UserData } from "../../users-management/types/user.types";
-
-function UserStatusBadge({ status }: { status: UserData["userStatus"] }) {
-  const isActive = status === "ACTIVE";
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-        isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"
-      }`}
-    >
-      <span
-        className={`inline-block size-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-red-500"}`}
-      />
-      {status}
-    </span>
-  );
-}
+import { RecycledActionsCell } from "../components/recycled-actions-cell";
 
 export const usersColumns: ColumnDef<UserData>[] = [
   {
@@ -105,7 +90,13 @@ export const usersColumns: ColumnDef<UserData>[] = [
     accessorKey: "userStatus",
     header: "Status",
     enableSorting: true,
-    cell: ({ row }) => <UserStatusBadge status={row.original.userStatus} />,
+    cell: ({ row }) => (
+      <StatusBadge
+        status={row.original.userStatus}
+        activeLabel="ACTIVE"
+        displayLabel={row.original.userStatus === "ACTIVE" ? "Active" : "Inactive"}
+      />
+    ),
   },
   {
     id: "actions",
