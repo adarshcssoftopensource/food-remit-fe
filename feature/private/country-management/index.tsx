@@ -3,6 +3,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +23,7 @@ import {
 } from "@/constants/country-management";
 import { type CountryManagerData } from "@/feature/private/country-management/types/country-manager";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getCountryManagerColumns } from "./columns/country-manager-columns";
 import { AddCountryManagerDialog } from "./components/add-country-manager-dialog";
 import { EditCountryManagerDialog } from "./components/edit-country-manager-dialog";
@@ -62,6 +63,11 @@ export default function CountryManagementPage() {
 
   const [editingManager, setEditingManager] = useState<CountryManagerData | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const handleImageClick = useCallback((image: string) => {
+    setLightboxSrc(image);
+  }, []);
 
   const columns = useMemo(
     () =>
@@ -74,8 +80,9 @@ export default function CountryManagementPage() {
           setIsEditOpen(true);
         },
         onToggleStatus: toggleManagerStatus,
+        onImageClick: handleImageClick,
       }),
-    [router, toggleManagerStatus],
+    [router, toggleManagerStatus, handleImageClick],
   );
 
   const activeFilterCount = useMemo(() => {
@@ -89,6 +96,8 @@ export default function CountryManagementPage() {
 
   return (
     <div className="space-y-6">
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         title="Country Management"
         description="Manage country managers, assignments, and account status with streamlined controls."

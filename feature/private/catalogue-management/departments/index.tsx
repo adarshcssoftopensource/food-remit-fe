@@ -3,6 +3,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Button } from "@/components/ui/button";
@@ -52,7 +53,8 @@ export function DepartmentsManagement() {
   const [country, setCountry] = useState("all");
   const [city, setCity] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingDept, setEditingDept] = useState<DepartmentData | null>(null);
+  const [editingDepartment, setEditingDepartment] = useState<DepartmentData | null>(null);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -125,32 +127,38 @@ export function DepartmentsManagement() {
     return count;
   }, [fromDate, toDate, country, city, status]);
 
-  const handleEdit = useCallback((dept: DepartmentData) => {
-    setEditingDept(dept);
+  const handleEdit = useCallback((department: DepartmentData) => {
+    setEditingDepartment(department);
     setDialogOpen(true);
   }, []);
 
-  const handleView = useCallback(
-    (dept: DepartmentData) => {
-      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.DEPARTMENTS}/${dept.id}`);
+  const handleViewDetails = useCallback(
+    (department: DepartmentData) => {
+      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.DEPARTMENTS}/${department.id}`);
     },
     [router],
   );
 
+  const handleImageClick = useCallback((image: string) => {
+    setLightboxSrc(image);
+  }, []);
+
   const columns = useMemo(
-    () => getDepartmentColumns(handleEdit, handleView),
-    [handleEdit, handleView],
+    () => getDepartmentColumns(handleEdit, handleViewDetails, handleImageClick),
+    [handleEdit, handleViewDetails, handleImageClick],
   );
 
   return (
     <div className="space-y-6">
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         title="Departments"
         description="Manage all catalogue departments across countries and stores."
         action={
           <Button
             onClick={() => {
-              setEditingDept(null);
+              setEditingDepartment(null);
               setDialogOpen(true);
             }}
             className="gap-2 rounded-xl"
@@ -262,7 +270,7 @@ export function DepartmentsManagement() {
       <DepartmentFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        department={editingDept}
+        department={editingDepartment}
       />
     </div>
   );

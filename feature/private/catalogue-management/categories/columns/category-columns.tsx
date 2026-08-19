@@ -8,6 +8,7 @@ import { CategoryData } from "../types/category.types";
 export function getCategoryColumns(
   onEdit: (dept: CategoryData) => void,
   onView: (dept: CategoryData) => void,
+  onImageClick?: (image: string) => void,
 ): ColumnDef<CategoryData>[] {
   return [
     {
@@ -25,6 +26,8 @@ export function getCategoryColumns(
           name={row.original.categoryName}
           image={row.original.categoryIcon}
           type="logo"
+          onImageClick={onImageClick}
+          enableZoom={!!onImageClick}
         />
       ),
     },

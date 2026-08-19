@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Expand, Package } from "lucide-react";
+import { Expand, Eye, Package } from "lucide-react";
 import Image from "next/image";
 
 interface ItemMediaCardProps {
@@ -114,9 +114,7 @@ export function ItemMediaCard({
                   </p>
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-colors transition-opacity duration-200 group-hover:bg-black/30 group-hover:opacity-100">
-                  <span className="rounded-full bg-white/90 px-1.5 py-0.5 text-[9px] font-bold text-slate-700 shadow">
-                    View
-                  </span>
+                  <Eye className="text-white" />
                 </div>
               </Button>
             ))}
@@ -150,9 +148,7 @@ export function ItemMediaCard({
                   </p>
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-colors transition-opacity duration-200 group-hover:bg-black/30 group-hover:opacity-100">
-                  <span className="rounded-full bg-white/90 px-1.5 py-0.5 text-[9px] font-bold text-slate-700 shadow">
-                    View
-                  </span>
+                  <Eye className="text-white" />
                 </div>
               </Button>
             ))}

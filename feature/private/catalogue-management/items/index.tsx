@@ -5,6 +5,7 @@ import { DataTable } from "@/components/common/data-table/data-table";
 import { DepartmentSelect } from "@/components/common/department-select";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ export function ItemsManagement() {
   const [category, setCategory] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ItemData | null>(null);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   const { data: itemsResponse, isLoading } = useGetItems({
     page,
@@ -128,17 +130,26 @@ export function ItemsManagement() {
     setDialogOpen(true);
   }, []);
 
-  const handleView = useCallback(
+  const handleViewDetails = useCallback(
     (item: ItemData) => {
       router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS}/${item.id}`);
     },
     [router],
   );
 
-  const columns = useMemo(() => getItemColumns(handleEdit, handleView), [handleEdit, handleView]);
+  const handleImageClick = useCallback((image: string) => {
+    setLightboxSrc(image);
+  }, []);
+
+  const columns = useMemo(
+    () => getItemColumns(handleEdit, handleViewDetails, handleImageClick),
+    [handleEdit, handleViewDetails, handleImageClick],
+  );
 
   return (
     <div className="space-y-6">
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         title="Items"
         description="Manage all catalogue items across categories, departments, and countries."

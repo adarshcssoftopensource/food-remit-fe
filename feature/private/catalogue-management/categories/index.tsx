@@ -4,6 +4,7 @@ import { DataTable } from "@/components/common/data-table/data-table";
 import { DepartmentSelect } from "@/components/common/department-select";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ export function CategoriesManagement() {
   const [department, setDepartment] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<CategoryData | null>(null);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -132,25 +134,31 @@ export function CategoriesManagement() {
     return count;
   }, [fromDate, toDate, country, city, department, status]);
 
-  const handleEdit = useCallback((dept: CategoryData) => {
-    setEditingCategory(dept);
+  const handleEdit = useCallback((category: CategoryData) => {
+    setEditingCategory(category);
     setDialogOpen(true);
   }, []);
 
-  const handleView = useCallback(
-    (dept: CategoryData) => {
-      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES}/${dept.id}`);
+  const handleViewDetails = useCallback(
+    (category: CategoryData) => {
+      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES}/${category.id}`);
     },
     [router],
   );
 
+  const handleImageClick = useCallback((image: string) => {
+    setLightboxSrc(image);
+  }, []);
+
   const columns = useMemo(
-    () => getCategoryColumns(handleEdit, handleView),
-    [handleEdit, handleView],
+    () => getCategoryColumns(handleEdit, handleViewDetails, handleImageClick),
+    [handleEdit, handleViewDetails, handleImageClick],
   );
 
   return (
     <div className="space-y-6">
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         title="Categories"
         description="Manage all catalogue categories across countries, departments, and stores."

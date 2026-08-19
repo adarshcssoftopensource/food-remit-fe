@@ -12,6 +12,7 @@ import { ItemData } from "../types/item.types";
 export function getItemColumns(
   onEdit: (item: ItemData) => void,
   onView: (item: ItemData) => void,
+  onImageClick?: (image: string) => void,
 ): ColumnDef<ItemData>[] {
   return [
     {
@@ -28,6 +29,8 @@ export function getItemColumns(
         <ImageNameCell
           name={row.original.productName}
           image={row.original.productImage?.split(",")[0]?.trim()}
+          onImageClick={onImageClick}
+          enableZoom={!!onImageClick}
         />
       ),
     },

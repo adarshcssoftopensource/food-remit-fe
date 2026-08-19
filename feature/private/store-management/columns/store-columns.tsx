@@ -18,7 +18,7 @@ function CommissionCell({ value }: { value: number }) {
   );
 }
 
-export const storeColumns: ColumnDef<StoreData>[] = [
+export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<StoreData>[] => [
   {
     accessorKey: "id",
     header: "S No.",
@@ -31,7 +31,13 @@ export const storeColumns: ColumnDef<StoreData>[] = [
     accessorKey: "storeName",
     header: "Store Name",
     cell: ({ row }) => (
-      <ImageNameCell name={row.original.storeName} image={row.original.storeImage} type="profile" />
+      <ImageNameCell
+        name={row.original.storeName}
+        image={row.original.storeImage}
+        type="profile"
+        onImageClick={onImageClick}
+        enableZoom={!!onImageClick}
+      />
     ),
     enableSorting: true,
   },

@@ -11,12 +11,14 @@ type CityManagerColumnsConfig = {
   onView: (manager: CityManagerData) => void;
   onEdit: (manager: CityManagerData) => void;
   onToggleStatus: (id: string, checked: boolean) => void;
+  onImageClick?: (image: string) => void;
 };
 
 export function getCityManagerColumns({
   onView,
   onEdit,
   onToggleStatus,
+  onImageClick,
 }: CityManagerColumnsConfig): ColumnDef<CityManagerData>[] {
   return [
     {
@@ -25,7 +27,15 @@ export function getCityManagerColumns({
       accessorFn: (row) => `${row.firstName} ${row.lastName}`.trim(),
       cell: ({ row }) => {
         const fullName = `${row.original.firstName} ${row.original.lastName}`.trim();
-        return <ImageNameCell name={fullName} image={row.original.image} type="profile" />;
+        return (
+          <ImageNameCell
+            name={fullName}
+            image={row.original.image}
+            type="profile"
+            onImageClick={onImageClick}
+            enableZoom={!!onImageClick}
+          />
+        );
       },
     },
     {

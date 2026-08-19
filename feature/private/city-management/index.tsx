@@ -3,6 +3,7 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +23,7 @@ import {
 } from "@/constants/city-management";
 import { type CityManagerData } from "@/feature/private/city-management/types/city-manager";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getCityManagerColumns } from "./columns/city-manager-columns";
 import { AddCityManagerDialog } from "./components/add-city-manager-dialog";
 import { EditCityManagerDialog } from "./components/edit-city-manager-dialog";
@@ -62,6 +63,11 @@ export default function CityManagementPage() {
 
   const [editingManager, setEditingManager] = useState<CityManagerData | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const handleImageClick = useCallback((image: string) => {
+    setLightboxSrc(image);
+  }, []);
 
   const columns = useMemo(
     () =>
@@ -74,8 +80,9 @@ export default function CityManagementPage() {
           setIsEditOpen(true);
         },
         onToggleStatus: toggleManagerStatus,
+        onImageClick: handleImageClick,
       }),
-    [router, toggleManagerStatus],
+    [router, toggleManagerStatus, handleImageClick],
   );
 
   const activeFilterCount = useMemo(() => {
@@ -89,6 +96,8 @@ export default function CityManagementPage() {
 
   return (
     <div className="space-y-6">
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         title="City Management"
         description="Manage city managers, assigned cities, and account status."

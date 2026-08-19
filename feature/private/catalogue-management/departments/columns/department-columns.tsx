@@ -8,6 +8,7 @@ import { DepartmentData } from "../types/department.types";
 export function getDepartmentColumns(
   onEdit: (dept: DepartmentData) => void,
   onView: (dept: DepartmentData) => void,
+  onImageClick?: (image: string) => void,
 ): ColumnDef<DepartmentData>[] {
   return [
     {
@@ -25,6 +26,8 @@ export function getDepartmentColumns(
           name={row.original.departmentName}
           image={row.original.departmentIcon}
           type="logo"
+          onImageClick={onImageClick}
+          enableZoom={!!onImageClick}
         />
       ),
     },

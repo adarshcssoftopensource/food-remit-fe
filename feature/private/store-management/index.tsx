@@ -1,11 +1,13 @@
 "use client";
 
 import { DataTable } from "@/components/common/data-table/data-table";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { STORE_STAT_CONFIG } from "@/constants/store-management";
 import { Store } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { storeColumns } from "./columns/store-columns";
 import { AddStoreDialog } from "./components/add-store-dialog";
 import { StoreFilters } from "./components/store-filters";
@@ -38,8 +40,18 @@ export function StoreManagement() {
     setLimit,
   } = useStoreFilters();
 
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const handleImageClick = useCallback((image: string) => {
+    setLightboxSrc(image);
+  }, []);
+
+  const columns = useMemo(() => storeColumns(handleImageClick), [handleImageClick]);
+
   return (
     <div className="space-y-6">
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         title="Store Management"
         description="Manage and monitor all registered stores, their managers and commission settings."
@@ -95,7 +107,7 @@ export function StoreManagement() {
         </CardHeader>
         <CardContent className="p-4">
           <DataTable
-            columns={storeColumns}
+            columns={columns}
             data={filteredData}
             searchKey="storeName"
             loading={isLoading}

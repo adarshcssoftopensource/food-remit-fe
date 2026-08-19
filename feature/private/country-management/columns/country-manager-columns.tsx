@@ -11,12 +11,14 @@ type CountryManagerColumnsConfig = {
   onView: (manager: CountryManagerData) => void;
   onEdit: (manager: CountryManagerData) => void;
   onToggleStatus: (id: string, checked: boolean) => void;
+  onImageClick?: (image: string) => void;
 };
 
 export function getCountryManagerColumns({
   onView,
   onEdit,
   onToggleStatus,
+  onImageClick,
 }: CountryManagerColumnsConfig): ColumnDef<CountryManagerData>[] {
   return [
     {
@@ -25,7 +27,15 @@ export function getCountryManagerColumns({
       accessorFn: (row) => `${row.firstName} ${row.lastName}`.trim(),
       cell: ({ row }) => {
         const fullName = `${row.original.firstName} ${row.original.lastName}`.trim();
-        return <ImageNameCell name={fullName} image={row.original.image} type="logo" />;
+        return (
+          <ImageNameCell
+            name={fullName}
+            image={row.original.image}
+            type="logo"
+            onImageClick={onImageClick}
+            enableZoom={!!onImageClick}
+          />
+        );
       },
     },
     {

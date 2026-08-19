@@ -4,6 +4,7 @@ import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ export function UserManagement() {
   const debouncedSearch = useDebounce(search, 500);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const bulkDeleteUsers = useBulkDeleteUsers();
 
   const queryArgs: UseGetUsersArgs = {
@@ -120,8 +122,16 @@ export function UserManagement() {
     [],
   );
 
+  const handleImageClick = useCallback((image: string) => {
+    setLightboxSrc(image);
+  }, []);
+
+  const columns = useMemo(() => usersColumns(handleImageClick), [handleImageClick]);
+
   return (
     <div className="space-y-6">
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         title="Users Management"
         description="Manage and monitor all registered users in the platform."
@@ -242,7 +252,7 @@ export function UserManagement() {
 
         <CardContent className="p-4">
           <DataTable
-            columns={usersColumns}
+            columns={columns}
             data={allData}
             searchKey="fullName"
             loading={isLoading}
