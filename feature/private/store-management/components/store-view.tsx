@@ -1,15 +1,16 @@
 "use client";
 
 import { StoreViewPageProps } from "@/app/(private)/store-management/[id]/page";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { useGetStore } from "@/feature/private/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
-import { Building2, Mail, MapPin, Phone, UserCircle } from "lucide-react";
+import { Building2, Expand, Mail, MapPin, Phone, UserCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { use } from "react";
+import { use, useState } from "react";
 import StoreScaltonLoading from "./store-scalton-loading";
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -28,6 +29,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
   const { id } = use(params);
 
   const { data: store, isLoading } = useGetStore(id);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   if (isLoading) {
     return <StoreScaltonLoading />;
@@ -57,6 +59,8 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
     .join(", ");
   return (
     <div>
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         breadcrumbs={[
           { label: "Store Management", href: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT },
@@ -67,9 +71,24 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
       <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="from-primary/5 via-background to-primary/5 border-b bg-linear-to-r px-8 py-8">
           <div className="flex items-center gap-6">
-            <div className="bg-primary/10 ring-primary/5 relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl ring-4">
+            <div className="group bg-primary/10 ring-primary/5 relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl ring-4">
               {store.storeImage ? (
-                <Image src={store.storeImage} alt={store.storeName} fill className="object-cover" />
+                <>
+                  <Image
+                    src={store.storeImage}
+                    alt={store.storeName}
+                    fill
+                    className="object-cover"
+                  />
+                  <Button
+                    variant="ghost"
+                    onClick={() => setLightboxSrc(store.storeImage || null)}
+                    className="absolute right-1 bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 hover:scale-110"
+                    title="View full screen"
+                  >
+                    <Expand className="h-3 w-3" />
+                  </Button>
+                </>
               ) : (
                 <Building2 className="text-primary h-10 w-10" />
               )}
@@ -146,15 +165,25 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
             </h3>
 
             <div className="mb-6 flex items-center gap-4">
-              <div className="relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-slate-100">
+              <div className="group relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-slate-100">
                 {store.managerImage ? (
-                  <Image
-                    src={store.managerImage}
-                    alt={managerName}
-                    fill
-                    className="object-cover"
-                    sizes="64px"
-                  />
+                  <>
+                    <Image
+                      src={store.managerImage}
+                      alt={managerName}
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                    <Button
+                      variant="ghost"
+                      onClick={() => setLightboxSrc(store.managerImage || null)}
+                      className="absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
+                      title="View full screen"
+                    >
+                      <Expand className="h-2.5 w-2.5" />
+                    </Button>
+                  </>
                 ) : (
                   <div className="from-primary/10 to-primary/15 text-primary flex h-full w-full items-center justify-center bg-linear-to-br text-xl font-bold">
                     {`${store.managerFirstName[0]}${store.managerLastName[0]}`.toUpperCase()}

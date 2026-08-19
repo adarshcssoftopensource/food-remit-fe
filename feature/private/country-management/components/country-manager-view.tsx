@@ -1,15 +1,16 @@
 "use client";
 
 import { CountryManagerViewPageProps } from "@/app/(private)/country-management/[id]/page";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { useGetCountryManager } from "@/feature/private/country-management/hooks/use-get-country-manager";
 import { formatDate } from "@/lib/date";
-import { Globe2, UserCircle } from "lucide-react";
+import { Expand, Globe2, UserCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { use } from "react";
+import { use, useState } from "react";
 import ViewPageLoading from "./view-page-loading";
 
 const DetailCard = ({ label, value }: { label: string; value?: string }) => (
@@ -24,6 +25,7 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
   const { id } = use(params);
 
   const { data: manager, isLoading } = useGetCountryManager(id);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   if (isLoading) {
     return <ViewPageLoading />;
@@ -52,6 +54,8 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
 
   return (
     <div>
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         breadcrumbs={[
           { label: "Country Management", href: ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST },
@@ -62,15 +66,25 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
       <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
         <div className="border-b border-emerald-100/60 bg-linear-to-r from-emerald-50/70 via-teal-50/30 to-emerald-50/40 p-8 pb-8">
           <div className="flex items-center gap-6">
-            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-emerald-500/10 text-2xl font-bold text-emerald-700 shadow-sm ring-1 ring-emerald-500/20">
+            <div className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-emerald-500/10 text-2xl font-bold text-emerald-700 shadow-sm ring-1 ring-emerald-500/20">
               {manager.image ? (
-                <Image
-                  src={manager.image}
-                  alt={`${manager.firstName} ${manager.lastName}`}
-                  width={40}
-                  height={40}
-                  className="object-cover"
-                />
+                <>
+                  <Image
+                    src={manager.image}
+                    alt={`${manager.firstName} ${manager.lastName}`}
+                    width={40}
+                    height={40}
+                    className="object-cover"
+                  />
+                  <Button
+                    variant="ghost"
+                    onClick={() => setLightboxSrc(manager.image || null)}
+                    className="absolute right-1 bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 hover:scale-110"
+                    title="View full screen"
+                  >
+                    <Expand className="h-3 w-3" />
+                  </Button>
+                </>
               ) : (
                 `${manager.firstName[0] ?? ""}${manager.lastName[0] ?? ""}`.toUpperCase()
               )}

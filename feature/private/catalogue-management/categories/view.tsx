@@ -136,7 +136,6 @@ export function CategoryView({ id }: CategoryViewProps) {
             </CardHeader>
           </Card>
 
-          {/* Information Grid */}
           <Card className="rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-2 dark:bg-slate-950 dark:shadow-none">
             <CardHeader className="border-b border-slate-100/80 px-8 py-6 dark:border-slate-800/80">
               <CardTitle className="flex items-center gap-3 text-lg font-bold text-slate-900 dark:text-white">
