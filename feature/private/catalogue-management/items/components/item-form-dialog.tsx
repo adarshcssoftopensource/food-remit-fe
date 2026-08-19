@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useMemo } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ItemFormValues, useItemForm } from "../../hooks/useItemForm";
 import { ItemData } from "../types/item.types";
@@ -46,6 +47,32 @@ interface ItemFormDialogProps {
 export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormDialogProps) {
   const isEditing = !!item;
   const { form, isSubmitting, handleSubmit } = useItemForm(open, item, onOpenChange, onSubmit);
+
+  const initialProductImages = useMemo(() => {
+    if (!open) return [];
+    if ((item as any)?.productImageUrls && (item as any).productImageUrls.length > 0) {
+      return (item as any).productImageUrls as string[];
+    }
+    if (item?.productImageUrl) {
+      return [item.productImageUrl];
+    }
+    if (item?.productImages && item.productImages.length > 0) {
+      return item.productImages;
+    }
+    return [];
+  }, [open, item]);
+
+  const initialProductInfoImage = useMemo(() => {
+    if (!open) return [];
+    const src = (item as any)?.productInfoImageUrl || item?.productInfoImage;
+    return src ? [src] : [];
+  }, [open, item]);
+
+  const initialNutritionInfoImage = useMemo(() => {
+    if (!open) return [];
+    const src = (item as any)?.nutritionInfoImageUrl || item?.nutritionInfoImage;
+    return src ? [src] : [];
+  }, [open, item]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -216,23 +243,22 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                     value={field.value}
                                     onChange={(files) => {
                                       field.onChange(files);
-                                      if (files.length > 0) {
-                                        form.setValue("hasExistingProductImage", false);
-                                      }
                                     }}
                                     onAllImagesChange={(all) => {
-                                      form.setValue("hasExistingProductImage", all.length > 0);
+                                      const existing = all.filter((i) => !i.file).map((i) => i.url);
+                                      const newFiles = all
+                                        .filter((i) => !!i.file)
+                                        .map((i) => i.file!);
+                                      form.setValue("existingProductImages", existing, {
+                                        shouldValidate: true,
+                                      });
+                                      form.setValue("productImageFile", newFiles, {
+                                        shouldValidate: true,
+                                      });
                                     }}
                                     label="Upload product images"
                                     hint="PNG, JPG or WEBP (up to 5 images)"
-                                    initialImages={
-                                      (item as any)?.productImageUrls &&
-                                      (item as any).productImageUrls.length > 0
-                                        ? (item as any).productImageUrls
-                                        : item?.productImageUrl
-                                          ? [item.productImageUrl]
-                                          : []
-                                    }
+                                    initialImages={initialProductImages}
                                   />
                                 </div>
                               </FormControl>
@@ -263,13 +289,21 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                     maxFiles={1}
                                     value={field.value}
                                     onChange={field.onChange}
+                                    onAllImagesChange={(all) => {
+                                      const existing = all.find((i) => !i.file)?.url || null;
+                                      const newFiles = all
+                                        .filter((i) => !!i.file)
+                                        .map((i) => i.file!);
+                                      form.setValue("existingProductInfoImage", existing, {
+                                        shouldValidate: true,
+                                      });
+                                      form.setValue("productInfoImageFile", newFiles, {
+                                        shouldValidate: true,
+                                      });
+                                    }}
                                     label="Upload info image"
                                     hint="Optional supporting image"
-                                    initialImages={
-                                      (item as any)?.productInfoImageUrl
-                                        ? [(item as any).productInfoImageUrl]
-                                        : []
-                                    }
+                                    initialImages={initialProductInfoImage}
                                   />
                                 </div>
                               </FormControl>
@@ -567,13 +601,19 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                 maxFiles={1}
                                 value={field.value}
                                 onChange={field.onChange}
+                                onAllImagesChange={(all) => {
+                                  const existing = all.find((i) => !i.file)?.url || null;
+                                  const newFiles = all.filter((i) => !!i.file).map((i) => i.file!);
+                                  form.setValue("existingNutritionInfoImage", existing, {
+                                    shouldValidate: true,
+                                  });
+                                  form.setValue("nutritionInfoImageFile", newFiles, {
+                                    shouldValidate: true,
+                                  });
+                                }}
                                 label="Upload nutrition image"
                                 hint="Optional nutrition reference"
-                                initialImages={
-                                  (item as any)?.nutritionInfoImageUrl
-                                    ? [(item as any).nutritionInfoImageUrl]
-                                    : []
-                                }
+                                initialImages={initialNutritionInfoImage}
                               />
                             </div>
                           </FormControl>

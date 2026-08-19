@@ -159,12 +159,13 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
             {images.map((image, index) => (
               <div
                 key={image.url}
-                className="group relative h-20 w-20 overflow-hidden rounded-lg border"
+                className="group relative h-20 w-20 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
               >
                 <Image
                   src={image.url}
                   alt={image.file?.name || "Image"}
                   fill
+                  unoptimized
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
                 />
@@ -174,9 +175,10 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
                   size="icon"
                   variant="secondary"
                   onClick={() => removeImage(index)}
-                  className="absolute top-1 right-1 h-5 w-5 rounded-full p-0 opacity-0 transition-opacity group-hover:opacity-100"
+                  title="Remove image"
+                  className="absolute top-1 right-1 h-6 w-6 rounded-full bg-white/90 p-0 text-red-500 shadow-sm transition-all hover:bg-red-500 hover:text-white sm:opacity-0 sm:group-hover:opacity-100 dark:bg-slate-900/90 dark:hover:bg-red-600"
                 >
-                  <X size={22} className="text-red-500" />
+                  <X className="h-3.5 w-3.5" />
                 </Button>
               </div>
             ))}

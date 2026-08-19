@@ -26,20 +26,23 @@ const itemSchema = z
       .optional(),
     productInfoImageFile: z.array(z.instanceof(File)).optional(),
     nutritionInfoImageFile: z.array(z.instanceof(File)).optional(),
-    hasExistingProductImage: z.boolean().optional(),
+    existingProductImages: z.array(z.string()).optional(),
+    existingProductInfoImage: z.string().nullable().optional(),
+    existingNutritionInfoImage: z.string().nullable().optional(),
   })
   .superRefine((data, ctx) => {
-    if (
-      !data.hasExistingProductImage &&
-      (!data.productImageFile || data.productImageFile.length === 0)
-    ) {
+    const existingCount = data.existingProductImages?.length || 0;
+    const newFilesCount = data.productImageFile?.length || 0;
+    const totalCount = existingCount + newFilesCount;
+
+    if (totalCount === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["productImageFile"],
         message: "Product image is required (at least 1 image)",
       });
     }
-    if (data.productImageFile && data.productImageFile.length > 5) {
+    if (totalCount > 5) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["productImageFile"],
@@ -61,11 +64,29 @@ export function useItemForm(
 
   const isSubmitting = isCreating || isUpdating;
 
-  const hasExistingImages = !!(
-    item?.productImageUrl ||
-    item?.productImage ||
-    (item as any)?.productImageUrls?.length
-  );
+  const getInitialImages = (currentItem?: ItemData | null) => {
+    if (
+      (currentItem as any)?.productImageUrls &&
+      (currentItem as any).productImageUrls.length > 0
+    ) {
+      return (currentItem as any).productImageUrls as string[];
+    }
+    if (currentItem?.productImageUrl) {
+      return [currentItem.productImageUrl];
+    }
+    if (currentItem?.productImages && currentItem.productImages.length > 0) {
+      return currentItem.productImages;
+    }
+    return [];
+  };
+
+  const getInitialInfoImage = (currentItem?: ItemData | null) => {
+    return (currentItem as any)?.productInfoImageUrl || currentItem?.productInfoImage || "";
+  };
+
+  const getInitialNutritionImage = (currentItem?: ItemData | null) => {
+    return (currentItem as any)?.nutritionInfoImageUrl || currentItem?.nutritionInfoImage || "";
+  };
 
   const form = useForm<ItemFormValues>({
     resolver: zodResolver(itemSchema),
@@ -84,17 +105,14 @@ export function useItemForm(
       productImageFile: [],
       productInfoImageFile: [],
       nutritionInfoImageFile: [],
-      hasExistingProductImage: hasExistingImages,
+      existingProductImages: getInitialImages(item),
+      existingProductInfoImage: getInitialInfoImage(item),
+      existingNutritionInfoImage: getInitialNutritionImage(item),
     },
   });
 
   useEffect(() => {
     if (open) {
-      const existing = !!(
-        item?.productImageUrl ||
-        item?.productImage ||
-        (item as any)?.productImageUrls?.length
-      );
       form.reset({
         productName: item?.productName ?? "",
         description: item?.description ?? "",
@@ -110,7 +128,9 @@ export function useItemForm(
         productImageFile: [],
         productInfoImageFile: [],
         nutritionInfoImageFile: [],
-        hasExistingProductImage: existing,
+        existingProductImages: getInitialImages(item),
+        existingProductInfoImage: getInitialInfoImage(item),
+        existingNutritionInfoImage: getInitialNutritionImage(item),
       });
     }
   }, [open, item, form]);
@@ -131,16 +151,32 @@ export function useItemForm(
       formData.append("baseQuantity", values.baseQuantity);
       formData.append("unit", values.unit);
 
+      if (item && values.existingProductImages !== undefined) {
+        formData.append("existingProductImages", JSON.stringify(values.existingProductImages));
+      }
+
       if (values.productImageFile && values.productImageFile.length > 0) {
         values.productImageFile.forEach((file) => {
           formData.append("productImageFile", file);
         });
       }
+
       if (values.productInfoImageFile && values.productInfoImageFile.length > 0) {
         formData.append("productInfoImageFile", values.productInfoImageFile[0]);
+      } else if (item) {
+        const hadInitialInfo = !!getInitialInfoImage(item);
+        if (hadInitialInfo && !values.existingProductInfoImage) {
+          formData.append("productInfoImage", "");
+        }
       }
+
       if (values.nutritionInfoImageFile && values.nutritionInfoImageFile.length > 0) {
         formData.append("nutritionInfoImageFile", values.nutritionInfoImageFile[0]);
+      } else if (item) {
+        const hadInitialNutrition = !!getInitialNutritionImage(item);
+        if (hadInitialNutrition && !values.existingNutritionInfoImage) {
+          formData.append("nutritionInfoImage", "");
+        }
       }
 
       if (item) {
