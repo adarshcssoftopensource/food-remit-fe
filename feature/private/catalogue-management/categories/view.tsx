@@ -1,13 +1,15 @@
 "use client";
 
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
 import { formatDate } from "@/lib/date";
-import { ArrowLeft, Building2, Calendar, Clock, Layers, MapPin, User } from "lucide-react";
+import { ArrowLeft, Building2, Calendar, Clock, Expand, Layers, MapPin, User } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useGetCategory } from "./hooks/use-get-category";
 
 interface CategoryViewProps {
@@ -17,6 +19,7 @@ interface CategoryViewProps {
 export function CategoryView({ id }: CategoryViewProps) {
   const router = useRouter();
   const { data: category, isLoading } = useGetCategory(id);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -60,114 +63,125 @@ export function CategoryView({ id }: CategoryViewProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <PageHeader
-          breadcrumbs={[
-            { label: "Catalogue Management" },
-            { label: "Categories", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES },
-            { label: "Category Details" },
-          ]}
-        />
-      </div>
+    <>
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
 
-      <div className="animate-in fade-in slide-in-from-bottom-4 grid gap-6 duration-700 lg:grid-cols-3">
-        {/* Profile Card */}
-        <Card className="relative flex h-fit flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
-          {/* Cover Background */}
-          <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-linear-to-br opacity-90" />
+      <div className="space-y-6">
+        <div>
+          <PageHeader
+            breadcrumbs={[
+              { label: "Catalogue Management" },
+              { label: "Categories", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES },
+              { label: "Category Details" },
+            ]}
+          />
+        </div>
 
-          <CardHeader className="relative flex flex-1 flex-col px-6 pt-2 pb-8 text-center">
-            {/* Icon Container with overlap */}
-            <div className="shadow-primary/20 mx-auto flex h-60 w-60 shrink-0 items-center justify-center rounded-[3rem] bg-white p-3 shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105 dark:bg-slate-900 dark:ring-slate-950">
-              <div className="bg-primary/5 text-primary relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2.5rem]">
-                {category.categoryIcon ? (
-                  <Image
-                    key={category.id}
-                    src={category.categoryIcon}
-                    alt={category.categoryName}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <Building2 className="h-20 w-20" />
-                )}
+        <div className="animate-in fade-in slide-in-from-bottom-4 grid gap-6 duration-700 lg:grid-cols-3">
+          <Card className="relative flex h-fit flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
+            <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-linear-to-br opacity-90" />
+
+            <CardHeader className="relative flex flex-1 flex-col px-6 pt-2 pb-8 text-center">
+              <div className="shadow-primary/20 mx-auto flex h-60 w-60 shrink-0 items-center justify-center rounded-[3rem] bg-white p-3 shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105 dark:bg-slate-900 dark:ring-slate-950">
+                <div className="bg-primary/5 text-primary group relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2.5rem]">
+                  {category.categoryIcon ? (
+                    <>
+                      <Image
+                        key={category.id}
+                        src={category.categoryIcon}
+                        alt={category.categoryName}
+                        fill
+                        className="object-cover"
+                      />
+                      <Button
+                        variant={"ghost"}
+                        onClick={() => setLightboxSrc(category.categoryIcon || null)}
+                        className="absolute right-2 bottom-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
+                        title="View full screen"
+                      >
+                        <Expand className="h-4 w-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    <Building2 className="h-20 w-20" />
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className="mt-10 w-full text-center">
-              <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {category.categoryName}
-              </CardTitle>
+              <div className="mt-10 w-full text-center">
+                <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                  {category.categoryName}
+                </CardTitle>
 
-              <div className="mt-4 flex justify-center">
-                <span
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm backdrop-blur-sm transition-colors ${
-                    category.status === "ACTIVE"
-                      ? "bg-green-500/10 text-green-700 ring-1 ring-green-500/20 dark:bg-green-500/20 dark:text-green-400"
-                      : "bg-red-500/10 text-red-700 ring-1 ring-red-500/20 dark:bg-red-500/20 dark:text-red-400"
-                  }`}
-                >
-                  <span className="relative flex h-2 w-2">
-                    <span
-                      className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
-                    ></span>
-                    <span
-                      className={`relative inline-flex h-2 w-2 rounded-full ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
-                    ></span>
+                <div className="mt-4 flex justify-center">
+                  <span
+                    className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm backdrop-blur-sm transition-colors ${
+                      category.status === "ACTIVE"
+                        ? "bg-green-500/10 text-green-700 ring-1 ring-green-500/20 dark:bg-green-500/20 dark:text-green-400"
+                        : "bg-red-500/10 text-red-700 ring-1 ring-red-500/20 dark:bg-red-500/20 dark:text-red-400"
+                    }`}
+                  >
+                    <span className="relative flex h-2 w-2">
+                      <span
+                        className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                      ></span>
+                      <span
+                        className={`relative inline-flex h-2 w-2 rounded-full ${category.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                      ></span>
+                    </span>
+                    {category.status === "ACTIVE" ? "Active" : "Inactive"}
                   </span>
-                  {category.status === "ACTIVE" ? "Active" : "Inactive"}
-                </span>
+                </div>
               </div>
-            </div>
-          </CardHeader>
-        </Card>
+            </CardHeader>
+          </Card>
 
-        {/* Information Grid */}
-        <Card className="rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-2 dark:bg-slate-950 dark:shadow-none">
-          <CardHeader className="border-b border-slate-100/80 px-8 py-6 dark:border-slate-800/80">
-            <CardTitle className="flex items-center gap-3 text-lg font-bold text-slate-900 dark:text-white">
-              <div className="bg-primary h-5 w-1.5 rounded-full" />
-              Information Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <InfoCard
-                icon={<Building2 className="h-5 w-5" />}
-                label="Department"
-                value={category.department?.departmentName || "Unknown"}
-              />
-              <InfoCard
-                icon={<Layers className="h-5 w-5" />}
-                label="Parent Category"
-                value={category.parentCategoryName || category.parent?.categoryName || "None"}
-              />
-              <InfoCard
-                icon={<MapPin className="h-5 w-5" />}
-                label="City"
-                value={category.city?.name || category.cityName || "All Cities"}
-              />
-              <InfoCard
-                icon={<User className="h-5 w-5" />}
-                label="Created By"
-                value={category.createdBy || "System"}
-              />
-              <InfoCard
-                icon={<Calendar className="h-5 w-5" />}
-                label="Added On"
-                value={formatDate(category.addedOn)}
-              />
-              <InfoCard
-                icon={<Clock className="h-5 w-5" />}
-                label="Modified On"
-                value={formatDate(category.modifiedOn)}
-              />
-            </div>
-          </CardContent>
-        </Card>
+          {/* Information Grid */}
+          <Card className="rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-2 dark:bg-slate-950 dark:shadow-none">
+            <CardHeader className="border-b border-slate-100/80 px-8 py-6 dark:border-slate-800/80">
+              <CardTitle className="flex items-center gap-3 text-lg font-bold text-slate-900 dark:text-white">
+                <div className="bg-primary h-5 w-1.5 rounded-full" />
+                Information Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <InfoCard
+                  icon={<Building2 className="h-5 w-5" />}
+                  label="Department"
+                  value={category.department?.departmentName || "Unknown"}
+                />
+                <InfoCard
+                  icon={<Layers className="h-5 w-5" />}
+                  label="Parent Category"
+                  value={category.parentCategoryName || category.parent?.categoryName || "None"}
+                />
+                <InfoCard
+                  icon={<MapPin className="h-5 w-5" />}
+                  label="City"
+                  value={category.city?.name || category.cityName || "All Cities"}
+                />
+                <InfoCard
+                  icon={<User className="h-5 w-5" />}
+                  label="Created By"
+                  value={category.createdBy || "System"}
+                />
+                <InfoCard
+                  icon={<Calendar className="h-5 w-5" />}
+                  label="Added On"
+                  value={formatDate(category.addedOn)}
+                />
+                <InfoCard
+                  icon={<Clock className="h-5 w-5" />}
+                  label="Modified On"
+                  value={formatDate(category.modifiedOn)}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

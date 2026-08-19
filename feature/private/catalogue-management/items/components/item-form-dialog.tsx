@@ -265,6 +265,11 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                     onChange={field.onChange}
                                     label="Upload info image"
                                     hint="Optional supporting image"
+                                    initialImages={
+                                      (item as any)?.productInfoImageUrl
+                                        ? [(item as any).productInfoImageUrl]
+                                        : []
+                                    }
                                   />
                                 </div>
                               </FormControl>
@@ -564,6 +569,11 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                 onChange={field.onChange}
                                 label="Upload nutrition image"
                                 hint="Optional nutrition reference"
+                                initialImages={
+                                  (item as any)?.nutritionInfoImageUrl
+                                    ? [(item as any).nutritionInfoImageUrl]
+                                    : []
+                                }
                               />
                             </div>
                           </FormControl>

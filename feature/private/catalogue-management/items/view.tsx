@@ -1,24 +1,15 @@
 "use client";
 
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
-import { formatDate } from "@/lib/date";
-import {
-  ArrowLeft,
-  Barcode,
-  Building2,
-  Calendar,
-  Clock,
-  Layers,
-  MapPin,
-  Package,
-  Percent,
-  Scale,
-} from "lucide-react";
-import Image from "next/image";
+import { ArrowLeft, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ItemDetailsCard } from "./components/item-details-card";
+import { ItemMediaCard } from "./components/item-media-card";
+import { ItemViewSkeleton } from "./components/item-view-skeleton";
 import { useGetItemById } from "./hooks/use-get-item-by-id";
 
 interface ItemViewProps {
@@ -30,33 +21,46 @@ export function ItemView({ id }: ItemViewProps) {
   const { data: response, isLoading } = useGetItemById(id);
   const item = response?.data;
 
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const [imageList, setImageList] = useState<{ src: string; label: string; type: string }[]>([]);
+  const [initializedForId, setInitializedForId] = useState<string | null>(null);
+
+  if (item && item.id !== initializedForId) {
+    const list: { src: string; label: string; type: string }[] = [];
+
+    if (item.productImageUrls && item.productImageUrls.length > 0) {
+      item.productImageUrls.forEach((url: string, idx: number) => {
+        list.push({ src: url, label: `Product ${idx + 1}`, type: "product" });
+      });
+    } else if (item.productImageUrl) {
+      list.push({ src: item.productImageUrl, label: item.productName, type: "product" });
+    }
+
+    if (item.productInfoImageUrl)
+      list.push({ src: item.productInfoImageUrl, label: "Product Info", type: "additional" });
+    if (item.nutritionInfoImageUrl)
+      list.push({ src: item.nutritionInfoImageUrl, label: "Nutrition Info", type: "additional" });
+
+    setImageList(list);
+    setInitializedForId(item.id);
+  }
+
+  const swapWithMain = (idx: number) => {
+    setImageList((prev) => {
+      const next = [...prev];
+      [next[0], next[idx]] = [next[idx], next[0]];
+      return next;
+    });
+  };
+
+  const mainImage = imageList[0] ?? null;
+  const thumbnailsWithIndex = imageList.map((img, i) => ({ ...img, originalIndex: i })).slice(1);
+  const productGalleryThumbnails = thumbnailsWithIndex.filter((t) => t.type === "product");
+  const additionalThumbnails = thumbnailsWithIndex.filter((t) => t.type === "additional");
+
   if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="h-10 w-24 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
-          <div className="h-8 w-64 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
-        </div>
-        <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="animate-pulse overflow-hidden border-slate-200/80 lg:col-span-1 dark:border-slate-800">
-            <div className="h-32 bg-slate-200 dark:bg-slate-800" />
-            <div className="px-6 pt-0 pb-6 text-center">
-              <div className="mx-auto -mt-12 h-24 w-24 rounded-3xl bg-slate-300 ring-4 ring-white dark:bg-slate-700 dark:ring-slate-950" />
-              <div className="mx-auto mt-4 h-6 w-32 rounded-lg bg-slate-200 dark:bg-slate-800" />
-              <div className="mx-auto mt-3 h-5 w-16 rounded-full bg-slate-200 dark:bg-slate-800" />
-            </div>
-          </Card>
-          <Card className="animate-pulse border-slate-200/80 lg:col-span-2 dark:border-slate-800">
-            <CardHeader className="h-20 border-b border-slate-100 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-900/20" />
-            <CardContent className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <div key={i} className="h-24 rounded-xl bg-slate-100 dark:bg-slate-800/50" />
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
+    return <ItemViewSkeleton />;
   }
 
   if (!item) {
@@ -72,223 +76,32 @@ export function ItemView({ id }: ItemViewProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <PageHeader
-          breadcrumbs={[
-            { label: "Catalogue Management" },
-            { label: "Items", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS },
-            { label: "Item Details" },
-          ]}
-        />
-      </div>
+    <>
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
 
-      <div className="animate-in fade-in slide-in-from-bottom-4 grid gap-6 duration-700 lg:grid-cols-3">
-        {/* Profile Card */}
-        <Card className="relative flex h-fit flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
-          {/* Cover Background */}
-          <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-linear-to-br opacity-90" />
+      <div className="space-y-4">
+        <div>
+          <PageHeader
+            breadcrumbs={[
+              { label: "Catalogue Management" },
+              { label: "Items", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS },
+              { label: "Item Details" },
+            ]}
+          />
+        </div>
 
-          <CardHeader className="relative flex flex-1 flex-col px-6 pt-2 pb-8 text-center">
-            {/* Icon Container with overlap */}
-            <div className="shadow-primary/20 mx-auto flex h-60 w-60 shrink-0 items-center justify-center rounded-[3rem] bg-white p-3 shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105 dark:bg-slate-900 dark:ring-slate-950">
-              <div className="bg-primary/5 text-primary relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2.5rem]">
-                {item.productImageUrl ? (
-                  <Image
-                    key={item.id}
-                    src={item.productImageUrl}
-                    alt={item.productName}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <Package className="h-20 w-20" />
-                )}
-              </div>
-            </div>
-
-            <div className="mt-10 w-full text-center">
-              <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {item.productName}
-              </CardTitle>
-              {item.description && (
-                <p className="mt-2 text-sm text-slate-500">{item.description}</p>
-              )}
-
-              <div className="mt-4 flex justify-center gap-2">
-                <span
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm backdrop-blur-sm transition-colors ${
-                    item.status === "ACTIVE"
-                      ? "bg-green-500/10 text-green-700 ring-1 ring-green-500/20 dark:bg-green-500/20 dark:text-green-400"
-                      : "bg-red-500/10 text-red-700 ring-1 ring-red-500/20 dark:bg-red-500/20 dark:text-red-400"
-                  }`}
-                >
-                  <span className="relative flex h-2 w-2">
-                    <span
-                      className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${item.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
-                    ></span>
-                    <span
-                      className={`relative inline-flex h-2 w-2 rounded-full ${item.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
-                    ></span>
-                  </span>
-                  {item.status === "ACTIVE" ? "Active" : "Inactive"}
-                </span>
-
-                {item.adminShare && (
-                  <span className="inline-flex items-center rounded-full bg-blue-500/10 px-4 py-1.5 text-sm font-semibold text-blue-700 shadow-sm ring-1 ring-blue-500/20">
-                    Admin Share
-                  </span>
-                )}
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
-
-        {/* Information Grid */}
-        <Card className="rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-2 dark:bg-slate-950 dark:shadow-none">
-          <CardHeader className="border-b border-slate-100/80 px-8 py-6 dark:border-slate-800/80">
-            <CardTitle className="flex items-center gap-3 text-lg font-bold text-slate-900 dark:text-white">
-              <div className="bg-primary h-5 w-1.5 rounded-full" />
-              Information Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <InfoCard
-                icon={<MapPin className="h-5 w-5" />}
-                label="Country"
-                value={item.country?.name || "Unknown"}
-              />
-              <InfoCard
-                icon={<Building2 className="h-5 w-5" />}
-                label="Department"
-                value={item.department?.departmentName || "None"}
-              />
-              <InfoCard
-                icon={<Layers className="h-5 w-5" />}
-                label="Category"
-                value={item.category?.categoryName || "None"}
-              />
-              <InfoCard
-                icon={<Barcode className="h-5 w-5" />}
-                label="UPC Code"
-                value={item.upcCode || "N/A"}
-              />
-              <InfoCard
-                icon={<Scale className="h-5 w-5" />}
-                label="Base Quantity"
-                value={item.baseQuantity && item.unit ? `${item.baseQuantity} ${item.unit}` : "N/A"}
-              />
-              <InfoCard
-                icon={<Percent className="h-5 w-5" />}
-                label="Discount"
-                value={
-                  item.discountAvailability
-                    ? item.discountPercentage
-                      ? `${item.discountPercentage}%`
-                      : "Available"
-                    : "Not Available"
-                }
-              />
-              <InfoCard
-                icon={<Calendar className="h-5 w-5" />}
-                label="Added On"
-                value={formatDate(item.createdAt)}
-              />
-              <InfoCard
-                icon={<Clock className="h-5 w-5" />}
-                label="Modified On"
-                value={formatDate(item.updatedAt)}
-              />
-            </div>
-
-            {/* Product Images Gallery */}
-            {item.productImageUrls && item.productImageUrls.length > 1 && (
-              <div className="mt-8 border-t border-slate-100/80 pt-6 dark:border-slate-800/80">
-                <h3 className="mb-4 text-sm font-bold text-slate-700 dark:text-slate-300">
-                  Product Gallery ({item.productImageUrls.length} images)
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {item.productImageUrls.map((url, idx) => (
-                    <div
-                      key={idx}
-                      className="relative h-24 w-24 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-transform duration-200 hover:scale-105 dark:border-slate-700 dark:bg-slate-900"
-                    >
-                      <Image
-                        src={url}
-                        alt={`${item.productName} ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Additional info images if present */}
-            {(item.productInfoImageUrl || item.nutritionInfoImageUrl) && (
-              <div className="mt-8 border-t border-slate-100/80 pt-6 dark:border-slate-800/80">
-                <h3 className="mb-4 text-sm font-bold text-slate-700 dark:text-slate-300">
-                  Additional Information Images
-                </h3>
-                <div className="flex flex-wrap gap-4">
-                  {item.productInfoImageUrl && (
-                    <div className="space-y-1.5">
-                      <div className="relative h-32 w-32 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                        <Image
-                          src={item.productInfoImageUrl}
-                          alt="Product Info"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <p className="text-center text-[11px] font-medium text-slate-500">
-                        Product Info
-                      </p>
-                    </div>
-                  )}
-                  {item.nutritionInfoImageUrl && (
-                    <div className="space-y-1.5">
-                      <div className="relative h-32 w-32 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                        <Image
-                          src={item.nutritionInfoImageUrl}
-                          alt="Nutrition Info"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <p className="text-center text-[11px] font-medium text-slate-500">
-                        Nutrition Info
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function InfoCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="group hover:border-primary/20 hover:shadow-primary/5 relative flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/30 dark:hover:bg-slate-900">
-      <div className="group-hover:bg-primary/10 group-hover:text-primary group-hover:ring-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-colors dark:bg-slate-800 dark:ring-slate-700">
-        <div className="group-hover:text-primary text-slate-500 transition-colors dark:text-slate-400">
-          {icon}
+        <div className="animate-in fade-in slide-in-from-bottom-4 grid items-stretch gap-4 duration-700 lg:grid-cols-3">
+          <ItemMediaCard
+            item={item}
+            mainImage={mainImage}
+            productGalleryThumbnails={productGalleryThumbnails}
+            additionalThumbnails={additionalThumbnails}
+            setLightboxSrc={setLightboxSrc}
+            swapWithMain={swapWithMain}
+          />
+          <ItemDetailsCard item={item} />
         </div>
       </div>
-      <div className="flex flex-col justify-center space-y-1">
-        <span className="text-xs font-medium tracking-wider text-slate-500 uppercase dark:text-slate-400">
-          {label}
-        </span>
-        <span className="text-sm font-semibold text-slate-900 capitalize dark:text-slate-100">
-          {value}
-        </span>
-      </div>
-    </div>
+    </>
   );
 }
