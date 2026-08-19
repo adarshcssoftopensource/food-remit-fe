@@ -75,7 +75,13 @@ export function StoreReportDetail({ store }: StoreReportDetailProps) {
               <div className="flex flex-col gap-5 sm:flex-row">
                 <div className="border-background bg-muted relative h-32 w-32 shrink-0 overflow-hidden rounded-3xl border-4 shadow-md">
                   {store.image ? (
-                    <Image src={store.image} fill alt={store.storeName} className="object-cover" />
+                    <Image
+                      src={store.image}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      alt={store.storeName}
+                      className="object-cover"
+                    />
                   ) : (
                     <div className="flex h-full items-center justify-center">
                       <Store className="text-muted-foreground h-12 w-12" />

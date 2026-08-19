@@ -36,7 +36,9 @@ export function ImageLightbox({ src, onClose, alt = "Full size" }: ImageLightbox
   }
 
   return createPortal(
-    <div
+    <button
+      type="button"
+      aria-label="Close lightbox"
       className="fixed inset-0 flex items-center justify-center backdrop-blur-md"
       style={{ zIndex: 99999, background: "rgba(15,15,20,0.45)" }}
       onClick={onClose}
@@ -68,7 +70,7 @@ export function ImageLightbox({ src, onClose, alt = "Full size" }: ImageLightbox
           className="max-h-[93vh] max-w-[45vw] object-contain"
         />
       </div>
-    </div>,
+    </button>,
     document.body,
   );
 }

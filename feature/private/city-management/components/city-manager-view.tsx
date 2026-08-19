@@ -184,13 +184,15 @@ export default function CityManagerViewPage({ params }: CityManagerViewPageProps
                 <div className="flex flex-wrap gap-2">
                   {assignedStores.length ? (
                     assignedStores.map((store) => (
-                      <span
+                      <Button
+                        variant={"ghost"}
                         key={store.id}
+                        type="button"
                         className="border-primary-100 bg-primary-50 text-primary-700 cursor-pointer rounded-full border px-3 py-1 text-sm font-medium shadow-xs"
                         onClick={() => router.push(`${ROUTES.ADMIN.STORE_MANAGEMENT.ROOT}`)}
                       >
                         {store.storeName}
-                      </span>
+                      </Button>
                     ))
                   ) : (
                     <span className="text-sm text-slate-400">No stores assigned</span>

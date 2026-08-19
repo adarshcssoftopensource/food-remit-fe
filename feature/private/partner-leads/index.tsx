@@ -12,7 +12,7 @@ import { STATS_CONFIG } from "@/constants/partner.leads";
 import { useDebounce } from "@/lib/debounce";
 import { SortingState } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getPartnerLeadColumns } from "./columns/partner-lead-columns";
 import { usePartnerLeads } from "./hooks/use-get-partner-leads";
 
@@ -75,11 +75,14 @@ export function PartnerLeadsManagement() {
     (city !== "all" && city !== "All" ? 1 : 0) +
     (searchValue ? 1 : 0);
 
-  const handleViewDetails = (id: string) => {
-    router.push(`${ROUTES.ADMIN.PARTNER_LEADS}/${id}`);
-  };
+  const handleViewDetails = useCallback(
+    (id: string) => {
+      router.push(`${ROUTES.ADMIN.PARTNER_LEADS}/${id}`);
+    },
+    [router],
+  );
 
-  const columns = useMemo(() => getPartnerLeadColumns(handleViewDetails), []);
+  const columns = useMemo(() => getPartnerLeadColumns(handleViewDetails), [handleViewDetails]);
 
   return (
     <div className="space-y-6">

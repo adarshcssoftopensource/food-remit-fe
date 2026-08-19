@@ -85,6 +85,7 @@ export function TutorialManagement() {
                     src={tutorial.imageUrl}
                     alt={tutorial.title || "Tutorial Image"}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover"
                   />
                   <div className="absolute top-4 right-4">

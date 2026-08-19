@@ -21,7 +21,7 @@ import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/ca
 import { useTableFilters } from "@/hooks/use-table-filters";
 import { Building2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getDepartmentColumns } from "./columns/department-columns";
 import { DepartmentFormDialog } from "./components/department-form-dialog";
 import { useGetDepartments, type UseGetDepartmentsArgs } from "./hooks/use-get-departments";
@@ -82,15 +82,15 @@ export function DepartmentsManagement() {
 
   const { data: res, isLoading } = useGetDepartments(queryArgs);
 
-  const rawDepartments = res?.data ?? [];
   const departments = useMemo(() => {
+    const rawDepartments = res?.data ?? [];
     return rawDepartments.filter((d) => {
       if (city !== "all" && city !== "All" && (d as any).cityId && (d as any).cityId !== city) {
         return false;
       }
       return true;
     });
-  }, [rawDepartments, city]);
+  }, [res?.data, city]);
 
   const stats = {
     total: res?.stats?.total ?? 0,
@@ -125,16 +125,22 @@ export function DepartmentsManagement() {
     return count;
   }, [fromDate, toDate, country, city, status]);
 
-  const handleEdit = (dept: DepartmentData) => {
+  const handleEdit = useCallback((dept: DepartmentData) => {
     setEditingDept(dept);
     setDialogOpen(true);
-  };
+  }, []);
 
-  const handleView = (dept: DepartmentData) => {
-    router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.DEPARTMENTS}/${dept.id}`);
-  };
+  const handleView = useCallback(
+    (dept: DepartmentData) => {
+      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.DEPARTMENTS}/${dept.id}`);
+    },
+    [router],
+  );
 
-  const columns = useMemo(() => getDepartmentColumns(handleEdit, handleView), []);
+  const columns = useMemo(
+    () => getDepartmentColumns(handleEdit, handleView),
+    [handleEdit, handleView],
+  );
 
   return (
     <div className="space-y-6">

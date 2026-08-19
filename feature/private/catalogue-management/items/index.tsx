@@ -23,7 +23,7 @@ import { CATALOGUE_STATUS_OPTIONS, ITEM_STAT_CONFIG } from "@/constants/catalogu
 import { useTableFilters } from "@/hooks/use-table-filters";
 import { Package, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getItemColumns } from "./columns/item-columns";
 import { ItemFormDialog } from "./components/item-form-dialog";
 import { useGetItems } from "./hooks/use-get-items";
@@ -67,8 +67,8 @@ export function ItemsManagement() {
     toDate: formattedToDate,
   });
 
-  const rawFilteredData = itemsResponse?.data || [];
   const filteredData = useMemo(() => {
+    const rawFilteredData = itemsResponse?.data || [];
     return rawFilteredData.filter((item) => {
       if (
         city !== "all" &&
@@ -80,7 +80,7 @@ export function ItemsManagement() {
       }
       return true;
     });
-  }, [rawFilteredData, city]);
+  }, [itemsResponse?.data, city]);
 
   const pagination = itemsResponse?.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 };
 
@@ -123,16 +123,19 @@ export function ItemsManagement() {
     return count;
   }, [fromDate, toDate, country, city, department, category, status]);
 
-  const handleEdit = (item: ItemData) => {
+  const handleEdit = useCallback((item: ItemData) => {
     setEditingItem(item);
     setDialogOpen(true);
-  };
+  }, []);
 
-  const handleView = (item: ItemData) => {
-    router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS}/${item.id}`);
-  };
+  const handleView = useCallback(
+    (item: ItemData) => {
+      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS}/${item.id}`);
+    },
+    [router],
+  );
 
-  const columns = useMemo(() => getItemColumns(handleEdit, handleView), []);
+  const columns = useMemo(() => getItemColumns(handleEdit, handleView), [handleEdit, handleView]);
 
   return (
     <div className="space-y-6">

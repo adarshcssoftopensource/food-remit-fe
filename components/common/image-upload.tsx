@@ -58,6 +58,8 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
       const initial = initialImagesStr ? initialImagesStr.split(",").map((url) => ({ url })) : [];
       setImages(initial);
       onAllImagesChange?.(initial);
+      // onAllImagesChange is intentionally excluded: callers should stabilize it with useCallback
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initialImagesStr]);
 
     useEffect(() => {
@@ -85,47 +87,39 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
         return;
       }
 
-      setImages((prev) => {
-        const next = maxFiles === 1 ? [] : [...prev];
-        const existing = new Set(
-          next.map((i) => (i.file ? `${i.file.name}-${i.file.size}` : i.url)),
-        );
+      // Compute next state outside the setter so side effects run exactly once
+      const next = maxFiles === 1 ? [] : [...images];
+      const existing = new Set(next.map((i) => (i.file ? `${i.file.name}-${i.file.size}` : i.url)));
 
-        validFiles.forEach((file) => {
-          const key = `${file.name}-${file.size}`;
-
-          if (!existing.has(key)) {
-            next.push({
-              file,
-              url: URL.createObjectURL(file),
-            });
-          }
-        });
-
-        const finalImages = next.slice(0, maxFiles);
-        onChange?.(finalImages.map((i) => i.file).filter(Boolean) as File[]);
-        onAllImagesChange?.(finalImages);
-
-        return finalImages;
+      validFiles.forEach((file) => {
+        const key = `${file.name}-${file.size}`;
+        if (!existing.has(key)) {
+          next.push({ file, url: URL.createObjectURL(file) });
+        }
       });
 
+      const finalImages = next.slice(0, maxFiles);
+
+      // Side effects before setting state — no setter to replay them
+      onChange?.(finalImages.flatMap((i) => (i.file ? [i.file] : [])));
+      onAllImagesChange?.(finalImages);
+
+      setImages(finalImages);
       event.target.value = "";
     };
 
     const removeImage = (index: number) => {
-      setImages((prev) => {
-        const removed = prev[index];
+      // Compute next state outside the setter so side effects run exactly once
+      const removed = images[index];
+      if (removed?.file) URL.revokeObjectURL(removed.url);
 
-        if (removed) {
-          URL.revokeObjectURL(removed.url);
-        }
+      const next = images.filter((_, i) => i !== index);
 
-        const next = prev.filter((_, i) => i !== index);
-        onChange?.(next.map((i) => i.file).filter(Boolean) as File[]);
-        onAllImagesChange?.(next);
+      // Side effects before setting state — no setter to replay them
+      onChange?.(next.flatMap((i) => (i.file ? [i.file] : [])));
+      onAllImagesChange?.(next);
 
-        return next;
-      });
+      setImages(next);
 
       if (inputRef.current) {
         inputRef.current.value = "";
@@ -171,6 +165,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
                   src={image.url}
                   alt={image.file?.name || "Image"}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
                 />
 

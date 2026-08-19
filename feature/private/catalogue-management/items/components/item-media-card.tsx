@@ -33,6 +33,7 @@ export function ItemMediaCard({
                 src={mainImage.src}
                 alt={mainImage.label}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover transition-opacity duration-300"
               />
             ) : (
@@ -104,6 +105,7 @@ export function ItemMediaCard({
                   src={src}
                   alt={label}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-300 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 flex items-end justify-center bg-linear-to-t from-black/60 via-transparent to-transparent">
@@ -139,6 +141,7 @@ export function ItemMediaCard({
                   src={src}
                   alt={label}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-300 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 flex items-end justify-center bg-linear-to-t from-black/60 via-transparent to-transparent">

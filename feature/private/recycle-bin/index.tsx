@@ -46,9 +46,8 @@ export function RecycledUsersManagement() {
   };
 
   const { data: res, isLoading } = useGetRecycledUsers(queryArgs);
-  const rawData = (res?.data ?? []) as any[];
-
   const allData = useMemo(() => {
+    const rawData = (res?.data ?? []) as any[];
     return rawData.filter((user) => {
       if (country !== "all" && country !== "All" && user.countryId && user.countryId !== country) {
         return false;
@@ -58,7 +57,7 @@ export function RecycledUsersManagement() {
       }
       return true;
     });
-  }, [rawData, country, city]);
+  }, [res?.data, country, city]);
 
   const stats = {
     total: res?.stats?.total ?? 0,

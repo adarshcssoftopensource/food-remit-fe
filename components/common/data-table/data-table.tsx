@@ -82,13 +82,11 @@ export function DataTable<TData, TValue>({
 
   const handleSortingChange = React.useCallback(
     (updater: SortingState | ((prev: SortingState) => SortingState)) => {
-      setSorting((prev) => {
-        const next = typeof updater === "function" ? updater(prev) : updater;
-        onSortingChange?.(next);
-        return next;
-      });
+      const next = typeof updater === "function" ? updater(sorting) : updater;
+      onSortingChange?.(next);
+      setSorting(next);
     },
-    [onSortingChange],
+    [sorting, onSortingChange],
   );
 
   const table = useReactTable({

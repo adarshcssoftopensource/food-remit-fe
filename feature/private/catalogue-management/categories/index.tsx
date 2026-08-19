@@ -22,7 +22,7 @@ import { CATALOGUE_STATUS_OPTIONS, CATEGORY_STAT_CONFIG } from "@/constants/cata
 import { useTableFilters } from "@/hooks/use-table-filters";
 import { Building2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getCategoryColumns } from "./columns/category-columns";
 import { CategoryFormDialog } from "./components/category-form-dialog";
 import { useGetCategories, type UseGetCategoriesArgs } from "./hooks/use-get-categories";
@@ -86,15 +86,15 @@ export function CategoriesManagement() {
 
   const { data: res, isLoading } = useGetCategories(queryArgs);
 
-  const rawCategories = res?.data ?? [];
   const categories = useMemo(() => {
+    const rawCategories = res?.data ?? [];
     return rawCategories.filter((c) => {
       if (city !== "all" && city !== "All" && (c as any).cityId && (c as any).cityId !== city) {
         return false;
       }
       return true;
     });
-  }, [rawCategories, city]);
+  }, [res?.data, city]);
 
   const stats = {
     total: res?.stats?.total ?? 0,
@@ -132,16 +132,22 @@ export function CategoriesManagement() {
     return count;
   }, [fromDate, toDate, country, city, department, status]);
 
-  const handleEdit = (dept: CategoryData) => {
+  const handleEdit = useCallback((dept: CategoryData) => {
     setEditingCategory(dept);
     setDialogOpen(true);
-  };
+  }, []);
 
-  const handleView = (dept: CategoryData) => {
-    router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES}/${dept.id}`);
-  };
+  const handleView = useCallback(
+    (dept: CategoryData) => {
+      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES}/${dept.id}`);
+    },
+    [router],
+  );
 
-  const columns = useMemo(() => getCategoryColumns(handleEdit, handleView), []);
+  const columns = useMemo(
+    () => getCategoryColumns(handleEdit, handleView),
+    [handleEdit, handleView],
+  );
 
   return (
     <div className="space-y-6">
