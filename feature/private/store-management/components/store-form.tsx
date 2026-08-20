@@ -4,10 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, UserCircle } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 
+import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { ImageUpload } from "@/components/common/image-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { applyPlaceToLocationFields } from "@/lib/places/apply-place-to-location-fields";
 import React from "react";
 import { storeSchema, type StoreFormValues } from "../schema/store.schema";
 import { CountryCityFields } from "./country-city-fields";
@@ -52,6 +54,7 @@ export function StoreForm({
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<StoreFormValues>({
     resolver: zodResolver(storeSchema),
@@ -193,11 +196,13 @@ export function StoreForm({
                 control={control}
                 render={({ field }) => (
                   <FormField label="Address" error={errors.storeAddress?.message} required>
-                    <Input
-                      {...field}
+                    <AddressAutocompleteInput
                       id="storeAddress"
+                      value={field.value}
+                      onChange={field.onChange}
+                      addressFormat="full"
                       placeholder="Enter Address"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      invalid={!!errors.storeAddress}
                     />
                   </FormField>
                 )}
@@ -375,11 +380,21 @@ export function StoreForm({
                 control={control}
                 render={({ field }) => (
                   <FormField label="Address" error={errors.managerAddress?.message} required>
-                    <Input
-                      {...field}
+                    <AddressAutocompleteInput
                       id="managerAddress"
+                      value={field.value}
+                      onChange={field.onChange}
+                      addressFormat="street"
                       placeholder="Enter Address"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      invalid={!!errors.managerAddress}
+                      onPlaceSelect={(place) => {
+                        applyPlaceToLocationFields(place, setValue, {
+                          country: "managerCountry",
+                          state: "managerState",
+                          city: "managerCity",
+                          zipcode: "managerZipCode",
+                        });
+                      }}
                     />
                   </FormField>
                 )}

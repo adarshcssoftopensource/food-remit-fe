@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Globe2, Home, Mail, UserRound } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
+import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { ImageUpload } from "@/components/common/image-upload";
 import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
+import { applyPlaceToLocationFields } from "@/lib/places/apply-place-to-location-fields";
 import { cn } from "@/lib/utils";
 import { City, Country, State } from "country-state-city";
 import {
@@ -273,7 +275,22 @@ export function CountryManagerForm({
                     <FieldLabel className="mb-1.5 text-sm font-semibold">
                       Address 1 <span className="text-red-500">*</span>
                     </FieldLabel>
-                    <Input {...field} placeholder="Street address" className={inputClass} />
+                    <AddressAutocompleteInput
+                      id="countryMgrAddress1"
+                      value={field.value}
+                      onChange={field.onChange}
+                      addressFormat="street"
+                      placeholder="Street address"
+                      invalid={!!errors.address1}
+                      onPlaceSelect={(place) => {
+                        applyPlaceToLocationFields(place, setValue, {
+                          country: "residentialCountry",
+                          state: "state",
+                          city: "city",
+                          zipcode: "zipcode",
+                        });
+                      }}
+                    />
                     {fieldError(errors.address1?.message)}
                   </div>
                 )}
@@ -284,10 +301,12 @@ export function CountryManagerForm({
                 render={({ field }) => (
                   <div>
                     <FieldLabel className="mb-1.5 text-sm font-semibold">Address 2</FieldLabel>
-                    <Input
-                      {...field}
+                    <AddressAutocompleteInput
+                      id="countryMgrAddress2"
+                      value={field.value}
+                      onChange={field.onChange}
                       placeholder="Street address 2 (optional)"
-                      className={inputClass}
+                      invalid={!!errors.address2}
                     />
                     {fieldError(errors.address2?.message)}
                   </div>

@@ -119,7 +119,8 @@ export const DIFFERENTIATORS = [
   },
   {
     unlike: "Unlike marketplaces",
-    point: "We specialize in food support between families living in different countries.",
+    point:
+      "We specialize in food support between families living in the same or different countries.",
   },
 ] as const;
 

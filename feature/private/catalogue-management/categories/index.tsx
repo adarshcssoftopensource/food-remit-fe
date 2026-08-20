@@ -256,7 +256,7 @@ export function CategoriesManagement() {
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                    Categories
+                    Discount Availability
                   </CardTitle>
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:bg-slate-800 dark:text-slate-400">
                     Directory
