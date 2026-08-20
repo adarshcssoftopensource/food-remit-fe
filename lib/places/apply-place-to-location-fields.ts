@@ -15,16 +15,8 @@ export function applyPlaceToLocationFields<T extends FieldValues>(
   setValue: UseFormSetValue<T>,
   fields: ResidentialFieldMap<T>,
 ): void {
-  if (place.country) {
-    setValue(fields.country, place.country as T[Path<T>], SET_OPTS);
-  }
-  if (place.state) {
-    setValue(fields.state, place.state as T[Path<T>], SET_OPTS);
-  }
-  if (place.city) {
-    setValue(fields.city, place.city as T[Path<T>], SET_OPTS);
-  }
-  if (place.postalCode) {
-    setValue(fields.zipcode, place.postalCode as T[Path<T>], SET_OPTS);
-  }
+  setValue(fields.country, (place.country || "") as T[Path<T>], SET_OPTS);
+  setValue(fields.state, (place.state || "") as T[Path<T>], SET_OPTS);
+  setValue(fields.city, (place.city || "") as T[Path<T>], SET_OPTS);
+  setValue(fields.zipcode, (place.postalCode || "") as T[Path<T>], SET_OPTS);
 }
