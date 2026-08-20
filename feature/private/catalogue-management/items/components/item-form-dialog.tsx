@@ -32,8 +32,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMemo } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { useMemo } from "react";
 import { ItemFormValues, useItemForm } from "../../hooks/useItemForm";
 import { ItemData } from "../types/item.types";
 
@@ -250,10 +250,10 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                         .filter((i) => !!i.file)
                                         .map((i) => i.file!);
                                       form.setValue("existingProductImages", existing, {
-                                        shouldValidate: true,
+                                        shouldValidate: false,
                                       });
                                       form.setValue("productImageFile", newFiles, {
-                                        shouldValidate: true,
+                                        shouldValidate: false,
                                       });
                                     }}
                                     label="Upload product images"
@@ -295,10 +295,10 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                         .filter((i) => !!i.file)
                                         .map((i) => i.file!);
                                       form.setValue("existingProductInfoImage", existing, {
-                                        shouldValidate: true,
+                                        shouldValidate: false,
                                       });
                                       form.setValue("productInfoImageFile", newFiles, {
-                                        shouldValidate: true,
+                                        shouldValidate: false,
                                       });
                                     }}
                                     label="Upload info image"
@@ -605,10 +605,10 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                   const existing = all.find((i) => !i.file)?.url || null;
                                   const newFiles = all.filter((i) => !!i.file).map((i) => i.file!);
                                   form.setValue("existingNutritionInfoImage", existing, {
-                                    shouldValidate: true,
+                                    shouldValidate: false,
                                   });
                                   form.setValue("nutritionInfoImageFile", newFiles, {
-                                    shouldValidate: true,
+                                    shouldValidate: false,
                                   });
                                 }}
                                 label="Upload nutrition image"

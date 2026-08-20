@@ -279,6 +279,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
+  z-index: 0;
 }
 
 .react-tel-input .country-list .country:hover,
@@ -286,22 +288,27 @@
   background: #f3f4f6 !important;
 }
 
+/* Keep search above scrolling country rows (WEB-0003) */
 .react-tel-input .country-list .search {
-  padding: 8px 10px 4px !important;
+  padding: 8px 10px !important;
   position: sticky;
   top: 0;
-  background: #fff;
-  z-index: 1;
+  background: #fff !important;
+  z-index: 20 !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .react-tel-input .country-list .search-box {
   width: 100% !important;
+  margin: 0 !important;
   padding: 6px 10px !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 8px !important;
   font-size: 13px !important;
   outline: none !important;
   box-shadow: none !important;
+  background: #fff !important;
 }
 
 .react-tel-input .country-list .search-box:focus {

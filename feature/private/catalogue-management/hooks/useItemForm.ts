@@ -90,6 +90,7 @@ export function useItemForm(
 
   const form = useForm<ItemFormValues>({
     resolver: zodResolver(itemSchema),
+    mode: "onSubmit",
     defaultValues: {
       productName: item?.productName ?? "",
       description: item?.description ?? "",
@@ -113,25 +114,29 @@ export function useItemForm(
 
   useEffect(() => {
     if (open) {
-      form.reset({
-        productName: item?.productName ?? "",
-        description: item?.description ?? "",
-        upcCode: item?.upcCode ?? "",
-        productInfo: item?.productInfo ?? "",
-        nutritionInfo: item?.nutritionInfo ?? "",
-        discountPercentage: item?.discountPercentage?.toString() ?? "",
-        baseQuantity: item?.baseQuantity?.toString() ?? "",
-        unit: item?.unit ?? "",
-        countryId: item?.countryId ?? "",
-        departmentId: item?.departmentId ?? "",
-        categoryId: item?.categoryId ?? "",
-        productImageFile: [],
-        productInfoImageFile: [],
-        nutritionInfoImageFile: [],
-        existingProductImages: getInitialImages(item),
-        existingProductInfoImage: getInitialInfoImage(item),
-        existingNutritionInfoImage: getInitialNutritionImage(item),
-      });
+      form.clearErrors();
+      form.reset(
+        {
+          productName: item?.productName ?? "",
+          description: item?.description ?? "",
+          upcCode: item?.upcCode ?? "",
+          productInfo: item?.productInfo ?? "",
+          nutritionInfo: item?.nutritionInfo ?? "",
+          discountPercentage: item?.discountPercentage?.toString() ?? "",
+          baseQuantity: item?.baseQuantity?.toString() ?? "",
+          unit: item?.unit ?? "",
+          countryId: item?.countryId ?? "",
+          departmentId: item?.departmentId ?? "",
+          categoryId: item?.categoryId ?? "",
+          productImageFile: [],
+          productInfoImageFile: [],
+          nutritionInfoImageFile: [],
+          existingProductImages: getInitialImages(item),
+          existingProductInfoImage: getInitialInfoImage(item),
+          existingNutritionInfoImage: getInitialNutritionImage(item),
+        },
+        { keepErrors: false },
+      );
     }
   }, [open, item, form]);
 
@@ -180,17 +185,31 @@ export function useItemForm(
       }
 
       if (item) {
-        await updateItem(formData as any);
-        toast.success("Item updated successfully");
+        const response = (await updateItem(formData as any)) as {
+          status?: boolean | string;
+          message?: string;
+        };
+        if (response?.status === false) {
+          toast.error(response.message || "Failed to update item");
+          return;
+        }
+        toast.success(response?.message || "Item updated successfully");
       } else {
-        await createItem(formData as any);
-        toast.success("Item created successfully");
+        const response = (await createItem(formData as any)) as {
+          status?: boolean | string;
+          message?: string;
+        };
+        if (response?.status === false) {
+          toast.error(response.message || "Failed to create item");
+          return;
+        }
+        toast.success(response?.message || "Item created successfully");
       }
 
       onSubmitCallback?.(values);
       onOpenChange(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save item");
+    } catch {
+      // Axios interceptor already shows the error toast — avoid duplicate messages (WEB-0008)
     }
   };
 

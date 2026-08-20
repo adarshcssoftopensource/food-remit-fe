@@ -74,17 +74,31 @@ export function useCategoryForm(
       }
 
       if (category) {
-        await updateCategory(formData as any);
-        toast.success("Category updated successfully");
+        const response = (await updateCategory(formData as any)) as {
+          status?: boolean | string;
+          message?: string;
+        };
+        if (response?.status === false) {
+          toast.error(response.message || "Failed to update category");
+          return;
+        }
+        toast.success(response?.message || "Category updated successfully");
       } else {
-        await createCategory(formData as any);
-        toast.success("Category created successfully");
+        const response = (await createCategory(formData as any)) as {
+          status?: boolean | string;
+          message?: string;
+        };
+        if (response?.status === false) {
+          toast.error(response.message || "Failed to create category");
+          return;
+        }
+        toast.success(response?.message || "Category created successfully");
       }
 
       onSubmitCallback?.(values);
       onOpenChange(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save category");
+    } catch {
+      // Axios interceptor already shows the error toast — avoid duplicates
     }
   };
 

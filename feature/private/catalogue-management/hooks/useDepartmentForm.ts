@@ -72,17 +72,31 @@ export function useDepartmentForm(
       }
 
       if (department) {
-        await updateDepartment(formData as any);
-        toast.success("Department updated successfully");
+        const response = (await updateDepartment(formData as any)) as {
+          status?: boolean | string;
+          message?: string;
+        };
+        if (response?.status === false) {
+          toast.error(response.message || "Failed to update department");
+          return;
+        }
+        toast.success(response?.message || "Department updated successfully");
       } else {
-        await createDepartment(formData as any);
-        toast.success("Department created successfully");
+        const response = (await createDepartment(formData as any)) as {
+          status?: boolean | string;
+          message?: string;
+        };
+        if (response?.status === false) {
+          toast.error(response.message || "Failed to create department");
+          return;
+        }
+        toast.success(response?.message || "Department created successfully");
       }
 
       onSubmitCallback?.(values);
       onOpenChange(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save department");
+    } catch {
+      // Axios interceptor already shows the error toast — avoid duplicates
     }
   };
 

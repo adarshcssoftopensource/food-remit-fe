@@ -148,7 +148,7 @@ export function CountrySelect({
       />
       <PopoverContent
         align="start"
-        className="w-[min(28rem,calc(100vw-2rem))] gap-2 p-2"
+        className="z-[200] w-[min(28rem,calc(100vw-2rem))] gap-2 p-2"
         side="bottom"
       >
         <div className="relative">

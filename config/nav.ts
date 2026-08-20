@@ -43,7 +43,7 @@ export const navigationItems = [
   },
 
   {
-    title: "Foundation And Charities Management",
+    title: "Foundations & Charities Management",
     url: ROUTES.ADMIN.FOUNDATION_MANAGEMENT,
     icon: Building,
     isComingSoon: true,

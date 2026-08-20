@@ -20,7 +20,7 @@ export function PhoneInputComponent({
 }: PhoneInputComponentProps) {
   return (
     <div
-      className={`rounded-xl border bg-gray-50/50 transition-colors ${"border-gray-200/80 focus-within:border-[#1B3A8C] focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(27,58,140,0.1)]"} ${disabled ? "pointer-events-none cursor-not-allowed opacity-60" : ""}`}
+      className={`relative z-50 overflow-visible rounded-xl border bg-gray-50/50 transition-colors ${"border-gray-200/80 focus-within:border-[#1B3A8C] focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(27,58,140,0.1)]"} ${disabled ? "pointer-events-none cursor-not-allowed opacity-60" : ""}`}
     >
       <PhoneInput
         country="in"
@@ -29,20 +29,24 @@ export function PhoneInputComponent({
         onBlur={onBlur}
         disabled={disabled}
         enableSearch
+        disableDropdown={false}
         searchPlaceholder="Search country..."
+        dropdownClass="phone-country-dropdown"
         searchStyle={{
-          width: "calc(100% - 16px)",
-          margin: "0 8px 4px",
+          width: "100%",
+          margin: "0",
           padding: "6px 10px",
           border: "1px solid #e2e8f0",
           borderRadius: "8px",
           fontSize: "13px",
           outline: "none",
+          background: "#fff",
         }}
         containerStyle={{
           width: "100%",
           background: "transparent",
           position: "relative",
+          overflow: "visible",
         }}
         inputStyle={{
           width: "100%",

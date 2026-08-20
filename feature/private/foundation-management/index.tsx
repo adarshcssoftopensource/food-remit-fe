@@ -31,7 +31,7 @@ export default function FoundationManagement() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Foundation And Charities Management"
+        title="Foundations & Charities Management"
         description="Manage and monitor all registered foundations and foundation requests."
         badge={<ComingSoonBadge />}
       />
