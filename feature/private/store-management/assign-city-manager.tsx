@@ -28,6 +28,7 @@ import {
   assignCityManagerSchema,
   type AssignCityManagerFormValues,
 } from "./schema/assign-city-manager.schema";
+import { ROUTES } from "@/config/routes";
 
 interface RawCityManager {
   id: string;
@@ -223,8 +224,12 @@ export function AssignCityManagerToStore() {
 
   return (
     <div className="space-y-6">
-      <PageHeader breadcrumbs={[{ label: "Store Management" }, { label: "Assign City-Manager" }]} />
-
+      <PageHeader
+        breadcrumbs={[
+          { label: "Store Management", href: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT },
+          { label: "Assign City-Manager" },
+        ]}
+      />
       <Card className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
         <CardHeader className="border-b border-slate-100 px-6 py-5">
           <div className="flex items-center gap-3">

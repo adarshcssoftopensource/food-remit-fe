@@ -18,6 +18,12 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         "dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-700 dark:focus-visible:border-emerald-500 dark:focus-visible:bg-slate-900",
         className,
       )}
+      onKeyDown={(e) => {
+        const value = e.currentTarget.value;
+        if (e.key === " " && value.length === 0) {
+          e.preventDefault();
+        }
+      }}
       {...props}
     />
   );

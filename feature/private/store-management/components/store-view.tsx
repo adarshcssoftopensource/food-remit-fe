@@ -154,8 +154,8 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                   </span>
                 }
               />
-              <InfoRow label="City" value={store.storeCityName} />
               <InfoRow label="Country" value={store.storeCountryName} />
+              <InfoRow label="City" value={store.storeCityName} />
             </div>
           </div>
 
