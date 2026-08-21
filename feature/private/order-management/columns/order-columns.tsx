@@ -1,7 +1,10 @@
-import type { OrderRow } from "@/constants/order-management";
 import { ColumnDef } from "@tanstack/react-table";
+import { OrderData } from "../types/order.types";
+import { OrderActionsCell } from "../components/order-actions-cell";
+import { formatDate } from "@/lib/date";
+import { StatusBadge } from "@/components/common/status-badge";
 
-export const orderColumns: ColumnDef<OrderRow>[] = [
+export const orderColumns: ColumnDef<OrderData>[] = [
   {
     id: "sno",
     header: "S.No",
@@ -10,40 +13,45 @@ export const orderColumns: ColumnDef<OrderRow>[] = [
     ),
   },
   {
-    accessorKey: "referenceNo",
+    accessorKey: "id",
     header: "Reference No",
+    cell: ({ row }) => <span className="font-mono text-xs">{row.original.id.substring(0, 8)}</span>,
   },
   {
-    accessorKey: "orderDate",
+    accessorKey: "createdAt",
     header: "Order Date",
+    cell: ({ row }) => <span>{formatDate(row.original.createdAt)}</span>,
   },
   {
-    accessorKey: "senderName",
-    header: "Sender Name",
+    accessorKey: "userId",
+    header: "Sender",
+    cell: ({ row }) => <span>{row.original.userId || "N/A"}</span>,
   },
   {
-    accessorKey: "receiverName",
-    header: "Receiver Name",
+    accessorKey: "recieverId",
+    header: "Receiver",
+    cell: ({ row }) => <span>{row.original.recieverId || "N/A"}</span>,
   },
   {
-    accessorKey: "totalCost",
-    header: "Total Cost",
+    accessorKey: "storeId",
+    header: "Store",
+    cell: ({ row }) => <span>{row.original.storeId || "N/A"}</span>,
   },
   {
-    accessorKey: "processingFees",
-    header: "Processing Fees",
+    accessorKey: "orderType",
+    header: "Order Type",
+    cell: ({ row }) => <span>{row.original.orderType || 1}</span>,
   },
   {
-    accessorKey: "totalItemTax",
-    header: "Total Item Tax",
-  },
-  {
-    accessorKey: "status",
+    accessorKey: "orderStatus",
     header: "Status",
+    cell: ({ row }) => (
+      <StatusBadge status={row.original.orderStatus === 1 ? "Active" : "Inactive"} />
+    ),
   },
   {
     id: "actions",
     header: "Action",
-    cell: () => <span className="text-muted-foreground text-sm">—</span>,
+    cell: ({ row }) => <OrderActionsCell order={row.original} />,
   },
 ];
