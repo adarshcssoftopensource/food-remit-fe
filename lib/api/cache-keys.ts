@@ -42,4 +42,8 @@ export const API_CACHE_KEYS = {
 
   // Dashboard
   DASHBOARD: ["dashboard"],
+
+  // Orders
+  ORDERS: ["orders"],
+  ORDER_BY_ID: (id: string) => ["order", id],
 };
