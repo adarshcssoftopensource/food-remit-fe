@@ -4,10 +4,12 @@ import { AUTH_FEATURES } from "@/constants/auth.constants";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { LockAuthScroll } from "./lock-auth-scroll";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="brand-mesh-canvas relative flex min-h-screen w-full overflow-y-auto">
+    <main className="brand-mesh-canvas relative flex h-dvh w-full overflow-hidden">
+      <LockAuthScroll />
       <div className="pointer-events-none absolute -top-40 -left-40 h-125 w-125 rounded-full bg-linear-to-br from-emerald-500/10 to-teal-500/0 blur-3xl" />
       <div className="pointer-events-none absolute -right-40 -bottom-40 h-125 w-125 rounded-full bg-linear-to-tl from-emerald-600/10 to-transparent blur-3xl" />
 
@@ -22,7 +24,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         />
       </div>
 
-      <div className="relative z-10 hidden min-h-screen w-1/2 flex-col items-center justify-center px-12 lg:flex">
+      <div className="relative z-10 hidden h-full w-1/2 flex-col items-center justify-center overflow-hidden px-12 lg:flex">
         <div className="flex max-w-md flex-col items-center">
           <Link href={ROUTES.ROOT} className="transition-transform duration-200 hover:scale-105">
             <Image
@@ -77,7 +79,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
       </div>
 
-      <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-12 sm:px-8 lg:w-1/2 lg:px-12">
+      <div className="relative z-10 flex h-full w-full items-center justify-center overflow-y-auto overscroll-contain px-4 py-6 sm:px-8 sm:py-8 lg:w-1/2 lg:px-12">
         {children}
       </div>
     </main>
