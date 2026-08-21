@@ -19,6 +19,7 @@ import { Edit3, Loader2, MapPin, Plus, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useCreateCity } from "../hooks/use-create-city";
+import { useGetCities } from "../hooks/use-get-cities";
 import { useGetCountriesDropdown } from "../hooks/use-get-countries-dropdown";
 import { useUpdateCity } from "../hooks/use-update-city";
 import { CityFormValues, citySchema } from "../schema/city.schema";
@@ -70,6 +71,21 @@ export function AddCityDialog({
 
   const selectedCountryId = watch("countryId");
   const selectedCountryIsoCode = watch("countryIsoCode");
+
+  const { data: existingCitiesResponse } = useGetCities({
+    countryId: selectedCountryId || undefined,
+    limit: 1000,
+  });
+
+  const excludedCityNames = useMemo(() => {
+    const existing = existingCitiesResponse?.data ?? [];
+    if (mode === "edit" && city) {
+      return existing
+        .filter((item) => item.id !== city.id)
+        .map((item) => item.cityName || item.name);
+    }
+    return existing.map((item) => item.cityName || item.name);
+  }, [existingCitiesResponse?.data, mode, city]);
 
   const resolvedCountryIso = useMemo(() => {
     if (selectedCountryIsoCode) return selectedCountryIsoCode;
@@ -222,6 +238,7 @@ export function AddCityDialog({
                   placeholder="Search and select city"
                   invalid={!!errors.cityName}
                   disabled={isPending}
+                  excludeNames={excludedCityNames}
                 />
                 {errors.cityName && (
                   <p className="flex items-center gap-1 text-xs font-medium text-red-500">

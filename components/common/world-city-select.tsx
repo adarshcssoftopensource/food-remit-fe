@@ -21,6 +21,8 @@ export type WorldCitySelectProps = {
   className?: string;
   id?: string;
   placeholder?: string;
+  /** Already-created city names to hide from the list */
+  excludeNames?: string[];
 };
 
 export function WorldCitySelect({
@@ -32,11 +34,21 @@ export function WorldCitySelect({
   className,
   id,
   placeholder = "Select a city",
+  excludeNames = [],
 }: WorldCitySelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const allCities = useMemo(() => getWorldCitiesByCountryIso(countryIsoCode), [countryIsoCode]);
+  const excluded = useMemo(
+    () => new Set(excludeNames.map((name) => name.trim().toLowerCase())),
+    [excludeNames],
+  );
+
+  const allCities = useMemo(() => {
+    return getWorldCitiesByCountryIso(countryIsoCode).filter(
+      (city) => !excluded.has(city.name.toLowerCase()),
+    );
+  }, [countryIsoCode, excluded]);
 
   const isLargeList = allCities.length > LARGE_CITY_LIST_THRESHOLD;
 
