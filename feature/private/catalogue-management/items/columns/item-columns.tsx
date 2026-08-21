@@ -64,6 +64,26 @@ export function getItemColumns(
       ),
     },
     {
+      id: "price",
+      header: "Price",
+      cell: ({ row }) => {
+        const placements = Array.isArray(row.original.placements) ? row.original.placements : [];
+        const first = placements[0];
+        if (!first) {
+          return <span className="text-sm text-slate-400">-</span>;
+        }
+        const amount = Number(first.price);
+        const priceText = Number.isFinite(amount) ? amount.toLocaleString() : "-";
+        const extra = placements.length > 1 ? ` +${placements.length - 1}` : "";
+        return (
+          <span className="text-sm font-medium text-slate-700">
+            {first.currencySymbol || first.currency || ""} {priceText}
+            {extra ? <span className="ml-1 text-xs text-slate-400">{extra}</span> : null}
+          </span>
+        );
+      },
+    },
+    {
       id: "createdBy",
       header: "Created/Edited by",
       cell: ({ row }) => (
