@@ -36,22 +36,22 @@ export function CountryActionsCell({ country }: { country: CountryData }) {
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="size-8 rounded-full text-slate-500"
           onClick={() => setIsEditDialogOpen(true)}
           title="Edit country"
         >
-          <Edit size={20} />
+          <Edit className="size-4" />
         </Button>
 
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
           onClick={() => setIsDeleteDialogOpen(true)}
           disabled={isDeleting}
           title="Delete country"
         >
-          <Trash2 className="text-red-600" size={20} />
+          <Trash2 className="size-4" />
         </Button>
       </div>
 

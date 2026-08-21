@@ -36,9 +36,9 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
     <>
       <div className="flex items-center gap-2">
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="text-primary hover:bg-primary/10 size-8 rounded-lg transition-colors"
+          className="size-8 rounded-full text-slate-500"
           title="View details"
           asChild
         >
@@ -48,9 +48,9 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
         </Button>
 
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="size-8 rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+          className="size-8 rounded-full text-slate-500"
           onClick={() => setEditOpen(true)}
           title="Edit sub admin"
         >

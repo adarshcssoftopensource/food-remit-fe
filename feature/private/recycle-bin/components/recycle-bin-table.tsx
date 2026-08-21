@@ -59,7 +59,6 @@ export function RecycleBinTable({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="bg-primary h-1.5 w-1.5 rounded-full" />
-
               <span className="text-[11px] font-bold tracking-[0.12em] text-slate-400 uppercase">
                 User Directory
               </span>
