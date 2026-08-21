@@ -3,9 +3,24 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import type { ItemPlacementRow } from "@/components/common/item-placements-field";
+import { resolveCurrencyDisplay } from "@/lib/currency";
 import { useCreateItem } from "../items/hooks/use-create-item";
 import { useUpdateItem } from "../items/hooks/use-update-item";
 import { ItemData } from "../items/types/item.types";
+
+const placementSchema = z.object({
+  key: z.string(),
+  countryId: z.string().min(1),
+  departmentId: z.string().min(1),
+  categoryId: z.string().min(1),
+  price: z.string().min(1, "Price is required"),
+  currency: z.string(),
+  currencySymbol: z.string(),
+  countryName: z.string(),
+  departmentName: z.string(),
+  categoryName: z.string(),
+});
 
 const itemSchema = z
   .object({
@@ -17,9 +32,7 @@ const itemSchema = z
     discountPercentage: z.string().optional(),
     baseQuantity: z.string().min(1, "Base quantity is required"),
     unit: z.string().min(1, "Unit is required"),
-    countryId: z.string().min(1, "Country is required"),
-    departmentId: z.string().min(1, "Department is required"),
-    categoryId: z.string().min(1, "Category is required"),
+    placements: z.array(placementSchema).min(1, "Add at least one country price"),
     productImageFile: z
       .array(z.instanceof(File))
       .max(5, "Maximum 5 product images allowed")
@@ -49,9 +62,69 @@ const itemSchema = z
         message: "Maximum 5 product images allowed",
       });
     }
+
+    data.placements.forEach((row, index) => {
+      const price = Number(row.price);
+      if (!row.price.trim() || Number.isNaN(price) || price < 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["placements"],
+          message: "Enter a valid price for every country row",
+        });
+      }
+    });
   });
 
 export type ItemFormValues = z.infer<typeof itemSchema>;
+
+function mapItemPlacements(item?: ItemData | null): ItemPlacementRow[] {
+  if (!item) return [];
+
+  if (item.placements && item.placements.length > 0) {
+    return item.placements.map((placement, index) => {
+      const currencyMeta = resolveCurrencyDisplay({
+        currency: placement.currency,
+        countryName: placement.country?.name,
+      });
+      return {
+        key: placement.id || `existing-${index}`,
+        countryId: placement.countryId,
+        departmentId: placement.departmentId,
+        categoryId: placement.categoryId,
+        price: String(placement.price ?? ""),
+        currency: placement.currency || currencyMeta.code,
+        currencySymbol: placement.currencySymbol || currencyMeta.symbol,
+        countryName: placement.country?.name || "Country",
+        departmentName:
+          placement.department?.displayName || placement.department?.departmentName || "Department",
+        categoryName: placement.category?.categoryName || "Category",
+      };
+    });
+  }
+
+  if (item.countryId && item.departmentId && item.categoryId) {
+    const currencyMeta = resolveCurrencyDisplay({
+      countryName: item.country?.name,
+    });
+    return [
+      {
+        key: `legacy-${item.id}`,
+        countryId: item.countryId,
+        departmentId: item.departmentId,
+        categoryId: item.categoryId,
+        price: "",
+        currency: currencyMeta.code,
+        currencySymbol: currencyMeta.symbol,
+        countryName: item.country?.name || "Country",
+        departmentName:
+          item.departmentDisplayName || item.department?.departmentName || "Department",
+        categoryName: item.category?.categoryName || "Category",
+      },
+    ];
+  }
+
+  return [];
+}
 
 export function useItemForm(
   open: boolean,
@@ -100,9 +173,7 @@ export function useItemForm(
       discountPercentage: item?.discountPercentage?.toString() ?? "",
       baseQuantity: item?.baseQuantity?.toString() ?? "",
       unit: item?.unit ?? "",
-      countryId: item?.countryId ?? "",
-      departmentId: item?.departmentId ?? "",
-      categoryId: item?.categoryId ?? "",
+      placements: mapItemPlacements(item),
       productImageFile: [],
       productInfoImageFile: [],
       nutritionInfoImageFile: [],
@@ -125,9 +196,7 @@ export function useItemForm(
           discountPercentage: item?.discountPercentage?.toString() ?? "",
           baseQuantity: item?.baseQuantity?.toString() ?? "",
           unit: item?.unit ?? "",
-          countryId: item?.countryId ?? "",
-          departmentId: item?.departmentId ?? "",
-          categoryId: item?.categoryId ?? "",
+          placements: mapItemPlacements(item),
           productImageFile: [],
           productInfoImageFile: [],
           nutritionInfoImageFile: [],
@@ -142,10 +211,33 @@ export function useItemForm(
 
   const handleSubmit = async (values: ItemFormValues) => {
     try {
+      const placements = Array.isArray(values.placements) ? values.placements : [];
+      if (placements.length === 0) {
+        toast.error("Add at least one country price");
+        return;
+      }
+
+      const primary = placements[0];
+      if (!primary?.countryId || !primary?.departmentId || !primary?.categoryId) {
+        toast.error("Each placement needs country, department and category");
+        return;
+      }
+
       const formData = new FormData();
-      formData.append("countryId", values.countryId);
-      formData.append("departmentId", values.departmentId);
-      formData.append("categoryId", values.categoryId);
+      formData.append("countryId", primary.countryId);
+      formData.append("departmentId", primary.departmentId);
+      formData.append("categoryId", primary.categoryId);
+      formData.append(
+        "placements",
+        JSON.stringify(
+          placements.map((row) => ({
+            countryId: row.countryId,
+            departmentId: row.departmentId,
+            categoryId: row.categoryId,
+            price: Number(row.price),
+          })),
+        ),
+      );
       formData.append("productName", values.productName);
       formData.append("description", values.description);
       if (values.upcCode) formData.append("upcCode", values.upcCode);

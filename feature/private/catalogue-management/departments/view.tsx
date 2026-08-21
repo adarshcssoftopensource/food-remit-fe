@@ -2,6 +2,7 @@
 
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
+import { ScopeBadge } from "@/components/common/scope-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
@@ -124,7 +125,7 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                   {department.departmentName}
                 </CardTitle>
 
-                <div className="mt-4 flex justify-center">
+                <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                   <span
                     className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm backdrop-blur-sm transition-colors ${
                       department.status === "ACTIVE"
@@ -142,6 +143,11 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                     </span>
                     {department.status === "ACTIVE" ? "Active" : "Inactive"}
                   </span>
+                  <ScopeBadge
+                    isGlobal={department.isGlobal}
+                    scopeLabel={department.scopeLabel}
+                    cityName={department.city?.name || department.cityName}
+                  />
                 </div>
               </div>
             </CardHeader>
@@ -170,8 +176,13 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                 />
                 <InfoCard
                   icon={<MapPin className="h-5 w-5" />}
-                  label="City"
-                  value={department.city?.name || department.cityName || "All Cities"}
+                  label="Scope"
+                  value={
+                    department.scopeLabel ||
+                    (department.city?.name || department.cityName
+                      ? `City · ${department.city?.name || department.cityName}`
+                      : "Global (All Cities)")
+                  }
                 />
                 <InfoCard
                   icon={<User className="h-5 w-5" />}

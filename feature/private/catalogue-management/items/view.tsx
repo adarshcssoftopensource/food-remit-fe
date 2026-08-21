@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ItemDetailsCard } from "./components/item-details-card";
 import { ItemMediaCard } from "./components/item-media-card";
+import { ItemPlacementsCard } from "./components/item-placements-card";
 import { ItemViewSkeleton } from "./components/item-view-skeleton";
 import { useGetItemById } from "./hooks/use-get-item-by-id";
 
@@ -100,6 +101,10 @@ export function ItemView({ id }: ItemViewProps) {
             swapWithMain={swapWithMain}
           />
           <ItemDetailsCard item={item} />
+        </div>
+
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <ItemPlacementsCard item={item} />
         </div>
       </div>
     </>

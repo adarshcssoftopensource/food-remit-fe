@@ -7,6 +7,7 @@ export interface CategoryData {
     id: string;
     departmentName: string;
     countryId?: string;
+    cityId?: string | null;
   };
   categoryIcon?: string | null;
   categoryIconUrl?: string | null;
@@ -22,6 +23,10 @@ export interface CategoryData {
   cityName?: string | null;
   parentCategoryName?: string | null;
   createdBy?: string | null;
+  isGlobal?: boolean;
+  scopeType?: "global" | "city";
+  scopeLabel?: string | null;
+  departmentDisplayName?: string | null;
 
   city?: { id: string; name: string } | null;
   parent?: { id: string; categoryName: string } | null;
