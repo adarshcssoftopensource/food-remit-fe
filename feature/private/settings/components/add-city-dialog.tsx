@@ -1,6 +1,7 @@
 "use client";
 
 import { CountrySelect } from "@/components/common/country-select";
+import { WorldCitySelect } from "@/components/common/world-city-select";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,12 +13,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { resolveWorldCountryIsoCode } from "@/lib/world-locations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit3, Loader2, MapPin, Plus, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useCreateCity } from "../hooks/use-create-city";
+import { useGetCountriesDropdown } from "../hooks/use-get-countries-dropdown";
 import { useUpdateCity } from "../hooks/use-update-city";
 import { CityFormValues, citySchema } from "../schema/city.schema";
 import type { CityData } from "../types/settings.types";
@@ -43,6 +45,7 @@ export function AddCityDialog({
   const isDialogOpen = isControlled ? controlledOpen : internalOpen;
   const setIsDialogOpen = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
+  const { countries } = useGetCountriesDropdown();
   const { mutateAsync: createCity, isPending: isCreating } = useCreateCity();
   const { mutateAsync: updateCity, isPending: isUpdating } = useUpdateCity(city?.id ?? "");
 
@@ -52,31 +55,52 @@ export function AddCityDialog({
     control,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<CityFormValues>({
     resolver: zodResolver(citySchema),
     defaultValues: {
       countryId: defaultCountryId || "",
+      countryIsoCode: "",
       cityName: "",
     },
     mode: "onChange",
   });
 
+  const selectedCountryId = watch("countryId");
+  const selectedCountryIsoCode = watch("countryIsoCode");
+
+  const resolvedCountryIso = useMemo(() => {
+    if (selectedCountryIsoCode) return selectedCountryIsoCode;
+    const selected = countries.find((item) => item.id === selectedCountryId);
+    return resolveWorldCountryIsoCode(selected?.name, selected?.countryCode) ?? "";
+  }, [countries, selectedCountryId, selectedCountryIsoCode]);
+
   useEffect(() => {
     if (isDialogOpen) {
       if (mode === "edit" && city) {
+        const matchedCountry = countries.find((item) => item.id === city.countryId);
         reset({
           countryId: city.countryId || "",
+          countryIsoCode:
+            resolveWorldCountryIsoCode(
+              matchedCountry?.name ?? city.countryName,
+              matchedCountry?.countryCode ?? city.countryCode,
+            ) ?? "",
           cityName: city.cityName || city.name || "",
         });
       } else {
+        const matchedCountry = countries.find((item) => item.id === defaultCountryId);
         reset({
           countryId: defaultCountryId || "",
+          countryIsoCode:
+            resolveWorldCountryIsoCode(matchedCountry?.name, matchedCountry?.countryCode) ?? "",
           cityName: "",
         });
       }
     }
-  }, [isDialogOpen, mode, city, defaultCountryId, reset]);
+  }, [isDialogOpen, mode, city, defaultCountryId, countries, reset]);
 
   const onSubmit = async (data: CityFormValues) => {
     try {
@@ -138,7 +162,7 @@ export function AddCityDialog({
               </DialogTitle>
               <p className="mt-0.5 text-xs text-slate-500">
                 {mode === "add"
-                  ? "Select country and enter city details"
+                  ? "Select country and choose a city from its list"
                   : "Update the city information below"}
               </p>
             </div>
@@ -152,12 +176,21 @@ export function AddCityDialog({
             render={({ field }) => (
               <div className="flex flex-col gap-1.5">
                 <FieldLabel htmlFor="countryId" className="text-sm font-semibold">
-                  Country <span className="text-red-500">*</span>
+                  Country Name <span className="text-red-500">*</span>
                 </FieldLabel>
                 <CountrySelect
                   id="countryId"
                   value={field.value}
-                  onValueChange={field.onChange}
+                  onValueChange={(value, countryOption) => {
+                    field.onChange(value);
+                    setValue(
+                      "countryIsoCode",
+                      resolveWorldCountryIsoCode(countryOption?.name, countryOption?.countryCode) ??
+                        "",
+                      { shouldValidate: true },
+                    );
+                    setValue("cityName", "", { shouldValidate: true });
+                  }}
                   valueKey="id"
                   placeholder="Select a country"
                   invalid={!!errors.countryId}
@@ -181,17 +214,15 @@ export function AddCityDialog({
                 <FieldLabel htmlFor="cityName" className="text-sm font-semibold">
                   City Name <span className="text-red-500">*</span>
                 </FieldLabel>
-                <div className="relative">
-                  <MapPin className="pointer-events-none absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <Input
-                    {...field}
-                    id="cityName"
-                    placeholder="e.g. Manchester"
-                    aria-invalid={!!errors.cityName}
-                    className="h-11 pl-9"
-                    disabled={isPending}
-                  />
-                </div>
+                <WorldCitySelect
+                  id="cityName"
+                  countryIsoCode={resolvedCountryIso}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  placeholder="Search and select city"
+                  invalid={!!errors.cityName}
+                  disabled={isPending}
+                />
                 {errors.cityName && (
                   <p className="flex items-center gap-1 text-xs font-medium text-red-500">
                     <span className="inline-block h-1 w-1 rounded-full bg-red-500" />
