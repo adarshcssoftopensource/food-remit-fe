@@ -52,6 +52,7 @@ export function AddressAutocompleteInput({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const suppressFetchRef = useRef(false);
+  const userEditedRef = useRef(false);
 
   const debouncedValue = useDebounce(value, 300);
 
@@ -67,6 +68,9 @@ export function AddressAutocompleteInput({
 
   useEffect(() => {
     if (!isReady || !query) return;
+
+    // Prefill on edit/open must not auto-open suggestions.
+    if (!userEditedRef.current) return;
 
     if (suppressFetchRef.current) {
       suppressFetchRef.current = false;
@@ -113,11 +117,13 @@ export function AddressAutocompleteInput({
   }, []);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    userEditedRef.current = true;
     suppressFetchRef.current = false;
     onChange(e.target.value);
   }
 
   function handleClear() {
+    userEditedRef.current = false;
     suppressFetchRef.current = false;
     onChange("");
     setSuggestions([]);
@@ -126,6 +132,7 @@ export function AddressAutocompleteInput({
   }
 
   async function handleSelect(prediction: PlacePrediction) {
+    userEditedRef.current = false;
     suppressFetchRef.current = true;
     setSuggestions([]);
     setIsOpen(false);
@@ -177,7 +184,7 @@ export function AddressAutocompleteInput({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={() => {
-            if (visibleSuggestions.length > 0) setIsOpen(true);
+            if (userEditedRef.current && visibleSuggestions.length > 0) setIsOpen(true);
           }}
           placeholder={placeholder}
           className={cn(
