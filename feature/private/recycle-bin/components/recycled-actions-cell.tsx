@@ -53,23 +53,23 @@ export function RecycledActionsCell({ user }: { user: UserData }) {
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-lg text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/30"
+          className="size-8 rounded-full text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/30"
           onClick={() => setIsRestoreDialogOpen(true)}
           disabled={restoreUser.isPending || isDeleting}
           title="Restore user"
         >
-          <RotateCcw className="h-4 w-4" />
+          <RotateCcw className="size-4" />
         </Button>
 
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30"
+          className="size-8 rounded-full text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30"
           onClick={() => setIsPermanentDeleteDialogOpen(true)}
           disabled={restoreUser.isPending || isDeleting}
           title="Permanently delete user"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="size-4" />
         </Button>
       </div>
 

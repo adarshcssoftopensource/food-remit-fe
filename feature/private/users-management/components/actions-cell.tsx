@@ -54,15 +54,15 @@ export function ActionsCell({ user }: { user: UserData }) {
 
   return (
     <>
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2">
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="text-primary hover:bg-primary/10 h-8 w-8 rounded-lg transition-colors"
+          className="size-8 rounded-full text-slate-500"
           onClick={() => router.push(`${ROUTES.ADMIN.USERS_MANAGEMENT}/${user.id}`)}
           title="View user details"
         >
-          <Eye className="h-4 w-4" />
+          <Eye className="size-4" />
         </Button>
 
         <Switch
@@ -73,14 +73,14 @@ export function ActionsCell({ user }: { user: UserData }) {
         />
 
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-lg text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+          className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
           onClick={() => setIsDeleteDialogOpen(true)}
           disabled={isDeleting || updateUserStatus.isPending}
           title="Delete user"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="size-4" />
         </Button>
       </div>
 

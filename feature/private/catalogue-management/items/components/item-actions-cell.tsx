@@ -1,10 +1,13 @@
 "use client";
 
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { errorToast, successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Eye, Pencil } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useUpdateItemStatus } from "../hooks/use-update-item-status";
+import { useDeleteItem } from "../hooks/use-delete-item";
 import { ItemData } from "../types/item.types";
 
 interface ItemActionsCellProps {
@@ -14,21 +17,63 @@ interface ItemActionsCellProps {
 }
 
 export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const { mutateAsync: deleteItem, isPending: isDeleting } = useDeleteItem(item.id);
+
+  const handleDelete = async () => {
+    try {
+      const response = await deleteItem();
+      setDeleteOpen(false);
+      successToast({
+        title: "Item Deleted",
+        description: response?.message || "Item has been deleted successfully.",
+      });
+    } catch {}
+  };
+
   return (
     <div className="flex items-center gap-2">
       <Button
         variant="outline"
         size="icon"
-        className="text-primary hover:bg-primary/10 h-8 w-8 rounded-lg transition-colors"
+        className="size-8 rounded-full text-slate-500"
         onClick={() => onView(item)}
         title="View item"
       >
-        <Eye size={20} />
+        <Eye className="size-4" />
       </Button>
 
-      <Button variant="outline" size="icon" onClick={() => onEdit(item)} title="Edit item">
-        <Pencil size={20} />
+      <Button
+        variant="outline"
+        size="icon"
+        className="size-8 rounded-full text-slate-500"
+        onClick={() => onEdit(item)}
+        title="Edit item"
+      >
+        <Pencil className="size-4" />
       </Button>
+
+      <Button
+        variant="outline"
+        size="icon"
+        className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+        onClick={() => setDeleteOpen(true)}
+        disabled={isDeleting}
+        title="Delete item"
+      >
+        <Trash2 className="size-4" />
+      </Button>
+
+      <ConfirmationDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete Item"
+        description={`Are you sure you want to delete ${item.productName}? This action cannot be undone.`}
+        confirmLabel="Delete Item"
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        variant="destructive"
+      />
     </div>
   );
 }

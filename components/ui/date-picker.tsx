@@ -14,6 +14,7 @@ interface DatePickerProps {
   placeholder?: string;
   className?: string;
   maxDate?: Date;
+  minDate?: Date;
 }
 
 export function DatePicker({
@@ -22,6 +23,7 @@ export function DatePicker({
   placeholder = "YYYY-MM-DD",
   className,
   maxDate,
+  minDate,
 }: DatePickerProps) {
   return (
     <Popover>
@@ -70,7 +72,15 @@ export function DatePicker({
           onSelect={setDate}
           captionLayout="dropdown"
           className="p-3 [--cell-size:--spacing(9)]"
-          disabled={maxDate ? { after: maxDate } : undefined}
+          disabled={(date) => {
+            if (maxDate && date > maxDate) return true;
+            if (minDate) {
+              const copy = new Date(minDate);
+              copy.setHours(0, 0, 0, 0);
+              if (date < copy) return true;
+            }
+            return false;
+          }}
         />
       </PopoverContent>
     </Popover>

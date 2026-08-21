@@ -5,18 +5,20 @@ import { Switch } from "@/components/ui/switch";
 import type { CityManagerData } from "@/feature/private/city-management/types/city-manager";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Pencil } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 type CityManagerColumnsConfig = {
   onView: (manager: CityManagerData) => void;
   onEdit: (manager: CityManagerData) => void;
   onToggleStatus: (id: string, checked: boolean) => void;
+  onDelete: (manager: CityManagerData) => void;
   onImageClick?: (image: string) => void;
 };
 
 export function getCityManagerColumns({
   onView,
   onEdit,
+  onDelete,
   onToggleStatus,
   onImageClick,
 }: CityManagerColumnsConfig): ColumnDef<CityManagerData>[] {
@@ -76,16 +78,38 @@ export function getCityManagerColumns({
       id: "actions",
       header: "Action",
       cell: ({ row }) => (
-        <div className="flex items-center gap-1.5">
-          <Button variant="outline" size="icon-sm" onClick={() => onView(row.original)}>
-            <Eye size={20} />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-8 rounded-full text-slate-500"
+            onClick={() => onView(row.original)}
+            title="View manager"
+          >
+            <Eye className="size-4" />
           </Button>
-          <Button variant="outline" size="icon-sm" onClick={() => onEdit(row.original)}>
-            <Pencil size={20} />
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-8 rounded-full text-slate-500"
+            onClick={() => onEdit(row.original)}
+            title="Edit manager"
+          >
+            <Pencil className="size-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+            onClick={() => onDelete(row.original)}
+            title="Delete manager"
+          >
+            <Trash2 className="size-4" />
           </Button>
           <Switch
             checked={row.original.status === "Active"}
             onCheckedChange={(checked) => onToggleStatus(row.original.id, checked)}
+            className="data-[state=checked]:bg-emerald-500"
           />
         </div>
       ),

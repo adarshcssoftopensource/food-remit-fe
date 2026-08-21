@@ -23,7 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/config/routes";
-import { formatDateTime } from "@/lib/date";
+import { formatDate } from "@/lib/date";
 import Image from "next/image";
 
 type TabKey = "profile" | "requested" | "sent" | "received";
@@ -54,8 +54,16 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
       title: "Last Name",
     },
     {
-      value: user?.userName,
-      title: "Username",
+      value: user?.country ?? "N/A",
+      title: "Country",
+    },
+    {
+      value: user?.state ?? "N/A",
+      title: "State",
+    },
+    {
+      value: user?.city ?? "N/A",
+      title: "City",
     },
     {
       value: `${user?.countryCode} ${user?.phoneNumber}`,
@@ -70,7 +78,7 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
       title: "Status",
     },
     {
-      value: formatDateTime(user?.createdAt),
+      value: formatDate(user?.createdAt),
       title: "Registered On",
     },
   ];

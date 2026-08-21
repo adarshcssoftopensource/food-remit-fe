@@ -10,6 +10,9 @@ export type UserData = {
   createdAt: string;
   userStatus: "ACTIVE" | "INACTIVE";
   profileImage?: string;
+  country: string;
+  state: string;
+  city: string;
 };
 
 export interface UserStats {
