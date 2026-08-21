@@ -1,11 +1,11 @@
 import {
-  AlertCircle,
-  Building2,
-  CheckCircle,
-  Loader2,
-  MailOpen,
+  BadgeCheck,
+  CircleCheck,
+  CircleX,
+  FilePenLine,
+  PhoneCall,
   Send,
-  Star,
+  UserPlus,
   Users,
 } from "lucide-react";
 
@@ -20,25 +20,31 @@ export const PARTNER_LEAD_STATUSES = [
 ] as const;
 
 export const STATS_CONFIG = [
-  { key: "total", label: "Total Leads", Icon: Users, color: "text-blue-600", bg: "bg-blue-100" },
+  {
+    key: "total",
+    label: "Total Leads",
+    Icon: Users,
+    color: "text-blue-600",
+    bg: "bg-blue-100",
+  },
   {
     key: "new",
     label: "New Leads",
-    Icon: Building2,
+    Icon: UserPlus,
     color: "text-emerald-600",
     bg: "bg-emerald-100",
   },
   {
     key: "contacted",
     label: "Contacted",
-    Icon: MailOpen,
+    Icon: PhoneCall,
     color: "text-amber-600",
     bg: "bg-amber-100",
   },
   {
     key: "qualified",
     label: "Qualified",
-    Icon: Star,
+    Icon: BadgeCheck,
     color: "text-teal-600",
     bg: "bg-teal-100",
   },
@@ -52,21 +58,21 @@ export const STATS_CONFIG = [
   {
     key: "registrationStarted",
     label: "Registration Started",
-    Icon: Loader2,
+    Icon: FilePenLine,
     color: "text-indigo-600",
     bg: "bg-indigo-100",
   },
   {
     key: "approved",
     label: "Approved",
-    Icon: CheckCircle,
+    Icon: CircleCheck,
     color: "text-green-600",
     bg: "bg-green-100",
   },
   {
     key: "notQualified",
     label: "Not Qualified",
-    Icon: AlertCircle,
+    Icon: CircleX,
     color: "text-red-600",
     bg: "bg-red-100",
   },
