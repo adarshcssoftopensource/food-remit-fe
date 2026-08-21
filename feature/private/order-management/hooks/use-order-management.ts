@@ -1,28 +1,27 @@
-import type { OrderRow } from "@/constants/order-management";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useGetOrders } from "./use-get-orders";
 
-export function useOrderManagement() {
+export function useOrderManagement(status?: string) {
   const [fromDate, setFromDate] = useState<Date>();
   const [toDate, setToDate] = useState<Date>();
   const [country, setCountry] = useState("All");
   const [city, setCity] = useState("All");
-  const [appliedFromDate, setAppliedFromDate] = useState<Date>();
-  const [appliedToDate, setAppliedToDate] = useState<Date>();
 
-  const data = useMemo<OrderRow[]>(() => [], []);
+  // Create ISO strings for API if dates are selected
+  const fromDateString = fromDate ? fromDate.toISOString() : undefined;
+  const toDateString = toDate ? toDate.toISOString() : undefined;
 
-  const filteredData = useMemo(() => {
-    return data.filter((order) => {
-      if (country !== "All" && country !== "all" && order.country !== country) return false;
-      if (city !== "All" && city !== "all" && (order as any).city !== city) return false;
-      if (appliedFromDate || appliedToDate) {
-        const date = new Date(order.orderDate);
-        if (appliedFromDate && date < appliedFromDate) return false;
-        if (appliedToDate && date > appliedToDate) return false;
-      }
-      return true;
-    });
-  }, [appliedFromDate, appliedToDate, country, city, data]);
+  const {
+    data: response,
+    isLoading,
+    refetch,
+  } = useGetOrders({
+    status,
+    fromDate: fromDateString,
+    toDate: toDateString,
+    country: country !== "All" ? country : undefined,
+    city: city !== "All" ? city : undefined,
+  });
 
   const hasFilters = Boolean(
     fromDate ||
@@ -32,15 +31,12 @@ export function useOrderManagement() {
   );
 
   const applyFilters = () => {
-    setAppliedFromDate(fromDate);
-    setAppliedToDate(toDate);
+    refetch();
   };
 
   const clearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setAppliedFromDate(undefined);
-    setAppliedToDate(undefined);
     setCountry("All");
     setCity("All");
   };
@@ -50,7 +46,8 @@ export function useOrderManagement() {
     clearFilters,
     country,
     city,
-    filteredData,
+    filteredData: response?.data || [],
+    isLoading,
     fromDate,
     hasFilters,
     setCountry,
