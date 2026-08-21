@@ -33,6 +33,12 @@ export interface ItemData {
   department?: { id: string; departmentName: string };
   category?: { id: string; categoryName: string };
 
+  createdBy?: string | null;
+  isGlobal?: boolean;
+  scopeType?: "global" | "city";
+  scopeLabel?: string | null;
+  departmentDisplayName?: string | null;
+
   createdAt: string;
   updatedAt: string;
 }

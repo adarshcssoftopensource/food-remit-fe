@@ -26,7 +26,13 @@ function formatDepartmentLabel(raw?: string | null) {
 }
 
 function getDepartmentLabel(dept: DepartmentDropdownItem) {
-  return formatDepartmentLabel(dept.name || dept.departmentName || "");
+  if (dept.displayName || dept.name) {
+    return formatDepartmentLabel(dept.displayName || dept.name);
+  }
+  const base = dept.departmentName || "";
+  if (!base) return "";
+  if (dept.scopeLabel) return `${base} (${dept.isGlobal ? "All Cities" : dept.cityName || "City"})`;
+  return formatDepartmentLabel(base);
 }
 
 export function DepartmentSelect({

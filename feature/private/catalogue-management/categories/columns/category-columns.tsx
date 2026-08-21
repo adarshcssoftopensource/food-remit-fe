@@ -1,4 +1,5 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { ScopeBadge } from "@/components/common/scope-badge";
 import { StatusBadge } from "@/components/common/status-badge";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
@@ -22,13 +23,20 @@ export function getCategoryColumns(
       accessorKey: "categoryName",
       header: "Category Name",
       cell: ({ row }) => (
-        <ImageNameCell
-          name={row.original.categoryName}
-          image={row.original.categoryIcon}
-          type="logo"
-          onImageClick={onImageClick}
-          enableZoom={!!onImageClick}
-        />
+        <div className="space-y-1.5">
+          <ImageNameCell
+            name={row.original.categoryName}
+            image={row.original.categoryIcon}
+            type="logo"
+            onImageClick={onImageClick}
+            enableZoom={!!onImageClick}
+          />
+          <ScopeBadge
+            isGlobal={row.original.isGlobal}
+            scopeLabel={row.original.scopeLabel}
+            cityName={row.original.cityName}
+          />
+        </div>
       ),
     },
     {
@@ -37,7 +45,16 @@ export function getCategoryColumns(
       enableSorting: true,
       cell: ({ row }) => (
         <span className="text-primary text-sm font-medium">
-          {row.original.department?.departmentName || "-"}
+          {row.original.departmentDisplayName || row.original.department?.departmentName || "-"}
+        </span>
+      ),
+    },
+    {
+      id: "createdBy",
+      header: "Created By",
+      cell: ({ row }) => (
+        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          {row.original.createdBy || "—"}
         </span>
       ),
     },

@@ -1,9 +1,11 @@
 "use client";
 
-import { Building2, Loader2 } from "lucide-react";
+import { Building2, Globe2, Loader2, MapPin } from "lucide-react";
 
+import { CitySelect } from "@/components/common/city-select";
 import { CountrySelect } from "@/components/common/country-select";
 import { ImageUpload } from "@/components/common/image-upload";
+import { useProfile } from "@/components/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -38,12 +40,20 @@ export function DepartmentFormDialog({
   onSubmit,
 }: DepartmentFormDialogProps) {
   const isEditing = !!department;
+  const { profile, isSuperAdmin } = useProfile();
+  const role = profile?.role || "";
+  const isCityManager = role === "city_manager";
+  const isStoreScoped = role === "store_manager" || role === "employee";
+  const isGlobalCreator = isSuperAdmin || role === "sub_admin" || role === "country_manager";
+
   const { form, isSubmitting, handleSubmit } = useDepartmentForm(
     open,
     department,
     onOpenChange,
     onSubmit,
   );
+
+  const countryId = form.watch("countryId");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -72,6 +82,25 @@ export function DepartmentFormDialog({
                   ? "Update the department information and keep your organization directory current."
                   : "Create a new department and add it to your organization directory."}
               </DialogDescription>
+
+              <div className="mt-3">
+                {isGlobalCreator ? (
+                  <p className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/10 px-2.5 py-1 text-[11px] font-semibold text-sky-700 ring-1 ring-sky-500/20">
+                    <Globe2 className="h-3 w-3" />
+                    Creates as Global (All Cities) unless a city is selected
+                  </p>
+                ) : isStoreScoped ? (
+                  <p className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-800 ring-1 ring-amber-500/20">
+                    <MapPin className="h-3 w-3" />
+                    Scoped to your store city — not global
+                  </p>
+                ) : isCityManager ? (
+                  <p className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-800 ring-1 ring-amber-500/20">
+                    <MapPin className="h-3 w-3" />
+                    City scoped — select your assigned city
+                  </p>
+                ) : null}
+              </div>
             </div>
           </div>
         </DialogHeader>
@@ -91,7 +120,10 @@ export function DepartmentFormDialog({
 
                       <CountrySelect
                         value={field.value}
-                        onValueChange={field.onChange}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          form.setValue("cityId", "");
+                        }}
                         valueKey="id"
                         placeholder="Select country"
                         className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
@@ -101,6 +133,39 @@ export function DepartmentFormDialog({
                     </FormItem>
                   )}
                 />
+
+                {(isCityManager || isGlobalCreator) && (
+                  <FormField
+                    control={form.control}
+                    name="cityId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                          City {isCityManager && <span className="text-destructive">*</span>}
+                          {isGlobalCreator && (
+                            <span className="ml-1 font-medium text-slate-400 normal-case">
+                              (optional — leave empty for Global)
+                            </span>
+                          )}
+                        </FormLabel>
+
+                        <CitySelect
+                          value={field.value || (isGlobalCreator ? "all" : "")}
+                          onValueChange={(value) =>
+                            field.onChange(value === "all" || value === "All" ? "" : value)
+                          }
+                          countryId={countryId}
+                          includeAll={isGlobalCreator}
+                          allLabel="Global (All Cities)"
+                          placeholder={isCityManager ? "Select city" : "Global (All Cities)"}
+                          className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none"
+                        />
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}
@@ -113,7 +178,7 @@ export function DepartmentFormDialog({
 
                       <FormControl>
                         <Input
-                          placeholder="e.g. Engineering"
+                          placeholder="e.g. Fresh Produce"
                           className="h-11 rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors placeholder:text-slate-400 hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
                           {...field}
                         />
