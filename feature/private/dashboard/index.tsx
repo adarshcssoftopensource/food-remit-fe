@@ -2,6 +2,7 @@
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
+import { useProfile } from "@/components/providers/profile-provider";
 import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { ShoppingBag } from "lucide-react";
 import {
@@ -29,12 +30,17 @@ export function Dashboard() {
   const { dashboardData, isLoading, isFetching, isError, error, refetch } =
     useGetDashboardStats(filters);
 
+  const { profile, isSuperAdmin } = useProfile();
+
+  const welcomeMessage = !isSuperAdmin && profile?.name ? `Welcome, ${profile.name}` : undefined;
+
   return (
     <div className="relative min-h-[calc(100vh-8rem)] space-y-6">
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader
           title="Dashboard Overview"
           description="Real-time performance analytics, logistics dispatch, and regional management metrics."
+          welcomeMessage={welcomeMessage}
         />
       </div>
 
