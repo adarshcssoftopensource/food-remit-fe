@@ -158,8 +158,11 @@ export function CategoryView({ id }: CategoryViewProps) {
                 />
                 <InfoCard
                   icon={<MapPin className="h-5 w-5" />}
-                  label="City"
-                  value={category.city?.name || category.cityName || "All Cities"}
+                  label="Scope"
+                  value={
+                    category.scopeLabel ||
+                    (category.cityName ? `City · ${category.cityName}` : "Global (All Cities)")
+                  }
                 />
                 <InfoCard
                   icon={<User className="h-5 w-5" />}

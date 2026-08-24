@@ -1,14 +1,56 @@
 "use client";
 
+import type { SortingState } from "@tanstack/react-table";
 import { BadgeDollarSign, DollarSign, Globe2 } from "lucide-react";
+import { useCallback, useState } from "react";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { Card, CardContent } from "@/components/ui/card";
-import { MOCK_PROCESSING_FEES } from "@/constants/settings";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
+import { useDebounce } from "@/lib/debounce";
 import { processingFeeColumns } from "../columns/processing-fee-columns";
+import { useGetProcessingFees } from "../hooks/use-get-processing-fees";
 
 export function ProcessingFee() {
-  const totalFees = MOCK_PROCESSING_FEES.length;
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  }, []);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const handleRowsPerPageChange = useCallback((limit: number) => {
+    setRowsPerPage(limit);
+    setCurrentPage(1);
+  }, []);
+
+  const handleSortingChange = useCallback((nextSorting: SortingState) => {
+    setSorting(nextSorting);
+    setCurrentPage(1);
+  }, []);
+
+  const sortBy = sorting[0]?.id;
+  const sortOrder = sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined;
+
+  const { data: response, isLoading } = useGetProcessingFees({
+    search: debouncedSearch || undefined,
+    page: currentPage,
+    limit: rowsPerPage,
+    sortBy,
+    sortOrder,
+  });
+
+  const feesList = response?.data || [];
+  const totalCount = response?.pagination?.total ?? feesList.length;
+  const totalPages = response?.pagination?.totalPages ?? 1;
 
   return (
     <div className="space-y-4">
@@ -35,14 +77,25 @@ export function ProcessingFee() {
 
           <div className="flex items-center gap-2 rounded-full border bg-white px-4 py-2 shadow-sm">
             <Globe2 className="text-primary h-4 w-4" />
-            <span className="text-sm font-medium text-slate-700">{totalFees} Countries</span>
+            <span className="text-sm font-medium text-slate-700">{totalCount} Countries</span>
           </div>
         </div>
         <CardContent className="p-4">
           <DataTable
             columns={processingFeeColumns}
-            data={MOCK_PROCESSING_FEES}
+            data={feesList}
+            loading={isLoading}
             searchKey="countryName"
+            searchValue={search}
+            onSearchChange={handleSearchChange}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            onSortingChange={handleSortingChange}
+            manualSorting={true}
+            manualFiltering={true}
           />
         </CardContent>
       </Card>

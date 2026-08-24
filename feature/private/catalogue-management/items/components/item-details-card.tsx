@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/date";
 import { Barcode, Building2, Calendar, Clock, Layers, MapPin, Percent, Scale } from "lucide-react";
+import type { ItemData } from "../types/item.types";
 import { InfoCard } from "./info-card";
 
 interface ItemDetailsCardProps {
-  item: any;
+  item: ItemData;
 }
 
 export function ItemDetailsCard({ item }: ItemDetailsCardProps) {

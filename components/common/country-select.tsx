@@ -26,6 +26,7 @@ export type CountryOption = {
   name: string;
   code?: string | null;
   countryCode?: string | null;
+  currency?: string | null;
 };
 
 type CountrySelectProps = {
@@ -69,6 +70,7 @@ export function CountrySelect({
       name: c.name,
       code: c.countryCode,
       countryCode: c.countryCode,
+      currency: c.currency,
     }));
   }, [customCountries, apiCountries]);
 
@@ -213,6 +215,7 @@ export function CountrySelect({
                       name: country.name,
                       countryName: country.name,
                       countryCode: country.code || country.countryCode,
+                      currency: country.currency ?? undefined,
                     });
                     setIsOpen(false);
                     setSearchQuery("");

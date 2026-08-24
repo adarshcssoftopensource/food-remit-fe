@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { StatusBadge } from "@/components/common/status-badge";
 import { type StoreData } from "@/feature/private/store-management/types/store-management";
 import { ColumnDef } from "@tanstack/react-table";
@@ -45,10 +46,10 @@ export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<
     accessorKey: "storeAddress",
     header: "Store Address",
     cell: ({ row }) => (
-      <span className="max-w-45 cursor-default text-sm">
-        {row.original.storeAddress}
-        {row.original.address2 ? `, ${row.original.address2}` : ""}
-      </span>
+      <TruncatedTextCell
+        text={`${row.original.storeAddress}${row.original.address2 ? `, ${row.original.address2}` : ""}`}
+        className="max-w-45 cursor-default text-sm"
+      />
     ),
   },
   {

@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DollarSign, Edit, Globe, X } from "lucide-react";
+import { Edit, Globe, X } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -17,24 +17,34 @@ import {
 } from "@/components/ui/dialog";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { getCurrencySymbol } from "@/lib/utils/currency";
+
+import { useUpdateProcessingFee } from "../hooks/use-update-processing-fee";
 import { ProcessingFeeFormValues, processingFeeSchema } from "../schema/processing-fee.schema";
 
 export function EditProcessingFeeDialog({
   countryId,
   countryName,
   currentFee,
+  currencySymbol,
+  currencyCode,
 }: {
   countryId: string;
   countryName: string;
   currentFee: string;
+  currencySymbol?: string;
+  currencyCode?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { mutateAsync: updateFee, isPending } = useUpdateProcessingFee(countryId);
+
+  const symbol = getCurrencySymbol(currencySymbol, currencyCode);
 
   const {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ProcessingFeeFormValues>({
     resolver: zodResolver(processingFeeSchema),
     defaultValues: { processingFee: currentFee },
@@ -42,13 +52,19 @@ export function EditProcessingFeeDialog({
   });
 
   const onSubmit = async (data: ProcessingFeeFormValues) => {
-    console.log("Update processing fee:", { countryId, countryName, newFee: data.processingFee });
-    setIsOpen(false);
-    reset();
-    successToast({
-      title: "Fee Updated",
-      description: `Processing fee for ${countryName} updated to ${data.processingFee}.`,
-    });
+    try {
+      const response = await updateFee({ processingFee: data.processingFee });
+      setIsOpen(false);
+      reset({ processingFee: data.processingFee });
+      successToast({
+        title: "Fee Updated",
+        description:
+          response?.message ||
+          `Processing fee for ${countryName} updated to ${symbol} ${data.processingFee}.`,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -70,8 +86,8 @@ export function EditProcessingFeeDialog({
       <DialogContent className="p-2">
         <DialogHeader className="pb-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
-              <DollarSign className="h-5 w-5 text-amber-600" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 font-bold text-amber-700">
+              {symbol}
             </div>
             <div>
               <DialogTitle className="text-base font-bold">Edit Processing Fee</DialogTitle>
@@ -88,9 +104,11 @@ export function EditProcessingFeeDialog({
             <p className="text-xs font-medium text-slate-500">Country</p>
             <p className="text-sm font-bold text-slate-800">{countryName}</p>
           </div>
-          <div className="ml-auto">
+          <div className="ml-auto text-right">
             <p className="text-xs font-medium text-slate-500">Current Fee</p>
-            <p className="text-sm font-bold text-amber-600">{currentFee}</p>
+            <p className="text-sm font-bold text-amber-600">
+              {symbol} {currentFee}
+            </p>
           </div>
         </div>
 
@@ -104,7 +122,9 @@ export function EditProcessingFeeDialog({
                   New Processing Fee <span className="text-red-500">*</span>
                 </FieldLabel>
                 <div className="relative">
-                  <DollarSign className="pointer-events-none absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <span className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-sm font-bold text-slate-500">
+                    {symbol}
+                  </span>
                   <Input
                     {...field}
                     id="processingFee"
@@ -131,10 +151,10 @@ export function EditProcessingFeeDialog({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isPending}
               className="shadow-primary/20 flex-1 gap-2 shadow-md"
             >
-              <DollarSign size={20} />
+              <span className="font-bold">{symbol}</span>
               Update Fee
             </Button>
           </DialogFooter>

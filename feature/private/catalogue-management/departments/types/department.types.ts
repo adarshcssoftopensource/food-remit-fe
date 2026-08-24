@@ -3,6 +3,7 @@ export type DepartmentStatus = "ACTIVE" | "INACTIVE";
 export interface DepartmentData {
   id: string;
   departmentName: string;
+  displayName?: string | null;
   country?: {
     id: string;
     name: string;
@@ -21,6 +22,10 @@ export interface DepartmentData {
   cityName?: string | null;
   parentDepartmentName?: string | null;
   createdBy?: string | null;
+  isGlobal?: boolean;
+  scopeType?: "global" | "city";
+  scopeLabel?: string | null;
+  cityId?: string | null;
 
   city?: { id: string; name: string } | null;
   parent?: { id: string; departmentName: string } | null;
@@ -31,6 +36,12 @@ export interface DepartmentDropdownItem {
   id: string;
   name?: string;
   departmentName?: string;
+  displayName?: string;
+  cityId?: string | null;
+  cityName?: string | null;
+  isGlobal?: boolean;
+  scopeLabel?: string | null;
+  createdBy?: string | null;
 }
 
 export interface UseGetDepartmentsArgs {

@@ -1,12 +1,10 @@
 "use client";
 
 import { generateUpcCode } from "@/lib/utils/generate-upc";
-import { Boxes, ImageIcon, Layers3, Package2, Save, Wrench } from "lucide-react";
+import { Boxes, ImageIcon, Package2, Save, Wrench } from "lucide-react";
 
-import { CategorySelect } from "@/components/common/category-select";
-import { CountrySelect } from "@/components/common/country-select";
-import { DepartmentSelect } from "@/components/common/department-select";
 import { ImageUpload } from "@/components/common/image-upload";
+import { ItemPlacementsField } from "@/components/common/item-placements-field";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -204,116 +202,6 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                         />
                       </div>
                     </section>
-
-                    <section className="rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
-                      <div className="mb-5 flex items-center gap-3">
-                        <div className="text-primary flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-700">
-                          <ImageIcon className="h-4 w-4" />
-                        </div>
-
-                        <div>
-                          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                            Product Media
-                          </h3>
-
-                          <p className="text-[11px] text-slate-400">Upload images for the item</p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-5">
-                        <FormField
-                          control={form.control}
-                          name="productImageFile"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                  Product Images <span className="text-destructive">*</span>
-                                </FormLabel>
-                                <span className="text-[10px] font-medium text-slate-400">
-                                  Max 5 images
-                                </span>
-                              </div>
-
-                              <FormControl>
-                                <div className="rounded-xl border border-dashed border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
-                                  <ImageUpload
-                                    maxFiles={5}
-                                    multiple={true}
-                                    value={field.value}
-                                    onChange={(files) => {
-                                      field.onChange(files);
-                                    }}
-                                    onAllImagesChange={(all) => {
-                                      const existing = all.filter((i) => !i.file).map((i) => i.url);
-                                      const newFiles = all
-                                        .filter((i) => !!i.file)
-                                        .map((i) => i.file!);
-                                      form.setValue("existingProductImages", existing, {
-                                        shouldValidate: false,
-                                      });
-                                      form.setValue("productImageFile", newFiles, {
-                                        shouldValidate: false,
-                                      });
-                                    }}
-                                    label="Upload product images"
-                                    hint="PNG, JPG or WEBP (up to 5 images)"
-                                    initialImages={initialProductImages}
-                                  />
-                                </div>
-                              </FormControl>
-
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="productInfoImageFile"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                  Product Info Image
-                                </FormLabel>
-
-                                <span className="text-[10px] font-medium text-slate-400">
-                                  Optional
-                                </span>
-                              </div>
-
-                              <FormControl>
-                                <div className="rounded-xl border border-dashed border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
-                                  <ImageUpload
-                                    maxFiles={1}
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    onAllImagesChange={(all) => {
-                                      const existing = all.find((i) => !i.file)?.url || null;
-                                      const newFiles = all
-                                        .filter((i) => !!i.file)
-                                        .map((i) => i.file!);
-                                      form.setValue("existingProductInfoImage", existing, {
-                                        shouldValidate: false,
-                                      });
-                                      form.setValue("productInfoImageFile", newFiles, {
-                                        shouldValidate: false,
-                                      });
-                                    }}
-                                    label="Upload info image"
-                                    hint="Optional supporting image"
-                                    initialImages={initialProductInfoImage}
-                                  />
-                                </div>
-                              </FormControl>
-
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </section>
                   </div>
 
                   <div className="space-y-6">
@@ -416,97 +304,6 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                       </div>
                     </section>
 
-                    <section className="rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
-                      <div className="mb-5 flex items-center gap-3">
-                        <div className="text-primary flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-700">
-                          <Layers3 className="h-4 w-4" />
-                        </div>
-
-                        <div>
-                          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                            Classification
-                          </h3>
-
-                          <p className="text-[11px] text-slate-400">
-                            Organize this item in the catalogue
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-5">
-                        <FormField
-                          control={form.control}
-                          name="countryId"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                Country <span className="text-destructive">*</span>
-                              </FormLabel>
-
-                              <CountrySelect
-                                value={field.value}
-                                onValueChange={(val) => {
-                                  field.onChange(val);
-                                  form.setValue("departmentId", "");
-                                  form.setValue("categoryId", "");
-                                }}
-                                placeholder="Select country"
-                              />
-
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="departmentId"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                Department <span className="text-destructive">*</span>
-                              </FormLabel>
-
-                              <DepartmentSelect
-                                countryId={form.watch("countryId")}
-                                value={field.value}
-                                onValueChange={(val) => {
-                                  field.onChange(val);
-                                  form.setValue("categoryId", "");
-                                }}
-                                placeholder="Select department"
-                                disabled={!form.watch("countryId")}
-                              />
-
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="categoryId"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                Category <span className="text-destructive">*</span>
-                              </FormLabel>
-
-                              <CategorySelect
-                                departmentId={form.watch("departmentId")}
-                                value={field.value}
-                                onValueChange={field.onChange}
-                                placeholder="Select category"
-                                disabled={!form.watch("departmentId")}
-                              />
-
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </section>
-
                     <div className="border-primary/15 bg-primary/3 dark:bg-primary/5 rounded-2xl border p-4 sm:p-5">
                       <div className="flex items-start gap-3">
                         <div className="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
@@ -526,103 +323,257 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                     </div>
                   </div>
                 </div>
-                <section className="mt-6 w-full rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
-                  <div className="mb-5">
-                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                      Additional Information
-                    </h3>
+                <div className="mt-6 grid w-full gap-6 lg:grid-cols-2 lg:gap-8">
+                  <section className="h-full rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
+                    <div className="mb-5 flex items-center gap-3">
+                      <div className="text-primary flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-700">
+                        <ImageIcon className="h-4 w-4" />
+                      </div>
 
-                    <p className="mt-0.5 text-[11px] text-slate-400">
-                      Product and nutrition details
-                    </p>
-                  </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                          Product Media
+                        </h3>
 
-                  <div className="space-y-5">
-                    <FormField
-                      control={form.control}
-                      name="productInfo"
-                      render={({ field }) => (
-                        <FormItem className="space-y-2">
-                          <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                            Product Information <span className="text-destructive">*</span>
-                          </FormLabel>
+                        <p className="text-[11px] text-slate-400">Upload images for the item</p>
+                      </div>
+                    </div>
 
-                          <FormControl>
-                            <Textarea
-                              placeholder="Add product information..."
-                              className="min-h-22.5 resize-none rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
-                              {...field}
-                            />
-                          </FormControl>
+                    <div className="space-y-5">
+                      <FormField
+                        control={form.control}
+                        name="productImageFile"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                Product Images <span className="text-destructive">*</span>
+                              </FormLabel>
+                              <span className="text-[10px] font-medium text-slate-400">
+                                Max 5 images
+                              </span>
+                            </div>
 
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            <FormControl>
+                              <div className="rounded-xl border border-dashed border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
+                                <ImageUpload
+                                  maxFiles={5}
+                                  multiple={true}
+                                  value={field.value}
+                                  onChange={(files) => {
+                                    field.onChange(files);
+                                  }}
+                                  onAllImagesChange={(all) => {
+                                    const existing = all.filter((i) => !i.file).map((i) => i.url);
+                                    const newFiles = all
+                                      .filter((i) => !!i.file)
+                                      .map((i) => i.file!);
+                                    form.setValue("existingProductImages", existing, {
+                                      shouldValidate: false,
+                                    });
+                                    form.setValue("productImageFile", newFiles, {
+                                      shouldValidate: false,
+                                    });
+                                  }}
+                                  label="Upload product images"
+                                  hint="PNG, JPG or WEBP (up to 5 images)"
+                                  initialImages={initialProductImages}
+                                />
+                              </div>
+                            </FormControl>
 
-                    <FormField
-                      control={form.control}
-                      name="nutritionInfo"
-                      render={({ field }) => (
-                        <FormItem className="space-y-2">
-                          <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                            Nutrition Information
-                          </FormLabel>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                          <FormControl>
-                            <Textarea
-                              placeholder="Add nutrition information..."
-                              className="min-h-22.5 resize-none rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
-                              {...field}
-                            />
-                          </FormControl>
+                      <FormField
+                        control={form.control}
+                        name="productInfoImageFile"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                Product Info Image
+                              </FormLabel>
 
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                              <span className="text-[10px] font-medium text-slate-400">
+                                Optional
+                              </span>
+                            </div>
 
-                    <FormField
-                      control={form.control}
-                      name="nutritionInfoImageFile"
-                      render={({ field }) => (
-                        <FormItem className="space-y-2">
-                          <div className="flex items-center justify-between">
+                            <FormControl>
+                              <div className="rounded-xl border border-dashed border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
+                                <ImageUpload
+                                  maxFiles={1}
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  onAllImagesChange={(all) => {
+                                    const existing = all.find((i) => !i.file)?.url || null;
+                                    const newFiles = all
+                                      .filter((i) => !!i.file)
+                                      .map((i) => i.file!);
+                                    form.setValue("existingProductInfoImage", existing, {
+                                      shouldValidate: false,
+                                    });
+                                    form.setValue("productInfoImageFile", newFiles, {
+                                      shouldValidate: false,
+                                    });
+                                  }}
+                                  label="Upload info image"
+                                  hint="Optional supporting image"
+                                  initialImages={initialProductInfoImage}
+                                />
+                              </div>
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </section>
+                  <section className="h-full rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
+                    <div className="mb-5 flex items-center gap-3">
+                      <div className="text-primary flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-700">
+                        <Package2 className="h-4 w-4" />
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                          Additional Information
+                        </h3>
+
+                        <p className="text-[11px] text-slate-400">Product and nutrition details</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-5">
+                      <FormField
+                        control={form.control}
+                        name="productInfo"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
                             <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                              Nutrition Info Image
+                              Product Information <span className="text-destructive">*</span>
                             </FormLabel>
 
-                            <span className="text-[10px] font-medium text-slate-400">Optional</span>
-                          </div>
-
-                          <FormControl>
-                            <div className="rounded-xl border border-dashed border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
-                              <ImageUpload
-                                maxFiles={1}
-                                value={field.value}
-                                onChange={field.onChange}
-                                onAllImagesChange={(all) => {
-                                  const existing = all.find((i) => !i.file)?.url || null;
-                                  const newFiles = all.filter((i) => !!i.file).map((i) => i.file!);
-                                  form.setValue("existingNutritionInfoImage", existing, {
-                                    shouldValidate: false,
-                                  });
-                                  form.setValue("nutritionInfoImageFile", newFiles, {
-                                    shouldValidate: false,
-                                  });
-                                }}
-                                label="Upload nutrition image"
-                                hint="Optional nutrition reference"
-                                initialImages={initialNutritionInfoImage}
+                            <FormControl>
+                              <Textarea
+                                placeholder="Add product information..."
+                                className="min-h-22.5 resize-none rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                                {...field}
                               />
-                            </div>
-                          </FormControl>
+                            </FormControl>
 
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="nutritionInfo"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                              Nutrition Information
+                            </FormLabel>
+
+                            <FormControl>
+                              <Textarea
+                                placeholder="Add nutrition information..."
+                                className="min-h-22.5 resize-none rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                                {...field}
+                              />
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="nutritionInfoImageFile"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                Nutrition Info Image
+                              </FormLabel>
+
+                              <span className="text-[10px] font-medium text-slate-400">
+                                Optional
+                              </span>
+                            </div>
+
+                            <FormControl>
+                              <div className="rounded-xl border border-dashed border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
+                                <ImageUpload
+                                  maxFiles={1}
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  onAllImagesChange={(all) => {
+                                    const existing = all.find((i) => !i.file)?.url || null;
+                                    const newFiles = all
+                                      .filter((i) => !!i.file)
+                                      .map((i) => i.file!);
+                                    form.setValue("existingNutritionInfoImage", existing, {
+                                      shouldValidate: false,
+                                    });
+                                    form.setValue("nutritionInfoImageFile", newFiles, {
+                                      shouldValidate: false,
+                                    });
+                                  }}
+                                  label="Upload nutrition image"
+                                  hint="Optional nutrition reference"
+                                  initialImages={initialNutritionInfoImage}
+                                />
+                              </div>
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </section>
+                </div>
+
+                <section className="mt-6 w-full rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
+                  <div className="mb-5 flex items-center gap-3">
+                    <div className="text-primary flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-700">
+                      <Boxes className="h-4 w-4" />
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                        Country Pricing
+                      </h3>
+
+                      <p className="text-[11px] text-slate-400">
+                        Add multiple countries with local currency price
+                      </p>
+                    </div>
                   </div>
+
+                  <FormField
+                    control={form.control}
+                    name="placements"
+                    render={({ field, fieldState }) => (
+                      <FormItem className="gap-2">
+                        <FormControl>
+                          <ItemPlacementsField
+                            value={field.value}
+                            onChange={field.onChange}
+                            invalid={!!fieldState.error}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </section>
               </div>
             </ScrollArea>

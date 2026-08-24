@@ -1,5 +1,22 @@
 export type ItemStatus = "ACTIVE" | "INACTIVE";
 
+export interface ItemPlacementData {
+  id?: string;
+  countryId: string;
+  departmentId: string;
+  categoryId: string;
+  price: number;
+  currency?: string | null;
+  currencySymbol?: string | null;
+  country?: { id: string; name: string };
+  department?: {
+    id: string;
+    departmentName: string;
+    displayName?: string | null;
+  };
+  category?: { id: string; categoryName: string };
+}
+
 export interface ItemData {
   id: string;
   productName: string;
@@ -28,10 +45,17 @@ export interface ItemData {
   countryId: string;
   departmentId: string;
   categoryId: string;
+  placements?: ItemPlacementData[];
 
   country?: { id: string; name: string };
   department?: { id: string; departmentName: string };
   category?: { id: string; categoryName: string };
+
+  createdBy?: string | null;
+  isGlobal?: boolean;
+  scopeType?: "global" | "city";
+  scopeLabel?: string | null;
+  departmentDisplayName?: string | null;
 
   createdAt: string;
   updatedAt: string;
@@ -71,6 +95,12 @@ export interface CreateItemPayload {
   countryId: string;
   departmentId: string;
   categoryId: string;
+  placements: Array<{
+    countryId: string;
+    departmentId: string;
+    categoryId: string;
+    price: number;
+  }>;
   productName: string;
   description?: string;
   productInfo?: string;
