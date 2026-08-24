@@ -44,6 +44,7 @@ export function ItemsManagement() {
     setLimit,
     searchQuery: search,
     setSearchQuery: setSearch,
+    debouncedSearch,
     formattedFromDate,
     formattedToDate,
   } = useTableFilters();
@@ -56,11 +57,10 @@ export function ItemsManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ItemData | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
-
   const { data: itemsResponse, isLoading } = useGetItems({
     page,
     limit,
-    search,
+    search: debouncedSearch,
     countryId: country !== "all" ? country : undefined,
     departmentId: department !== "all" ? department : undefined,
     categoryId: category !== "all" ? category : undefined,
@@ -283,6 +283,9 @@ export function ItemsManagement() {
           <DataTable
             columns={columns}
             data={filteredData}
+            searchKey="itemDisplayName"
+            searchValue={search}
+            onSearchChange={setSearch}
             loading={isLoading}
             currentPage={pagination.page}
             totalPages={pagination.totalPages}

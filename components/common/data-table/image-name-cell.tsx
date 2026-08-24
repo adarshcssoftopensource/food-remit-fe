@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { TruncatedTextCell } from "./truncated-text-cell";
 
 type ImageNameCellProps = {
   name: string;
@@ -68,11 +69,11 @@ export function ImageNameCell({
         )}
       </div>
       <div className="flex flex-col">
-        <span
+        <TruncatedTextCell
+          maxWords={2}
+          text={name || "-"}
           className={`font-medium ${isProfile ? "text-sm text-slate-800" : "font-semibold text-slate-900"}`}
-        >
-          {name}
-        </span>
+        />
       </div>
     </div>
   );
