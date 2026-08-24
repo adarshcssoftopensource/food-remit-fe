@@ -10,6 +10,7 @@ import { DepartmentData } from "../departments/types/department.types";
 const departmentSchema = z
   .object({
     countryId: z.string().min(1, "Country is required"),
+    cityId: z.string().optional(),
     departmentName: z.string().min(2, "Department name must be at least 2 characters"),
     iconFile: z.array(z.instanceof(File)).optional(),
     hasExistingIcon: z.boolean().optional(),
@@ -43,6 +44,7 @@ export function useDepartmentForm(
     resolver: zodResolver(departmentSchema),
     defaultValues: {
       countryId: department?.country?.id ?? "",
+      cityId: department?.cityId || department?.city?.id || "",
       departmentName: department?.departmentName ?? "",
       iconFile: [],
       hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
@@ -53,6 +55,7 @@ export function useDepartmentForm(
     if (open) {
       form.reset({
         countryId: department?.country?.id ?? "",
+        cityId: department?.cityId || department?.city?.id || "",
         departmentName: department?.departmentName ?? "",
         iconFile: [],
         hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
@@ -62,27 +65,44 @@ export function useDepartmentForm(
 
   const handleSubmit = async (values: DepartmentFormValues) => {
     try {
-      // Build form data since there might be an iconFile
       const formData = new FormData();
       formData.append("countryId", values.countryId);
       formData.append("departmentName", values.departmentName);
+
+      if (values.cityId && values.cityId !== "all" && values.cityId !== "All") {
+        formData.append("cityId", values.cityId);
+      }
 
       if (values.iconFile && values.iconFile.length > 0) {
         formData.append("departmentIcon", values.iconFile[0]);
       }
 
       if (department) {
-        await updateDepartment(formData as any);
-        toast.success("Department updated successfully");
+        const response = (await updateDepartment(formData as any)) as {
+          status?: boolean | string;
+          message?: string;
+        };
+        if (response?.status === false) {
+          toast.error(response.message || "Failed to update department");
+          return;
+        }
+        toast.success(response?.message || "Department updated successfully");
       } else {
-        await createDepartment(formData as any);
-        toast.success("Department created successfully");
+        const response = (await createDepartment(formData as any)) as {
+          status?: boolean | string;
+          message?: string;
+        };
+        if (response?.status === false) {
+          toast.error(response.message || "Failed to create department");
+          return;
+        }
+        toast.success(response?.message || "Department created successfully");
       }
 
       onSubmitCallback?.(values);
       onOpenChange(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save department");
+    } catch {
+      // Axios interceptor already shows the error toast — avoid duplicates
     }
   };
 

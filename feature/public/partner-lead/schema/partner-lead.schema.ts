@@ -1,3 +1,4 @@
+import { getFullPhoneError } from "@/lib/phone";
 import { z } from "zod/v3";
 
 export const partnerLeadSchema = z.object({
@@ -15,7 +16,15 @@ export const partnerLeadSchema = z.object({
     .string()
     .min(1, "Business email is required")
     .email("Please enter a valid business email address"),
-  phoneNumber: z.string().min(5, "Please enter a valid phone number"),
+  phoneNumber: z
+    .string()
+    .min(1, "Phone number is required")
+    .superRefine((value, ctx) => {
+      const error = getFullPhoneError(value);
+      if (error) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: error });
+      }
+    }),
 
   workPreferences: z.array(z.string()),
   inventoryManagement: z.string().optional(),

@@ -1,5 +1,6 @@
 "use client";
 
+import { WorldCountrySelect } from "@/components/common/world-country-select";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,15 +12,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit3, Loader2, Plus, X, FlagIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Edit3, FlagIcon, Loader2, Plus, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useCreateCountry } from "../hooks/use-create-country";
+import { useGetCountriesDropdown } from "../hooks/use-get-countries-dropdown";
 import { useUpdateCountry } from "../hooks/use-update-country";
 import { CountryFormValues, countrySchema } from "../schema/country.schema";
 import type { CountryData } from "../types/settings.types";
+import { findWorldCountryByName, toCreateCountryPayload } from "@/lib/world-locations";
 
 interface AddCountriesDialogProps {
   mode?: "add" | "edit";
@@ -40,10 +42,18 @@ export function AddCountriesDialog({
   const isDialogOpen = isControlled ? controlledOpen : internalOpen;
   const setIsDialogOpen = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
+  const { countries: existingCountries } = useGetCountriesDropdown();
   const { mutateAsync: createCountry, isPending: isCreating } = useCreateCountry();
   const { mutateAsync: updateCountry, isPending: isUpdating } = useUpdateCountry(country?.id ?? "");
 
   const isPending = mode === "add" ? isCreating : isUpdating;
+
+  const excludedCountryNames = useMemo(() => {
+    if (mode === "edit" && country) {
+      return existingCountries.filter((item) => item.id !== country.id).map((item) => item.name);
+    }
+    return existingCountries.map((item) => item.name);
+  }, [existingCountries, mode, country]);
 
   const {
     control,
@@ -71,24 +81,27 @@ export function AddCountriesDialog({
   }, [isDialogOpen, mode, country, reset]);
 
   const onSubmit = async (data: CountryFormValues) => {
+    const selectedCountry = findWorldCountryByName(data.countryName);
+    if (!selectedCountry) return;
+
+    const payload = toCreateCountryPayload(selectedCountry);
+
     try {
       if (mode === "edit" && country) {
-        const response = await updateCountry({
-          name: data.countryName.trim(),
-        });
+        const response = await updateCountry(payload);
         handleDialogOpenChange(false);
         successToast({
           title: "Country Updated",
-          description: response?.message || `"${data.countryName}" has been updated successfully.`,
+          description:
+            response?.message || `"${selectedCountry.name}" has been updated successfully.`,
         });
       } else {
-        const response = await createCountry({
-          name: data.countryName.trim(),
-        });
+        const response = await createCountry(payload);
         handleDialogOpenChange(false);
         successToast({
           title: "Country Added",
-          description: response?.message || `"${data.countryName}" has been added successfully.`,
+          description:
+            response?.message || `"${selectedCountry.name}" has been added successfully.`,
         });
       }
     } catch {}
@@ -128,8 +141,8 @@ export function AddCountriesDialog({
               </DialogTitle>
               <p className="mt-0.5 text-xs text-slate-500">
                 {mode === "add"
-                  ? "Fill in the details below to add a new country"
-                  : "Update the country details below"}
+                  ? "Search and select a country from the global list"
+                  : "Update the country selection below"}
               </p>
             </div>
           </div>
@@ -144,17 +157,15 @@ export function AddCountriesDialog({
                 <FieldLabel htmlFor="countryName" className="text-sm font-semibold">
                   Country Name <span className="text-red-500">*</span>
                 </FieldLabel>
-                <div className="relative mt-2">
-                  <FlagIcon className="pointer-events-none absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <Input
-                    {...field}
-                    id="countryName"
-                    placeholder="e.g. United Kingdom"
-                    aria-invalid={!!errors.countryName}
-                    className="h-11 pl-9"
-                    disabled={isPending}
-                  />
-                </div>
+                <WorldCountrySelect
+                  id="countryName"
+                  value={field.value}
+                  onValueChange={(selected) => field.onChange(selected.name)}
+                  placeholder="Search and select country"
+                  invalid={!!errors.countryName}
+                  disabled={isPending}
+                  excludeNames={excludedCountryNames}
+                />
                 {errors.countryName && (
                   <p className="flex items-center gap-1 text-xs font-medium text-red-500">
                     <span className="inline-block h-1 w-1 rounded-full bg-red-500" />

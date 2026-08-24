@@ -1,11 +1,13 @@
 "use client";
 
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
+import { successToast } from "@/components/toaster";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,6 +30,7 @@ import { getCountryManagerColumns } from "./columns/country-manager-columns";
 import { AddCountryManagerDialog } from "./components/add-country-manager-dialog";
 import { EditCountryManagerDialog } from "./components/edit-country-manager-dialog";
 import { useCountryManagerFilters } from "./hooks/use-country-manager-filters";
+import { useDeleteCountryManager } from "./hooks/use-delete-country-manager";
 
 export default function CountryManagementPage() {
   const {
@@ -63,7 +66,25 @@ export default function CountryManagementPage() {
 
   const [editingManager, setEditingManager] = useState<CountryManagerData | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [deletingManager, setDeletingManager] = useState<CountryManagerData | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const { mutateAsync: deleteCountryManager, isPending: isDeleting } = useDeleteCountryManager(
+    deletingManager?.id || "",
+  );
+
+  const handleDelete = async () => {
+    try {
+      const response = await deleteCountryManager();
+      setIsDeleteOpen(false);
+      successToast({
+        title: "Country Manager Deleted",
+        description: response?.message || "Country manager has been deleted successfully.",
+      });
+      setDeletingManager(null);
+    } catch {}
+  };
 
   const handleImageClick = useCallback((image: string) => {
     setLightboxSrc(image);
@@ -78,6 +99,10 @@ export default function CountryManagementPage() {
         onEdit: (manager) => {
           setEditingManager(manager);
           setIsEditOpen(true);
+        },
+        onDelete: (manager) => {
+          setDeletingManager(manager);
+          setIsDeleteOpen(true);
         },
         onToggleStatus: toggleManagerStatus,
         onImageClick: handleImageClick,
@@ -195,6 +220,17 @@ export default function CountryManagementPage() {
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
         onSubmit={updateCountryManager}
+      />
+
+      <ConfirmationDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        title="Delete Country Manager"
+        description={`Are you sure you want to delete ${deletingManager?.firstName} ${deletingManager?.lastName}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        variant="destructive"
       />
     </div>
   );

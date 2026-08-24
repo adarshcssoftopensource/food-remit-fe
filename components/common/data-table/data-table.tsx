@@ -143,7 +143,7 @@ export function DataTable<TData, TValue>({
       <TableRow
         key={row.id}
         data-state={row.getIsSelected() && "selected"}
-        className="group hover:bg-primary/5 dark:hover:bg-primary/10 border-b border-slate-100/50 transition-colors transition-shadow duration-200 last:border-0 hover:shadow-sm dark:border-slate-800/50"
+        className="group hover:bg-primary/5 dark:hover:bg-primary/10 border-b border-slate-100/50 transition-colors duration-200 last:border-0 hover:shadow-sm dark:border-slate-800/50"
       >
         {row.getVisibleCells().map((cell) => (
           <TableCell
@@ -195,7 +195,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="h-11 text-[11px] font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400"
+                      className="h-11 text-[11px] font-bold tracking-wider text-slate-500 dark:text-slate-400"
                     >
                       {header.isPlaceholder ? null : renderHeader(header.column, renderedHeader)}
                     </TableHead>

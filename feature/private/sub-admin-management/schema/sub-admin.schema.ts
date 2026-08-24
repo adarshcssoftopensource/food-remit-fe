@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getFullPhoneError } from "@/lib/phone";
 
 export const subAdminSchema = z.object({
   name: z
@@ -15,9 +16,12 @@ export const subAdminSchema = z.object({
   phone: z
     .string()
     .min(1, "Phone number is required")
-    .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number is too long")
-    .regex(/^\d{10,15}$/, "Enter a valid phone number"),
+    .superRefine((value, ctx) => {
+      const error = getFullPhoneError(value);
+      if (error) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: error });
+      }
+    }),
 
   permissions: z.array(z.string()).min(1, "Select at least one permission"),
 });

@@ -62,6 +62,7 @@ export function DateRangeFilter({
             placeholder={placeholder}
             className={pickerClassName}
             maxDate={maxDate}
+            minDate={fromDate}
           />
         )}
       </div>

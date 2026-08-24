@@ -15,7 +15,7 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { CountrySelect } from "@/components/common/country-select";
@@ -60,6 +60,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     handleSubmit,
     trigger,
     getValues,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<PartnerLeadFormValues>({
     resolver: zodResolver(partnerLeadSchema),
@@ -83,6 +85,23 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     },
     mode: "onChange",
   });
+
+  const locationsCount = watch("locationsCount");
+  const isSingleLocation = locationsCount === "1 Location";
+  const multipleLocationsOption = "Add multiple store locations";
+
+  // WEB-0004: keep Step 3 preference in sync with Step 1 location count
+  useEffect(() => {
+    if (!isSingleLocation) return;
+    const current = getValues("workPreferences") || [];
+    if (current.includes(multipleLocationsOption)) {
+      setValue(
+        "workPreferences",
+        current.filter((v) => v !== multipleLocationsOption),
+        { shouldValidate: true },
+      );
+    }
+  }, [isSingleLocation, getValues, setValue]);
 
   async function handleNextStep() {
     let fieldsToValidate: (keyof PartnerLeadFormValues)[] = [];
@@ -125,7 +144,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   return (
     <div
       className={cn(
-        "relative z-10 w-full overflow-hidden rounded-[2.5rem] bg-white p-6 shadow-2xl shadow-black/30 sm:p-10",
+        "relative z-10 w-full overflow-visible rounded-[2.5rem] bg-white p-6 shadow-2xl shadow-black/30 sm:p-10",
         className,
       )}
     >
@@ -552,6 +571,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 render={({ field }) => {
                   const values = field.value || [];
                   const toggleValue = (option: string) => {
+                    if (option === multipleLocationsOption && isSingleLocation) return;
                     if (values.includes(option)) {
                       field.onChange(values.filter((v) => v !== option));
                     } else {
@@ -567,19 +587,29 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
                       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                         {WORK_PREFERENCES_OPTIONS.map((opt) => {
+                          const isMultipleLocationsOption = opt === multipleLocationsOption;
+                          const isDisabled = isMultipleLocationsOption && isSingleLocation;
                           const isChecked = values.includes(opt);
                           return (
                             <label
                               key={opt}
                               className={cn(
-                                "flex min-h-16 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 shadow-sm transition-colors",
-                                isChecked
-                                  ? "border-emerald-500 bg-emerald-50 font-medium text-emerald-950 shadow-emerald-100"
-                                  : "border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30",
+                                "flex min-h-16 items-center gap-3 rounded-xl border px-3 py-2.5 shadow-sm transition-colors",
+                                isDisabled
+                                  ? "cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400 opacity-70"
+                                  : isChecked
+                                    ? "cursor-pointer border-emerald-500 bg-emerald-50 font-medium text-emerald-950 shadow-emerald-100"
+                                    : "cursor-pointer border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30",
                               )}
+                              title={
+                                isDisabled
+                                  ? "Not available when Number of Locations is set to 1 Location"
+                                  : undefined
+                              }
                             >
                               <Checkbox
                                 checked={isChecked}
+                                disabled={isDisabled}
                                 onCheckedChange={() => toggleValue(opt)}
                                 className="size-4 rounded"
                               />
@@ -588,6 +618,12 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           );
                         })}
                       </div>
+                      {isSingleLocation && (
+                        <p className="text-[11px] text-slate-400">
+                          &quot;Add multiple store locations&quot; is disabled because you selected
+                          1 Location in Step 1.
+                        </p>
+                      )}
                     </div>
                   );
                 }}

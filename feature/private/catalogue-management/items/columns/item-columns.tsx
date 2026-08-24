@@ -1,4 +1,5 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { ScopeBadge } from "@/components/common/scope-badge";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import {
@@ -43,9 +44,16 @@ export function getItemColumns(
       id: "departmentName",
       header: "Department",
       cell: ({ row }) => (
-        <span className="text-sm text-slate-600">
-          {row.original.department?.departmentName || "-"}
-        </span>
+        <div className="space-y-1">
+          <span className="text-sm text-slate-600">
+            {row.original.departmentDisplayName || row.original.department?.departmentName || "-"}
+          </span>
+          {(row.original.scopeLabel || row.original.isGlobal !== undefined) && (
+            <div>
+              <ScopeBadge isGlobal={row.original.isGlobal} scopeLabel={row.original.scopeLabel} />
+            </div>
+          )}
+        </div>
       ),
     },
     {
@@ -56,9 +64,31 @@ export function getItemColumns(
       ),
     },
     {
+      id: "price",
+      header: "Price",
+      cell: ({ row }) => {
+        const placements = Array.isArray(row.original.placements) ? row.original.placements : [];
+        const first = placements[0];
+        if (!first) {
+          return <span className="text-sm text-slate-400">-</span>;
+        }
+        const amount = Number(first.price);
+        const priceText = Number.isFinite(amount) ? amount.toLocaleString() : "-";
+        const extra = placements.length > 1 ? ` +${placements.length - 1}` : "";
+        return (
+          <span className="text-sm font-medium text-slate-700">
+            {first.currencySymbol || first.currency || ""} {priceText}
+            {extra ? <span className="ml-1 text-xs text-slate-400">{extra}</span> : null}
+          </span>
+        );
+      },
+    },
+    {
       id: "createdBy",
       header: "Created/Edited by",
-      cell: () => <span className="text-sm text-slate-600">Admin</span>,
+      cell: ({ row }) => (
+        <span className="text-sm text-slate-600">{row.original.createdBy || "Admin"}</span>
+      ),
     },
     {
       accessorKey: "createdAt",

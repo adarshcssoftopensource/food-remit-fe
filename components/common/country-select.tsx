@@ -26,6 +26,7 @@ export type CountryOption = {
   name: string;
   code?: string | null;
   countryCode?: string | null;
+  currency?: string | null;
 };
 
 type CountrySelectProps = {
@@ -69,6 +70,7 @@ export function CountrySelect({
       name: c.name,
       code: c.countryCode,
       countryCode: c.countryCode,
+      currency: c.currency,
     }));
   }, [customCountries, apiCountries]);
 
@@ -148,7 +150,7 @@ export function CountrySelect({
       />
       <PopoverContent
         align="start"
-        className="w-[min(28rem,calc(100vw-2rem))] gap-2 p-2"
+        className="z-[200] w-[min(28rem,calc(100vw-2rem))] gap-2 p-2"
         side="bottom"
       >
         <div className="relative">
@@ -213,6 +215,7 @@ export function CountrySelect({
                       name: country.name,
                       countryName: country.name,
                       countryCode: country.code || country.countryCode,
+                      currency: country.currency ?? undefined,
                     });
                     setIsOpen(false);
                     setSearchQuery("");

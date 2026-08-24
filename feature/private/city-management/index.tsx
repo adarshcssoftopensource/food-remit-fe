@@ -1,11 +1,13 @@
 "use client";
 
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
+import { successToast } from "@/components/toaster";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,6 +30,7 @@ import { getCityManagerColumns } from "./columns/city-manager-columns";
 import { AddCityManagerDialog } from "./components/add-city-manager-dialog";
 import { EditCityManagerDialog } from "./components/edit-city-manager-dialog";
 import { useCityManagerFilters } from "./hooks/use-city-manager-filters";
+import { useDeleteCityManager } from "./hooks/use-delete-city-manager";
 
 export default function CityManagementPage() {
   const {
@@ -63,7 +66,25 @@ export default function CityManagementPage() {
 
   const [editingManager, setEditingManager] = useState<CityManagerData | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [deletingManager, setDeletingManager] = useState<CityManagerData | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const { mutateAsync: deleteCityManager, isPending: isDeleting } = useDeleteCityManager(
+    deletingManager?.id || "",
+  );
+
+  const handleDelete = async () => {
+    try {
+      const response = await deleteCityManager();
+      setIsDeleteOpen(false);
+      successToast({
+        title: "City Manager Deleted",
+        description: response?.message || "City manager has been deleted successfully.",
+      });
+      setDeletingManager(null);
+    } catch {}
+  };
 
   const handleImageClick = useCallback((image: string) => {
     setLightboxSrc(image);
@@ -78,6 +99,10 @@ export default function CityManagementPage() {
         onEdit: (manager) => {
           setEditingManager(manager);
           setIsEditOpen(true);
+        },
+        onDelete: (manager) => {
+          setDeletingManager(manager);
+          setIsDeleteOpen(true);
         },
         onToggleStatus: toggleManagerStatus,
         onImageClick: handleImageClick,
@@ -195,6 +220,17 @@ export default function CityManagementPage() {
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
         onSubmit={updateCityManager}
+      />
+
+      <ConfirmationDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        title="Delete City Manager"
+        description={`Are you sure you want to delete ${deletingManager?.firstName} ${deletingManager?.lastName}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        variant="destructive"
       />
     </div>
   );
