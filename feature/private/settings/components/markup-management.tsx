@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/incompatible-library */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Info, Percent, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { successToast } from "@/components/toaster";
@@ -10,34 +11,50 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+
+import { useGetMarkup } from "../hooks/use-get-markup";
+import { useUpdateMarkup } from "../hooks/use-update-markup";
 import { MarkupFormValues, markupSchema } from "../schema/markup.schema";
 
 export function MarkupManagement() {
-  const [currentMarkup, setCurrentMarkup] = useState("10");
+  const { data: markupData, isLoading } = useGetMarkup();
+  const { mutateAsync: updateMarkup, isPending } = useUpdateMarkup();
+
+  const currentMarkup = markupData?.data?.markupPercentage || "10";
 
   const {
     control,
     handleSubmit,
     reset,
     watch,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isDirty },
   } = useForm<MarkupFormValues>({
     resolver: zodResolver(markupSchema),
     defaultValues: { markupPercentage: currentMarkup },
     mode: "onChange",
   });
 
+  useEffect(() => {
+    if (markupData?.data?.markupPercentage) {
+      reset({ markupPercentage: markupData.data.markupPercentage });
+    }
+  }, [markupData, reset]);
+
   const liveValue = watch("markupPercentage") ?? "";
   const numericValue = parseFloat(liveValue);
   const isValid = !isNaN(numericValue) && numericValue >= 0 && numericValue <= 100;
 
   const onSubmit = async (data: MarkupFormValues) => {
-    setCurrentMarkup(data.markupPercentage);
-    reset({ markupPercentage: data.markupPercentage });
-    successToast({
-      title: "Markup Updated",
-      description: `Commission markup set to ${data.markupPercentage}%.`,
-    });
+    try {
+      const res = await updateMarkup({ markupPercentage: data.markupPercentage });
+      reset({ markupPercentage: data.markupPercentage });
+      successToast({
+        title: "Markup Updated",
+        description: res?.message || `Commission markup set to ${data.markupPercentage}%.`,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -49,7 +66,7 @@ export function MarkupManagement() {
           </p>
           <div className="mt-1 flex items-end gap-1">
             <p className="text-3xl font-black text-slate-700">
-              {isValid ? liveValue || currentMarkup : currentMarkup}
+              {isLoading ? "..." : isValid ? liveValue || currentMarkup : currentMarkup}
             </p>
             <p className="mb-1 text-lg font-bold text-slate-400">%</p>
           </div>
@@ -115,7 +132,7 @@ export function MarkupManagement() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => reset()}
+                onClick={() => reset({ markupPercentage: currentMarkup })}
                 className="px-6"
                 disabled={!isDirty}
               >
@@ -123,7 +140,7 @@ export function MarkupManagement() {
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting || !isDirty}
+                disabled={isPending || !isDirty}
                 className="shadow-primary/20 gap-2 px-6 shadow-md"
               >
                 <TrendingUp className="h-4 w-4" />

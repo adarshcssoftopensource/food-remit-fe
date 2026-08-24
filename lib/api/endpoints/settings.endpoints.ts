@@ -11,4 +11,8 @@ export const SETTINGS_ENDPOINTS = {
   CREATE_CITY: `${ADMIN}/cities`,
   UPDATE_CITY: (id: string) => `${ADMIN}/cities/${id}`,
   DELETE_CITY: (id: string) => `${ADMIN}/cities/${id}`,
+  GET_MARKUP: `${ADMIN}/settings/markup`,
+  UPDATE_MARKUP: `${ADMIN}/settings/markup`,
+  GET_PROCESSING_FEES: `${ADMIN}/settings/processing-fees`,
+  UPDATE_PROCESSING_FEE: (countryId: string) => `${ADMIN}/settings/processing-fees/${countryId}`,
 } as const;

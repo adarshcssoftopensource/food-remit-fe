@@ -30,11 +30,11 @@ interface RawGetSubAdminsResponse {
 export function useGetSubAdmins(args: UseGetSubAdminsArgs = {}) {
   const url = buildUrl(SUB_ADMIN_ENDPOINTS.GET_SUB_ADMINS, {
     ...args,
-    sortOrder: args.sortOrder ?? "asc",
+    sortOrder: args.sortOrder ?? "desc",
   });
   const cacheKey = buildCacheKey(API_CACHE_KEYS.SUB_ADMINS[0], {
     ...args,
-    sortOrder: args.sortOrder ?? "asc",
+    sortOrder: args.sortOrder ?? "desc",
   });
 
   const query = useApiQuery<RawGetSubAdminsResponse>(cacheKey, url, {});
