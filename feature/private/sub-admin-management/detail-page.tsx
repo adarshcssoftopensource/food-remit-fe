@@ -52,7 +52,7 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
     },
     {
       label: "Phone Number",
-      value: admin.contactNumber || "—",
+      value: `${admin.countryCode ?? ""} ${admin.contactNumber ?? ""}`.trim() || "—",
       icon: <Phone className="h-4.5 w-4.5" />,
       color: "emerald",
     },

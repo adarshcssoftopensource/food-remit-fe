@@ -6,6 +6,7 @@ import { useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { PageHeader } from "@/components/common/page-header";
+import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { errorToast, successToast } from "@/components/toaster";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ROUTES } from "@/config/routes";
 import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
 import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
@@ -28,7 +30,6 @@ import {
   assignCityManagerSchema,
   type AssignCityManagerFormValues,
 } from "./schema/assign-city-manager.schema";
-import { ROUTES } from "@/config/routes";
 
 interface RawCityManager {
   id: string;
@@ -216,6 +217,8 @@ export function AssignCityManagerToStore() {
         title: `Assigned ${data.storeIds.length} store${data.storeIds.length > 1 ? "s" : ""} to ${selectedManager?.name || "City Manager"} successfully!`,
       });
       setValue("storeIds", []);
+      setValue("country", "");
+      setValue("cityManagerId", "");
       await refetchStores();
     } catch {
       errorToast({ title: "Failed to assign stores. Please try again." });
@@ -260,26 +263,25 @@ export function AssignCityManagerToStore() {
                 <Controller
                   name="country"
                   control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-12! w-full rounded-xl border-slate-200 bg-slate-50">
-                        <SelectValue placeholder="Select a country">
-                          {field.value
-                            ? countriesData.find((c) => c.id === field.value)?.name
-                            : "Select a country"}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {countriesData.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>
-                              {c.name}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )}
+                  render={({ field }) => {
+                    const currentCountryName =
+                      countriesData.find((c) => c.id === field.value)?.name || field.value;
+
+                    return (
+                      <ResidentialCountrySelect
+                        value={currentCountryName}
+                        onValueChange={(name) => {
+                          const matchedCountry = countriesData.find(
+                            (c) => c.name.toLowerCase() === name.toLowerCase(),
+                          );
+                          field.onChange(matchedCountry ? matchedCountry.id : name);
+                        }}
+                        invalid={!!errors.country}
+                        className="h-12! bg-slate-50"
+                        disableAutoDetect
+                      />
+                    );
+                  }}
                 />
                 {errors.country && (
                   <p className="text-xs font-medium text-red-500">{errors.country.message}</p>
