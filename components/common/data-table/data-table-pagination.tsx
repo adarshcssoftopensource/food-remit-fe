@@ -44,7 +44,8 @@ export function DataTablePagination<TData>({
 
   const activePage = isBackendMode ? currentPage : pageIndex + 1;
   const maxPages = isBackendMode ? totalPages : pageCount;
-  const pageSize = rowsPerPage ?? table.getState().pagination.pageSize;
+  const pageSize =
+    isBackendMode && rowsPerPage ? rowsPerPage : table.getState().pagination.pageSize;
 
   const getPages = () => {
     const current = activePage;
@@ -71,6 +72,7 @@ export function DataTablePagination<TData>({
   const handleRowsPerPageChange = (size: number) => {
     if (isBackendMode && onRowsPerPageChange) {
       onRowsPerPageChange(size);
+      onPageChange(1);
     } else {
       table.setPageSize(size);
     }

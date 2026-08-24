@@ -18,6 +18,7 @@ import { useUpdateSubAdmin } from "../hooks/use-update-sub-admin";
 import { type SubAdminFormValues } from "../schema/sub-admin.schema";
 import type { SubAdminData } from "../types/sub-admin.types";
 import { SubAdminForm } from "./sub-admin-form";
+import { resolveFromValue } from "@/components/ui/phone-input";
 
 interface SubAdminDialogProps {
   mode?: "add" | "edit";
@@ -49,9 +50,8 @@ export function SubAdminDialog({
 
   const handleSubmit = async (values: SubAdminFormValues) => {
     try {
-      const rawPhone = values.phone;
-      const localNumber = rawPhone.slice(rawPhone.length - 10);
-      const countryCode = rawPhone.slice(0, rawPhone.length - 10);
+      const { country, nationalNumber: localNumber } = resolveFromValue(values.phone);
+      const countryCode = country ? `+${country.dialCode}` : "";
 
       if (mode === "add") {
         const response = await createSubAdmin({

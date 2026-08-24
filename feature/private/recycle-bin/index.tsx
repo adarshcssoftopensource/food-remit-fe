@@ -13,7 +13,6 @@ import { useDebounce } from "@/lib/debounce";
 import { useGetRecycledUsers, UseGetUsersArgs } from "./hooks/use-get-recycled-users";
 
 import { RecycleBinFilters } from "./components/recycle-bin-filters";
-import { RecycleBinStats } from "./components/recycle-bin-stats";
 import { RecycleBinTable } from "./components/recycle-bin-table";
 
 export function RecycledUsersManagement() {
@@ -148,8 +147,6 @@ export function RecycledUsersManagement() {
         title="Recycle Bin"
         description="Users who have been deleted but can be restored across countries and cities"
       />
-
-      <RecycleBinStats stats={stats} isLoading={isLoading} />
 
       <RecycleBinFilters
         fromDate={fromDate}

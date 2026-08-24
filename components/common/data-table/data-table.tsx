@@ -103,6 +103,11 @@ export function DataTable<TData, TValue>({
     enableRowSelection: true,
     onRowSelectionChange,
     getRowId,
+    initialState: {
+      pagination: {
+        pageSize: DEFAULT_PAGE_SIZE,
+      },
+    },
     state: {
       sorting,
       columnFilters,
@@ -155,7 +160,7 @@ export function DataTable<TData, TValue>({
         ))}
       </TableRow>
     ));
-  }, [loading, rows, columns, table, rowSelection]);
+  }, [loading, rows, columns, table]);
 
   return (
     <div className="space-y-4">

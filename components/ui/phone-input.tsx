@@ -53,7 +53,7 @@ const ALL_COUNTRIES = buildCountries();
 const COUNTRIES_BY_ISO = new Map(ALL_COUNTRIES.map((country) => [country.isoCode, country]));
 const DIAL_CODES_DESC = [...ALL_COUNTRIES].sort((a, b) => b.dialCode.length - a.dialCode.length);
 
-function resolveFromValue(value: string): { country: PhoneCountry; nationalNumber: string } {
+export function resolveFromValue(value: string): { country: PhoneCountry; nationalNumber: string } {
   const digits = toPhoneDigits(value || "");
   const fallback = COUNTRIES_BY_ISO.get(DEFAULT_ISO) ?? ALL_COUNTRIES[0];
 

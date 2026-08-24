@@ -108,9 +108,12 @@ export function AssignCityManagerToStore() {
   const availableManagers = useMemo(() => {
     if (!rawCityManagers?.data || !selectedCountry) return [];
     return rawCityManagers.data
-      .filter(
-        (m) => (m.country || "").trim().toLowerCase() === selectedCountry.trim().toLowerCase(),
-      )
+      .filter((m) => {
+        const matchesCountry =
+          (m.country || "").trim().toLowerCase() === selectedCountry.trim().toLowerCase();
+        const isActive = (m.managerStatus || "").toUpperCase() !== "INACTIVE";
+        return matchesCountry && isActive;
+      })
       .map((m) => ({
         ...m,
         name: `${m.firstName || ""} ${m.lastName || ""}`.trim() || "City Manager",

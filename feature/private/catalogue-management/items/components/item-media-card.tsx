@@ -44,7 +44,7 @@ export function ItemMediaCard({
           {mainImage?.src && (
             <button
               onClick={() => setLightboxSrc(mainImage.src)}
-              className="absolute right-2 bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-colors transition-opacity transition-transform duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
+              className="absolute right-2 bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
               title="View full screen"
             >
               <Expand className="h-3.5 w-3.5" />
@@ -57,7 +57,9 @@ export function ItemMediaCard({
             {item.productName}
           </CardTitle>
           {item.description && (
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">{item.description}</p>
+            <p className="mt-1 text-start text-xs leading-relaxed text-slate-500">
+              {item.description}
+            </p>
           )}
 
           <div className="mt-3 flex justify-center gap-2">
@@ -78,12 +80,6 @@ export function ItemMediaCard({
               </span>
               {item.status === "ACTIVE" ? "Active" : "Inactive"}
             </span>
-
-            {item.adminShare && (
-              <span className="inline-flex items-center rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-700 shadow-sm ring-1 ring-blue-500/20">
-                Admin Share
-              </span>
-            )}
           </div>
         </div>
       </CardHeader>

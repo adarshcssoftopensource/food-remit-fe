@@ -80,7 +80,6 @@ export function ItemView({ id }: ItemViewProps) {
   return (
     <>
       <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
-
       <div className="space-y-4">
         <div>
           <PageHeader
@@ -92,7 +91,7 @@ export function ItemView({ id }: ItemViewProps) {
           />
         </div>
 
-        <div className="animate-in fade-in slide-in-from-bottom-4 grid items-stretch gap-4 transition-colors duration-700 lg:grid-cols-3">
+        <div className="animate-in fade-in slide-in-from-bottom-4 grid items-start gap-4 transition-colors duration-700 lg:grid-cols-3">
           <ItemMediaCard
             item={item}
             mainImage={mainImage}
