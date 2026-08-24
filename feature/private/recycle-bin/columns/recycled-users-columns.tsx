@@ -51,7 +51,6 @@ export const usersColumns: ColumnDef<UserData>[] = [
           <p className="text-sm font-medium text-slate-800">
             {row.original.firstName} {row.original.lastName}
           </p>
-          <p className="text-xs text-slate-400">@{row.original.userName}</p>
         </div>
       </div>
     ),
