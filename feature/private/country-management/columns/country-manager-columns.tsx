@@ -24,6 +24,18 @@ export function getCountryManagerColumns({
 }: CountryManagerColumnsConfig): ColumnDef<CountryManagerData>[] {
   return [
     {
+      id: "sno",
+      header: "S.No",
+      cell: ({ row, table }) => {
+        const pageIndex = table.getState().pagination.pageIndex;
+        const pageSize = table.getState().pagination.pageSize;
+
+        return pageIndex * pageSize + row.index + 1;
+      },
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
       id: "name",
       header: "Name",
       accessorFn: (row) => `${row.firstName} ${row.lastName}`.trim(),
