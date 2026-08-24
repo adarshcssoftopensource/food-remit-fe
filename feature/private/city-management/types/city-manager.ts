@@ -99,4 +99,6 @@ export interface UseGetCityManagersArgs {
   status?: string;
   fromDate?: string;
   toDate?: string;
+  countryId?: string;
+  cityId?: string;
 }

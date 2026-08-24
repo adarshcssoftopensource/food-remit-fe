@@ -36,3 +36,11 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
     description: "Browse historical order activity.",
   },
 };
+
+export const ORDER_TABS: { label: string; value: OrderSectionKey }[] = [
+  { label: "Sent Orders", value: "sent-orders" },
+  { label: "Requested Orders", value: "requested-orders" },
+  { label: "Partial Orders", value: "partial-orders" },
+  { label: "Completed Orders", value: "completed-orders" },
+  { label: "History", value: "history" },
+];

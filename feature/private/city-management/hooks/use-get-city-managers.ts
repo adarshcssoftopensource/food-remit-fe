@@ -20,6 +20,8 @@ export function useGetCityManagers(args?: UseGetCityManagersArgs) {
     status: args?.status,
     fromDate: args?.fromDate,
     toDate: args?.toDate,
+    countryId: args?.countryId,
+    cityId: args?.cityId,
   }).replace("?", "");
 
   const queryKey = [...API_CACHE_KEYS.CITY_MANAGERS, queryString];

@@ -32,7 +32,7 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
         size="icon"
         className="size-8 rounded-full text-slate-500"
         onClick={() => {
-          router.push(`${ROUTES.ADMIN.ORDER_MANAGEMENT}/${order.id}`);
+          router.push(`${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}/${order.id}`);
         }}
         title="View order"
       >
@@ -54,7 +54,7 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="Delete Order"
-        description={`Are you sure you want to delete order ${order.id}? This action cannot be undone.`}
+        description={`Are you sure you want to delete order ? This action cannot be undone.`}
         confirmLabel="Delete Order"
         onConfirm={handleDelete}
         isLoading={isDeleting}

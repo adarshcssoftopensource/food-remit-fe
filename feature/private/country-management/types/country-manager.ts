@@ -120,4 +120,5 @@ export interface UseGetCountryManagersArgs {
   status?: string;
   fromDate?: string;
   toDate?: string;
+  countryId?: string;
 }

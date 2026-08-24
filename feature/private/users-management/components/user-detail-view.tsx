@@ -3,20 +3,12 @@
 import { User } from "lucide-react";
 import { useState } from "react";
 
-import {
-  MOCK_RECEIVED_ORDERS,
-  MOCK_REQUESTED_ORDERS,
-  MOCK_SENT_ORDERS,
-  USER_MANAGEMENT_VIEW_TABS,
-} from "@/constants/users-management";
+import { USER_MANAGEMENT_VIEW_TABS } from "@/constants/users-management";
 import { useGetUserById } from "../hooks/use-get-user-by-id";
 import { UserData } from "../types/user.types";
 
-import {
-  RECEIVED_ORDER_COLUMNS,
-  REQUESTED_ORDER_COLUMNS,
-  SENT_ORDER_COLUMNS,
-} from "../columns/order-columns";
+import { orderColumns } from "@/feature/private/order-management/columns/order-columns";
+import { useGetOrders } from "@/feature/private/order-management/hooks/use-get-orders";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -83,23 +75,27 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
     },
   ];
 
+  const { data: requestedOrdersResponse } = useGetOrders({ userId: id, type: 2 });
+  const { data: sentOrdersResponse } = useGetOrders({ userId: id, type: 1 });
+  const { data: receivedOrdersResponse } = useGetOrders({ recieverId: id });
+
   const orders = {
-    requested: user ? (MOCK_REQUESTED_ORDERS[user.id] ?? []) : [],
-    sent: user ? (MOCK_SENT_ORDERS[user.id] ?? []) : [],
-    received: user ? (MOCK_RECEIVED_ORDERS[user.id] ?? []) : [],
+    requested: requestedOrdersResponse?.data || [],
+    sent: sentOrdersResponse?.data || [],
+    received: receivedOrdersResponse?.data || [],
   };
 
   const tableConfig = {
     requested: {
-      columns: REQUESTED_ORDER_COLUMNS,
+      columns: orderColumns,
       data: orders.requested,
     },
     sent: {
-      columns: SENT_ORDER_COLUMNS,
+      columns: orderColumns,
       data: orders.sent,
     },
     received: {
-      columns: RECEIVED_ORDER_COLUMNS,
+      columns: orderColumns,
       data: orders.received,
     },
   };
@@ -125,13 +121,13 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
 
       <div className="rounded-2xl border p-4 shadow-sm sm:p-6">
         <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
-          <div className="mb-8">
-            <TabsList className="flex h-8 w-full gap-1 rounded-xl bg-slate-100 p-1">
+          <div className="mb-8 overflow-x-auto pb-2">
+            <TabsList className="inline-flex h-11 w-auto items-center justify-start gap-1 rounded-full bg-slate-100/80 p-1 px-1.5 shadow-inner dark:bg-slate-800/50">
               {USER_MANAGEMENT_VIEW_TABS.map((item) => (
                 <TabsTrigger
                   key={item.value}
                   value={item.value}
-                  className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground h-8! rounded-md"
+                  className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground inline-flex h-8 items-center justify-center rounded-full px-5 text-sm font-medium whitespace-nowrap text-slate-600 transition-all hover:text-slate-900 data-active:shadow-md dark:text-slate-400 dark:hover:text-slate-100"
                 >
                   {item.label}
                 </TabsTrigger>
@@ -179,7 +175,7 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
                 <DataTable
                   columns={tableConfig[key].columns}
                   data={tableConfig[key].data}
-                  searchKey="orderId"
+                  searchKey="id"
                 />
               </div>
             </TabsContent>

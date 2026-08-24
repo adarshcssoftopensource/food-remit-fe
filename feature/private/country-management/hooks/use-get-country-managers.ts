@@ -20,6 +20,7 @@ export function useGetCountryManagers(args?: UseGetCountryManagersArgs) {
     status: args?.status,
     fromDate: args?.fromDate,
     toDate: args?.toDate,
+    countryId: args?.countryId,
   }).replace("?", "");
 
   const queryKey = [...API_CACHE_KEYS.COUNTRY_MANAGERS, queryString];
@@ -49,6 +50,7 @@ export function useGetCountryManagers(args?: UseGetCountryManagersArgs) {
       city: item.city ?? "",
       zipcode: item.zipcode ?? "",
       assignCountryName: item.assignCountryName ?? "",
+      assignedCountry: item.assignCountries ?? null,
       assignedCityManagers: [],
       cityManagers: [],
       createdAt: item.addedOn ?? new Date().toISOString(),

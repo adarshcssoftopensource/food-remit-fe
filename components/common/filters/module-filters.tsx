@@ -136,8 +136,9 @@ export function ModuleFilters({
                 includeAll
                 allLabel={cityPlaceholder}
                 placeholder={
-                  countryId && countryId !== "all" ? cityPlaceholder : "All Cities (Any Country)"
+                  countryId && countryId !== "all" ? cityPlaceholder : "Select country first"
                 }
+                disabled={!countryId || countryId === "all" || countryId === "All"}
                 className="h-10 rounded-xl"
               />
             </div>

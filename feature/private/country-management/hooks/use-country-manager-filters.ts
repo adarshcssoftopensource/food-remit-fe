@@ -46,19 +46,15 @@ export function useCountryManagerFilters() {
     status: statusFilter,
     fromDate: formattedFromDate,
     toDate: formattedToDate,
+    countryId: country,
   });
 
   const createMutation = useCreateCountryManager();
   const updateMutation = useUpdateCountryManager();
 
   const filteredData = useMemo(() => {
-    return countryManagers.filter((item) => {
-      if (country !== "all" && country !== "All") {
-        if (item.assignedCountry !== country && item.assignCountryName !== country) return false;
-      }
-      return true;
-    });
-  }, [countryManagers, country]);
+    return countryManagers;
+  }, [countryManagers]);
 
   const stats = useMemo(() => {
     const total = countryManagers.length;

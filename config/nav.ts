@@ -131,28 +131,6 @@ export const navigationItems = [
     title: "Order Management",
     url: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
     icon: Box,
-    items: [
-      {
-        title: "Sent Orders",
-        url: ROUTES.ADMIN.ORDER_MANAGEMENT.SENT_ORDERS,
-      },
-      {
-        title: "Requested Orders",
-        url: ROUTES.ADMIN.ORDER_MANAGEMENT.REQUESTED_ORDERS,
-      },
-      {
-        title: "Partial Orders",
-        url: ROUTES.ADMIN.ORDER_MANAGEMENT.PARTIAL_ORDERS,
-      },
-      {
-        title: "Completed Orders",
-        url: ROUTES.ADMIN.ORDER_MANAGEMENT.COMPLETED_ORDERS,
-      },
-      {
-        title: "History",
-        url: ROUTES.ADMIN.ORDER_MANAGEMENT.HISTORY,
-      },
-    ],
   },
   {
     title: "Ticket Management",

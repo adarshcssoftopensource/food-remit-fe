@@ -9,10 +9,15 @@ interface GetOrdersParams {
   limit?: number;
   search?: string;
   status?: string;
+  type?: number | string;
   fromDate?: string;
   toDate?: string;
   country?: string;
   city?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  userId?: string;
+  recieverId?: string;
 }
 
 interface OrdersResponse {

@@ -46,28 +46,16 @@ export function useCityManagerFilters() {
     status: statusFilter,
     fromDate: formattedFromDate,
     toDate: formattedToDate,
+    countryId: country,
+    cityId: city,
   });
 
   const createMutation = useCreateCityManager();
   const updateMutation = useUpdateCityManager();
 
   const filteredData = useMemo(() => {
-    return cityManagers.filter((item) => {
-      if (country !== "all" && country !== "All") {
-        if (item.country !== country && item.countryName !== country) return false;
-      }
-      if (city !== "all" && city !== "All") {
-        if (
-          !item.assignedCities.includes(city) &&
-          !item.assignedCityNames.includes(city) &&
-          item.city !== city
-        ) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }, [cityManagers, country, city]);
+    return cityManagers;
+  }, [cityManagers]);
 
   const stats = useMemo(() => {
     const total = cityManagers.length;

@@ -11,4 +11,7 @@ export interface OrderData {
   updatedAt: string;
   items?: any[];
   transactions?: any[];
+  userName?: string;
+  recieverName?: string;
+  storeName?: string;
 }

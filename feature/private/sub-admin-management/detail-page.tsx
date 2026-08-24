@@ -98,7 +98,7 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
 
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="truncate text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+                  <h1 className="truncate text-2xl font-black tracking-tight text-slate-900 capitalize sm:text-3xl dark:text-white">
                     {admin.userName}
                   </h1>
                 </div>
