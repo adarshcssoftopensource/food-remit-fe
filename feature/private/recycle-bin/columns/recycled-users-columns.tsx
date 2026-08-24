@@ -8,6 +8,18 @@ import { RecycledActionsCell } from "../components/recycled-actions-cell";
 
 export const usersColumns: ColumnDef<UserData>[] = [
   {
+    id: "sno",
+    header: "S.No",
+    cell: ({ row, table }) => {
+      const pageIndex = table.getState().pagination.pageIndex;
+      const pageSize = table.getState().pagination.pageSize;
+
+      return pageIndex * pageSize + row.index + 1;
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     id: "select",
     header: ({ table }) => (
       <Checkbox

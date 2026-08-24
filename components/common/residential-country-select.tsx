@@ -32,6 +32,7 @@ export type ResidentialCountrySelectProps = {
   invalid?: boolean;
   className?: string;
   id?: string;
+  disableAutoDetect?: boolean;
 };
 
 export function ResidentialCountrySelect({
@@ -41,6 +42,7 @@ export function ResidentialCountrySelect({
   invalid,
   className,
   id,
+  disableAutoDetect = false,
 }: ResidentialCountrySelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -49,6 +51,7 @@ export function ResidentialCountrySelect({
   const { countryName: detectedName, isLoading: isDetecting } = useUserCountry();
 
   useEffect(() => {
+    if (disableAutoDetect) return;
     if (autoDetectApplied.current) return;
     if (isDetecting) return;
     if (!detectedName) return;

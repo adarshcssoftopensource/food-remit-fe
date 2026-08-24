@@ -5,6 +5,18 @@ import { SubAdminData } from "../types/sub-admin.types";
 
 export const subAdminColumns: ColumnDef<SubAdminData>[] = [
   {
+    id: "sno",
+    header: "S.No",
+    cell: ({ row, table }) => {
+      const pageIndex = table.getState().pagination.pageIndex;
+      const pageSize = table.getState().pagination.pageSize;
+
+      return pageIndex * pageSize + row.index + 1;
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "userName",
     header: "User Name",
     enableSorting: true,

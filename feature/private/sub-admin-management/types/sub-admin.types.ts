@@ -18,6 +18,7 @@ export type SubAdminData = {
   userId: string;
   userName: string;
   email: string;
+  countryCode?: string;
   contactNumber: string;
   status: "Active" | "Inactive";
   createdAt: string;
