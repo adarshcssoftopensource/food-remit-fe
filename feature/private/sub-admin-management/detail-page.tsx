@@ -223,9 +223,9 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
                       <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-200">
                         {permission.value}
                       </p>
-                      <p className="mt-0.5 truncate text-[10px] font-medium tracking-wider text-slate-400 uppercase">
+                      {/* <p className="mt-0.5 truncate text-[10px] font-medium tracking-wider text-slate-400 uppercase">
                         {permission.key}
-                      </p>
+                      </p> */}
                     </div>
                     <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold tracking-widest text-emerald-600 uppercase ring-1 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20">
                       Granted

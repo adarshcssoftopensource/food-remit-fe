@@ -11,7 +11,10 @@ const departmentSchema = z
   .object({
     countryId: z.string().min(1, "Country is required"),
     cityId: z.string().optional(),
-    departmentName: z.string().min(2, "Department name must be at least 2 characters"),
+    departmentName: z
+      .string()
+      .min(2, "Department name must be at least 2 characters")
+      .max(50, "Department name must not exceed 50 characters"),
     iconFile: z.array(z.instanceof(File)).optional(),
     hasExistingIcon: z.boolean().optional(),
   })
@@ -42,6 +45,7 @@ export function useDepartmentForm(
 
   const form = useForm<DepartmentFormValues>({
     resolver: zodResolver(departmentSchema),
+    mode: "onChange",
     defaultValues: {
       countryId: department?.country?.id ?? "",
       cityId: department?.cityId || department?.city?.id || "",
