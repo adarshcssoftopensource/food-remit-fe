@@ -25,7 +25,7 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
       const response = await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
       successToast({
         title:
-          response.message || `Sub Admin ${checked ? "activated" : "deactivated"} successfully`,
+          response.message || `Sub/Co Admin ${checked ? "activated" : "deactivated"} successfully`,
       });
     } catch {
       setIsActive(!checked);
@@ -52,7 +52,7 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
           size="icon"
           className="size-8 rounded-full text-slate-500"
           onClick={() => setEditOpen(true)}
-          title="Edit sub admin"
+          title="Edit sub/co admin"
         >
           <Pencil className="size-4" />
         </Button>

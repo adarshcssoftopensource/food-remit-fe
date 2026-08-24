@@ -24,6 +24,7 @@ export const subAdminSchema = z.object({
     }),
 
   permissions: z.array(z.string()).min(1, "Select at least one permission"),
+  isCoAdmin: z.boolean().default(false).optional(),
 });
 
 export type SubAdminFormValues = z.infer<typeof subAdminSchema>;

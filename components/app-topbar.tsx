@@ -1,5 +1,5 @@
 "use client";
-import { Bell, ChevronDown, Settings, User } from "lucide-react";
+import { ArrowLeftRight, Bell, ChevronDown, Settings, User } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,22 @@ import { ROUTES } from "@/config/routes";
 import { useLogout } from "@/hooks/use-logout";
 import { getInitials } from "@/lib/get-initials";
 import { cn } from "@/lib/utils";
+import { hasPathPermission } from "@/config/permissions";
 import { LogOut } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export function AppTopBar() {
-  const { profile } = useProfile();
+  const { profile, isSuperAdmin } = useProfile();
+  const hasCMSPermission = hasPathPermission(
+    ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT,
+    profile?.permissions,
+    isSuperAdmin,
+  );
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isCmsContext = searchParams.get("context") === "cms";
+  const inCmsMode = pathname.startsWith(ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT) || isCmsContext;
 
   const displayName = profile?.name || "Admin User";
   const initials = getInitials(displayName);
@@ -54,7 +63,6 @@ export function AppTopBar() {
             "transition-all duration-200",
           )}
         />
-
         <div className="h-6 w-px bg-slate-200/80 dark:bg-slate-800" />
       </div>
 
@@ -73,7 +81,6 @@ export function AppTopBar() {
           )}
         >
           <Bell className="h-5 w-5" />
-
           <span
             className={cn(
               "absolute -top-0.5 -right-0.5",
@@ -89,7 +96,6 @@ export function AppTopBar() {
             0
           </span>
         </Button>
-
         <div className="mx-1 h-7 w-px bg-slate-200/80 dark:bg-slate-800" />
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger
@@ -141,7 +147,7 @@ export function AppTopBar() {
             className="w-44 gap-1 rounded-2xl border border-slate-200/80 bg-white/95 p-1.5 shadow-xl backdrop-blur-2xl dark:border-slate-800/80 dark:bg-slate-900/95"
           >
             <Link
-              href={ROUTES.ADMIN.PROFILE}
+              href={inCmsMode ? `${ROUTES.ADMIN.PROFILE}?context=cms` : ROUTES.ADMIN.PROFILE}
               className="w-full"
               onClick={() => setIsPopoverOpen(false)}
             >
@@ -159,9 +165,27 @@ export function AppTopBar() {
                 Profile
               </Button>
             </Link>
-
+            {hasCMSPermission && (
+              <Link
+                href={inCmsMode ? ROUTES.ADMIN.DASHBOARD : ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT}
+                className="w-full"
+                onClick={() => setIsPopoverOpen(false)}
+              >
+                <Button
+                  variant={"ghost"}
+                  className={cn(
+                    "flex w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200",
+                  )}
+                >
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                    <ArrowLeftRight className="h-3.5 w-3.5" />
+                  </div>
+                  {inCmsMode ? "Admin Dashboard" : "CMS Dashboard"}
+                </Button>
+              </Link>
+            )}
             <Link
-              href={ROUTES.ADMIN.SETTINGS}
+              href={inCmsMode ? `${ROUTES.ADMIN.SETTINGS}?context=cms` : ROUTES.ADMIN.SETTINGS}
               className="w-full"
               onClick={() => setIsPopoverOpen(false)}
             >

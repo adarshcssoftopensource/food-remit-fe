@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import * as React from "react";
 
 import { useProfile } from "@/components/providers/profile-provider";
@@ -14,14 +14,17 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { navigationItems } from "@/config/nav";
+import { cmsNavigationItems, navigationItems } from "@/config/nav";
 import { hasPathPermission } from "@/config/permissions";
+import { ROUTES } from "@/config/routes";
 
 import { SidebarHeader as AppSidebarHeader } from "./sidebar-header";
 import { SidebarNavItem } from "./sidebar-nav-item";
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isCmsContext = searchParams.get("context") === "cms";
   const { state, isMobile, toggleSidebar } = useSidebar();
   const { profile, isSuperAdmin } = useProfile();
 
@@ -75,8 +78,14 @@ export function AppSidebar() {
     [isSubItemActive],
   );
 
+  const activeNavItems = React.useMemo(() => {
+    return pathname?.startsWith(ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT) || isCmsContext
+      ? (cmsNavigationItems as unknown as typeof navigationItems)
+      : navigationItems;
+  }, [pathname, isCmsContext]);
+
   const [openGroup, setOpenGroup] = React.useState<string | null>(() => {
-    const active = navigationItems.find(
+    const active = activeNavItems.find(
       (item) =>
         item.items?.length &&
         (item.items.some(
@@ -99,7 +108,7 @@ export function AppSidebar() {
   });
 
   const allowedNavItems = React.useMemo(() => {
-    return navigationItems
+    return activeNavItems
       .map((item) => {
         // If the item has sub-items, filter them first based on permissions
         if (item.items && item.items.length > 0) {
@@ -118,7 +127,7 @@ export function AppSidebar() {
         // Otherwise check the item's main URL permission
         return hasPathPermission(item.url, profile?.permissions, isSuperAdmin);
       });
-  }, [profile, isSuperAdmin]);
+  }, [activeNavItems, profile?.permissions, isSuperAdmin]);
 
   const filteredNavItems = React.useMemo(() => {
     if (!searchQuery) return allowedNavItems;

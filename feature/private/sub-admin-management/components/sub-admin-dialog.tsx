@@ -60,6 +60,7 @@ export function SubAdminDialog({
           email: values.email,
           phoneNumber: localNumber,
           permissions: values.permissions.map((key) => ({ key })),
+          isCoAdmin: values.isCoAdmin,
         });
 
         successToast({ title: response.message || "Sub Admin added successfully" });
@@ -70,6 +71,7 @@ export function SubAdminDialog({
           email: values.email,
           phoneNumber: localNumber,
           permissions: values.permissions.map((key) => ({ key })),
+          isCoAdmin: values.isCoAdmin,
         });
 
         successToast({ title: response.message || "Sub Admin updated successfully" });
@@ -93,6 +95,7 @@ export function SubAdminDialog({
           email: admin.email,
           phone: buildInitialPhone(),
           permissions: admin.permissions.map((permission) => permission.key),
+          isCoAdmin: admin.role === "CO_ADMIN",
         }
       : undefined;
 
@@ -105,7 +108,7 @@ export function SubAdminDialog({
           render={
             <Button className="rounded-xl px-4 font-semibold shadow-sm">
               <Plus className="mr-2 h-4 w-4" />
-              Add Sub-Admin
+              Add Sub/Co Admin
             </Button>
           }
         />
@@ -123,17 +126,13 @@ export function SubAdminDialog({
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  {mode === "add" ? "Add Sub Admin" : "Edit Sub Admin"}
+                  {mode === "add" ? "Add Sub/Co Admin" : "Edit Sub/Co Admin"}
                 </DialogTitle>
-
-                <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase">
-                  {mode === "add" ? "New Account" : "Edit Account"}
-                </span>
               </div>
 
               <DialogDescription className="mt-1.5 max-w-xl text-sm leading-5 text-slate-500 dark:text-slate-400">
                 {mode === "add"
-                  ? "Create a new sub-admin account and configure dashboard permissions."
+                  ? "Create a new sub/co-admin account and configure dashboard permissions."
                   : "Update account details and manage dashboard permissions."}
               </DialogDescription>
             </div>
@@ -151,6 +150,7 @@ export function SubAdminDialog({
         <div className="max-h-[calc(92vh-190px)] overflow-y-auto">
           <div className="px-3 py-3">
             <SubAdminForm
+              mode={mode}
               initialValues={initialValues}
               onSubmit={handleSubmit}
               submitLabel={mode}

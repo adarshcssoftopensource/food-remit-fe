@@ -190,11 +190,6 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                   value={department.createdBy || "System"}
                 />
                 <InfoCard
-                  icon={<Users className="h-5 w-5" />}
-                  label="Sub-departments"
-                  value={department.children?.length?.toString() || "0"}
-                />
-                <InfoCard
                   icon={<Calendar className="h-5 w-5" />}
                   label="Added On"
                   value={formatDate(department.addedOn)}

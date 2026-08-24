@@ -55,7 +55,7 @@ export const navigationItems = [
     isComingSoon: true,
   },
   {
-    title: "Sub-admin Management",
+    title: "Sub/Co-admin Management",
     url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT,
     icon: UserCog,
   },
@@ -155,29 +155,6 @@ export const navigationItems = [
     ],
   },
   {
-    title: "Content Management",
-    url: ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT,
-    icon: FileText,
-    items: [
-      {
-        title: "About Us",
-        url: ROUTES.ADMIN.CONTENT_MANAGEMENT.ABOUT_US,
-      },
-      {
-        title: "Privacy Policy",
-        url: ROUTES.ADMIN.CONTENT_MANAGEMENT.PRIVACY_POLICY,
-      },
-      {
-        title: "Terms Of Use",
-        url: ROUTES.ADMIN.CONTENT_MANAGEMENT.TERMS_OF_USE,
-      },
-      {
-        title: "FAQ",
-        url: ROUTES.ADMIN.CONTENT_MANAGEMENT.FAQ,
-      },
-    ],
-  },
-  {
     title: "Ticket Management",
     url: ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT,
     icon: Ticket,
@@ -260,5 +237,28 @@ export const navigationItems = [
     url: ROUTES.ADMIN.PARTNER_LEADS,
     icon: Building,
     isNewFeature: true,
+  },
+];
+
+export const cmsNavigationItems = [
+  {
+    title: "About Us",
+    url: ROUTES.ADMIN.CONTENT_MANAGEMENT.ABOUT_US,
+    icon: FileText,
+  },
+  {
+    title: "Privacy Policy",
+    url: ROUTES.ADMIN.CONTENT_MANAGEMENT.PRIVACY_POLICY,
+    icon: FileText,
+  },
+  {
+    title: "Terms Of Use",
+    url: ROUTES.ADMIN.CONTENT_MANAGEMENT.TERMS_OF_USE,
+    icon: FileText,
+  },
+  {
+    title: "FAQ",
+    url: ROUTES.ADMIN.CONTENT_MANAGEMENT.FAQ,
+    icon: FileText,
   },
 ];

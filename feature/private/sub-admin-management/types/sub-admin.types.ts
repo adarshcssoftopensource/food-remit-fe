@@ -22,6 +22,7 @@ export type SubAdminData = {
   status: "Active" | "Inactive";
   createdAt: string;
   role: string;
+  userType: string;
   permissions: AssignedSubAdminPermission[];
 };
 
@@ -33,6 +34,7 @@ export interface CreateSubAdminPayload {
   permissions: Array<{
     key: string;
   }>;
+  isCoAdmin?: boolean;
 }
 
 export interface CreateSubAdminResponse {
@@ -44,6 +46,8 @@ export interface SubAdminStats {
   active: number;
   inactive: number;
   avgPermissions: number;
+  subAdmins?: number;
+  coAdmins?: number;
 }
 
 export interface PaginationMeta {
@@ -79,6 +83,7 @@ export interface UpdateSubAdminPayload {
   email: string;
   phoneNumber: string;
   permissions: Array<{ key: string }>;
+  isCoAdmin?: boolean;
 }
 
 export interface UpdateSubAdminStatusPayload {

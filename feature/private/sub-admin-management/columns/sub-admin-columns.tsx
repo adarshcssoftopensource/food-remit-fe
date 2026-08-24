@@ -11,7 +11,7 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
     cell: ({ row }) => {
       const initials = row.original.userName
         .split(/[\s-_]/)
-        .map((w: any) => w[0]?.toUpperCase())
+        .map((w: string) => w[0]?.toUpperCase())
         .slice(0, 2)
         .join("");
       return (
@@ -19,8 +19,27 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
           <div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
             {initials}
           </div>
-          <span className="text-sm font-medium text-slate-800">{row.original.userName}</span>
+          <span className="text-sm font-medium text-slate-800 capitalize">
+            {row.original.userName}
+          </span>
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: "role",
+    header: "Type",
+    enableSorting: true,
+    cell: ({ row }) => {
+      const isCoAdmin = row.original.role === "CO_ADMIN";
+      return (
+        <span
+          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+            isCoAdmin ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
+          }`}
+        >
+          {isCoAdmin ? "Co Admin" : "Sub Admin"}
+        </span>
       );
     },
   },

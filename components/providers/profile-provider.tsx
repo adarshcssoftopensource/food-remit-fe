@@ -56,7 +56,9 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   });
 
   const isSuperAdmin =
-    profileData?.roleCode === "SUPER_ADMIN" || profileData?.role === "super_admin";
+    profileData?.roleCode === "SUPER_ADMIN" ||
+    profileData?.role === "super_admin" ||
+    profileData?.role === "co_admin";
 
   const hasPermission = (permissionKey: keyof ProfilePermissions | string): boolean => {
     if (isSuperAdmin) return true;

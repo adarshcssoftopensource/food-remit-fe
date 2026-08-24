@@ -69,8 +69,8 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
       <div className="flex items-center justify-between">
         <PageHeader
           breadcrumbs={[
-            { label: "Sub Admin Management", href: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT },
-            { label: "Sub Admin Details" },
+            { label: "Sub/Co Admin Management", href: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT },
+            { label: "Sub/Co Admin Details" },
           ]}
         />
       </div>
@@ -242,7 +242,7 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
                   No Permissions Assigned
                 </h4>
                 <p className="mt-1.5 max-w-xs text-xs leading-5 text-slate-400">
-                  This sub admin has no module access permissions yet.
+                  This sub/co admin has no module access permissions yet.
                 </p>
               </div>
             )}

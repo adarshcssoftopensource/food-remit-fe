@@ -112,24 +112,26 @@ export function SubAdminManagement() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Sub Admin Management"
-        description="Manage sub administrators, their roles, and module permissions."
+        title="Sub/Co Admin Management"
+        description="Manage sub/co administrators, their roles, and module permissions."
         action={<SubAdminDialog mode="add" />}
       />
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
         {SUB_ADMIN_STAT_CONFIG.map(({ key, label, Icon, color, bg }) => (
           <MetricStatCard
             key={key}
             label={label}
             value={
-              key === "total"
-                ? (res?.stats?.total ?? 0)
-                : key === "active"
-                  ? (res?.stats?.active ?? 0)
-                  : key === "inactive"
-                    ? (res?.stats?.inactive ?? 0)
-                    : (res?.stats?.avgPermissions ?? 0)
+              key === "subAdmins"
+                ? (res?.stats?.subAdmins ?? 0)
+                : key === "coAdmins"
+                  ? (res?.stats?.coAdmins ?? 0)
+                  : key === "active"
+                    ? (res?.stats?.active ?? 0)
+                    : key === "inactive"
+                      ? (res?.stats?.inactive ?? 0)
+                      : (res?.stats?.avgPermissions ?? 0)
             }
             icon={Icon}
             iconClassName={color}
@@ -140,7 +142,7 @@ export function SubAdminManagement() {
       </div>
 
       <ModuleFilters
-        title="Filter Sub Admins"
+        title="Filter Sub/Co Admins"
         description="Refine administrators by date and status"
         hideCountryFilter
         hideCityFilter
@@ -203,7 +205,7 @@ export function SubAdminManagement() {
               </div>
               <div>
                 <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                  All Sub Admins
+                  All Sub/Co Admins
                 </CardTitle>
                 <div className="mt-0.5 flex items-center gap-1.5">
                   <UserCheck className="h-3.5 w-3.5 text-emerald-500" />
@@ -211,7 +213,7 @@ export function SubAdminManagement() {
                     <strong className="font-bold text-slate-700 dark:text-slate-200">
                       {allData.length}
                     </strong>{" "}
-                    sub-admins found
+                    administrators found
                   </p>
                 </div>
               </div>

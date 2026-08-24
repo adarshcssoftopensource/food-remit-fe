@@ -137,7 +137,7 @@ export function ProfileForm() {
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel htmlFor="email" className="text-sm font-semibold text-slate-500">
+                  <FieldLabel htmlFor="email" className="text-sm font-semibold">
                     Email Address
                   </FieldLabel>
                   <div className="relative">

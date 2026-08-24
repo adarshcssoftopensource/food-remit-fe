@@ -23,7 +23,8 @@ export function normalizeSubAdmin(item: Record<string, unknown>): SubAdminData {
     contactNumber,
     status: isActive ? "Active" : "Inactive",
     createdAt: String(item.createdAt ?? item.created_at ?? ""),
-    role: String(item.role ?? "Sub-admin"),
+    role: String(item.userType ?? item.role ?? "Sub-admin"),
+    userType: String(item.userType ?? item.role ?? "SUB_ADMIN"),
     permissions:
       (item.permission as SubAdminData["permissions"]) ??
       (item.permissions as SubAdminData["permissions"]) ??

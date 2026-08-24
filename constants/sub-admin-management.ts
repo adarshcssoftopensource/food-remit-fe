@@ -2,11 +2,18 @@ import { Shield, ShieldCheck, ShieldOff, UserCog } from "lucide-react";
 
 export const SUB_ADMIN_STAT_CONFIG = [
   {
-    key: "total" as const,
+    key: "subAdmins" as const,
     label: "Total Sub Admins",
     Icon: UserCog,
     color: "text-primary",
     bg: "bg-primary/10",
+  },
+  {
+    key: "coAdmins" as const,
+    label: "Total Co Admins",
+    Icon: UserCog,
+    color: "text-amber-600",
+    bg: "bg-amber-50",
   },
   {
     key: "active" as const,

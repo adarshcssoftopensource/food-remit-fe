@@ -20,7 +20,7 @@ export function SiteFooter() {
             className="h-8 w-auto object-contain"
           />
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-slate-500">
-            The world’s first global food remittance network—connecting local stores with families
+            The world’s first global food remittance network - connecting local stores with families
             abroad.
           </p>
         </div>
