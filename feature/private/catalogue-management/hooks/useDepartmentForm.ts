@@ -10,7 +10,7 @@ import { DepartmentData } from "../departments/types/department.types";
 const departmentSchema = z
   .object({
     countryId: z.string().min(1, "Country is required"),
-    cityId: z.string().optional(),
+    cityIds: z.array(z.string()).optional(),
     departmentName: z
       .string()
       .min(2, "Department name must be at least 2 characters")
@@ -48,7 +48,10 @@ export function useDepartmentForm(
     mode: "onChange",
     defaultValues: {
       countryId: department?.country?.id ?? "",
-      cityId: department?.cityId || department?.city?.id || "",
+      cityIds:
+        department?.cityId || department?.city?.id
+          ? [department.cityId || department.city?.id]
+          : [],
       departmentName: department?.departmentName ?? "",
       iconFile: [],
       hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
@@ -59,7 +62,10 @@ export function useDepartmentForm(
     if (open) {
       form.reset({
         countryId: department?.country?.id ?? "",
-        cityId: department?.cityId || department?.city?.id || "",
+        cityIds:
+          department?.cityId || department?.city?.id
+            ? [department.cityId || department.city?.id]
+            : [],
         departmentName: department?.departmentName ?? "",
         iconFile: [],
         hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
@@ -73,8 +79,10 @@ export function useDepartmentForm(
       formData.append("countryId", values.countryId);
       formData.append("departmentName", values.departmentName);
 
-      if (values.cityId && values.cityId !== "all" && values.cityId !== "All") {
-        formData.append("cityId", values.cityId);
+      if (values.cityIds && values.cityIds.length > 0) {
+        values.cityIds.forEach((cityId) => {
+          formData.append("cityIds[]", cityId);
+        });
       }
 
       if (values.iconFile && values.iconFile.length > 0) {
