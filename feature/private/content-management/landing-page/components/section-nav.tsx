@@ -1,9 +1,42 @@
 "use client";
 
-import { LayoutTemplate } from "lucide-react";
+import {
+  ArrowRight,
+  Badge,
+  Building2,
+  Gift,
+  Heart,
+  HelpCircle,
+  Layout,
+  LayoutTemplate,
+  MessageSquare,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Trophy,
+  Workflow,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { LANDING_CMS_SECTIONS, type LandingSectionKey } from "../types";
+
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Sparkles,
+  Heart,
+  TrendingUp,
+  Workflow,
+  Gift,
+  Building2,
+  Target,
+  Badge,
+  Trophy,
+  ShieldCheck,
+  MessageSquare,
+  HelpCircle,
+  ArrowRight,
+  Layout,
+};
 
 type SectionNavProps = {
   activeSection: LandingSectionKey;
@@ -28,6 +61,7 @@ export function SectionNav({ activeSection, onSelect }: SectionNavProps) {
       <nav className="flex max-h-[min(70vh,640px)] flex-col gap-0.5 p-2">
         {LANDING_CMS_SECTIONS.map((item) => {
           const active = activeSection === item.key;
+          const Icon = iconMap[item.icon];
           return (
             <button
               key={item.key}
@@ -40,10 +74,10 @@ export function SectionNav({ activeSection, onSelect }: SectionNavProps) {
                   : "hover:bg-primary/8 hover:text-primary text-slate-600",
               )}
             >
-              {active ? (
-                <span className="bg-primary-foreground/90 absolute top-1/2 left-1 h-4 w-0.5 -translate-y-1/2 rounded-full" />
-              ) : null}
-              <span className={cn(active && "pl-1.5")}>{item.label}</span>
+              <div className={cn("flex items-center gap-2", active && "pl-1.5")}>
+                {Icon && <Icon className="h-4 w-4 shrink-0" />}
+                <span>{item.label}</span>
+              </div>
             </button>
           );
         })}

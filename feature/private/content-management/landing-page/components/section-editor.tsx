@@ -152,6 +152,7 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
           <Button
             type="submit"
             isLoading={isSaving}
+            disabled={Object.keys(dirtyFields).length === 0 && !imageFile}
             className="h-12 min-w-40 rounded-xl font-semibold"
           >
             <Save className="mr-2 size-4" />

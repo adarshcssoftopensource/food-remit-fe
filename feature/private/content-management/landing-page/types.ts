@@ -148,20 +148,24 @@ export type LandingPageResponse = {
   };
 };
 
-export const LANDING_CMS_SECTIONS: { key: LandingSectionKey; label: string; readOnly?: boolean }[] =
-  [
-    { key: "hero", label: "Hero" },
-    { key: "whyJoin", label: "Why Join" },
-    { key: "revenue", label: "Revenue / Markets" },
-    { key: "howItWorks", label: "How It Works" },
-    { key: "benefits", label: "Benefits" },
-    { key: "businessTypes", label: "Business Types" },
-    { key: "opportunity", label: "Opportunity" },
-    { key: "different", label: "Differentiators" },
-    { key: "success", label: "Success" },
-    { key: "trust", label: "Trust" },
-    { key: "testimonials", label: "Testimonials" },
-    { key: "faq", label: "FAQ" },
-    { key: "join", label: "Join CTA" },
-    { key: "footer", label: "Footer" },
-  ];
+export const LANDING_CMS_SECTIONS: {
+  key: LandingSectionKey;
+  label: string;
+  icon: string;
+  readOnly?: boolean;
+}[] = [
+  { key: "hero", label: "Hero", icon: "Sparkles" },
+  { key: "whyJoin", label: "Why Join", icon: "Heart" },
+  { key: "revenue", label: "Revenue / Markets", icon: "TrendingUp" },
+  { key: "howItWorks", label: "How It Works", icon: "Workflow" },
+  { key: "benefits", label: "Benefits", icon: "Gift" },
+  { key: "businessTypes", label: "Business Types", icon: "Building2" },
+  { key: "opportunity", label: "Opportunity", icon: "Target" },
+  { key: "different", label: "Differentiators", icon: "Badge" },
+  { key: "success", label: "Success", icon: "Trophy" },
+  { key: "trust", label: "Trust", icon: "ShieldCheck" },
+  { key: "testimonials", label: "Testimonials", icon: "MessageSquare" },
+  { key: "faq", label: "FAQ", icon: "HelpCircle" },
+  { key: "join", label: "Join CTA", icon: "ArrowRight" },
+  { key: "footer", label: "Footer", icon: "Layout" },
+];
