@@ -21,7 +21,7 @@ function PasswordInput({
   className,
   ...props
 }: PasswordInputProps) {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   return (
     <div className="relative">
@@ -34,7 +34,7 @@ function PasswordInput({
       <Input
         {...props}
         id={id}
-        type={visible ? "text" : "password"}
+        type={visible ? "password" : "text"}
         aria-invalid={isInvalid}
         className={cn(
           "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 text-sm transition-all duration-300 placeholder:text-gray-400/80",

@@ -10,6 +10,7 @@ import { DashboardActionButton } from "./common/dashboard-action-button";
 import { DashboardCard } from "./common/dashboard-card";
 import { DashboardEmptyState } from "./common/dashboard-empty-state";
 import { DashboardStatusBadge } from "./common/dashboard-status-badge";
+import { ROUTES } from "@/config/routes";
 
 const EMPTY_ORDERS: DashboardOrderRequested[] = [];
 const EMPTY_TICKETS: DashboardTicketItem[] = [];
@@ -37,7 +38,9 @@ export function DataTablesSection({
             <ShoppingBag className="h-4.5 w-4.5" />
           </div>
         }
-        action={<DashboardActionButton href={DASHBOARD_ROUTES.REQUESTED_ORDERS} label="View All" />}
+        action={
+          <DashboardActionButton href={ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT} label="View All" />
+        }
         contentClassName="p-0 overflow-x-auto"
       >
         <div className="w-full min-w-0 overflow-x-auto">

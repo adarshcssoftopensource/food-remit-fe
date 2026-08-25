@@ -1,12 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, KeyRound, Lock, ShieldCheck } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { CheckCircle2, Lock, ShieldCheck } from "lucide-react";
+import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useChangePassword } from "../hooks/use-change-password";
@@ -25,7 +25,6 @@ export function ChangePassword() {
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -37,7 +36,11 @@ export function ChangePassword() {
     mode: "onChange",
   });
 
-  const newPasswordValue = watch("newPassword") ?? "";
+  const newPasswordValue = useWatch({
+    control,
+    name: "newPassword",
+    defaultValue: "",
+  });
   const metCount = requirements.filter((r) => r.test(newPasswordValue)).length;
   const strengthPercent = (metCount / requirements.length) * 100;
   const strengthColor =
@@ -67,31 +70,30 @@ export function ChangePassword() {
   };
 
   return (
-    <div className="max-w-2xl space-y-4">
+    <div className="w-full space-y-6">
       {/* Security tips banner */}
-      <div className="border-primary/20 bg-primary/10 flex items-start gap-3 rounded-xl border px-4 py-3">
-        <ShieldCheck className="text-primary mt-0.5 h-5 w-5 shrink-0" />
+      <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-4">
+        <ShieldCheck className="mt-0.5 h-6 w-6 shrink-0 text-emerald-600" />
         <div>
-          <p className="text-primary text-sm font-semibold">Keep your account safe</p>
-          <p className="text-primary mt-0.5 text-xs">
+          <p className="text-sm font-bold text-emerald-700">Keep your account safe</p>
+          <p className="mt-0.5 text-xs font-medium text-emerald-700/80">
             Use a unique password that you don&apos;t use for other websites.
           </p>
         </div>
       </div>
 
-      <Card className="overflow-hidden rounded-2xl border border-slate-200/60 shadow-sm">
-        <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-4">
-          <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-xl">
-            <KeyRound className="text-primary h-4 w-4" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-slate-800">Change Password</p>
-            <p className="text-xs text-slate-500">Update your security credentials</p>
-          </div>
-        </div>
+      <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
+        <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-8 py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
+          <CardTitle className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
+            Change Password
+          </CardTitle>
+          <CardDescription className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            Update your security credentials and ensure account safety.
+          </CardDescription>
+        </CardHeader>
 
-        <CardContent className="p-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <CardContent className="max-w-2xl p-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <Controller
               name="oldPassword"
               control={control}
@@ -186,23 +188,14 @@ export function ChangePassword() {
               )}
             />
 
-            <div className="flex justify-end gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={isPending}
-                onClick={() => reset()}
-                className="px-6"
-              >
-                Reset
-              </Button>
+            <div className="mt-8 flex justify-end">
               <Button
                 type="submit"
                 disabled={isPending}
                 isLoading={isPending}
-                className="shadow-primary/20 gap-2 px-6 shadow-md"
+                className="h-14 w-full rounded-xl text-base font-bold shadow-sm transition-colors sm:w-auto sm:px-10"
               >
-                <ShieldCheck className="h-4 w-4" />
+                <ShieldCheck className="mr-2 h-5 w-5" />
                 Update Password
               </Button>
             </div>

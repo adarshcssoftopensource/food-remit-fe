@@ -2,7 +2,6 @@
 
 import { PageHeader } from "@/components/common/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChangePassword } from "./components/change-password";
 import { CitiesManagement } from "./components/cities-management";
 import { CountriesManagement } from "./components/countries-management";
 import { MarkupManagement } from "./components/markup-management";
@@ -27,11 +26,6 @@ export function SettingsPage() {
         label: "Cities Management",
         component: <CitiesManagement />,
         permission: "cityManagement",
-      },
-      {
-        value: "password",
-        label: "Change Password",
-        component: <ChangePassword />,
       },
       {
         value: "processing-fee",

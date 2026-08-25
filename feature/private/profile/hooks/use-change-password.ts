@@ -1,6 +1,6 @@
 import { useApiMutation } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
-import type { ChangePasswordPayload, ChangePasswordResponse } from "../types/settings.types";
+import { ChangePasswordPayload, ChangePasswordResponse } from "../../settings/types/settings.types";
 
 export function useChangePassword() {
   return useApiMutation<ChangePasswordResponse, ChangePasswordPayload>(
