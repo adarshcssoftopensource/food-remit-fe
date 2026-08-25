@@ -87,7 +87,7 @@ export function ItemMediaCard({
       {productGalleryThumbnails.length > 0 && (
         <div className="border-t border-slate-100/80 px-5 pt-3 pb-4 dark:border-slate-800/80">
           <p className="mb-2 text-xs font-bold tracking-wider text-slate-400 uppercase dark:text-slate-500">
-            Product Gallery ({productGalleryThumbnails.length + 1} images)
+            Product Gallery
           </p>
           <div className="flex flex-wrap gap-2">
             {productGalleryThumbnails.map(({ src, label, originalIndex }) => (
@@ -95,7 +95,7 @@ export function ItemMediaCard({
                 variant={"ghost"}
                 key={src}
                 onClick={() => swapWithMain(originalIndex)}
-                className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors transition-shadow transition-transform duration-200 hover:scale-[1.06] hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors duration-200 hover:scale-[1.06] hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
               >
                 <Image
                   src={src}
@@ -109,7 +109,7 @@ export function ItemMediaCard({
                     {label}
                   </p>
                 </div>
-                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-colors transition-opacity duration-200 group-hover:bg-black/30 group-hover:opacity-100">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-colors duration-200 group-hover:bg-black/30 group-hover:opacity-100">
                   <Eye className="text-white" />
                 </div>
               </Button>
@@ -129,7 +129,7 @@ export function ItemMediaCard({
                 key={src}
                 variant={"ghost"}
                 onClick={() => swapWithMain(originalIndex)}
-                className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors transition-shadow transition-transform duration-200 hover:scale-[1.06] hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors duration-200 hover:scale-[1.06] hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
               >
                 <Image
                   src={src}
@@ -143,7 +143,7 @@ export function ItemMediaCard({
                     {label}
                   </p>
                 </div>
-                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-colors transition-opacity duration-200 group-hover:bg-black/30 group-hover:opacity-100">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-colors duration-200 group-hover:bg-black/30 group-hover:opacity-100">
                   <Eye className="text-white" />
                 </div>
               </Button>

@@ -5,9 +5,14 @@ import Link from "next/link";
 
 import { APP_ASSETS } from "@/config/assets";
 import { ROUTES } from "@/config/routes";
+import type { LandingFooter } from "@/feature/private/content-management/landing-page/types";
 import { VENDOR_NAV_LINKS } from "../../../../constants/landing.constants";
 
-export function SiteFooter() {
+type SiteFooterProps = {
+  data: LandingFooter;
+};
+
+export function SiteFooter({ data }: SiteFooterProps) {
   return (
     <footer className="border-t border-slate-100 bg-white py-12">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 sm:px-8 md:flex-row md:items-center md:justify-between">
@@ -19,10 +24,7 @@ export function SiteFooter() {
             height={36}
             className="h-8 w-auto object-contain"
           />
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-slate-500">
-            The world’s first global food remittance network - connecting local stores with families
-            abroad.
-          </p>
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-slate-500">{data.tagline}</p>
         </div>
 
         <nav className="flex flex-wrap gap-x-6 gap-y-2">
@@ -45,9 +47,7 @@ export function SiteFooter() {
       </div>
 
       <div className="mx-auto mt-10 max-w-6xl border-t border-slate-100 px-5 pt-6 text-center sm:px-8">
-        <p className="text-xs text-slate-400">
-          © {new Date().getFullYear()} Food Remit. All rights reserved.
-        </p>
+        <p className="text-xs text-slate-400">{data.copyright}</p>
       </div>
     </footer>
   );

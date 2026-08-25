@@ -1,25 +1,29 @@
-import { HOW_IT_WORKS } from "../../../../constants/landing.constants";
+import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
 
-export function HowItWorksSection() {
+type HowItWorksSectionProps = {
+  data: LandingPageContent["howItWorks"];
+};
+
+export function HowItWorksSection({ data }: HowItWorksSectionProps) {
   return (
     <section id="how-it-works" className="scroll-mt-24 bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <div className="max-w-2xl">
           <p className="text-sm font-semibold tracking-[0.16em] text-[#ea580c] uppercase">
-            How It Works
+            {data.eyebrow}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            From overseas purchase to local fulfillment
+            {data.title}
           </h2>
           <p className="mt-5 text-base leading-relaxed text-slate-600 sm:text-lg">
-            A simple flow that turns international food support into orders for your store.
+            {data.description}
           </p>
         </div>
 
         <ol className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-5">
-          {HOW_IT_WORKS.map((item, index) => (
-            <li key={item.step} className="relative">
-              {index < HOW_IT_WORKS.length - 1 && (
+          {data.steps.map((item, index) => (
+            <li key={`${item.step}-${item.title}`} className="relative">
+              {index < data.steps.length - 1 && (
                 <span
                   aria-hidden
                   className="absolute top-5 left-[calc(100%-0.25rem)] hidden h-px w-[calc(100%-1.5rem)] bg-gradient-to-r from-[#166534]/30 to-transparent lg:block"

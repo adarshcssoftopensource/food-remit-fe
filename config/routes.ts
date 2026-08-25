@@ -50,6 +50,7 @@ export const ROUTES = {
     },
     CONTENT_MANAGEMENT: {
       ROOT: "/content-management",
+      LANDING_PAGE: "/content-management/landing-page",
       ABOUT_US: "/content-management/about-us",
       PRIVACY_POLICY: "/content-management/privacy-policy",
       TERMS_OF_USE: "/content-management/terms-of-use",

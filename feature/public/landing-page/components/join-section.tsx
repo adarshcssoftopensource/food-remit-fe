@@ -3,9 +3,14 @@ import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
+import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
 import { cn } from "@/lib/utils";
 
-export function JoinSection() {
+type JoinSectionProps = {
+  data: LandingPageContent["join"];
+};
+
+export function JoinSection({ data }: JoinSectionProps) {
   return (
     <section
       id="join"
@@ -16,14 +21,11 @@ export function JoinSection() {
 
       <div className="relative mx-auto max-w-3xl px-5 text-center sm:px-8">
         <p className="text-sm font-semibold tracking-[0.16em] text-[#fdba74] uppercase">
-          Join the Future of Global Food Commerce
+          {data.eyebrow}
         </p>
-        <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">
-          Start selling to the world - right from your neighborhood
-        </h2>
+        <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">{data.title}</h2>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
-          Thousands of families already support loved ones across borders. Become one of our trusted
-          Vendor Partners and help shape the future of food remittances.
+          {data.description}
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">

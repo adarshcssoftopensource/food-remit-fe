@@ -1,14 +1,13 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
-import * as React from "react";
 import { ComingSoonBadge } from "@/components/common/coming-soon-badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem } from "@/components/ui/sidebar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 interface NavItem {
   title: string;
