@@ -8,7 +8,7 @@ export interface ItemPlacementData {
   price: number;
   currency?: string | null;
   currencySymbol?: string | null;
-  country?: { id: string; name: string };
+  country?: { id: string; name: string; countryCode?: string | null };
   department?: {
     id: string;
     departmentName: string;
@@ -83,7 +83,13 @@ export interface ItemData {
   scopeLabel?: string | null;
   departmentDisplayName?: string | null;
 
-  pricing?: ItemPricingData;
+  pricing?: ItemPricingData | null;
+  pricingCountry?: {
+    id: string;
+    name: string;
+    countryCode?: string | null;
+  } | null;
+  hasPriceForCountry?: boolean;
   productId?: string;
   barcodeValue?: string;
   barcodeImage?: string | null;

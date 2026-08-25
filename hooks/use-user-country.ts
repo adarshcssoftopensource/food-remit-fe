@@ -7,7 +7,7 @@ interface IpApiResponse {
   country_code: string;
 }
 
-interface UserCountryResult {
+export interface UserCountryResult {
   countryName: string | null;
   countryCode: string | null;
   isLoading: boolean;
@@ -16,21 +16,30 @@ interface UserCountryResult {
 
 const SESSION_KEY = "fg_user_country";
 
+function readCache(): IpApiResponse | null {
+  try {
+    const cached = sessionStorage.getItem(SESSION_KEY);
+    if (!cached) return null;
+    return JSON.parse(cached) as IpApiResponse;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Detects viewer country via IP (works with VPN).
+ * Re-fetches on mount so a mid-session VPN change is picked up.
+ */
 export function useUserCountry(): UserCountryResult {
   const [result, setResult] = useState<UserCountryResult>(() => {
-    try {
-      const cached = sessionStorage.getItem(SESSION_KEY);
-      if (cached) {
-        const parsed = JSON.parse(cached) as IpApiResponse;
-        return {
-          countryName: parsed.country_name,
-          countryCode: parsed.country_code,
-          isLoading: false,
-          error: null,
-        };
-      }
-    } catch {
-      // sessionStorage not available (SSR), or parse failed
+    const cached = typeof window !== "undefined" ? readCache() : null;
+    if (cached?.country_code) {
+      return {
+        countryName: cached.country_name ?? null,
+        countryCode: cached.country_code ?? null,
+        isLoading: true, // still re-validate against current IP
+        error: null,
+      };
     }
     return {
       countryName: null,
@@ -41,9 +50,8 @@ export function useUserCountry(): UserCountryResult {
   });
 
   useEffect(() => {
-    if (!result.isLoading) return;
-
     let cancelled = false;
+
     fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(5000) })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -65,6 +73,16 @@ export function useUserCountry(): UserCountryResult {
       })
       .catch((err: unknown) => {
         if (cancelled) return;
+        const cached = readCache();
+        if (cached?.country_code) {
+          setResult({
+            countryName: cached.country_name ?? null,
+            countryCode: cached.country_code ?? null,
+            isLoading: false,
+            error: null,
+          });
+          return;
+        }
         setResult({
           countryName: null,
           countryCode: null,
@@ -76,7 +94,7 @@ export function useUserCountry(): UserCountryResult {
     return () => {
       cancelled = true;
     };
-  }, [result.isLoading]);
+  }, []);
 
   return result;
 }
