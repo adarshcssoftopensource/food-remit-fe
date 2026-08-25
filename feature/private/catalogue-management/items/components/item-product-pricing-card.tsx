@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { BadgePercent, CircleDollarSign, Hash, Receipt, Tags } from "lucide-react";
+import { Hash, Info, Receipt, Wallet } from "lucide-react";
 import type { ItemData } from "../types/item.types";
 
 interface ItemProductPricingCardProps {
@@ -13,103 +13,182 @@ function formatMoney(amount: number, symbol: string) {
   return `${symbol}${amount.toFixed(2)}`;
 }
 
+type ReceiptLine = {
+  label: string;
+  value: string;
+  muted?: boolean;
+  negative?: boolean;
+  addon?: boolean;
+  subtotal?: boolean;
+};
+
 export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
   const pricing = item.pricing;
   const symbol = pricing?.currencySymbol || pricing?.currency || "$";
+  const countryLabel = pricing?.countryName || item.country?.name || "Country";
+  const currency = pricing?.currency || "—";
 
-  const rows = [
-    {
-      label: "Product Base Price",
-      value: pricing ? formatMoney(pricing.basePrice, symbol) : "—",
-      hint: pricing?.currency ? pricing.currency : undefined,
-      icon: <CircleDollarSign className="size-4" />,
-    },
-    {
-      label: "Tax",
-      value: pricing ? `${formatMoney(pricing.taxAmount, symbol)} (${pricing.taxPercent}%)` : "—",
-      icon: <Receipt className="size-4" />,
-    },
-    {
-      label: "Net Price Amount (Including Tax)",
-      value: pricing ? formatMoney(pricing.netPriceIncludingTax, symbol) : "—",
-      icon: <Tags className="size-4" />,
-    },
-    {
-      label: "Discount",
-      value: pricing
-        ? pricing.discountEnabled
-          ? `${formatMoney(pricing.discountAmount, symbol)} (${pricing.discountPercent}%)`
-          : "Not available"
-        : "—",
-      icon: <BadgePercent className="size-4" />,
-    },
-    {
-      label: "Price After Discount",
-      value: pricing ? formatMoney(pricing.priceAfterDiscount, symbol) : "—",
-      icon: <CircleDollarSign className="size-4" />,
-    },
-    {
-      label: "Total Price (Including Foodremit Commission)",
-      value: pricing ? formatMoney(pricing.totalPriceIncludingCommission, symbol) : "—",
-      hint: pricing?.adminShareEnabled
-        ? `Commission ${formatMoney(pricing.commissionAmount, symbol)} (${pricing.commissionPercent}%)`
-        : "Commission not applied",
-      icon: <Receipt className="size-4" />,
-      highlight: true,
-    },
-    {
-      label: "UPC Code",
-      value: item.upcCode || "N/A",
-      icon: <Hash className="size-4" />,
-      mono: true,
-    },
-  ];
+  const lines: ReceiptLine[] = pricing
+    ? [
+        {
+          label: "Product Base Price",
+          value: formatMoney(pricing.basePrice, symbol),
+          muted: true,
+        },
+        {
+          label: `Tax (${pricing.taxPercent}%)`,
+          value: `+ ${formatMoney(pricing.taxAmount, symbol)}`,
+          addon: true,
+        },
+        {
+          label: "Net Price (Including Tax)",
+          value: formatMoney(pricing.netPriceIncludingTax, symbol),
+          subtotal: true,
+        },
+        {
+          label: pricing.discountEnabled ? `Discount (${pricing.discountPercent}%)` : "Discount",
+          value: pricing.discountEnabled
+            ? `− ${formatMoney(pricing.discountAmount, symbol)}`
+            : "Not available",
+          negative: pricing.discountEnabled,
+          muted: !pricing.discountEnabled,
+        },
+        {
+          label: "Price After Discount",
+          value: formatMoney(pricing.priceAfterDiscount, symbol),
+          subtotal: true,
+        },
+      ]
+    : [];
+
+  const itemTotal = pricing
+    ? formatMoney(pricing.itemTotal ?? pricing.priceAfterDiscount ?? pricing.grandTotal, symbol)
+    : "—";
 
   return (
-    <Card className="overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 dark:bg-slate-950 dark:shadow-none">
-      <CardHeader className="border-b border-slate-100/80 px-5 py-4 sm:px-6 dark:border-slate-800/80">
-        <CardTitle className="flex items-center gap-3 text-base font-bold text-slate-900 dark:text-white">
+    <Card className="w-full overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 dark:bg-slate-950 dark:shadow-none">
+      <CardHeader className="border-b border-slate-100/80 px-5 py-4 sm:px-8 dark:border-slate-800/80">
+        <CardTitle className="flex items-center gap-3 text-base font-bold text-slate-900 sm:text-lg dark:text-white">
           <div className="bg-primary h-4 w-1.5 rounded-full" />
           Product Information
         </CardTitle>
         <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-          Pricing breakdown and UPC for this product.
+          Item total = base + tax − discount. Processing fee is charged once per order (not per
+          item) · {countryLabel} ({currency}).
         </p>
       </CardHeader>
 
-      <CardContent className="p-4 sm:p-6">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {rows.map((row) => (
-            <div
-              key={row.label}
-              className={cn(
-                "rounded-xl border border-slate-100 bg-slate-50/60 p-3.5 sm:p-4 dark:border-slate-800 dark:bg-slate-900/40",
-                row.highlight &&
-                  "border-primary/20 from-primary/8 dark:from-primary/10 bg-linear-to-br to-emerald-50/50 sm:col-span-2 lg:col-span-1 dark:to-slate-900",
-              )}
-            >
-              <div className="flex items-start gap-3">
-                <div className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
-                  {row.icon}
+      <CardContent className="space-y-4 p-4 sm:p-6 lg:p-8">
+        <div className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-[#fafaf8] shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+          <div className="border-b border-dashed border-slate-200 bg-white px-5 py-5 sm:px-8 dark:border-slate-700 dark:bg-slate-950">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-xl">
+                  <Receipt className="size-5" />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">
-                    {row.label}
+                <div>
+                  <p className="text-base font-semibold text-slate-900 dark:text-white">
+                    Item Price Receipt
                   </p>
-                  <p
-                    className={cn(
-                      "mt-1 text-sm font-semibold break-all text-slate-900 sm:text-base dark:text-white",
-                      row.mono && "font-mono text-xs sm:text-sm",
-                    )}
-                  >
-                    {row.value}
-                  </p>
-                  {row.hint ? <p className="mt-0.5 text-xs text-slate-500">{row.hint}</p> : null}
+                  <p className="text-xs text-slate-500 sm:text-sm">{item.productName}</p>
                 </div>
               </div>
+              <div className="sm:text-right">
+                <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
+                  Currency
+                </p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  {currency} · {countryLabel}
+                </p>
+              </div>
             </div>
-          ))}
+          </div>
+
+          <div className="space-y-0 px-5 py-1 sm:px-8">
+            {lines.map((line) => (
+              <div
+                key={line.label}
+                className={cn(
+                  "flex items-center justify-between gap-4 border-b border-dashed border-slate-200/80 py-3.5 last:border-0 dark:border-slate-800",
+                  line.subtotal && "-mx-2 rounded-lg bg-slate-50/90 px-2 dark:bg-slate-800/40",
+                )}
+              >
+                <span
+                  className={cn(
+                    "text-sm text-slate-600 sm:text-[15px] dark:text-slate-300",
+                    line.subtotal && "font-medium text-slate-800 dark:text-slate-100",
+                    line.muted && "text-slate-500",
+                  )}
+                >
+                  {line.label}
+                </span>
+                <span
+                  className={cn(
+                    "font-mono text-sm font-semibold text-slate-900 tabular-nums sm:text-base dark:text-white",
+                    line.addon && "text-emerald-700 dark:text-emerald-400",
+                    line.negative && "text-rose-600 dark:text-rose-400",
+                    line.muted && !line.negative && "font-medium text-slate-400",
+                    line.subtotal && "text-base sm:text-lg",
+                  )}
+                >
+                  {line.value}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="dark:border-primary dark:bg-primary border-t-2 border-slate-900 bg-slate-900 px-5 py-5 text-white sm:px-8">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[11px] font-medium tracking-wider text-white/70 uppercase">
+                  Item Total
+                </p>
+                <p className="mt-0.5 text-xs text-white/60">
+                  Per item (processing fee not included)
+                </p>
+              </div>
+              <p className="font-mono text-3xl font-bold tracking-tight tabular-nums sm:text-4xl">
+                {itemTotal}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-dashed border-slate-200 bg-white px-5 py-3.5 sm:px-8 dark:border-slate-700 dark:bg-slate-950">
+            <div className="flex items-center gap-2">
+              <Hash className="size-3.5 text-slate-400" />
+              <p className="text-[11px] text-slate-500 sm:text-xs">
+                UPC{" "}
+                <span className="font-mono font-medium text-slate-700 dark:text-slate-200">
+                  {item.upcCode || "N/A"}
+                </span>
+              </p>
+            </div>
+            <p className="text-[11px] text-slate-400 sm:text-xs">Tax = Set Markup %</p>
+          </div>
         </div>
+
+        {pricing ? (
+          <div className="flex gap-3 rounded-2xl border border-amber-200/80 bg-amber-50/80 p-4 sm:p-5 dark:border-amber-500/20 dark:bg-amber-500/10">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
+              <Wallet className="size-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <p className="text-sm font-semibold text-amber-950 dark:text-amber-100">
+                  Processing Fee (per order)
+                </p>
+                <p className="font-mono text-lg font-bold text-amber-900 tabular-nums dark:text-amber-50">
+                  {formatMoney(pricing.processingFeeAmount, symbol)}
+                </p>
+              </div>
+              <p className="mt-1 flex items-start gap-1.5 text-xs text-amber-800/90 dark:text-amber-200/80">
+                <Info className="mt-0.5 size-3.5 shrink-0" />
+                Added once on the whole order for {countryLabel} — not on each item. Order payable =
+                sum of item totals + this fee.
+              </p>
+            </div>
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );

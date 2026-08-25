@@ -62,7 +62,7 @@ export function MarkupManagement() {
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-slate-100 bg-linear-to-br from-slate-50 to-white p-4">
           <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
-            Current Markup
+            Current Tax (Markup)
           </p>
           <div className="mt-1 flex items-end gap-1">
             <p className="text-3xl font-black text-slate-700">
@@ -76,8 +76,9 @@ export function MarkupManagement() {
       <div className="flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
         <p className="text-xs text-rose-700">
-          This markup commission is applied on top of all food remit transactions. Set between
-          <span className="font-semibold"> 0% – 100%</span>. Changes take effect immediately.
+          This <span className="font-semibold">Tax</span> % (Set Markup) is an add-on — product base
+          price does not change. Applied on every item in the country currency. Set between
+          <span className="font-semibold"> 0% – 100%</span>.
         </p>
       </div>
 
@@ -87,8 +88,10 @@ export function MarkupManagement() {
             <TrendingUp className="h-4 w-4 text-rose-600" />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-800">Set Markup Commission</p>
-            <p className="text-xs text-slate-500">Applied globally across all transactions</p>
+            <p className="text-sm font-bold text-slate-800">Set Tax (Markup)</p>
+            <p className="text-xs text-slate-500">
+              Add-on tax % on every item — base price stays original
+            </p>
           </div>
         </div>
 

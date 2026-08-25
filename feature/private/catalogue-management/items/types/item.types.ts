@@ -21,6 +21,7 @@ export interface ItemPricingData {
   basePrice: number;
   taxPercent: number;
   taxAmount: number;
+  taxLabel?: string;
   netPriceIncludingTax: number;
   discountPercent: number;
   discountAmount: number;
@@ -28,6 +29,14 @@ export interface ItemPricingData {
   commissionPercent: number;
   commissionAmount: number;
   totalPriceIncludingCommission: number;
+  grandTotal: number;
+  /** Item line total (no processing fee) */
+  itemTotal?: number;
+  /** Shown for reference — charged once per order */
+  processingFeeAmount: number;
+  processingFeeScope: "per_order";
+  countryId?: string | null;
+  countryName?: string | null;
   currency: string;
   currencySymbol: string;
   adminShareEnabled: boolean;
@@ -75,10 +84,8 @@ export interface ItemData {
   departmentDisplayName?: string | null;
 
   pricing?: ItemPricingData;
-  /** Product UUID encoded in the barcode (same as item id) */
   productId?: string;
   barcodeValue?: string;
-  /** Backend-generated Code128 PNG data URL of the product id */
   barcodeImage?: string | null;
 
   createdAt: string;
