@@ -21,6 +21,7 @@ type FieldProps<T extends FieldValues> = {
   error?: string;
   multiline?: boolean;
   rows?: number;
+  inputRef?: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
 };
 
 export function FormTextField<T extends FieldValues>({
@@ -31,6 +32,7 @@ export function FormTextField<T extends FieldValues>({
   error,
   multiline,
   rows = 3,
+  inputRef,
 }: FieldProps<T>) {
   return (
     <Controller
@@ -49,6 +51,7 @@ export function FormTextField<T extends FieldValues>({
               placeholder={placeholder}
               aria-invalid={!!error}
               className={cn(textareaClass, error && "border-red-400 bg-red-50")}
+              ref={inputRef as any}
             />
           ) : (
             <Input
@@ -57,6 +60,7 @@ export function FormTextField<T extends FieldValues>({
               placeholder={placeholder}
               aria-invalid={!!error}
               className={cn(inputClass, error && "border-red-400 bg-red-50")}
+              ref={inputRef as any}
             />
           )}
           {error ? <p className="text-xs font-medium text-red-500">{error}</p> : null}

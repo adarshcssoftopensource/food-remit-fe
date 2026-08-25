@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
+import { useRef } from "react";
 import { useFieldArray, useWatch, type Control, type UseFormSetValue } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,23 @@ export function ObjectArrayFields({
   error,
 }: ObjectArrayFieldsProps) {
   const { fields: rows, append, remove } = useFieldArray({ control, name: name as never });
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const handleAdd = () => {
+    append(emptyItem as never);
+    setTimeout(() => {
+      const newIndex = rows.length;
+      const newRow = rowRefs.current[newIndex];
+      if (newRow) {
+        newRow.scrollIntoView({ behavior: "smooth", block: "center" });
+        const firstInput = newRow.querySelector("input, textarea") as
+          HTMLInputElement | HTMLTextAreaElement | null;
+        if (firstInput) {
+          firstInput.focus();
+        }
+      }
+    }, 100);
+  };
 
   return (
     <div className="space-y-3">
@@ -37,7 +55,7 @@ export function ObjectArrayFields({
           variant="outline"
           size="sm"
           className="border-primary/30 text-primary hover:bg-primary/10 h-9 rounded-xl"
-          onClick={() => append(emptyItem as never)}
+          onClick={handleAdd}
         >
           <Plus className="mr-1.5 size-4" />
           Add
@@ -47,6 +65,9 @@ export function ObjectArrayFields({
       {rows.map((row, index) => (
         <div
           key={row.id}
+          ref={(el) => {
+            rowRefs.current[index] = el;
+          }}
           className="space-y-3 rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4"
         >
           <div className="flex items-center justify-between">
@@ -96,6 +117,19 @@ export function StringArrayFields({
   error,
 }: StringArrayFieldsProps) {
   const values = (useWatch({ control, name }) as string[] | undefined) ?? [];
+  const inputRefs = useRef<(HTMLInputElement | HTMLTextAreaElement | null)[]>([]);
+
+  const handleAdd = () => {
+    setValue(name, [...values, ""], { shouldValidate: true });
+    setTimeout(() => {
+      const newIndex = values.length;
+      const newInput = inputRefs.current[newIndex];
+      if (newInput) {
+        newInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        newInput.focus();
+      }
+    }, 100);
+  };
 
   return (
     <div className="space-y-3">
@@ -106,7 +140,7 @@ export function StringArrayFields({
           variant="outline"
           size="sm"
           className="border-primary/30 text-primary hover:bg-primary/10 h-9 rounded-xl"
-          onClick={() => setValue(name, [...values, ""], { shouldValidate: true })}
+          onClick={handleAdd}
         >
           <Plus className="mr-1.5 size-4" />
           Add
@@ -121,6 +155,9 @@ export function StringArrayFields({
               name={`${name}.${index}` as never}
               label={`${title} ${index + 1}`}
               placeholder={placeholder}
+              inputRef={(el: HTMLInputElement | HTMLTextAreaElement | null) => {
+                inputRefs.current[index] = el;
+              }}
             />
           </div>
           <Button
