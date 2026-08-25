@@ -42,7 +42,7 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
     control,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = form;
 
   const meta = LANDING_CMS_SECTIONS.find((s) => s.key === section);
@@ -60,7 +60,9 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
 
   const onSubmit = handleSubmit(async (values) => {
     if (isReadOnlyStats) return;
-    await onSave(values, imageFile);
+    const payload = pickDirtyFields(values, dirtyFields as Record<string, unknown>);
+    if (Object.keys(payload).length === 0 && !imageFile) return;
+    await onSave(payload, imageFile);
   });
 
   return (
@@ -681,4 +683,31 @@ function FooterFields({ control, errors }: FieldsProps) {
       />
     </>
   );
+}
+
+/** Send only changed keys. Dirty arrays are sent as the full current array. */
+function pickDirtyFields(
+  values: Record<string, unknown>,
+  dirty: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const key of Object.keys(dirty)) {
+    const marker = dirty[key];
+    if (marker === true) {
+      out[key] = values[key];
+      continue;
+    }
+    if (Array.isArray(marker)) {
+      if (marker.some((item) => Boolean(item))) {
+        out[key] = values[key];
+      }
+      continue;
+    }
+    if (marker && typeof marker === "object") {
+      const nestedValues = (values[key] ?? {}) as Record<string, unknown>;
+      const nested = pickDirtyFields(nestedValues, marker as Record<string, unknown>);
+      if (Object.keys(nested).length > 0) out[key] = nested;
+    }
+  }
+  return out;
 }

@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { RefreshCw, ShieldAlert } from "lucide-react";
-import { LogoutButton } from "./logout-button";
 
 interface ProfileErrorScreenProps {
   errorMessage: string;
@@ -32,8 +31,6 @@ export function ProfileErrorScreen({ errorMessage, onRetry }: ProfileErrorScreen
             <RefreshCw className="h-4 w-4" />
             Try Again
           </Button>
-
-          <LogoutButton />
         </div>
       </div>
     </div>

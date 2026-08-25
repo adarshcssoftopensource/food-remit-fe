@@ -1,17 +1,19 @@
 import { Button } from "@/components/ui/button";
-import type { FaqData } from "@/constants/content-management";
 import { ColumnDef } from "@tanstack/react-table";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
+import type { FaqData } from "../types";
 
 type FaqColumnsConfig = {
   onEdit: (faq: FaqData) => void;
+  onDelete: (faq: FaqData) => void;
 };
 
-export function getFaqColumns({ onEdit }: FaqColumnsConfig): ColumnDef<FaqData>[] {
+export function getFaqColumns({ onEdit, onDelete }: FaqColumnsConfig): ColumnDef<FaqData>[] {
   return [
     {
       id: "sno",
       header: "S.no",
+      enableSorting: false,
       cell: ({ row }) => (
         <span className="pl-2 font-mono text-xs text-slate-500">{row.index + 1}</span>
       ),
@@ -35,15 +37,24 @@ export function getFaqColumns({ onEdit }: FaqColumnsConfig): ColumnDef<FaqData>[
     {
       id: "actions",
       header: "Action",
+      enableSorting: false,
       cell: ({ row }) => (
         <div className="flex items-center gap-1.5">
           <Button
             variant="outline"
             size="icon-sm"
-
+            className="border-primary/20 text-primary hover:bg-primary/10"
             onClick={() => onEdit(row.original)}
           >
-            <Pencil size={20} />
+            <Pencil size={16} />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            className="border-red-200 text-red-500 hover:bg-red-50"
+            onClick={() => onDelete(row.original)}
+          >
+            <Trash2 size={16} />
           </Button>
         </div>
       ),

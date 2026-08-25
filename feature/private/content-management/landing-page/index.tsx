@@ -13,7 +13,7 @@ import type { LandingSectionKey } from "./types";
 
 export function LandingPageCmsPage() {
   const [activeSection, setActiveSection] = useState<LandingSectionKey>("hero");
-  const { content, isLoading, isError, isSaving, saveSection } = useLandingCms();
+  const { content, updatedAt, isLoading, isError, isSaving, saveSection } = useLandingCms();
 
   return (
     <div className="space-y-6">
@@ -49,7 +49,7 @@ export function LandingPageCmsPage() {
             </div>
             <CardContent className="min-h-0 flex-1 p-5 sm:p-6">
               <SectionEditor
-                key={activeSection}
+                key={`${activeSection}-${updatedAt ?? "init"}`}
                 section={activeSection}
                 initialData={content[activeSection]}
                 isSaving={isSaving}

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 
 export const contentPageSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters."),
