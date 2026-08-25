@@ -25,6 +25,7 @@ import { useGetContentPage } from "../hooks/use-get-content-page";
 import { useUpdateContentPage } from "../hooks/use-update-content-page";
 import { contentPageSchema, type ContentPageFormValues } from "../schema/content.schema";
 import { CONTENT_PAGE_LABELS, type ContentPageKey } from "../types";
+import { ContentPageSkeleton } from "./content-page-skeleton";
 
 type ContentPageEditorProps = {
   pageKey: ContentPageKey;
@@ -59,11 +60,7 @@ export function ContentPageEditor({ pageKey }: ContentPageEditorProps) {
         }
       />
 
-      {isLoading ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500">
-          Loading content…
-        </div>
-      ) : null}
+      {isLoading && <ContentPageSkeleton />}
 
       {isError ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-10 text-center text-sm font-medium text-red-600">

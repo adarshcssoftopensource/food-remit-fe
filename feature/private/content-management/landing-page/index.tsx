@@ -6,6 +6,7 @@ import { useState } from "react";
 import { PageHeader } from "@/components/common/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 
+import { LandingPageSkeleton } from "./components/landing-page-skeleton";
 import { SectionEditor } from "./components/section-editor";
 import { SectionNav } from "./components/section-nav";
 import { useLandingCms } from "./hooks/use-landing-cms";
@@ -22,11 +23,7 @@ export function LandingPageCmsPage() {
         description="Edit vendor landing sections. Navbar and Become a Vendor Partner stay system-controlled."
       />
 
-      {isLoading ? (
-        <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-10 text-center text-sm text-slate-500 shadow-sm">
-          Loading landing content…
-        </div>
-      ) : null}
+      {isLoading && <LandingPageSkeleton />}
 
       {isError ? (
         <div className="rounded-2xl border border-red-200 bg-red-50/80 p-10 text-center text-sm font-medium text-red-600">

@@ -1,8 +1,8 @@
 "use client";
 
+import type { SortingState } from "@tanstack/react-table";
 import { CircleHelp } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { SortingState } from "@tanstack/react-table";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { DataTable } from "@/components/common/data-table/data-table";
@@ -14,6 +14,7 @@ import { useDebounce } from "@/lib/debounce";
 import { getFaqColumns } from "./columns/faq-columns";
 import { AddFaqDialog } from "./components/add-faq-dialog";
 import { EditFaqDialog } from "./components/edit-faq-dialog";
+import { FaqSkeleton } from "./components/faq-skeleton";
 import { useCreateFaq, useDeleteFaq, useGetFaqs, useUpdateFaq } from "./hooks/use-faq-api";
 import type { FaqData } from "./types";
 
@@ -76,56 +77,58 @@ export function FaqManagementPage() {
         }
       />
 
-      <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
-        <CardHeader className="from-primary/8 border-b bg-linear-to-r via-emerald-50/40 to-transparent">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/15 text-primary flex size-10 items-center justify-center rounded-xl">
-              <CircleHelp className="size-5" />
+      {isLoading ? (
+        <FaqSkeleton />
+      ) : (
+        <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
+          <CardHeader className="from-primary/8 border-b bg-linear-to-r via-emerald-50/40 to-transparent">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/15 text-primary flex size-10 items-center justify-center rounded-xl">
+                <CircleHelp className="size-5" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-semibold">FAQ&apos;s</CardTitle>
+                <p className="text-muted-foreground mt-0.5 text-sm">
+                  {`${pagination.total} FAQ${pagination.total !== 1 ? "s" : ""} found`}
+                </p>
+              </div>
             </div>
-            <div>
-              <CardTitle className="text-xl font-semibold">FAQ&apos;s</CardTitle>
-              <p className="text-muted-foreground mt-0.5 text-sm">
-                {isLoading
-                  ? "Loading…"
-                  : `${pagination.total} FAQ${pagination.total !== 1 ? "s" : ""} found`}
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6">
+            {isError ? (
+              <p className="py-8 text-center text-sm font-medium text-red-600">
+                Failed to load FAQs.
               </p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-4 sm:p-6">
-          {isError ? (
-            <p className="py-8 text-center text-sm font-medium text-red-600">
-              Failed to load FAQs.
-            </p>
-          ) : (
-            <DataTable
-              columns={columns}
-              data={faqs}
-              loading={isLoading}
-              searchKey="question"
-              searchValue={searchValue}
-              onSearchChange={(val) => {
-                setSearchValue(val);
-                setPage(1);
-              }}
-              onSortingChange={(next) => {
-                setSorting(next);
-                setPage(1);
-              }}
-              manualSorting
-              manualFiltering
-              currentPage={pagination.page}
-              totalPages={pagination.totalPages}
-              rowsPerPage={pagination.limit}
-              onPageChange={setPage}
-              onRowsPerPageChange={(newLimit) => {
-                setLimit(newLimit);
-                setPage(1);
-              }}
-            />
-          )}
-        </CardContent>
-      </Card>
+            ) : (
+              <DataTable
+                columns={columns}
+                data={faqs}
+                loading={false}
+                searchKey="question"
+                searchValue={searchValue}
+                onSearchChange={(val) => {
+                  setSearchValue(val);
+                  setPage(1);
+                }}
+                onSortingChange={(next) => {
+                  setSorting(next);
+                  setPage(1);
+                }}
+                manualSorting
+                manualFiltering
+                currentPage={pagination.page}
+                totalPages={pagination.totalPages}
+                rowsPerPage={pagination.limit}
+                onPageChange={setPage}
+                onRowsPerPageChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setPage(1);
+                }}
+              />
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <EditFaqDialog
         faq={editingFaq}
