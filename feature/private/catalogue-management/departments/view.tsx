@@ -7,17 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
 import { formatDate } from "@/lib/date";
-import {
-  ArrowLeft,
-  Building2,
-  Calendar,
-  Clock,
-  Expand,
-  Layers,
-  MapPin,
-  User,
-  Users,
-} from "lucide-react";
+import { ArrowLeft, Building2, Calendar, Clock, Expand, MapPin, User } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -89,12 +79,14 @@ export function DepartmentView({ id }: DepartmentViewProps) {
         </div>
 
         <div className="animate-in fade-in slide-in-from-bottom-4 grid gap-6 transition-colors duration-700 lg:grid-cols-3">
-          <Card className="relative flex h-fit flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
-            <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-32 bg-linear-to-br opacity-90" />
+          <Card className="relative flex h-fit flex-col overflow-hidden rounded-3xl border-0 lg:col-span-1 dark:bg-slate-950 dark:shadow-none">
+            <div className="from-primary/80 via-primary to-primary/40 absolute inset-x-0 top-0 h-40 bg-linear-to-br opacity-90" />
+            <div className="bg-primary/8 pointer-events-none absolute -top-32 -right-20 h-96 w-96 rounded-full blur-3xl" />
+            <div className="bg-primary/5 pointer-events-none absolute -bottom-24 left-1/4 h-72 w-72 rounded-full blur-3xl" />
 
-            <CardHeader className="relative flex flex-1 flex-col px-6 pt-2 pb-8 text-center">
-              <div className="shadow-primary/20 mx-auto flex h-60 w-60 shrink-0 items-center justify-center rounded-[3rem] bg-white p-3 shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105 dark:bg-slate-900 dark:ring-slate-950">
-                <div className="bg-primary/5 text-primary group relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2.5rem]">
+            <CardHeader className="relative flex flex-1 flex-col px-6 pt-4 pb-8 text-center">
+              <div className="shadow-primary/20 mx-auto flex h-64 w-64 shrink-0 items-center justify-center rounded-[2.5rem] bg-white p-4 shadow-2xl ring-4 ring-white transition-transform duration-500 hover:scale-105 dark:bg-slate-900 dark:ring-slate-950">
+                <div className="bg-primary/5 text-primary group relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2rem]">
                   {department.departmentIcon ? (
                     <>
                       <Image
@@ -108,37 +100,37 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                       <Button
                         variant={"ghost"}
                         onClick={() => setLightboxSrc(department.departmentIcon || "")}
-                        className="absolute right-2 bottom-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-colors transition-opacity transition-transform duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
+                        className="absolute right-3 bottom-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
                         title="View full screen"
                       >
-                        <Expand className="h-4 w-4" />
+                        <Expand className="h-4.5 w-4.5" />
                       </Button>
                     </>
                   ) : (
-                    <Building2 className="h-20 w-20" />
+                    <Building2 className="h-24 w-24" />
                   )}
                 </div>
               </div>
 
-              <div className="mt-10 w-full text-center">
-                <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <div className="mt-12 w-full text-center">
+                <CardTitle className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
                   {department.departmentName}
                 </CardTitle>
 
-                <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
                   <span
-                    className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm backdrop-blur-sm transition-colors ${
+                    className={`inline-flex items-center gap-2.5 rounded-full px-5 py-2 text-sm font-bold shadow-sm backdrop-blur-sm transition-all ${
                       department.status === "ACTIVE"
-                        ? "bg-green-500/10 text-green-700 ring-1 ring-green-500/20 dark:bg-green-500/20 dark:text-green-400"
-                        : "bg-red-500/10 text-red-700 ring-1 ring-red-500/20 dark:bg-red-500/20 dark:text-red-400"
+                        ? "bg-emerald-500/10 text-emerald-700 ring-1 ring-emerald-500/20 hover:bg-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500/30"
+                        : "bg-rose-500/10 text-rose-700 ring-1 ring-rose-500/20 hover:bg-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500/30"
                     }`}
                   >
-                    <span className="relative flex h-2 w-2">
+                    <span className="relative flex h-2.5 w-2.5">
                       <span
-                        className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${department.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                        className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${department.status === "ACTIVE" ? "bg-emerald-500" : "bg-rose-500"}`}
                       ></span>
                       <span
-                        className={`relative inline-flex h-2 w-2 rounded-full ${department.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}
+                        className={`relative inline-flex h-2.5 w-2.5 rounded-full ${department.status === "ACTIVE" ? "bg-emerald-500" : "bg-rose-500"}`}
                       ></span>
                     </span>
                     {department.status === "ACTIVE" ? "Active" : "Inactive"}
@@ -153,30 +145,31 @@ export function DepartmentView({ id }: DepartmentViewProps) {
             </CardHeader>
           </Card>
 
-          <Card className="rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-2 dark:bg-slate-950 dark:shadow-none">
-            <CardHeader className="border-b border-slate-100/80 px-8 py-6 dark:border-slate-800/80">
-              <CardTitle className="flex items-center gap-3 text-lg font-bold text-slate-900 dark:text-white">
-                <div className="bg-primary h-5 w-1.5 rounded-full" />
-                Information Overview
+          <Card className="rounded-3xl border border-slate-200/80 shadow-sm lg:col-span-2 dark:border-slate-800 dark:bg-slate-950">
+            <CardHeader className="border-b border-slate-100 px-6 py-5 dark:border-slate-800">
+              <CardTitle className="flex items-center gap-3 text-base font-bold text-slate-900 dark:text-white">
+                <div className="bg-primary flex h-11 w-11 items-center justify-center rounded-xl">
+                  <Building2 className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  Information Overview
+                  <p className="text-xs font-normal text-slate-400">
+                    Department details and metadata
+                  </p>
+                </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-8">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <CardContent className="p-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <InfoCard
                   icon={<MapPin className="h-5 w-5" />}
                   label="Country"
                   value={department.country?.name || department.countryName || "Unknown"}
                 />
-                <InfoCard
-                  icon={<Layers className="h-5 w-5" />}
-                  label="Parent Department"
-                  value={
-                    department.parentDepartmentName || department.parent?.departmentName || "None"
-                  }
-                />
+
                 <InfoCard
                   icon={<MapPin className="h-5 w-5" />}
-                  label="Scope"
+                  label="Address"
                   value={
                     department.scopeLabel ||
                     (department.city?.name || department.cityName
@@ -210,17 +203,17 @@ export function DepartmentView({ id }: DepartmentViewProps) {
 
 function InfoCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="group hover:border-primary/20 hover:shadow-primary/5 relative flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-colors transition-shadow transition-transform duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl dark:border-slate-800/80 dark:bg-slate-900/30 dark:hover:bg-slate-900">
-      <div className="group-hover:bg-primary/10 group-hover:text-primary group-hover:ring-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-colors dark:bg-slate-800 dark:ring-slate-700">
+    <div className="group hover:border-primary/20 hover:shadow-primary/5 relative flex items-start gap-4 rounded-2xl border border-slate-100 bg-gradient-to-br from-slate-50/80 to-slate-50/40 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800 dark:from-slate-900/60 dark:to-slate-900/30 dark:hover:bg-slate-900">
+      <div className="group-hover:bg-primary/10 group-hover:text-primary group-hover:ring-primary/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-colors dark:bg-slate-800 dark:ring-slate-700">
         <div className="group-hover:text-primary text-slate-500 transition-colors dark:text-slate-400">
           {icon}
         </div>
       </div>
       <div className="flex flex-col justify-center space-y-1">
-        <span className="text-xs font-medium tracking-wider text-slate-500 uppercase dark:text-slate-400">
+        <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-500">
           {label}
         </span>
-        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{value}</span>
+        <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{value}</span>
       </div>
     </div>
   );
