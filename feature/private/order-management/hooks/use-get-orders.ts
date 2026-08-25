@@ -32,7 +32,7 @@ interface OrdersResponse {
   };
 }
 
-export function useGetOrders(params?: GetOrdersParams) {
+export function useGetOrders(params?: GetOrdersParams, enabled = true) {
   return useQuery({
     queryKey: [...API_CACHE_KEYS.ORDERS, params],
     queryFn: async () => {
@@ -41,5 +41,6 @@ export function useGetOrders(params?: GetOrdersParams) {
       });
       return data;
     },
+    enabled,
   });
 }

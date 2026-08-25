@@ -17,6 +17,23 @@ export interface ItemPlacementData {
   category?: { id: string; categoryName: string };
 }
 
+export interface ItemPricingData {
+  basePrice: number;
+  taxPercent: number;
+  taxAmount: number;
+  netPriceIncludingTax: number;
+  discountPercent: number;
+  discountAmount: number;
+  priceAfterDiscount: number;
+  commissionPercent: number;
+  commissionAmount: number;
+  totalPriceIncludingCommission: number;
+  currency: string;
+  currencySymbol: string;
+  adminShareEnabled: boolean;
+  discountEnabled: boolean;
+}
+
 export interface ItemData {
   id: string;
   productName: string;
@@ -56,6 +73,13 @@ export interface ItemData {
   scopeType?: "global" | "city";
   scopeLabel?: string | null;
   departmentDisplayName?: string | null;
+
+  pricing?: ItemPricingData;
+  /** Product UUID encoded in the barcode (same as item id) */
+  productId?: string;
+  barcodeValue?: string;
+  /** Backend-generated Code128 PNG data URL of the product id */
+  barcodeImage?: string | null;
 
   createdAt: string;
   updatedAt: string;
