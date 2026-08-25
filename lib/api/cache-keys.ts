@@ -25,6 +25,15 @@ export const API_CACHE_KEYS = {
   // Flash Images
   FLASH_IMAGES: ["flash-images"],
 
+  // Landing Page CMS
+  LANDING_PAGE: ["landing-page"],
+  LANDING_PAGE_PUBLIC: ["landing-page-public"],
+
+  // Content pages / FAQ CMS
+  CONTENT_PAGE: (key: string) => ["content-page", key],
+  FAQS: ["cms-faqs"],
+  FAQS_PUBLIC: ["cms-faqs-public"],
+
   // Country Managers
   COUNTRY_MANAGERS: ["COUNTRY_MANAGERS"],
 

@@ -8,13 +8,39 @@ export interface ItemPlacementData {
   price: number;
   currency?: string | null;
   currencySymbol?: string | null;
-  country?: { id: string; name: string };
+  country?: { id: string; name: string; countryCode?: string | null };
   department?: {
     id: string;
     departmentName: string;
     displayName?: string | null;
   };
   category?: { id: string; categoryName: string };
+}
+
+export interface ItemPricingData {
+  basePrice: number;
+  taxPercent: number;
+  taxAmount: number;
+  taxLabel?: string;
+  netPriceIncludingTax: number;
+  discountPercent: number;
+  discountAmount: number;
+  priceAfterDiscount: number;
+  commissionPercent: number;
+  commissionAmount: number;
+  totalPriceIncludingCommission: number;
+  grandTotal: number;
+  /** Item line total (no processing fee) */
+  itemTotal?: number;
+  /** Shown for reference — charged once per order */
+  processingFeeAmount: number;
+  processingFeeScope: "per_order";
+  countryId?: string | null;
+  countryName?: string | null;
+  currency: string;
+  currencySymbol: string;
+  adminShareEnabled: boolean;
+  discountEnabled: boolean;
 }
 
 export interface ItemData {
@@ -56,6 +82,17 @@ export interface ItemData {
   scopeType?: "global" | "city";
   scopeLabel?: string | null;
   departmentDisplayName?: string | null;
+
+  pricing?: ItemPricingData | null;
+  pricingCountry?: {
+    id: string;
+    name: string;
+    countryCode?: string | null;
+  } | null;
+  hasPriceForCountry?: boolean;
+  productId?: string;
+  barcodeValue?: string;
+  barcodeImage?: string | null;
 
   createdAt: string;
   updatedAt: string;

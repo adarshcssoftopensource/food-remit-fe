@@ -1,10 +1,10 @@
+import type { ItemPlacementRow } from "@/components/common/item-placements-field";
+import { resolveCurrencyDisplay } from "@/lib/currency";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import type { ItemPlacementRow } from "@/components/common/item-placements-field";
-import { resolveCurrencyDisplay } from "@/lib/currency";
 import { useCreateItem } from "../items/hooks/use-create-item";
 import { useUpdateItem } from "../items/hooks/use-update-item";
 import { ItemData } from "../items/types/item.types";
@@ -29,7 +29,13 @@ const itemSchema = z
     upcCode: z.string().optional(),
     productInfo: z.string().min(1, "Product information is required"),
     nutritionInfo: z.string().optional(),
-    discountPercentage: z.string().optional(),
+    discountPercentage: z
+      .string()
+      .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, {
+        message: "Please enter a valid percentage between 0 and 100",
+      })
+      .optional(),
+
     baseQuantity: z.string().min(1, "Base quantity is required"),
     unit: z.string().min(1, "Unit is required"),
     placements: z.array(placementSchema).min(1, "Add at least one country price"),
@@ -243,8 +249,14 @@ export function useItemForm(
       if (values.upcCode) formData.append("upcCode", values.upcCode);
       formData.append("productInfo", values.productInfo);
       if (values.nutritionInfo) formData.append("nutritionInfo", values.nutritionInfo);
-      if (values.discountPercentage)
+      if (values.discountPercentage !== undefined && values.discountPercentage !== "") {
         formData.append("discountPercentage", values.discountPercentage);
+        const pct = Number(values.discountPercentage);
+        formData.append("discountAvailability", !Number.isNaN(pct) && pct > 0 ? "true" : "false");
+      } else if (item) {
+        formData.append("discountPercentage", "0");
+        formData.append("discountAvailability", "false");
+      }
       formData.append("baseQuantity", values.baseQuantity);
       formData.append("unit", values.unit);
 

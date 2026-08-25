@@ -1,19 +1,22 @@
-import { APP_ASSETS } from "@/config/assets";
 import { HandCoins, Headphones, Shield } from "lucide-react";
 import Image from "next/image";
 
-import { INVESTMENTS, TRUST_ITEMS } from "../../../../constants/landing.constants";
+import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
 
 const TRUST_ICONS = [Shield, HandCoins, Headphones] as const;
 
-export function SuccessSection() {
+type SuccessSectionProps = {
+  data: LandingPageContent["success"];
+};
+
+export function SuccessSection({ data }: SuccessSectionProps) {
   return (
     <section className="bg-[#f8faf8] py-20 sm:py-28">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
         <div className="relative aspect-5/4 overflow-hidden rounded-[2rem]">
           <Image
-            src={APP_ASSETS.IMAGES.VENDOR_PAYMENT.PATH}
-            alt={APP_ASSETS.IMAGES.VENDOR_PAYMENT.ALT}
+            src={data.image}
+            alt={data.imageAlt}
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover"
@@ -22,18 +25,17 @@ export function SuccessSection() {
 
         <div>
           <p className="text-sm font-semibold tracking-[0.16em] text-[#ea580c] uppercase">
-            Your Success is Our Success
+            {data.eyebrow}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            Our mission is to help your business grow
+            {data.title}
           </h2>
           <p className="mt-5 text-base leading-relaxed text-slate-600 sm:text-lg">
-            Our mission isn’t simply to list your store. Every new customer we bring to Food Remit
-            becomes a potential customer for your business.
+            {data.description}
           </p>
 
           <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-3">
-            {INVESTMENTS.map((item) => (
+            {data.investments.map((item) => (
               <li key={item} className="text-sm font-medium text-slate-700">
                 <span className="mr-2 text-[#f97316]">—</span>
                 {item}
@@ -46,18 +48,22 @@ export function SuccessSection() {
   );
 }
 
-export function TrustSection() {
+type TrustSectionProps = {
+  data: LandingPageContent["trust"];
+};
+
+export function TrustSection({ data }: TrustSectionProps) {
   return (
     <section className="border-y border-slate-100 bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <div className="max-w-xl">
           <h2 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
-            Trusted payments. Clear settlements. Real support.
+            {data.title}
           </h2>
         </div>
 
         <div className="mt-10 grid gap-8 md:grid-cols-3">
-          {TRUST_ITEMS.map((item, index) => {
+          {data.items.map((item, index) => {
             const Icon = TRUST_ICONS[index] ?? Shield;
             return (
               <div key={item.title} className="flex gap-4">

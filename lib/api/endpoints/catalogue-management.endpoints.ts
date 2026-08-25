@@ -19,7 +19,23 @@ export const CATALOGUE_MANAGEMENT_ENDPOINTS = {
 
   // Items
   GET_ITEMS: "/admin/items",
-  GET_ITEM: (id: string) => `/admin/items/${id}`,
+  GET_ITEM: (
+    id: string,
+    params?: {
+      countryId?: string;
+      countryCode?: string;
+      countryName?: string;
+      dialCode?: string;
+    },
+  ) => {
+    const qs = new URLSearchParams();
+    if (params?.countryId) qs.set("countryId", params.countryId);
+    if (params?.countryCode) qs.set("countryCode", params.countryCode);
+    if (params?.countryName) qs.set("countryName", params.countryName);
+    if (params?.dialCode) qs.set("dialCode", params.dialCode);
+    const q = qs.toString();
+    return q ? `/admin/items/${id}?${q}` : `/admin/items/${id}`;
+  },
   CREATE_ITEM: "/admin/items",
   UPDATE_ITEM: (id: string) => `/admin/items/${id}`,
   UPDATE_ITEM_STATUS: (id: string) => `/admin/items/${id}/status`,

@@ -91,6 +91,7 @@ export function CategoryFormDialog({
                       </FormLabel>
 
                       <CountrySelect
+                        disabled={isEditing}
                         value={field.value}
                         onValueChange={(val) => {
                           field.onChange(val);
@@ -119,7 +120,7 @@ export function CategoryFormDialog({
                         value={field.value}
                         onValueChange={field.onChange}
                         placeholder="Select department"
-                        disabled={!form.watch("countryId")}
+                        disabled={!form.watch("countryId") || isEditing}
                         className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
                       />
 

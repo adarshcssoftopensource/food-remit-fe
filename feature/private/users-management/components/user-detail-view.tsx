@@ -1,22 +1,22 @@
 "use client";
 
+import type { SortingState } from "@tanstack/react-table";
 import { User } from "lucide-react";
-import { useState } from "react";
-
-import { USER_MANAGEMENT_VIEW_TABS } from "@/constants/users-management";
-import { useGetUserById } from "../hooks/use-get-user-by-id";
-import { UserData } from "../types/user.types";
-
-import { orderColumns } from "@/feature/private/order-management/columns/order-columns";
-import { useGetOrders } from "@/feature/private/order-management/hooks/use-get-orders";
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Image from "next/image";
+import { useMemo, useState } from "react";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROUTES } from "@/config/routes";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
+import { USER_MANAGEMENT_VIEW_TABS } from "@/constants/users-management";
+import { orderColumns } from "@/feature/private/order-management/columns/order-columns";
+import { useGetOrders } from "@/feature/private/order-management/hooks/use-get-orders";
 import { formatDate } from "@/lib/date";
-import Image from "next/image";
+import { useDebounce } from "@/lib/debounce";
+import { useGetUserById } from "../hooks/use-get-user-by-id";
+import { UserData } from "../types/user.types";
 
 type TabKey = "profile" | "requested" | "sent" | "received";
 
@@ -24,7 +24,6 @@ function InfoCard({ title, value }: { title: string; value?: string }) {
   return (
     <div className="rounded-xl border bg-slate-50 p-4">
       <p className="text-xs font-medium text-slate-500">{title}</p>
-
       <p className="mt-1 truncate text-sm font-semibold text-slate-800">{value || "—"}</p>
     </div>
   );
@@ -35,70 +34,61 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
   const user = userData?.data || initialUser;
 
   const [tab, setTab] = useState<TabKey>("profile");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(DEFAULT_PAGE_SIZE);
+  const [searchValue, setSearchValue] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const debouncedSearch = useDebounce(searchValue, 500);
+
+  const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
+  const sortOrder = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
+
+  const orderQuery = useMemo(() => {
+    if (tab === "requested") {
+      return { userId: id, type: 2 as const };
+    }
+    if (tab === "sent") {
+      return { userId: id, type: 1 as const };
+    }
+    if (tab === "received") {
+      return { recieverId: id };
+    }
+    return null;
+  }, [tab, id]);
+
+  const { data: ordersResponse, isLoading: ordersLoading } = useGetOrders(
+    orderQuery
+      ? {
+          ...orderQuery,
+          page,
+          limit,
+          search: debouncedSearch || undefined,
+          sortBy,
+          sortOrder,
+        }
+      : undefined,
+    Boolean(orderQuery),
+  );
+
+  const orders = ordersResponse?.data ?? [];
+  const pagination = ordersResponse?.pagination ?? {
+    page: 1,
+    limit,
+    total: 0,
+    totalPages: 1,
+  };
 
   const infoCardArray = [
-    {
-      value: user?.firstName,
-      title: "First Name",
-    },
-    {
-      value: user?.lastName,
-      title: "Last Name",
-    },
-    {
-      value: user?.country ?? "N/A",
-      title: "Country",
-    },
-    {
-      value: user?.state ?? "N/A",
-      title: "State",
-    },
-    {
-      value: user?.city ?? "N/A",
-      title: "City",
-    },
-    {
-      value: `${user?.countryCode} ${user?.phoneNumber}`,
-      title: "Phone",
-    },
-    {
-      value: user?.userType,
-      title: "User Type",
-    },
-    {
-      value: user?.userStatus,
-      title: "Status",
-    },
-    {
-      value: formatDate(user?.createdAt),
-      title: "Registered On",
-    },
+    { value: user?.firstName, title: "First Name" },
+    { value: user?.lastName, title: "Last Name" },
+    { value: user?.country ?? "N/A", title: "Country" },
+    { value: user?.state ?? "N/A", title: "State" },
+    { value: user?.city ?? "N/A", title: "City" },
+    { value: `${user?.countryCode} ${user?.phoneNumber}`, title: "Phone" },
+    { value: user?.userType, title: "User Type" },
+    { value: user?.userStatus, title: "Status" },
+    { value: formatDate(user?.createdAt), title: "Registered On" },
   ];
-
-  const { data: requestedOrdersResponse } = useGetOrders({ userId: id, type: 2 });
-  const { data: sentOrdersResponse } = useGetOrders({ userId: id, type: 1 });
-  const { data: receivedOrdersResponse } = useGetOrders({ recieverId: id });
-
-  const orders = {
-    requested: requestedOrdersResponse?.data || [],
-    sent: sentOrdersResponse?.data || [],
-    received: receivedOrdersResponse?.data || [],
-  };
-
-  const tableConfig = {
-    requested: {
-      columns: orderColumns,
-      data: orders.requested,
-    },
-    sent: {
-      columns: orderColumns,
-      data: orders.sent,
-    },
-    received: {
-      columns: orderColumns,
-      data: orders.received,
-    },
-  };
 
   if (isLoading) {
     return (
@@ -120,7 +110,15 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
       </div>
 
       <div className="rounded-2xl border p-4 shadow-sm sm:p-6">
-        <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
+        <Tabs
+          value={tab}
+          onValueChange={(v) => {
+            setTab(v as TabKey);
+            setPage(1);
+            setSearchValue("");
+            setSorting([]);
+          }}
+        >
           <div className="mb-8 overflow-x-auto pb-2">
             <TabsList className="inline-flex h-11 w-auto items-center justify-start gap-1 rounded-full bg-slate-100/80 p-1 px-1.5 shadow-inner dark:bg-slate-800/50">
               {USER_MANAGEMENT_VIEW_TABS.map((item) => (
@@ -156,7 +154,6 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
                   <h2 className="text-xl font-bold text-slate-900">
                     {user?.firstName} {user?.lastName}
                   </h2>
-
                   <p className="text-sm text-slate-500">{user?.email}</p>
                 </div>
               </div>
@@ -173,9 +170,29 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
             <TabsContent key={key} value={key}>
               <div className="rounded-xl border bg-white p-4">
                 <DataTable
-                  columns={tableConfig[key].columns}
-                  data={tableConfig[key].data}
+                  columns={orderColumns}
+                  data={orders}
+                  loading={ordersLoading}
                   searchKey="id"
+                  searchValue={searchValue}
+                  onSearchChange={(val) => {
+                    setSearchValue(val);
+                    setPage(1);
+                  }}
+                  onSortingChange={(next) => {
+                    setSorting(next);
+                    setPage(1);
+                  }}
+                  manualSorting
+                  manualFiltering
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
+                  rowsPerPage={pagination.limit}
+                  onPageChange={setPage}
+                  onRowsPerPageChange={(newLimit) => {
+                    setLimit(newLimit);
+                    setPage(1);
+                  }}
                 />
               </div>
             </TabsContent>

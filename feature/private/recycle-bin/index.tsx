@@ -12,7 +12,6 @@ import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDebounce } from "@/lib/debounce";
 import { useGetRecycledUsers, UseGetUsersArgs } from "./hooks/use-get-recycled-users";
 
-import { RecycleBinFilters } from "./components/recycle-bin-filters";
 import { RecycleBinTable } from "./components/recycle-bin-table";
 
 export function RecycledUsersManagement() {
@@ -148,7 +147,7 @@ export function RecycledUsersManagement() {
         description="Users who have been deleted but can be restored across countries and cities"
       />
 
-      <RecycleBinFilters
+      {/* <RecycleBinFilters
         fromDate={fromDate}
         toDate={toDate}
         status={status}
@@ -171,7 +170,7 @@ export function RecycledUsersManagement() {
           setCurrentPage(1);
         }}
         onClearFilters={clearFilters}
-      />
+      /> */}
 
       <RecycleBinTable
         data={allData}

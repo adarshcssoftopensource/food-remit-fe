@@ -4,6 +4,7 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
+import { useUserCountry } from "@/hooks/use-user-country";
 import { ArrowLeft, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,6 +12,7 @@ import { ItemDetailsCard } from "./components/item-details-card";
 import { ItemInfoSection } from "./components/item-info-section";
 import { ItemMediaCard } from "./components/item-media-card";
 import { ItemPlacementsCard } from "./components/item-placements-card";
+import { ItemProductPricingCard } from "./components/item-product-pricing-card";
 import { ItemViewSkeleton } from "./components/item-view-skeleton";
 import { useGetItemById } from "./hooks/use-get-item-by-id";
 
@@ -20,7 +22,23 @@ interface ItemViewProps {
 
 export function ItemView({ id }: ItemViewProps) {
   const router = useRouter();
-  const { data: response, isLoading } = useGetItemById(id);
+  const {
+    countryCode: viewerCountryCode,
+    countryName: viewerCountryName,
+    isLoading: isDetectingCountry,
+  } = useUserCountry();
+
+  /** Manual chip only — IP country goes as countryCode/countryName (single GET) */
+  const [manualCountryId, setManualCountryId] = useState<string | undefined>();
+
+  const countryReady = !isDetectingCountry;
+
+  const { data: response, isLoading } = useGetItemById(id, {
+    enabled: countryReady,
+    countryId: manualCountryId,
+    countryCode: manualCountryId ? undefined : viewerCountryCode,
+    countryName: manualCountryId ? undefined : viewerCountryName,
+  });
   const item = response?.data;
 
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -61,7 +79,7 @@ export function ItemView({ id }: ItemViewProps) {
   const productGalleryThumbnails = thumbnailsWithIndex.filter((t) => t.type === "product");
   const additionalThumbnails = thumbnailsWithIndex.filter((t) => t.type === "additional");
 
-  if (isLoading) {
+  if (!countryReady || isLoading) {
     return <ItemViewSkeleton />;
   }
 
@@ -91,7 +109,7 @@ export function ItemView({ id }: ItemViewProps) {
           />
         </div>
 
-        <div className="animate-in fade-in slide-in-from-bottom-4 grid items-start gap-4 transition-colors duration-700 lg:grid-cols-3">
+        <div className="animate-in fade-in slide-in-from-bottom-4 grid items-stretch gap-4 transition-colors duration-700 lg:grid-cols-3">
           <ItemMediaCard
             item={item}
             mainImage={mainImage}
@@ -101,6 +119,16 @@ export function ItemView({ id }: ItemViewProps) {
             swapWithMain={swapWithMain}
           />
           <ItemDetailsCard item={item} />
+        </div>
+
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <ItemProductPricingCard
+            item={item}
+            viewerCountryCode={viewerCountryCode}
+            viewerCountryName={viewerCountryName}
+            selectedCountryId={manualCountryId || item.pricingCountry?.id}
+            onSelectCountryId={setManualCountryId}
+          />
         </div>
 
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">

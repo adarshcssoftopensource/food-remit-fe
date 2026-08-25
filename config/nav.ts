@@ -220,6 +220,11 @@ export const navigationItems = [
 
 export const cmsNavigationItems = [
   {
+    title: "Landing Page",
+    url: ROUTES.ADMIN.CONTENT_MANAGEMENT.LANDING_PAGE,
+    icon: Monitor,
+  },
+  {
     title: "About Us",
     url: ROUTES.ADMIN.CONTENT_MANAGEMENT.ABOUT_US,
     icon: FileText,
