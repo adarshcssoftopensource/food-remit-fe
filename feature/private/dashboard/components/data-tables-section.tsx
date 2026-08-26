@@ -2,6 +2,7 @@
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ROUTES } from "@/config/routes";
 import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { Clock, Inbox, LifeBuoy, ShoppingBag } from "lucide-react";
 import type { DashboardOrderRequested, DashboardTicketItem } from "../types/dashboard.types";
@@ -37,7 +38,9 @@ export function DataTablesSection({
             <ShoppingBag className="h-4.5 w-4.5" />
           </div>
         }
-        action={<DashboardActionButton href={DASHBOARD_ROUTES.REQUESTED_ORDERS} label="View All" />}
+        action={
+          <DashboardActionButton href={ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT} label="View All" />
+        }
         contentClassName="p-0 overflow-x-auto"
       >
         <div className="w-full min-w-0 overflow-x-auto">

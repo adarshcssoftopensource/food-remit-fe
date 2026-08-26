@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/components/common/status-badge";
+import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { SubAdminActionsCell } from "../components/actions-cell";
 import { SubAdminData } from "../types/sub-admin.types";
@@ -77,6 +78,14 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
       <span className="bg-primary/10 text-primary rounded-full px-2.5 py-0.5 text-xs font-semibold">
         {row.original.permissions.length} modules
       </span>
+    ),
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-sm text-slate-700">{formatDate(row.original.createdAt)}</span>
     ),
   },
   {

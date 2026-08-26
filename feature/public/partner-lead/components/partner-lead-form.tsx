@@ -685,6 +685,11 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           className="h-11 rounded-xl border-slate-200 bg-white pl-9 text-sm"
                         />
                       </div>
+                      {errors.websiteOrSocial && (
+                        <p className="text-xs font-medium text-red-500">
+                          {errors.websiteOrSocial.message}
+                        </p>
+                      )}
                     </div>
                   )}
                 />
