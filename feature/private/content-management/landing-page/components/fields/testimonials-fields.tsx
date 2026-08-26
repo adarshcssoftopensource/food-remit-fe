@@ -12,16 +12,16 @@ export function TestimonialsFields({ control, errors }: FieldsProps) {
     <>
       <FormTextField
         control={control}
-        name="eyebrow"
-        label="Eyebrow"
-        error={fieldError(errors, "eyebrow")}
+        name="title"
+        label="Title"
+        error={fieldError(errors, "title")}
       />
       <FormTextField
         control={control}
-        name="title"
-        label="Title"
+        name="subtitle"
+        label="Subtitle"
         multiline
-        error={fieldError(errors, "title")}
+        error={fieldError(errors, "subtitle")}
       />
       <ObjectArrayFields
         control={control}

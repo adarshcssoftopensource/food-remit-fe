@@ -28,13 +28,13 @@ export function HeroSection({ data }: HeroSectionProps) {
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="vendor-fade-up text-sm font-semibold tracking-[0.18em] text-[#fdba74] uppercase">
-          {data.eyebrow}
+          {data.title}
         </p>
         <h1 className="vendor-fade-up vendor-delay-1 mt-4 max-w-3xl text-4xl leading-[1.08] font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-          {data.title}
+          {data.subtitle}
         </h1>
         <p className="vendor-fade-up vendor-delay-2 mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-          {data.subtitle}
+          {data.description}
         </p>
 
         <div className="vendor-fade-up vendor-delay-3 mt-8 flex flex-wrap gap-3">

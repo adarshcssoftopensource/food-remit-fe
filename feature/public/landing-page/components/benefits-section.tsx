@@ -14,9 +14,11 @@ export function BenefitsSection({ data }: BenefitsSectionProps) {
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <div className="max-w-2xl">
           <p className="text-sm font-semibold tracking-[0.16em] text-[#fdba74] uppercase">
-            {data.eyebrow}
+            {data.title}
           </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{data.title}</h2>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+            {data.subtitle}
+          </h2>
         </div>
 
         <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

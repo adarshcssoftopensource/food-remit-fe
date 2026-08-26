@@ -5,9 +5,9 @@ import type { LandingPageContent, LandingSectionKey } from "../types";
 const required = (label: string) => z.string().min(1, `${label} is required`);
 
 export const heroSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
   subtitle: required("Subtitle"),
+  description: required("Description"),
   ctaLabel: required("CTA label"),
   backgroundImage: z.string().optional().or(z.literal("")),
   backgroundImageAlt: required("Image alt text"),
@@ -23,8 +23,8 @@ export const statsSchema = z.object({
 });
 
 export const whyJoinSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   description: required("Description"),
   highlight: required("Highlight"),
   points: z.array(z.string().min(1, "Point is required")).min(1, "Add at least one point"),
@@ -33,8 +33,8 @@ export const whyJoinSchema = z.object({
 });
 
 export const revenueSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   description: required("Description"),
   marketLabel: required("Market label"),
   markets: z
@@ -49,8 +49,8 @@ export const revenueSchema = z.object({
 });
 
 export const howItWorksSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   description: required("Description"),
   steps: z
     .array(
@@ -64,8 +64,8 @@ export const howItWorksSchema = z.object({
 });
 
 export const benefitsSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   items: z
     .array(
       z.object({
@@ -77,15 +77,15 @@ export const benefitsSchema = z.object({
 });
 
 export const businessTypesSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   description: required("Description"),
   types: z.array(z.string().min(1, "Type is required")).min(1, "Add at least one type"),
 });
 
 export const opportunitySchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   stories: z
     .array(
       z.object({
@@ -99,8 +99,8 @@ export const opportunitySchema = z.object({
 });
 
 export const differentSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   items: z
     .array(
       z.object({
@@ -112,8 +112,8 @@ export const differentSchema = z.object({
 });
 
 export const successSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   description: required("Description"),
   investments: z
     .array(z.string().min(1, "Investment is required"))
@@ -135,8 +135,8 @@ export const trustSchema = z.object({
 });
 
 export const testimonialsSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   items: z
     .array(
       z.object({
@@ -149,8 +149,8 @@ export const testimonialsSchema = z.object({
 });
 
 export const faqSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   items: z
     .array(
       z.object({
@@ -162,8 +162,8 @@ export const faqSchema = z.object({
 });
 
 export const joinSchema = z.object({
-  eyebrow: required("Eyebrow"),
   title: required("Title"),
+  subtitle: required("Subtitle"),
   description: required("Description"),
 });
 
@@ -226,17 +226,17 @@ export type SectionFormValuesMap = {
 
 const EMPTY: LandingPageContent = {
   hero: {
-    eyebrow: "",
     title: "",
     subtitle: "",
+    description: "",
     ctaLabel: "",
     backgroundImage: "",
     backgroundImageAlt: "",
   },
   stats: { items: [] },
   whyJoin: {
-    eyebrow: "",
     title: "",
+    subtitle: "",
     description: "",
     highlight: "",
     points: [],
@@ -244,29 +244,29 @@ const EMPTY: LandingPageContent = {
     imageAlt: "",
   },
   revenue: {
-    eyebrow: "",
     title: "",
+    subtitle: "",
     description: "",
     marketLabel: "",
     markets: [],
   },
-  howItWorks: { eyebrow: "", title: "", description: "", steps: [] },
-  benefits: { eyebrow: "", title: "", items: [] },
-  businessTypes: { eyebrow: "", title: "", description: "", types: [] },
-  opportunity: { eyebrow: "", title: "", stories: [], closing: "" },
-  different: { eyebrow: "", title: "", items: [] },
+  howItWorks: { title: "", subtitle: "", description: "", steps: [] },
+  benefits: { title: "", subtitle: "", items: [] },
+  businessTypes: { title: "", subtitle: "", description: "", types: [] },
+  opportunity: { title: "", subtitle: "", stories: [], closing: "" },
+  different: { title: "", subtitle: "", items: [] },
   success: {
-    eyebrow: "",
     title: "",
+    subtitle: "",
     description: "",
     investments: [],
     image: "",
     imageAlt: "",
   },
   trust: { title: "", items: [] },
-  testimonials: { eyebrow: "", title: "", items: [] },
-  faq: { eyebrow: "", title: "", items: [] },
-  join: { eyebrow: "", title: "", description: "" },
+  testimonials: { title: "", subtitle: "", items: [] },
+  faq: { title: "", subtitle: "", items: [] },
+  join: { title: "", subtitle: "", description: "" },
   footer: { tagline: "", copyright: "" },
 };
 
@@ -276,6 +276,20 @@ export function normalizeSectionData<K extends LandingSectionKey>(
 ): SectionFormValuesMap[K] {
   const base = EMPTY[section];
   const data = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+
+  // Backwards compatibility migration for legacy data using eyebrow
+  if ("eyebrow" in data && typeof data.eyebrow === "string" && data.eyebrow) {
+    if (!data.title) {
+      data.title = data.eyebrow;
+      if (data.title && !data.subtitle) {
+        data.subtitle = (raw as Record<string, unknown>).title || "";
+      }
+      if (data.subtitle && !data.description && (raw as Record<string, unknown>).subtitle) {
+        data.description = (raw as Record<string, unknown>).subtitle || "";
+      }
+    }
+  }
+
   const merged = { ...base, ...data } as Record<string, unknown>;
 
   // Guarantee arrays so .map never crashes

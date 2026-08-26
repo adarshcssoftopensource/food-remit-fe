@@ -12,10 +12,10 @@ export function FaqSection({ data }: FaqSectionProps) {
       <div className="mx-auto max-w-3xl px-5 sm:px-8">
         <div className="text-center">
           <p className="text-sm font-semibold tracking-[0.16em] text-[#166534] uppercase">
-            {data.eyebrow}
+            {data.title}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            {data.title}
+            {data.subtitle}
           </h2>
         </div>
 

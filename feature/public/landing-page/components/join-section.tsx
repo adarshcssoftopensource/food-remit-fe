@@ -21,9 +21,9 @@ export function JoinSection({ data }: JoinSectionProps) {
 
       <div className="relative mx-auto max-w-3xl px-5 text-center sm:px-8">
         <p className="text-sm font-semibold tracking-[0.16em] text-[#fdba74] uppercase">
-          {data.eyebrow}
+          {data.title}
         </p>
-        <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">{data.title}</h2>
+        <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">{data.subtitle}</h2>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
           {data.description}
         </p>

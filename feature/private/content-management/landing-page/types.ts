@@ -16,9 +16,9 @@ export type LandingSectionKey =
   | "footer";
 
 export type LandingHero = {
-  eyebrow: string;
   title: string;
   subtitle: string;
+  description: string;
   ctaLabel: string;
   backgroundImage: string;
   backgroundImageAlt: string;
@@ -27,8 +27,8 @@ export type LandingHero = {
 export type LandingStat = { value: string; label: string };
 
 export type LandingWhyJoin = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   description: string;
   highlight: string;
   points: string[];
@@ -43,49 +43,49 @@ export type LandingMarket = {
 };
 
 export type LandingRevenue = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   description: string;
   marketLabel: string;
   markets: LandingMarket[];
 };
 
 export type LandingHowItWorks = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   description: string;
   steps: { step: string; title: string; description: string }[];
 };
 
 export type LandingBenefits = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   items: { title: string; description: string }[];
 };
 
 export type LandingBusinessTypes = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   description: string;
   types: string[];
 };
 
 export type LandingOpportunity = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   stories: { from: string; habit: string; for: string }[];
   closing: string;
 };
 
 export type LandingDifferent = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   items: { unlike: string; point: string }[];
 };
 
 export type LandingSuccess = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   description: string;
   investments: string[];
   image: string;
@@ -98,20 +98,20 @@ export type LandingTrust = {
 };
 
 export type LandingTestimonials = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   items: { quote: string; name: string; role: string }[];
 };
 
 export type LandingFaq = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   items: { question: string; answer: string }[];
 };
 
 export type LandingJoin = {
-  eyebrow: string;
   title: string;
+  subtitle: string;
   description: string;
 };
 

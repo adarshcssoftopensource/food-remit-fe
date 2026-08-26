@@ -14,10 +14,10 @@ export function WhyJoinSection({ data }: WhyJoinSectionProps) {
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
         <div>
           <p className="text-sm font-semibold tracking-[0.16em] text-[#ea580c] uppercase">
-            {data.eyebrow}
+            {data.title}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            {data.title}
+            {data.subtitle}
           </h2>
           <p className="mt-5 text-base leading-relaxed text-slate-600 sm:text-lg">
             {data.description}
@@ -68,10 +68,10 @@ export function RevenueSection({ data }: RevenueSectionProps) {
       <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
         <div className="max-w-2xl">
           <p className="text-sm font-semibold tracking-[0.16em] text-[#166534] uppercase">
-            {data.eyebrow}
+            {data.title}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            {data.title}
+            {data.subtitle}
           </h2>
           <p className="mt-5 text-base leading-relaxed text-slate-600 sm:text-lg">
             {data.description}

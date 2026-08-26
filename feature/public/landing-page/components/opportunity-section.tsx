@@ -10,10 +10,10 @@ export function OpportunitySection({ data }: OpportunitySectionProps) {
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <div className="max-w-2xl">
           <p className="text-sm font-semibold tracking-[0.16em] text-[#ea580c] uppercase">
-            {data.eyebrow}
+            {data.title}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            {data.title}
+            {data.subtitle}
           </h2>
         </div>
 

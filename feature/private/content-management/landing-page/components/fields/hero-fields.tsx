@@ -11,15 +11,8 @@ export function HeroFields({ control, errors }: FieldsProps) {
     <>
       <FormTextField
         control={control}
-        name="eyebrow"
-        label="Eyebrow"
-        error={fieldError(errors, "eyebrow")}
-      />
-      <FormTextField
-        control={control}
         name="title"
         label="Title"
-        multiline
         error={fieldError(errors, "title")}
       />
       <FormTextField
@@ -28,6 +21,13 @@ export function HeroFields({ control, errors }: FieldsProps) {
         label="Subtitle"
         multiline
         error={fieldError(errors, "subtitle")}
+      />
+      <FormTextField
+        control={control}
+        name="description"
+        label="Description"
+        multiline
+        error={fieldError(errors, "description")}
       />
       <FormTextField
         control={control}
