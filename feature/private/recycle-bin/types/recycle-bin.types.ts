@@ -1,4 +1,5 @@
 import { RowSelectionState } from "@tanstack/react-table";
+import { RecycleEntityType } from "../hooks/use-get-recycled-data";
 
 export interface RecycleBinStatsProps {
   stats: {
@@ -22,6 +23,7 @@ export interface RecycleBinFiltersProps {
 }
 
 export interface RecycleBinTableProps {
+  entityType?: RecycleEntityType;
   data: any[];
   isLoading: boolean;
   searchValue: string;
