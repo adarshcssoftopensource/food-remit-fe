@@ -170,7 +170,7 @@ export function DataTable<TData, TValue>({
         ))}
       </TableRow>
     ));
-  }, [loading, rows, columns, table]);
+  }, [loading, rows, columns, table, rowSelection]);
 
   return (
     <div className="space-y-4">

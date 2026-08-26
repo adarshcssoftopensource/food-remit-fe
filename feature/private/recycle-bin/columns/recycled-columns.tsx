@@ -51,10 +51,10 @@ export const storesColumns: ColumnDef<any>[] = [
     enableSorting: true,
     cell: ({ row }) => (
       <div>
-        <p className="font-semibold text-slate-900 dark:text-white">{row.original.storeName}</p>
-        {row.original.address && (
-          <p className="max-w-xs truncate text-xs text-slate-400">{row.original.address}</p>
-        )}
+        <p className="font-semibold text-slate-900 capitalize dark:text-white">
+          {row.original.storeName}
+        </p>
+        <p className="max-w-xs truncate text-xs text-slate-400">{row.original.storeAddress}</p>
       </div>
     ),
   },
@@ -72,7 +72,9 @@ export const storesColumns: ColumnDef<any>[] = [
     accessorKey: "contactNumber",
     header: "Contact",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-600">{row.original.contactNumber || "N/A"}</span>
+      <span className="text-xs text-slate-600">
+        {`${row.original.storeCountryCode} ${row.original.storePhoneNumber}` || "N/A"}
+      </span>
     ),
   },
   {
@@ -80,9 +82,9 @@ export const storesColumns: ColumnDef<any>[] = [
     header: "Status",
     cell: ({ row }) => (
       <StatusBadge
-        status={row.original.storeStatus}
+        status={row.original.status}
         activeLabel="ACTIVE"
-        displayLabel={row.original.storeStatus === "ACTIVE" ? "Active" : "Inactive"}
+        displayLabel={row.original.status === "ACTIVE" ? "Active" : "Inactive"}
       />
     ),
   },

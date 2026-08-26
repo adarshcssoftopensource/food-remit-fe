@@ -64,7 +64,6 @@ export function AmountLimitDialog({
   const onSubmit = async (values: AmountLimitFormValues) => {
     try {
       console.log("Amount Limit Data:", values);
-
       if (mode === "add") {
         successToast({ title: "Country amount limit added successfully" });
       } else {
