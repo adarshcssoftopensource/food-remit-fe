@@ -28,7 +28,12 @@ export const partnerLeadSchema = z.object({
 
   workPreferences: z.array(z.string()),
   inventoryManagement: z.string().optional(),
-  websiteOrSocial: z.string().optional(),
+  websiteOrSocial: z
+    .string()
+    .refine((value) => !value || /^https?:\/\/.+\..+/.test(value), {
+      message: "Please enter a valid URL",
+    })
+    .optional(),
   additionalNotes: z.string().optional(),
 
   agreeToContact: z.boolean().refine((val) => val === true, {

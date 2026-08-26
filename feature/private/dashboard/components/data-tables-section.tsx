@@ -2,6 +2,7 @@
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ROUTES } from "@/config/routes";
 import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { Clock, Inbox, LifeBuoy, ShoppingBag } from "lucide-react";
 import type { DashboardOrderRequested, DashboardTicketItem } from "../types/dashboard.types";

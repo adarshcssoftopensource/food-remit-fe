@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Input as InputPrimitive } from "@base-ui/react/input";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -19,8 +19,8 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         className,
       )}
       onKeyDown={(e) => {
-        const value = e.currentTarget.value;
-        if (e.key === " " && value.length === 0) {
+        const cursorPosition = e.currentTarget.selectionStart ?? 0;
+        if (e.key === " " && cursorPosition === 0) {
           e.preventDefault();
         }
       }}
