@@ -67,6 +67,7 @@ export function ActionsCell({ user }: { user: UserData }) {
 
         <Switch
           checked={isActive}
+          title={isActive ? "Active" : "Inactive"}
           onCheckedChange={handleStatusChange}
           disabled={updateUserStatus.isPending || isDeleting}
           className="data-[state=checked]:bg-green-500"

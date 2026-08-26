@@ -206,15 +206,11 @@ export function ItemProductPricingCard({
                 ))}
               </div>
 
-              <div className="dark:border-primary dark:bg-primary border-t-2 border-slate-900 bg-slate-800 px-5 py-5 text-white sm:px-8">
+              <div className="dark:border-primary dark:bg-primary border-primary/20 bg-primary/5 border-t-2 px-5 py-5 sm:px-8">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
-                    <p className="text-[11px] font-medium tracking-wider text-white/70 uppercase">
-                      Item Total
-                    </p>
-                    <p className="mt-0.5 text-xs text-white/60">
-                      Per item (processing fee not included)
-                    </p>
+                    <p className="text-[11px] font-medium tracking-wider uppercase">Item Total</p>
+                    <p className="mt-0.5 text-xs">Per item (processing fee not included)</p>
                   </div>
                   <p className="font-mono text-3xl font-bold tracking-tight tabular-nums sm:text-4xl">
                     {itemTotal}
