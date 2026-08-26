@@ -39,7 +39,10 @@ export function DataTablesSection({
           </div>
         }
         action={
-          <DashboardActionButton href={ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT} label="View All" />
+          <DashboardActionButton
+            href={`${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=requested-orders`}
+            label="View All"
+          />
         }
         contentClassName="p-0 overflow-x-auto"
       >

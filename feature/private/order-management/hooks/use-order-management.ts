@@ -1,7 +1,7 @@
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useTableFilters } from "@/hooks/use-table-filters";
 import { OrderSectionKey } from "@/constants/order-management";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useGetOrders } from "./use-get-orders";
 
 export function useOrderManagement(section?: OrderSectionKey) {
@@ -33,17 +33,14 @@ export function useOrderManagement(section?: OrderSectionKey) {
 
   if (section === "sent-orders") {
     type = 1;
-    status = "1"; // Only show pending sent orders
   } else if (section === "requested-orders") {
     type = 2;
-    status = "1"; // Only show pending requested orders
   } else if (section === "partial-orders") {
-    status = "5"; // Assuming 5 represents partial/accepted
+    status = "5"; // 5 represents partial/accepted
   } else if (section === "completed-orders") {
     status = "6"; // 6 represents completed
   } else if (section === "history") {
-    // Optionally leave undefined for all, or set a specific status if history implies past orders
-    // Leaving undefined for now so it fetches everything (or could be 6 and 7)
+    // History shows all orders across statuses
   }
 
   const {

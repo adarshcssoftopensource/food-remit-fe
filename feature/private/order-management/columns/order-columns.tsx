@@ -2,7 +2,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { OrderData } from "../types/order.types";
 import { OrderActionsCell } from "../components/order-actions-cell";
 import { formatDate } from "@/lib/date";
-import { StatusBadge } from "@/components/common/status-badge";
 
 export const orderColumns: ColumnDef<OrderData>[] = [
   {
@@ -54,26 +53,41 @@ export const orderColumns: ColumnDef<OrderData>[] = [
     ),
   },
   {
+    accessorKey: "price",
+    header: "Price",
+    cell: ({ row }) => (
+      <span className="font-semibold text-slate-900 dark:text-slate-100">
+        {row.original.price || "0.00 USD"}
+      </span>
+    ),
+  },
+  {
     accessorKey: "orderStatus",
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.orderStatus;
-      let label = "Unknown";
+      const isRequested = row.original.orderType === 2;
+      let label = "Pending";
       let colorClass = "border-slate-200 bg-slate-50 text-slate-700";
       let dotClass = "bg-slate-500";
 
-      if (status === 0) {
+      if (status === 0 || status === 7) {
         label = "Declined";
         colorClass =
           "border-red-200 bg-red-50 text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400";
         dotClass = "bg-red-500";
       } else if (status === 1) {
-        label = "Pending";
+        label = isRequested ? "Requested" : "Pending";
         colorClass =
           "border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400";
         dotClass = "bg-amber-500";
+      } else if (status === 2) {
+        label = "Preparing";
+        colorClass =
+          "border-sky-200 bg-sky-50 text-sky-600 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-400";
+        dotClass = "bg-sky-500";
       } else if (status === 5) {
-        label = "Partial";
+        label = isRequested ? "Accepted" : "Sent";
         colorClass =
           "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400";
         dotClass = "bg-blue-500";

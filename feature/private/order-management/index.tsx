@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
@@ -12,7 +13,21 @@ import { orderColumns } from "./columns/order-columns";
 import { useOrderManagement } from "./hooks/use-order-management";
 
 export function OrdersManagementPage() {
-  const [activeTab, setActiveTab] = useState<OrderSectionKey>("sent-orders");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab") as OrderSectionKey | null;
+  const validTabParam = tabParam && ORDER_TABS.some((t) => t.value === tabParam) ? tabParam : null;
+
+  const [overrideTab, setOverrideTab] = useState<{ param: string | null; tab: OrderSectionKey }>({
+    param: tabParam,
+    tab: validTabParam ?? "sent-orders",
+  });
+
+  const activeTab =
+    overrideTab.param === tabParam ? overrideTab.tab : (validTabParam ?? "sent-orders");
+
+  const handleTabChange = (v: string) => {
+    setOverrideTab({ param: tabParam, tab: v as OrderSectionKey });
+  };
 
   const {
     clearFilters,
@@ -75,7 +90,7 @@ export function OrdersManagementPage() {
       </ModuleFilters>
 
       <div className="rounded-2xl border p-4 shadow-sm sm:p-6">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as OrderSectionKey)}>
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <div className="mb-8 overflow-x-auto pb-2">
             <TabsList className="inline-flex h-11 w-auto items-center justify-start gap-1 rounded-full bg-slate-100/80 p-1 px-1.5 shadow-inner dark:bg-slate-800/50">
               {ORDER_TABS.map((tab) => (

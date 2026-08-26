@@ -9,9 +9,10 @@ export interface OrderData {
   addedOnTimestamp?: string;
   createdAt: string;
   updatedAt: string;
-  items?: any[];
-  transactions?: any[];
+  items?: Record<string, unknown>[];
+  transactions?: Record<string, unknown>[];
   userName?: string;
   recieverName?: string;
   storeName?: string;
+  price?: string;
 }
