@@ -1,35 +1,39 @@
 "use client";
 
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatDate } from "@/lib/date";
 import {
   ArrowLeft,
-  Package,
-  User,
-  Store,
-  Receipt,
-  CreditCard,
-  ShoppingBag,
-  Clock,
-  MapPin,
-  Phone,
   Barcode,
-  Tag,
-  Repeat,
-  DollarSign,
-  Percent,
   Calendar,
+  Clock,
+  CreditCard,
+  DollarSign,
+  Expand,
+  MapPin,
+  Package,
+  Percent,
+  Phone,
+  Receipt,
+  Repeat,
   ShieldCheck,
+  ShoppingBag,
+  Store,
+  Tag,
+  User,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useGetOrder } from "./hooks/use-get-order";
-import { formatDate } from "@/lib/date";
 
 export function OrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
   const { data: order, isLoading } = useGetOrder(id);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const renderStatus = (status: number) => {
     let label = "Unknown";
@@ -393,28 +397,44 @@ export function OrderDetailPage({ id }: { id: string }) {
                         className="transition-colors hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
                       >
                         <td className="px-6 py-4">
-                          {item.productPicture ? (
-                            <img
-                              src={item.productPicture.split(",")[0].trim()}
-                              alt={item.itemName || "Product"}
-                              className="size-16 rounded-xl border border-slate-200 object-cover shadow-xs dark:border-slate-700"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = "none";
-                                const parent = (e.target as HTMLImageElement).parentElement;
-                                if (parent && !parent.querySelector(".fallback-bag-icon")) {
-                                  const placeholder = document.createElement("div");
-                                  placeholder.className =
-                                    "fallback-bag-icon flex size-16 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-slate-800";
-                                  placeholder.innerHTML = `<svg class="size-7" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`;
-                                  parent.appendChild(placeholder);
+                          <div className="relative inline-block">
+                            {item.productPicture ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={item.productPicture.split(",")[0].trim()}
+                                alt={item.itemName || "Product"}
+                                className="size-16 rounded-xl border border-slate-200 object-cover shadow-xs dark:border-slate-700"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = "none";
+                                  const parent = (e.target as HTMLImageElement).parentElement;
+                                  if (parent && !parent.querySelector(".fallback-bag-icon")) {
+                                    const placeholder = document.createElement("div");
+                                    placeholder.className =
+                                      "fallback-bag-icon flex size-16 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-slate-800";
+                                    placeholder.innerHTML = `<svg class="size-7" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`;
+                                    parent.appendChild(placeholder);
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <div className="flex size-16 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-slate-800">
+                                <ShoppingBag className="size-7" />
+                              </div>
+                            )}
+                            {item.productPicture && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  setLightboxImage(item.productPicture!.split(",")[0].trim())
                                 }
-                              }}
-                            />
-                          ) : (
-                            <div className="flex size-16 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-slate-800">
-                              <ShoppingBag className="size-7" />
-                            </div>
-                          )}
+                                className="absolute -top-1 -right-1 h-6 w-6 rounded-full border border-white bg-slate-900/80 p-0 text-white shadow-md hover:bg-slate-900"
+                              >
+                                <Expand className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
                           <p className="text-base font-semibold">
@@ -452,6 +472,8 @@ export function OrderDetailPage({ id }: { id: string }) {
           )}
         </CardContent>
       </Card>
+
+      <ImageLightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />
     </div>
   );
 }
