@@ -2,24 +2,36 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { PageHeader } from "@/components/common/page-header";
-import { RowSelectionState, SortingState } from "@tanstack/react-table";
-import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
-import { useBulkPermanentDeleteUsers } from "../users-management/hooks/use-bulk-permanent-delete-users";
-import { useBulkRestoreUsers } from "../users-management/hooks/use-bulk-restore-users";
-
+import { Button } from "@/components/ui/button";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDebounce } from "@/lib/debounce";
-import { useGetRecycledUsers, UseGetUsersArgs } from "./hooks/use-get-recycled-users";
-
+import { RowSelectionState, SortingState } from "@tanstack/react-table";
+import { Building2, FolderTree, Globe, MapPin, Package, Store, Users } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { RecycleBinTable } from "./components/recycle-bin-table";
+import { RecycleEntityType, useGetRecycledData } from "./hooks/use-get-recycled-data";
+import {
+  useBulkPermanentDeleteEntities,
+  useBulkRestoreEntities,
+} from "./hooks/use-recycle-bin-actions";
+
+const ENTITY_TABS: {
+  id: RecycleEntityType;
+  label: string;
+  icon: any;
+}[] = [
+  { id: "users", label: "Users", icon: Users },
+  { id: "stores", label: "Stores", icon: Store },
+  { id: "items", label: "Items", icon: Package },
+  { id: "departments", label: "Departments", icon: Building2 },
+  { id: "categories", label: "Categories", icon: FolderTree },
+  { id: "city-managers", label: "City Managers", icon: MapPin },
+  { id: "country-managers", label: "Country Managers", icon: Globe },
+];
 
 export function RecycledUsersManagement() {
-  const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
-  const [toDate, setToDate] = useState<Date | undefined>(undefined);
-  const [status, setStatus] = useState<string | null>(null);
-  const [country, setCountry] = useState("all");
-  const [city, setCity] = useState("all");
+  const [activeTab, setActiveTab] = useState<RecycleEntityType>("users");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -29,93 +41,62 @@ export function RecycledUsersManagement() {
   const [isBulkRestoreDialogOpen, setIsBulkRestoreDialogOpen] = useState(false);
   const [isBulkPermanentDeleteDialogOpen, setIsBulkPermanentDeleteDialogOpen] = useState(false);
 
-  const bulkRestoreUsers = useBulkRestoreUsers();
-  const bulkPermanentDeleteUsers = useBulkPermanentDeleteUsers();
+  const bulkRestore = useBulkRestoreEntities(activeTab);
+  const bulkPermanentDelete = useBulkPermanentDeleteEntities(activeTab);
 
-  const queryArgs: UseGetUsersArgs = {
+  const queryArgs = {
     page: currentPage,
     limit: rowsPerPage,
     search: debouncedSearch || undefined,
-    fromDate,
-    toDate,
-    status: status || undefined,
     sortBy: sorting[0]?.id || undefined,
-    sortOrder: sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined,
+    sortOrder: (sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined) as
+      "asc" | "desc" | undefined,
   };
 
-  const { data: res, isLoading } = useGetRecycledUsers(queryArgs);
-  const allData = useMemo(() => {
-    const rawData = (res?.data ?? []) as any[];
-    return rawData.filter((user) => {
-      if (country !== "all" && country !== "All" && user.countryId && user.countryId !== country) {
-        return false;
-      }
-      if (city !== "all" && city !== "All" && user.cityId && user.cityId !== city) {
-        return false;
-      }
-      return true;
-    });
-  }, [res?.data, country, city]);
+  const { formattedData, isLoading } = useGetRecycledData(activeTab, queryArgs);
 
-  const stats = {
-    total: res?.stats?.total ?? 0,
-    active: res?.stats?.active ?? 0,
-    inactive: res?.stats?.inactive ?? 0,
-  };
-
-  const selectedUserIds = useMemo(() => {
-    return Object.keys(rowSelection).filter(Boolean);
+  const selectedIds = useMemo(() => {
+    return Object.keys(rowSelection).filter((id) => rowSelection[id]);
   }, [rowSelection]);
 
+  const handleTabChange = (tabId: RecycleEntityType) => {
+    setActiveTab(tabId);
+    setCurrentPage(1);
+    setSearch("");
+    setRowSelection({});
+    setSorting([]);
+  };
+
   const handleBulkRestore = () => {
-    bulkRestoreUsers.mutate(
-      { ids: selectedUserIds },
+    bulkRestore.mutate(
+      { ids: selectedIds },
       {
         onSuccess: () => {
-          toast.success(`${selectedUserIds.length} users have been restored successfully.`);
+          toast.success(`${selectedIds.length} records restored successfully.`);
           setRowSelection({});
           setIsBulkRestoreDialogOpen(false);
         },
         onError: () => {
-          toast.error("Failed to restore selected users.");
+          toast.error("Failed to restore selected records.");
         },
       },
     );
   };
 
   const handleBulkPermanentDelete = () => {
-    bulkPermanentDeleteUsers.mutate(
-      { ids: selectedUserIds },
+    bulkPermanentDelete.mutate(
+      { ids: selectedIds },
       {
         onSuccess: () => {
-          toast.success(`${selectedUserIds.length} users have been permanently deleted.`);
+          toast.success(`${selectedIds.length} records permanently deleted.`);
           setRowSelection({});
           setIsBulkPermanentDeleteDialogOpen(false);
         },
         onError: () => {
-          toast.error("Failed to permanently delete selected users.");
+          toast.error("Failed to permanently delete selected records.");
         },
       },
     );
-  };
-
-  const hasFilters = !!(
-    fromDate ||
-    toDate ||
-    status ||
-    (country !== "all" && country !== "All") ||
-    (city !== "all" && city !== "All")
-  );
-
-  const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatus(null);
-    setCountry("all");
-    setCity("all");
-    setSearch("");
-    setCurrentPage(1);
-    setSorting([]);
   };
 
   const handleSearchChange = useCallback((value: string) => {
@@ -132,55 +113,52 @@ export function RecycledUsersManagement() {
     setCurrentPage(1);
   }, []);
 
-  const handleSortingChange = useCallback(
-    (nextSorting: import("@tanstack/react-table").SortingState) => {
-      setSorting(nextSorting);
-      setCurrentPage(1);
-    },
-    [],
-  );
+  const handleSortingChange = useCallback((nextSorting: SortingState) => {
+    setSorting(nextSorting);
+    setCurrentPage(1);
+  }, []);
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Recycle Bin"
-        description="Users who have been deleted but can be restored across countries and cities"
+        description="View, restore, or permanently delete soft-deleted records across all modules."
       />
 
-      {/* <RecycleBinFilters
-        fromDate={fromDate}
-        toDate={toDate}
-        status={status}
-        country={country}
-        city={city}
-        isLoading={isLoading}
-        hasFilters={hasFilters}
-        onCountryChange={setCountry}
-        onCityChange={setCity}
-        onFromDateChange={(d) => {
-          setFromDate(d);
-          setCurrentPage(1);
-        }}
-        onToDateChange={(d) => {
-          setToDate(d);
-          setCurrentPage(1);
-        }}
-        onStatusChange={(v) => {
-          setStatus(v);
-          setCurrentPage(1);
-        }}
-        onClearFilters={clearFilters}
-      /> */}
+      {/* Entity Navigation Tabs */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3 dark:border-slate-800">
+        {ENTITY_TABS.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <Button
+              key={tab.id}
+              variant={isActive ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleTabChange(tab.id)}
+              className={`flex items-center gap-2 rounded-xl text-xs font-semibold transition-all ${
+                isActive
+                  ? "bg-slate-900 text-white shadow-md hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                  : "bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400"
+              }`}
+            >
+              <Icon className="h-3.75 w-3.75" />
+              {tab.label}
+            </Button>
+          );
+        })}
+      </div>
 
       <RecycleBinTable
-        data={allData}
+        entityType={activeTab}
+        data={formattedData?.data || []}
         isLoading={isLoading}
         searchValue={search}
         currentPage={currentPage}
-        totalPages={res?.pagination?.totalPages ?? 1}
+        totalPages={formattedData?.pagination?.totalPages ?? 1}
         rowsPerPage={rowsPerPage}
         rowSelection={rowSelection}
-        selectedCount={selectedUserIds.length}
+        selectedCount={selectedIds.length}
         onSearchChange={handleSearchChange}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
@@ -193,22 +171,22 @@ export function RecycledUsersManagement() {
       <ConfirmationDialog
         open={isBulkRestoreDialogOpen}
         onOpenChange={setIsBulkRestoreDialogOpen}
-        title="Restore Selected Users"
-        description={`Are you sure you want to restore ${selectedUserIds.length} selected users? They will be active in the system again.`}
-        confirmLabel="Restore Users"
+        title="Restore Selected Records"
+        description={`Are you sure you want to restore ${selectedIds.length} selected records? They will be active in the system again.`}
+        confirmLabel="Restore Records"
         onConfirm={handleBulkRestore}
-        isLoading={bulkRestoreUsers.isPending}
+        isLoading={bulkRestore.isPending}
       />
 
       <ConfirmationDialog
         open={isBulkPermanentDeleteDialogOpen}
         onOpenChange={setIsBulkPermanentDeleteDialogOpen}
-        title="Permanently Delete Selected Users"
-        description={`Are you sure you want to permanently delete ${selectedUserIds.length} selected users? This action cannot be undone and all associated data will be erased forever.`}
+        title="Permanently Delete Selected Records"
+        description={`Are you sure you want to permanently delete ${selectedIds.length} selected records? This action cannot be undone and all associated data will be erased forever.`}
         confirmLabel="Delete Permanently"
         variant="destructive"
         onConfirm={handleBulkPermanentDelete}
-        isLoading={bulkPermanentDeleteUsers.isPending}
+        isLoading={bulkPermanentDelete.isPending}
       />
     </div>
   );
