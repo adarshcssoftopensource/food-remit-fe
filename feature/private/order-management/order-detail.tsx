@@ -395,12 +395,19 @@ export function OrderDetailPage({ id }: { id: string }) {
                         <td className="px-6 py-4">
                           {item.productPicture ? (
                             <img
-                              src={item.productPicture}
+                              src={item.productPicture.split(",")[0].trim()}
                               alt={item.itemName || "Product"}
                               className="size-16 rounded-xl border border-slate-200 object-cover shadow-xs dark:border-slate-700"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  "https://foodremit-667761191441-ap-south-1-an.s3.ap-south-1.amazonaws.com/items/default-product.png";
+                                (e.target as HTMLImageElement).style.display = "none";
+                                const parent = (e.target as HTMLImageElement).parentElement;
+                                if (parent && !parent.querySelector(".fallback-bag-icon")) {
+                                  const placeholder = document.createElement("div");
+                                  placeholder.className =
+                                    "fallback-bag-icon flex size-16 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-slate-800";
+                                  placeholder.innerHTML = `<svg class="size-7" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`;
+                                  parent.appendChild(placeholder);
+                                }
                               }}
                             />
                           ) : (
