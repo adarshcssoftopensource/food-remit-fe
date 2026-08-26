@@ -6,7 +6,8 @@ export const feedbackColumns: ColumnDef<FeedbackData>[] = [
   {
     accessorKey: "id",
     header: "S.no",
-    cell: ({ row }) => row.index + 1,
+    cell: ({ row, table }) =>
+      table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1,
   },
   {
     accessorKey: "userName",

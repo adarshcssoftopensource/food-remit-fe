@@ -70,6 +70,7 @@ export function useGetStores(args?: UseGetStoresArgs) {
 
   return {
     data: stores,
+    stats: data?.stats,
     pagination: data?.pagination,
     isLoading,
     isError,

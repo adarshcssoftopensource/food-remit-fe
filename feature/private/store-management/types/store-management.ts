@@ -112,8 +112,16 @@ export interface RawStore {
   storeManager?: RawStoreManager;
 }
 
+export interface StoreStats {
+  total: number;
+  active: number;
+  inactive: number;
+  cities: number;
+}
+
 export interface StoreListResponse {
   data: RawStore[];
+  stats?: StoreStats;
   pagination?: {
     total: number;
     page: number;

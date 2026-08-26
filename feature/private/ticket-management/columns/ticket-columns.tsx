@@ -5,8 +5,12 @@ const baseColumns: ColumnDef<TicketRow>[] = [
   {
     id: "sno",
     header: "S.No",
-    cell: ({ row }) => (
-      <span className="pl-2 font-mono text-xs text-slate-500">{row.index + 1}</span>
+    cell: ({ row, table }) => (
+      <span className="pl-2 font-mono text-xs text-slate-500">
+        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+          row.index +
+          1}
+      </span>
     ),
   },
   { accessorKey: "orderId", header: "Order ID" },

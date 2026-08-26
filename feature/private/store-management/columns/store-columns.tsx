@@ -23,8 +23,12 @@ export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<
   {
     accessorKey: "id",
     header: "S No.",
-    cell: ({ row }) => (
-      <span className="pl-2 font-mono text-xs font-medium text-slate-400">{row.index + 1}</span>
+    cell: ({ row, table }) => (
+      <span className="pl-2 font-mono text-xs font-medium text-slate-400">
+        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+          row.index +
+          1}
+      </span>
     ),
     enableSorting: false,
   },

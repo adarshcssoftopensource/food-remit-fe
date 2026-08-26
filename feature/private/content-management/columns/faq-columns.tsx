@@ -14,8 +14,12 @@ export function getFaqColumns({ onEdit, onDelete }: FaqColumnsConfig): ColumnDef
       id: "sno",
       header: "S.no",
       enableSorting: false,
-      cell: ({ row }) => (
-        <span className="pl-2 font-mono text-xs text-slate-500">{row.index + 1}</span>
+      cell: ({ row, table }) => (
+        <span className="pl-2 font-mono text-xs text-slate-500">
+          {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+            row.index +
+            1}
+        </span>
       ),
     },
     {

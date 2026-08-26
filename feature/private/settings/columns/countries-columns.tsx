@@ -5,6 +5,17 @@ import { formatDate } from "@/lib/date";
 
 export const countriesColumns: ColumnDef<CountryData>[] = [
   {
+    id: "sno",
+    header: "S.No",
+    cell: ({ row, table }) => (
+      <span className="pl-2 font-mono text-xs text-slate-500">
+        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+          row.index +
+          1}
+      </span>
+    ),
+  },
+  {
     accessorKey: "countryName",
     header: "Country Name",
     cell: ({ row }) => (

@@ -10,8 +10,12 @@ export const customerReportColumns: ColumnDef<CustomerReportRow>[] = [
   {
     id: "sno",
     header: "S.no",
-    cell: ({ row }) => (
-      <span className="pl-2 font-mono text-xs text-slate-500">{row.index + 1}</span>
+    cell: ({ row, table }) => (
+      <span className="pl-2 font-mono text-xs text-slate-500">
+        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+          row.index +
+          1}
+      </span>
     ),
   },
   { accessorKey: "firstName", header: "First Name" },
@@ -32,8 +36,12 @@ export const orderReportColumns: ColumnDef<OrderReportRow>[] = [
   {
     id: "sno",
     header: "S.no",
-    cell: ({ row }) => (
-      <span className="pl-2 font-mono text-xs text-slate-500">{row.index + 1}</span>
+    cell: ({ row, table }) => (
+      <span className="pl-2 font-mono text-xs text-slate-500">
+        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+          row.index +
+          1}
+      </span>
     ),
   },
   { accessorKey: "referenceNumber", header: "Reference Number" },
@@ -63,8 +71,12 @@ export const storeTransactionColumns: ColumnDef<StoreTransactionRow>[] = [
   {
     id: "sno",
     header: "S.no",
-    cell: ({ row }) => (
-      <span className="pl-2 font-mono text-xs text-slate-500">{row.index + 1}</span>
+    cell: ({ row, table }) => (
+      <span className="pl-2 font-mono text-xs text-slate-500">
+        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+          row.index +
+          1}
+      </span>
     ),
   },
   { accessorKey: "transactionNo", header: "Transaction No." },

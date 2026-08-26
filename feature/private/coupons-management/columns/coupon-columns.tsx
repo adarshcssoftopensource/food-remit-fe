@@ -8,7 +8,13 @@ export const couponColumns: ColumnDef<CouponRow>[] = [
   {
     id: "srNo",
     header: "Sr.No",
-    cell: ({ row }) => <span>{row.index + 1}</span>,
+    cell: ({ row, table }) => (
+      <span>
+        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+          row.index +
+          1}
+      </span>
+    ),
   },
   {
     accessorKey: "couponCode",

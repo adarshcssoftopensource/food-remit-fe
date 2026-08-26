@@ -34,6 +34,7 @@ export function useStoreFilters() {
 
   const {
     data: rawStores,
+    stats: serverStats,
     isLoading,
     pagination,
   } = useGetStores({
@@ -53,7 +54,7 @@ export function useStoreFilters() {
 
   const filteredData = stores;
 
-  const stats = {
+  const stats = serverStats || {
     total: stores.length,
     active: stores.filter((s: StoreData) => s.status === "Active").length,
     inactive: stores.filter((s: StoreData) => s.status === "Inactive").length,

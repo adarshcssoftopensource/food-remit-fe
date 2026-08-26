@@ -11,7 +11,6 @@ import { DashboardActionButton } from "./common/dashboard-action-button";
 import { DashboardCard } from "./common/dashboard-card";
 import { DashboardEmptyState } from "./common/dashboard-empty-state";
 import { DashboardStatusBadge } from "./common/dashboard-status-badge";
-import { ROUTES } from "@/config/routes";
 
 const EMPTY_ORDERS: DashboardOrderRequested[] = [];
 const EMPTY_TICKETS: DashboardTicketItem[] = [];

@@ -20,8 +20,12 @@ export function getItemColumns(
     {
       id: "serial",
       header: "S.no",
-      cell: ({ row }) => (
-        <span className="pl-2 text-sm font-medium text-slate-500">{row.index + 1}</span>
+      cell: ({ row, table }) => (
+        <span className="pl-2 text-sm font-medium text-slate-500">
+          {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+            row.index +
+            1}
+        </span>
       ),
     },
     {
