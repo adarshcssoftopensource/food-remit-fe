@@ -48,6 +48,7 @@ export const ROUTES = {
       COMPLETED_ORDERS: "/order-management/completed-orders",
       HISTORY: "/order-management/history",
     },
+    MY_ORDERS: "/my-orders",
     CONTENT_MANAGEMENT: {
       ROOT: "/content-management",
       LANDING_PAGE: "/content-management/landing-page",
@@ -80,6 +81,7 @@ export const ROUTES = {
     TUTORIAL_MANAGEMENT: "/tutorial-management",
     PROFILE: "/profile",
     SETTINGS: "/settings",
+    EMPLOYEE_MANAGEMENT: "/employee-management",
   },
 } as const;
 

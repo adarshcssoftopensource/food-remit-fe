@@ -14,6 +14,7 @@ import { useDebounce } from "@/lib/debounce";
 import { cn } from "@/lib/utils";
 import { Loader2, MapPin, Search, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export type AddressFormat = "street" | "full";
 
@@ -107,13 +108,7 @@ export function AddressAutocompleteInput({
   }, [query, isReady, getSuggestions]);
 
   useEffect(() => {
-    function handlePointerDown(e: PointerEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
+    // Kept for backward compatibility if needed, but Popover handles outside clicks
   }, []);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -158,67 +153,78 @@ export function AddressAutocompleteInput({
   }
 
   return (
-    <div ref={wrapperRef} className={cn("relative w-full", className)}>
-      <div className="relative">
-        <span className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-slate-400">
-          {query && isFetching ? (
-            <Loader2 className="size-4 animate-spin" />
+    <Popover
+      open={showDropdown}
+      onOpenChange={(open) => setIsOpen(open && visibleSuggestions.length > 0)}
+    >
+      <PopoverTrigger
+        render={<div ref={wrapperRef} className={cn("relative w-full", className)} />}
+      >
+        <div className="relative">
+          <span className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-slate-400">
+            {query && isFetching ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <MapPin className="size-4" />
+            )}
+          </span>
+
+          <Input
+            ref={inputRef}
+            id={inputId}
+            type="text"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            disabled={disabled}
+            aria-invalid={invalid}
+            aria-expanded={showDropdown}
+            aria-haspopup="listbox"
+            value={value}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onFocus={() => {
+              if (userEditedRef.current && visibleSuggestions.length > 0) setIsOpen(true);
+            }}
+            placeholder={placeholder}
+            className={cn(
+              "h-11 rounded-xl border-slate-200 bg-slate-50/80 pr-8 pl-9 text-sm",
+              "focus-visible:ring-primary/10 transition-all duration-200 focus-visible:bg-white",
+              invalid && "border-red-400 bg-red-50/30 focus-visible:ring-red-100",
+            )}
+          />
+
+          {value && !disabled ? (
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-label="Clear address"
+              onClick={handleClear}
+              className="absolute top-1/2 right-3 z-10 -translate-y-1/2 rounded-full p-0.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            >
+              <X className="size-3.5" />
+            </button>
           ) : (
-            <MapPin className="size-4" />
+            isReady &&
+            !(query && isFetching) && (
+              <span className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 text-slate-300">
+                <Search className="size-3.5" />
+              </span>
+            )
           )}
-        </span>
+        </div>
+      </PopoverTrigger>
 
-        <Input
-          ref={inputRef}
-          id={inputId}
-          type="text"
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          disabled={disabled}
-          aria-invalid={invalid}
-          aria-expanded={showDropdown}
-          aria-haspopup="listbox"
-          value={value}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          onFocus={() => {
-            if (userEditedRef.current && visibleSuggestions.length > 0) setIsOpen(true);
-          }}
-          placeholder={placeholder}
-          className={cn(
-            "h-11 rounded-xl border-slate-200 bg-slate-50/80 pr-8 pl-9 text-sm",
-            "focus-visible:ring-primary/10 transition-all duration-200 focus-visible:bg-white",
-            invalid && "border-red-400 bg-red-50/30 focus-visible:ring-red-100",
-          )}
-        />
-
-        {value && !disabled ? (
-          <button
-            type="button"
-            tabIndex={-1}
-            aria-label="Clear address"
-            onClick={handleClear}
-            className="absolute top-1/2 right-3 z-10 -translate-y-1/2 rounded-full p-0.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
-          >
-            <X className="size-3.5" />
-          </button>
-        ) : (
-          isReady &&
-          !(query && isFetching) && (
-            <span className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 text-slate-300">
-              <Search className="size-3.5" />
-            </span>
-          )
-        )}
-      </div>
-
-      {showDropdown && (
+      <PopoverContent
+        align="start"
+        side="bottom"
+        sideOffset={6}
+        className="z-50 w-[var(--radix-popover-trigger-width)] border-none bg-transparent p-0 shadow-none"
+      >
         <div
           className={cn(
-            "absolute top-[calc(100%+6px)] left-0 z-50 w-full",
-            "overflow-hidden rounded-xl border border-slate-100 bg-white",
+            "w-full overflow-hidden rounded-xl border border-slate-100 bg-white",
             "shadow-lg shadow-slate-200/60",
             "animate-in fade-in-0 slide-in-from-top-1 duration-150",
           )}
@@ -281,7 +287,7 @@ export function AddressAutocompleteInput({
             </CommandList>
           </Command>
         </div>
-      )}
-    </div>
+      </PopoverContent>
+    </Popover>
   );
 }
