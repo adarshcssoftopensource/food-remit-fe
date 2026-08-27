@@ -141,7 +141,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                 }
               />
               <InfoRow
-                label="Store Tax"
+                label="Government Store Tax"
                 value={
                   <span className="font-semibold text-slate-700">{store.storeTax.toFixed(2)}%</span>
                 }

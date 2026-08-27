@@ -227,7 +227,7 @@ export function StoreForm({
                 name="storeTax"
                 control={control}
                 render={({ field }) => (
-                  <FormField label="Store Tax %" error={errors.storeTax?.message}>
+                  <FormField label="Government Store Tax" error={errors.storeTax?.message}>
                     <Input
                       {...field}
                       id="storeTax"
@@ -235,7 +235,7 @@ export function StoreForm({
                       min={0}
                       max={100}
                       step={0.01}
-                      placeholder="Store Tax %"
+                      placeholder="Government Store Tax"
                       className="h-11 rounded-xl border-slate-200 bg-slate-50"
                       value={field.value ?? ""}
                       onChange={(e) =>
