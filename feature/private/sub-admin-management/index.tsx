@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub-admin-management";
-import { useTableFilters } from "@/hooks/use-table-filters";
+import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import type { SortingState } from "@tanstack/react-table";
 import { UserCheck, Users } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -41,11 +41,14 @@ export function SubAdminManagement() {
     setSearchQuery: setSearch,
     setSorting,
     debouncedSearch,
-    formattedFromDate,
     formattedToDate,
     sortBy,
     sortOrder,
-  } = useTableFilters();
+    applied,
+    applyFilters,
+    cancelFilters,
+    resetBaseFilters,
+  } = useDraftTableFilters();
 
   const handleSearchChange = useCallback(
     (value: string) => {
@@ -59,9 +62,9 @@ export function SubAdminManagement() {
     page: currentPage,
     limit: rowsPerPage,
     search: debouncedSearch || undefined,
-    fromDate: formattedFromDate ? new Date(formattedFromDate) : undefined,
-    toDate: formattedToDate ? new Date(formattedToDate) : undefined,
-    status: status !== "all" ? status : undefined,
+    fromDate: applied.fromDate ? new Date(applied.fromDate) : undefined,
+    toDate: applied.toDate ? new Date(applied.toDate) : undefined,
+    status: applied.status !== "all" ? applied.status : undefined,
     sortBy,
     sortOrder,
   };
@@ -69,22 +72,19 @@ export function SubAdminManagement() {
   const { data: res, isLoading } = useGetSubAdmins(queryArgs);
   const allData = (res?.data ?? []) as SubAdminData[];
 
-  const hasFilters = Boolean(fromDate || toDate || status !== "all");
+  const hasFilters = Boolean(applied.fromDate || applied.toDate || applied.status !== "all");
 
   const handleReset = useCallback(() => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatus("all");
-    setSearch("");
+    resetBaseFilters();
     setCurrentPage(1);
-  }, [setFromDate, setToDate, setStatus, setSearch, setCurrentPage]);
+  }, [resetBaseFilters, setCurrentPage]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (fromDate || toDate) count++;
-    if (status !== "all") count++;
+    if (applied.fromDate || applied.toDate) count++;
+    if (applied.status !== "all") count++;
     return count;
-  }, [fromDate, toDate, status]);
+  }, [applied.fromDate, applied.toDate, applied.status]);
 
   const handlePageChange = useCallback(
     (page: number) => {
@@ -148,20 +148,16 @@ export function SubAdminManagement() {
         hideCityFilter
         hasFilters={hasFilters}
         onClearFilters={handleReset}
+        onApplyFilters={applyFilters}
+        onCancelFilters={cancelFilters}
         activeFilterCount={activeFilterCount}
       >
         <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
           <DateRangeFilter
             fromDate={fromDate}
             toDate={toDate}
-            onFromDateChange={(d) => {
-              setFromDate(d ?? undefined);
-              setCurrentPage(1);
-            }}
-            onToDateChange={(d) => {
-              setToDate(d ?? undefined);
-              setCurrentPage(1);
-            }}
+            onFromDateChange={(d) => setFromDate(d ?? undefined)}
+            onToDateChange={(d) => setToDate(d ?? undefined)}
             maxDate={new Date()}
             loading={isLoading}
           />
@@ -171,13 +167,7 @@ export function SubAdminManagement() {
           <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             Admin Status
           </Label>
-          <Select
-            value={status}
-            onValueChange={(v) => {
-              setStatus(v as string);
-              setCurrentPage(1);
-            }}
-          >
+          <Select value={status} onValueChange={(v) => setStatus(v as string)}>
             <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
               <SelectValue placeholder="All">
                 {SUB_ADMIN_STATUS_OPTIONS.find((opt) => opt.value === status)?.label || "All"}

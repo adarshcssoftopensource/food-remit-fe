@@ -113,8 +113,8 @@ export function ItemAdminShareCell({ item }: { item: ItemData }) {
         updateStatus(
           { type: "ADMIN_SHARE", adminShare: checked },
           {
-            onSuccess: () => successToast({ description: "Admin share updated successfully" }),
-            onError: () => errorToast({ description: "Failed to update admin share" }),
+            onSuccess: () => successToast({ description: "Markup value updated successfully" }),
+            onError: () => errorToast({ description: "Failed to update markup value" }),
           },
         )
       }

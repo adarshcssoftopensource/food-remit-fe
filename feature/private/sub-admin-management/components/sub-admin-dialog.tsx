@@ -126,7 +126,7 @@ export function SubAdminDialog({
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  {mode === "add" ? "Add Sub/Co Admin" : "Edit Sub/Co Admin"}
+                  {mode === "add" ? "Add" : "Edit Sub/Co Admin"}
                 </DialogTitle>
               </div>
 

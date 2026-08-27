@@ -26,6 +26,8 @@ export function DonationLogs() {
     setCountry,
     setCity,
     clearFilters,
+    applyFilters,
+    cancelFilters,
   } = useDonationLogs();
 
   return (
@@ -62,6 +64,8 @@ export function DonationLogs() {
         onCityChange={setCity}
         onStatusChange={setStatusFilter}
         onClearFilters={clearFilters}
+        onApplyFilters={applyFilters}
+        onCancelFilters={cancelFilters}
       />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">

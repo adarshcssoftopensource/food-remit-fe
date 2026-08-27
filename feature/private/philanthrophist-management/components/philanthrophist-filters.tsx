@@ -15,6 +15,8 @@ interface PhilanthrophistFiltersProps {
   onCountryChange: (value: string) => void;
   onCityChange: (value: string) => void;
   onClearFilters: () => void;
+  onApplyFilters?: () => void;
+  onCancelFilters?: () => void;
 }
 
 export function PhilanthrophistFilters({
@@ -28,6 +30,8 @@ export function PhilanthrophistFilters({
   onCountryChange,
   onCityChange,
   onClearFilters,
+  onApplyFilters,
+  onCancelFilters,
 }: PhilanthrophistFiltersProps) {
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -47,6 +51,8 @@ export function PhilanthrophistFilters({
       onCityChange={(val) => onCityChange(val === "all" ? "All Cities" : val)}
       hasFilters={hasFilters}
       onClearFilters={onClearFilters}
+      onApplyFilters={onApplyFilters}
+      onCancelFilters={onCancelFilters}
       activeFilterCount={activeFilterCount}
     >
       <div className="min-w-[280px] flex-1 sm:min-w-[320px]">

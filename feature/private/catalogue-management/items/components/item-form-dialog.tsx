@@ -386,6 +386,47 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                           </FormItem>
                         )}
                       />
+                    </div>
+                  </section>
+                  <section className="h-full rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
+                    <div className="mb-5 flex items-center gap-3">
+                      <div className="text-primary flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-700">
+                        <Package2 className="h-4 w-4" />
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                          Product Information
+                        </h3>
+
+                        <p className="text-[11px] text-slate-400">
+                          Product details and supporting image
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-5">
+                      <FormField
+                        control={form.control}
+                        name="productInfo"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                              Product Information <span className="text-destructive">*</span>
+                            </FormLabel>
+
+                            <FormControl>
+                              <Textarea
+                                placeholder="Add product information..."
+                                className="min-h-22.5 resize-none rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                                {...field}
+                              />
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
                       <FormField
                         control={form.control}
@@ -433,7 +474,10 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                       />
                     </div>
                   </section>
-                  <section className="h-full rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
+                </div>
+
+                <div className="mt-6 w-full">
+                  <section className="rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
                     <div className="mb-5 flex items-center gap-3">
                       <div className="text-primary flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-700">
                         <Package2 className="h-4 w-4" />
@@ -441,36 +485,16 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
 
                       <div>
                         <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                          Additional Information
+                          Nutrition Information
                         </h3>
 
-                        <p className="text-[11px] text-slate-400">Product and nutrition details</p>
+                        <p className="text-[11px] text-slate-400">
+                          Nutrition details and supporting image
+                        </p>
                       </div>
                     </div>
 
-                    <div className="space-y-5">
-                      <FormField
-                        control={form.control}
-                        name="productInfo"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                              Product Information <span className="text-destructive">*</span>
-                            </FormLabel>
-
-                            <FormControl>
-                              <Textarea
-                                placeholder="Add product information..."
-                                className="min-h-22.5 resize-none rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
-                                {...field}
-                              />
-                            </FormControl>
-
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
+                    <div className="grid gap-6 p-6 md:grid-cols-2">
                       <FormField
                         control={form.control}
                         name="nutritionInfo"
@@ -483,7 +507,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                             <FormControl>
                               <Textarea
                                 placeholder="Add nutrition information..."
-                                className="min-h-22.5 resize-none rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                                className="h-full min-h-20.5 resize-none rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
                                 {...field}
                               />
                             </FormControl>
@@ -516,12 +540,15 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                   onChange={field.onChange}
                                   onAllImagesChange={(all) => {
                                     const existing = all.find((i) => !i.file)?.url || null;
+
                                     const newFiles = all
                                       .filter((i) => !!i.file)
                                       .map((i) => i.file!);
+
                                     form.setValue("existingNutritionInfoImage", existing, {
                                       shouldValidate: false,
                                     });
+
                                     form.setValue("nutritionInfoImageFile", newFiles, {
                                       shouldValidate: false,
                                     });

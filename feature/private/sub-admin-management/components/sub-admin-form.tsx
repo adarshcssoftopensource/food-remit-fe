@@ -2,19 +2,18 @@
 
 import { NoDataFound } from "@/components/common/no-data-found";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PhoneInputComponent } from "@/components/ui/phone-input";
 import { Switch } from "@/components/ui/switch";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShieldCheck } from "lucide-react";
 import { FormInput } from "@/feature/private/stories/components/form-input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ShieldCheck } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { subAdminSchema, type SubAdminFormValues } from "../schema/sub-admin.schema";
 import { type SubAdminPermission } from "../types/sub-admin.types";
 import { PermissionsSkeleton } from "./permissions-skeleton";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface SubAdminFormProps {
   initialValues?: Partial<SubAdminFormValues>;
@@ -236,7 +235,7 @@ export function SubAdminForm({
           isLoading={isSubmitting}
           className="h-11 rounded-xl px-10 font-semibold shadow-sm"
         >
-          {submitLabel === "add" ? "Add Sub/Co Admin" : "Save Changes"}
+          {submitLabel === "add" ? "Add" : "Save Changes"}
         </Button>
       </div>
     </form>
