@@ -1,36 +1,50 @@
 import { MOCK_STORE_REPORTS, type StoreReportRow } from "@/constants/report-management";
-import { useMemo, useState } from "react";
+import { useFilterState } from "@/hooks/use-filter-state";
+import { useMemo } from "react";
 import { useReportDateFilters } from "./use-report-date-filters";
 
 export function useStoreReport() {
   const dateFilters = useReportDateFilters();
-  const [country, setCountry] = useState("All");
-  const [city, setCity] = useState("All");
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    country: "All",
+    city: "All",
+  });
 
   const filteredData = useMemo(() => {
     return MOCK_STORE_REPORTS.filter((store: StoreReportRow) => {
-      if (country !== "All" && store.country !== country) return false;
-      if (city !== "All" && store.city !== city) return false;
+      if (applied.country !== "All" && store.country !== applied.country) return false;
+      if (applied.city !== "All" && store.city !== applied.city) return false;
       return true;
     });
-  }, [city, country]);
+  }, [applied.city, applied.country]);
 
-  const hasFilters = dateFilters.hasFilters || country !== "All" || city !== "All";
+  const hasFilters = dateFilters.hasFilters || applied.country !== "All" || applied.city !== "All";
 
   const clearFilters = () => {
     dateFilters.clearFilters();
-    setCountry("All");
-    setCity("All");
+    reset();
+  };
+
+  const applyFilters = () => {
+    dateFilters.applyFilters();
+    apply();
+  };
+
+  const cancelFilters = () => {
+    dateFilters.cancelFilters();
+    cancel();
   };
 
   return {
     ...dateFilters,
-    city,
+    city: draft.city,
     clearFilters,
-    country,
+    country: draft.country,
     filteredData,
     hasFilters,
-    setCity,
-    setCountry,
+    setCity: (c: string) => setDraft((p) => ({ ...p, city: c })),
+    setCountry: (c: string) => setDraft((p) => ({ ...p, country: c })),
+    applyFilters,
+    cancelFilters,
   };
 }

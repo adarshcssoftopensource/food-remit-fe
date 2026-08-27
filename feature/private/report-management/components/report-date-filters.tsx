@@ -15,6 +15,7 @@ type ReportDateFiltersProps = {
   onCountryChange?: (country: string) => void;
   onCityChange?: (city: string) => void;
   onApply?: () => void;
+  onCancel?: () => void;
   onClear: () => void;
   children?: React.ReactNode;
 };
@@ -29,6 +30,8 @@ export function ReportDateFilters({
   onToDateChange,
   onCountryChange,
   onCityChange,
+  onApply,
+  onCancel,
   onClear,
   children,
 }: ReportDateFiltersProps) {
@@ -49,6 +52,8 @@ export function ReportDateFilters({
       cityId={cityId}
       onCityChange={onCityChange}
       hasFilters={hasFilters}
+      onApplyFilters={onApply}
+      onCancelFilters={onCancel}
       onClearFilters={onClear}
       activeFilterCount={activeFilterCount}
     >

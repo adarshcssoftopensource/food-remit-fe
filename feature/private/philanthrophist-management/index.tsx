@@ -29,6 +29,8 @@ export default function PhilanthrophistManagement() {
           onCountryChange={filters.setCountry}
           onCityChange={filters.setCity}
           onClearFilters={filters.clearFilters}
+          onApplyFilters={filters.applyFilters}
+          onCancelFilters={filters.cancelFilters}
         />
       </Card>
       <Card className="overflow-hidden rounded-xl">

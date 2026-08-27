@@ -26,6 +26,8 @@ export default function FoundationManagement() {
     stats,
     hasFilters,
     clearFilters,
+    applyFilters,
+    cancelFilters,
   } = useFoundationFilters();
 
   return (
@@ -51,6 +53,8 @@ export default function FoundationManagement() {
             onCountryChange={setCountry}
             onCityChange={setCity}
             onClearFilters={clearFilters}
+            onApplyFilters={applyFilters}
+            onCancelFilters={cancelFilters}
           />
         </TabsContent>
         <FoundationHeader

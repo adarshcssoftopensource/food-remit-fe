@@ -1,43 +1,37 @@
-import { useMemo, useState } from "react";
+import { useFilterState } from "@/hooks/use-filter-state";
+import { useMemo } from "react";
 
 export function useReportDateFilters() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [appliedFromDate, setAppliedFromDate] = useState<Date>();
-  const [appliedToDate, setAppliedToDate] = useState<Date>();
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    fromDate: undefined as Date | undefined,
+    toDate: undefined as Date | undefined,
+  });
 
-  const hasFilters = Boolean(fromDate || toDate);
-
-  const applyFilters = () => {
-    setAppliedFromDate(fromDate);
-    setAppliedToDate(toDate);
-  };
+  const hasFilters = Boolean(applied.fromDate || applied.toDate);
 
   const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setAppliedFromDate(undefined);
-    setAppliedToDate(undefined);
+    reset();
   };
 
   const isWithinRange = useMemo(() => {
     return (dateValue: string) => {
-      if (!appliedFromDate && !appliedToDate) return true;
+      if (!applied.fromDate && !applied.toDate) return true;
       const date = new Date(dateValue);
-      if (appliedFromDate && date < appliedFromDate) return false;
-      if (appliedToDate && date > appliedToDate) return false;
+      if (applied.fromDate && date < applied.fromDate) return false;
+      if (applied.toDate && date > applied.toDate) return false;
       return true;
     };
-  }, [appliedFromDate, appliedToDate]);
+  }, [applied.fromDate, applied.toDate]);
 
   return {
-    applyFilters,
+    applyFilters: apply,
+    cancelFilters: cancel,
     clearFilters,
-    fromDate,
+    fromDate: draft.fromDate,
     hasFilters,
     isWithinRange,
-    setFromDate,
-    setToDate,
-    toDate,
+    setFromDate: (d: Date | undefined) => setDraft((p) => ({ ...p, fromDate: d })),
+    setToDate: (d: Date | undefined) => setDraft((p) => ({ ...p, toDate: d })),
+    toDate: draft.toDate,
   };
 }

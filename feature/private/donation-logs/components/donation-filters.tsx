@@ -27,6 +27,8 @@ interface DonationFiltersProps {
   onCityChange: (val: string) => void;
   onStatusChange: (value: string) => void;
   onClearFilters: () => void;
+  onApplyFilters?: () => void;
+  onCancelFilters?: () => void;
 }
 
 export function DonationFilters({
@@ -42,6 +44,8 @@ export function DonationFilters({
   onCityChange,
   onStatusChange,
   onClearFilters,
+  onApplyFilters,
+  onCancelFilters,
 }: DonationFiltersProps) {
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -62,6 +66,8 @@ export function DonationFilters({
       onCityChange={onCityChange}
       hasFilters={hasFilters}
       onClearFilters={onClearFilters}
+      onApplyFilters={onApplyFilters}
+      onCancelFilters={onCancelFilters}
       activeFilterCount={activeFilterCount}
     >
       <div className="min-w-[280px] flex-1 sm:min-w-[320px]">

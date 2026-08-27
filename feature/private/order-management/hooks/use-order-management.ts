@@ -1,5 +1,5 @@
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
-import { useTableFilters } from "@/hooks/use-table-filters";
+import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { OrderSectionKey } from "@/constants/order-management";
 import { useState } from "react";
 import { useGetOrders } from "./use-get-orders";
@@ -23,10 +23,28 @@ export function useOrderManagement(section?: OrderSectionKey) {
     setSorting,
     setPage,
     setLimit,
-  } = useTableFilters(DEFAULT_PAGE_SIZE);
+    applied,
+    applyFilters: applyBaseFilters,
+    cancelFilters: cancelBaseFilters,
+  } = useDraftTableFilters(DEFAULT_PAGE_SIZE);
 
   const [country, setCountry] = useState("all");
   const [city, setCity] = useState("all");
+  const [appliedCountry, setAppliedCountry] = useState("all");
+  const [appliedCity, setAppliedCity] = useState("all");
+
+  const applyAllFilters = () => {
+    applyBaseFilters();
+    setAppliedCountry(country);
+    setAppliedCity(city);
+    refetch(); // if refetch was previously used here
+  };
+
+  const cancelAllFilters = () => {
+    cancelBaseFilters();
+    setCountry(appliedCountry);
+    setCity(appliedCity);
+  };
 
   let status: string | undefined = undefined;
   let type: string | number | undefined = undefined;
@@ -57,29 +75,28 @@ export function useOrderManagement(section?: OrderSectionKey) {
     type,
     fromDate: formattedFromDate,
     toDate: formattedToDate,
-    country: country !== "all" && country !== "All" ? country : undefined,
-    city: city !== "all" && city !== "All" ? city : undefined,
+    country: appliedCountry !== "all" && appliedCountry !== "All" ? appliedCountry : undefined,
+    city: appliedCity !== "all" && appliedCity !== "All" ? appliedCity : undefined,
   });
 
   const hasFilters = Boolean(
-    fromDate ||
-    toDate ||
-    (country !== "all" && country !== "All") ||
-    (city !== "all" && city !== "All"),
+    applied.fromDate ||
+    applied.toDate ||
+    (appliedCountry !== "all" && appliedCountry !== "All") ||
+    (appliedCity !== "all" && appliedCity !== "All"),
   );
-
-  const applyFilters = () => {
-    refetch();
-  };
 
   const clearFilters = () => {
     resetBaseFilters();
     setCountry("all");
     setCity("all");
+    setAppliedCountry("all");
+    setAppliedCity("all");
   };
 
   return {
-    applyFilters,
+    applyFilters: applyAllFilters,
+    cancelFilters: cancelAllFilters,
     clearFilters,
     country,
     city,

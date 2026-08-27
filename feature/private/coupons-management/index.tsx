@@ -19,6 +19,7 @@ import { Gift, RotateCcw, Sparkles, Ticket, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { couponColumns } from "./columns/coupon-columns";
 import { AddCouponDialog } from "./components/add-coupon-dialog";
+import { useFilterState } from "@/hooks/use-filter-state";
 import { type CouponFormValues } from "./schema/coupon.schema";
 
 const statusOptions: Array<{ label: string; value: CouponStatus }> = [
@@ -40,11 +41,13 @@ const generateCouponCode = (name: string) => {
 
 export function CouponsManagement() {
   const [coupons, setCoupons] = useState<CouponRow[]>(INITIAL_COUPONS);
-  const [statusFilter, setStatusFilter] = useState<CouponStatus>("All");
-  const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
-  const [toDate, setToDate] = useState<Date | undefined>(undefined);
-  const [country, setCountry] = useState("all");
-  const [city, setCity] = useState("all");
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    fromDate: undefined as Date | undefined,
+    toDate: undefined as Date | undefined,
+    statusFilter: "All" as CouponStatus,
+    country: "all",
+    city: "all",
+  });
 
   const stats = useMemo(() => {
     const activeCount = coupons.filter((item) => item.status === "Active").length;
@@ -61,59 +64,62 @@ export function CouponsManagement() {
 
   const filteredData = useMemo(() => {
     return coupons.filter((coupon) => {
-      if (statusFilter !== "All" && coupon.status !== statusFilter) {
+      if (applied.statusFilter !== "All" && coupon.status !== applied.statusFilter) {
         return false;
       }
       if (
-        country !== "all" &&
-        country !== "All" &&
+        applied.country !== "all" &&
+        applied.country !== "All" &&
         (coupon as any).countryId &&
-        (coupon as any).countryId !== country
+        (coupon as any).countryId !== applied.country
       ) {
         return false;
       }
       if (
-        city !== "all" &&
-        city !== "All" &&
+        applied.city !== "all" &&
+        applied.city !== "All" &&
         (coupon as any).cityId &&
-        (coupon as any).cityId !== city
+        (coupon as any).cityId !== applied.city
       ) {
         return false;
       }
-      if (fromDate && coupon.createdAt < fromDate) {
+      if (applied.fromDate && coupon.createdAt < applied.fromDate) {
         return false;
       }
-      if (toDate && coupon.createdAt > toDate) {
+      if (applied.toDate && coupon.createdAt > applied.toDate) {
         return false;
       }
       return true;
     });
-  }, [coupons, country, city, fromDate, statusFilter, toDate]);
+  }, [
+    coupons,
+    applied.country,
+    applied.city,
+    applied.fromDate,
+    applied.statusFilter,
+    applied.toDate,
+  ]);
 
   const hasFilters = Boolean(
-    fromDate ||
-    toDate ||
-    statusFilter !== "All" ||
-    (country !== "all" && country !== "All") ||
-    (city !== "all" && city !== "All"),
+    applied.fromDate ||
+    applied.toDate ||
+    applied.statusFilter !== "All" ||
+    (applied.country !== "all" && applied.country !== "All") ||
+    (applied.city !== "all" && applied.city !== "All"),
   );
 
   const handleClearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatusFilter("All");
-    setCountry("all");
-    setCity("all");
+    reset();
   };
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (fromDate || toDate) count++;
-    if (country && country !== "all" && country !== "All") count++;
-    if (city && city !== "all" && city !== "All") count++;
-    if (statusFilter !== "All") count++;
+    if (applied.fromDate || applied.toDate) count++;
+    if (applied.country && applied.country !== "all" && applied.country !== "All") count++;
+    if (applied.city && applied.city !== "all" && applied.city !== "All") count++;
+    if (applied.statusFilter !== "All") count++;
     return count;
-  }, [fromDate, toDate, country, city, statusFilter]);
+  }, [applied.fromDate, applied.toDate, applied.country, applied.city, applied.statusFilter]);
 
   const handleAddCoupon = (values: CouponFormValues) => {
     const nextCoupon: CouponRow = {
@@ -191,20 +197,22 @@ export function CouponsManagement() {
       <ModuleFilters
         title="Filter Coupons"
         description="Refine coupon campaigns by date, country, city, and status"
-        countryId={country}
-        onCountryChange={setCountry}
-        cityId={city}
-        onCityChange={setCity}
+        countryId={draft.country}
+        onCountryChange={(v) => setDraft((p) => ({ ...p, country: v }))}
+        cityId={draft.city}
+        onCityChange={(v) => setDraft((p) => ({ ...p, city: v }))}
         hasFilters={hasFilters}
         onClearFilters={handleClearFilters}
+        onApplyFilters={apply}
+        onCancelFilters={cancel}
         activeFilterCount={activeFilterCount}
       >
         <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
           <DateRangeFilter
-            fromDate={fromDate}
-            toDate={toDate}
-            onFromDateChange={setFromDate}
-            onToDateChange={setToDate}
+            fromDate={draft.fromDate}
+            toDate={draft.toDate}
+            onFromDateChange={(d) => setDraft((p) => ({ ...p, fromDate: d ?? undefined }))}
+            onToDateChange={(d) => setDraft((p) => ({ ...p, toDate: d ?? undefined }))}
           />
         </div>
 
@@ -212,7 +220,10 @@ export function CouponsManagement() {
           <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             Status
           </Label>
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as CouponStatus)}>
+          <Select
+            value={draft.statusFilter}
+            onValueChange={(v) => setDraft((p) => ({ ...p, statusFilter: v as CouponStatus }))}
+          >
             <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>

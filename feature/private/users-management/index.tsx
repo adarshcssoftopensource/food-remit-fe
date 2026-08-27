@@ -28,15 +28,20 @@ import { usersColumns } from "./columns/users-columns";
 import { useBulkDeleteUsers } from "./hooks/use-bulk-delete-users";
 import { useGetUsers, UseGetUsersArgs } from "./hooks/use-get-users";
 
+import { useFilterState } from "@/hooks/use-filter-state";
+
 export function UserManagement() {
-  const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
-  const [toDate, setToDate] = useState<Date | undefined>(undefined);
-  const [status, setStatus] = useState<string | null>(null);
+  const { draft, setDraft, applied, apply, reset, cancel } = useFilterState({
+    fromDate: undefined as Date | undefined,
+    toDate: undefined as Date | undefined,
+    status: null as string | null,
+    search: "",
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 500);
+  const debouncedSearch = useDebounce(applied.search, 500);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -46,9 +51,9 @@ export function UserManagement() {
     page: currentPage,
     limit: rowsPerPage,
     search: debouncedSearch || undefined,
-    fromDate,
-    toDate,
-    status: status || undefined,
+    fromDate: applied.fromDate,
+    toDate: applied.toDate,
+    status: applied.status || undefined,
     sortBy: sorting[0]?.id || undefined,
     sortOrder: sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined,
   };
@@ -82,28 +87,29 @@ export function UserManagement() {
     );
   };
 
-  const hasFilters = !!(fromDate || toDate || status);
+  const hasFilters = !!(applied.fromDate || applied.toDate || applied.status);
 
   const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatus(null);
-    setSearch("");
+    reset();
     setCurrentPage(1);
     setSorting([]);
   };
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (fromDate || toDate) count++;
-    if (status) count++;
+    if (applied.fromDate || applied.toDate) count++;
+    if (applied.status) count++;
     return count;
-  }, [fromDate, toDate, status]);
+  }, [applied.fromDate, applied.toDate, applied.status]);
 
-  const handleSearchChange = useCallback((value: string) => {
-    setSearch(value);
-    setCurrentPage(1);
-  }, []);
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setDraft((prev) => ({ ...prev, search: value }));
+      apply();
+      setCurrentPage(1);
+    },
+    [setDraft, apply],
+  );
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
@@ -158,19 +164,19 @@ export function UserManagement() {
         hideCityFilter
         hasFilters={hasFilters}
         onClearFilters={clearFilters}
+        onApplyFilters={apply}
+        onCancelFilters={cancel}
         activeFilterCount={activeFilterCount}
       >
         <div className="min-w-70 flex-1 sm:min-w-[320px]">
           <DateRangeFilter
-            fromDate={fromDate}
-            toDate={toDate}
+            fromDate={draft.fromDate}
+            toDate={draft.toDate}
             onFromDateChange={(d) => {
-              setFromDate(d ?? undefined);
-              setCurrentPage(1);
+              setDraft((prev) => ({ ...prev, fromDate: d ?? undefined }));
             }}
             onToDateChange={(d) => {
-              setToDate(d ?? undefined);
-              setCurrentPage(1);
+              setDraft((prev) => ({ ...prev, toDate: d ?? undefined }));
             }}
             maxDate={new Date()}
             loading={isLoading}
@@ -183,19 +189,18 @@ export function UserManagement() {
           </Label>
 
           <Select
-            value={status ?? ""}
+            value={draft.status ?? ""}
             onValueChange={(v) => {
-              setStatus(v || null);
-              setCurrentPage(1);
+              setDraft((prev) => ({ ...prev, status: v || null }));
             }}
           >
             <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
               <span
                 className={
-                  status ? "font-medium text-slate-700 dark:text-slate-200" : "text-slate-400"
+                  draft.status ? "font-medium text-slate-700 dark:text-slate-200" : "text-slate-400"
                 }
               >
-                {USER_STATUS_OPTIONS.find((option) => option.value === status)?.label ??
+                {USER_STATUS_OPTIONS.find((option) => option.value === draft.status)?.label ??
                   "All Users"}
               </span>
             </SelectTrigger>
@@ -256,7 +261,7 @@ export function UserManagement() {
             data={allData}
             searchKey="fullName"
             loading={isLoading}
-            searchValue={search}
+            searchValue={draft.search}
             onSearchChange={handleSearchChange}
             currentPage={currentPage}
             totalPages={res?.pagination?.totalPages ?? 1}

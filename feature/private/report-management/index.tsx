@@ -1,7 +1,7 @@
 "use client";
 
 import { FileSpreadsheet, TableProperties } from "lucide-react";
-import { useState } from "react";
+import { useFilterState } from "@/hooks/use-filter-state";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
@@ -49,17 +49,35 @@ function ExportButton() {
 
 function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "store-report"> }) {
   const meta = REPORT_SECTION_META[section];
-  const { applyFilters, clearFilters, fromDate, hasFilters, setFromDate, setToDate, toDate } =
-    useReportDateFilters();
-  const [foodType, setFoodType] = useState("All");
-  const [country, setCountry] = useState("all");
-  const [city, setCity] = useState("all");
+  const {
+    applyFilters,
+    cancelFilters,
+    clearFilters,
+    fromDate,
+    hasFilters,
+    setFromDate,
+    setToDate,
+    toDate,
+  } = useReportDateFilters();
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    foodType: "All",
+    country: "all",
+    city: "all",
+  });
 
   const clearAll = () => {
     clearFilters();
-    setFoodType("All");
-    setCountry("all");
-    setCity("all");
+    reset();
+  };
+
+  const handleApply = () => {
+    applyFilters();
+    apply();
+  };
+
+  const handleCancel = () => {
+    cancelFilters();
+    cancel();
   };
 
   const table =
@@ -90,19 +108,20 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
       <ReportDateFilters
         fromDate={fromDate}
         toDate={toDate}
-        countryId={country}
-        cityId={city}
-        onCountryChange={setCountry}
-        onCityChange={setCity}
+        countryId={draft.country}
+        cityId={draft.city}
+        onCountryChange={(v) => setDraft((p) => ({ ...p, country: v }))}
+        onCityChange={(v) => setDraft((p) => ({ ...p, city: v }))}
         hasFilters={
           hasFilters ||
-          (section === "orders-report" && foodType !== "All") ||
-          country !== "all" ||
-          city !== "all"
+          (section === "orders-report" && applied.foodType !== "All") ||
+          applied.country !== "all" ||
+          applied.city !== "all"
         }
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
-        onApply={applyFilters}
+        onApply={handleApply}
+        onCancel={handleCancel}
         onClear={clearAll}
       >
         {section === "orders-report" && (
@@ -110,7 +129,10 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
             <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
               Food Type
             </Label>
-            <Select value={foodType} onValueChange={(v) => setFoodType(v ?? "All")}>
+            <Select
+              value={draft.foodType}
+              onValueChange={(v) => setDraft((p) => ({ ...p, foodType: v ?? "All" }))}
+            >
               <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
                 <SelectValue placeholder="Select Food Type" />
               </SelectTrigger>
@@ -165,6 +187,7 @@ function StoreReportsPage() {
     setFromDate,
     setToDate,
     toDate,
+    cancelFilters,
   } = useStoreReport();
 
   return (
@@ -182,6 +205,7 @@ function StoreReportsPage() {
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
         onApply={applyFilters}
+        onCancel={cancelFilters}
         onClear={clearFilters}
       />
 

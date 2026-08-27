@@ -30,6 +30,8 @@ export function OrdersManagementPage() {
   };
 
   const {
+    applyFilters,
+    cancelFilters,
     clearFilters,
     country,
     city,
@@ -76,6 +78,8 @@ export function OrdersManagementPage() {
         onCityChange={(val) => setCity(val === "all" ? "All" : val)}
         hasFilters={hasFilters}
         onClearFilters={clearFilters}
+        onApplyFilters={applyFilters}
+        onCancelFilters={cancelFilters}
         activeFilterCount={activeFilterCount}
       >
         <div className="min-w-70 flex-1 sm:min-w-[320px]">

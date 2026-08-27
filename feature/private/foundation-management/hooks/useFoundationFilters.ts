@@ -1,5 +1,6 @@
 "use client";
 
+import { useFilterState } from "@/hooks/use-filter-state";
 import { useMemo, useState } from "react";
 import {
   MOCK_FOUNDATIONS_DATA,
@@ -9,25 +10,28 @@ import {
 
 export function useFoundationFilters() {
   const [activeTab, setActiveTab] = useState<"registered" | "requests">("registered");
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [country, setCountry] = useState("All Countries");
-  const [city, setCity] = useState("All Cities");
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    fromDate: undefined as Date | undefined,
+    toDate: undefined as Date | undefined,
+    country: "All Countries",
+    city: "All Cities",
+  });
 
   const sourceData = activeTab === "registered" ? MOCK_FOUNDATIONS_DATA : MOCK_FOUNDATION_REQUESTS;
 
   const filteredData = useMemo<FoundationData[]>(
     () =>
       sourceData.filter((foundation) => {
-        if (country !== "All Countries" && foundation.country !== country) return false;
-        if (city !== "All Cities" && foundation.city !== city) return false;
+        if (applied.country !== "All Countries" && foundation.country !== applied.country)
+          return false;
+        if (applied.city !== "All Cities" && foundation.city !== applied.city) return false;
 
         const date = new Date(foundation.registeredOn);
-        if (fromDate && date < fromDate) return false;
-        if (toDate && date > toDate) return false;
+        if (applied.fromDate && date < applied.fromDate) return false;
+        if (applied.toDate && date > applied.toDate) return false;
         return true;
       }),
-    [country, city, fromDate, toDate, sourceData],
+    [applied.country, applied.city, applied.fromDate, applied.toDate, sourceData],
   );
 
   const stats = {
@@ -36,26 +40,30 @@ export function useFoundationFilters() {
     pending: MOCK_FOUNDATION_REQUESTS.length,
   };
 
-  const hasFilters = !!(fromDate || toDate || country !== "All Countries" || city !== "All Cities");
+  const hasFilters = !!(
+    applied.fromDate ||
+    applied.toDate ||
+    applied.country !== "All Countries" ||
+    applied.city !== "All Cities"
+  );
 
   const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setCountry("All Countries");
-    setCity("All Cities");
+    reset();
   };
 
   return {
     activeTab,
     setActiveTab,
-    fromDate,
-    setFromDate,
-    toDate,
-    setToDate,
-    country,
-    setCountry,
-    city,
-    setCity,
+    fromDate: draft.fromDate,
+    setFromDate: (d: Date | undefined) => setDraft((p) => ({ ...p, fromDate: d })),
+    toDate: draft.toDate,
+    setToDate: (d: Date | undefined) => setDraft((p) => ({ ...p, toDate: d })),
+    country: draft.country,
+    setCountry: (c: string) => setDraft((p) => ({ ...p, country: c })),
+    city: draft.city,
+    setCity: (c: string) => setDraft((p) => ({ ...p, city: c })),
+    applyFilters: apply,
+    cancelFilters: cancel,
     filteredData,
     stats,
     hasFilters,

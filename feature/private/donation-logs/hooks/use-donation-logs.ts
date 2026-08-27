@@ -1,35 +1,45 @@
 "use client";
 
+import { useFilterState } from "@/hooks/use-filter-state";
+import { useMemo } from "react";
+
 import { MOCK_DONATION_LOGS, type DonationLog } from "@/constants/donation-logs";
-import { useMemo, useState } from "react";
 
 const DEFAULT_STATUS = "All";
 
 export function useDonationLogs() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [statusFilter, setStatusFilter] = useState(DEFAULT_STATUS);
-  const [country, setCountry] = useState("all");
-  const [city, setCity] = useState("all");
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    fromDate: undefined as Date | undefined,
+    toDate: undefined as Date | undefined,
+    statusFilter: DEFAULT_STATUS,
+    country: "all",
+    city: "all",
+  });
 
   const filteredData = useMemo<DonationLog[]>(() => {
     return MOCK_DONATION_LOGS.filter((log) => {
-      if (statusFilter !== DEFAULT_STATUS && log.status !== statusFilter) return false;
+      if (applied.statusFilter !== DEFAULT_STATUS && log.status !== applied.statusFilter)
+        return false;
       if (
-        country !== "all" &&
-        country !== "All" &&
+        applied.country !== "all" &&
+        applied.country !== "All" &&
         (log as any).countryId &&
-        (log as any).countryId !== country
+        (log as any).countryId !== applied.country
       )
         return false;
-      if (city !== "all" && city !== "All" && (log as any).cityId && (log as any).cityId !== city)
+      if (
+        applied.city !== "all" &&
+        applied.city !== "All" &&
+        (log as any).cityId &&
+        (log as any).cityId !== applied.city
+      )
         return false;
       const date = new Date(log.donatedAt);
-      if (fromDate && date < fromDate) return false;
-      if (toDate && date > toDate) return false;
+      if (applied.fromDate && date < applied.fromDate) return false;
+      if (applied.toDate && date > applied.toDate) return false;
       return true;
     });
-  }, [country, city, fromDate, statusFilter, toDate]);
+  }, [applied.country, applied.city, applied.fromDate, applied.statusFilter, applied.toDate]);
 
   const stats = useMemo(
     () => ({
@@ -42,35 +52,33 @@ export function useDonationLogs() {
   );
 
   const hasFilters = Boolean(
-    fromDate ||
-    toDate ||
-    statusFilter !== DEFAULT_STATUS ||
-    (country !== "all" && country !== "All") ||
-    (city !== "all" && city !== "All"),
+    applied.fromDate ||
+    applied.toDate ||
+    applied.statusFilter !== DEFAULT_STATUS ||
+    (applied.country !== "all" && applied.country !== "All") ||
+    (applied.city !== "all" && applied.city !== "All"),
   );
 
   const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatusFilter(DEFAULT_STATUS);
-    setCountry("all");
-    setCity("all");
+    reset();
   };
 
   return {
     filteredData,
-    fromDate,
-    toDate,
-    statusFilter,
-    country,
-    city,
+    fromDate: draft.fromDate,
+    toDate: draft.toDate,
+    statusFilter: draft.statusFilter,
+    country: draft.country,
+    city: draft.city,
     stats,
     hasFilters,
-    setFromDate,
-    setToDate,
-    setStatusFilter,
-    setCountry,
-    setCity,
+    setFromDate: (d: Date | undefined) => setDraft((p) => ({ ...p, fromDate: d })),
+    setToDate: (d: Date | undefined) => setDraft((p) => ({ ...p, toDate: d })),
+    setStatusFilter: (s: string) => setDraft((p) => ({ ...p, statusFilter: s })),
+    setCountry: (c: string) => setDraft((p) => ({ ...p, country: c })),
+    setCity: (c: string) => setDraft((p) => ({ ...p, city: c })),
     clearFilters,
+    applyFilters: apply,
+    cancelFilters: cancel,
   };
 }

@@ -9,30 +9,31 @@ import { CreditCard } from "lucide-react";
 import { useState } from "react";
 import { pendingCreditsColumns } from "./columns/pending-credits-columns";
 
+import { useFilterState } from "@/hooks/use-filter-state";
+
 export function PendingCredits() {
-  const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
-  const [toDate, setToDate] = useState<Date | undefined>(undefined);
-  const [country, setCountry] = useState("all");
-  const [city, setCity] = useState("all");
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    fromDate: undefined as Date | undefined,
+    toDate: undefined as Date | undefined,
+    country: "all",
+    city: "all",
+  });
 
   const hasFilters = Boolean(
-    fromDate ||
-    toDate ||
-    (country !== "all" && country !== "All") ||
-    (city !== "all" && city !== "All"),
+    applied.fromDate ||
+    applied.toDate ||
+    (applied.country !== "all" && applied.country !== "All") ||
+    (applied.city !== "all" && applied.city !== "All"),
   );
 
   const handleClearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setCountry("all");
-    setCity("all");
+    reset();
   };
 
   const activeFilterCount =
-    (fromDate || toDate ? 1 : 0) +
-    (country !== "all" && country !== "All" ? 1 : 0) +
-    (city !== "all" && city !== "All" ? 1 : 0);
+    (applied.fromDate || applied.toDate ? 1 : 0) +
+    (applied.country !== "all" && applied.country !== "All" ? 1 : 0) +
+    (applied.city !== "all" && applied.city !== "All" ? 1 : 0);
 
   return (
     <div className="space-y-6">
@@ -44,20 +45,22 @@ export function PendingCredits() {
       <ModuleFilters
         title="Filter Pending Credits"
         description="Filter records by date range, country, and city"
-        countryId={country}
-        onCountryChange={setCountry}
-        cityId={city}
-        onCityChange={setCity}
+        countryId={draft.country}
+        onCountryChange={(v) => setDraft((p) => ({ ...p, country: v }))}
+        cityId={draft.city}
+        onCityChange={(v) => setDraft((p) => ({ ...p, city: v }))}
         hasFilters={hasFilters}
         onClearFilters={handleClearFilters}
+        onApplyFilters={apply}
+        onCancelFilters={cancel}
         activeFilterCount={activeFilterCount}
       >
         <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
           <DateRangeFilter
-            fromDate={fromDate}
-            toDate={toDate}
-            onFromDateChange={setFromDate}
-            onToDateChange={setToDate}
+            fromDate={draft.fromDate}
+            toDate={draft.toDate}
+            onFromDateChange={(d) => setDraft((p) => ({ ...p, fromDate: d ?? undefined }))}
+            onToDateChange={(d) => setDraft((p) => ({ ...p, toDate: d ?? undefined }))}
           />
         </div>
       </ModuleFilters>

@@ -29,6 +29,8 @@ export function StoreManagement() {
     stats,
     hasFilters,
     clearFilters,
+    applyFilters,
+    cancelFilters,
     isLoading,
     pagination,
     searchQuery,
@@ -71,22 +73,22 @@ export function StoreManagement() {
         ))}
       </div>
 
-      <Card className="overflow-hidden rounded-xl border bg-white shadow-sm">
-        <StoreFilters
-          fromDate={fromDate}
-          toDate={toDate}
-          country={country}
-          city={city}
-          statusFilter={statusFilter}
-          hasFilters={hasFilters}
-          onFromDateChange={setFromDate}
-          onToDateChange={setToDate}
-          onCountryChange={setCountry}
-          onCityChange={setCity}
-          onStatusFilterChange={setStatusFilter}
-          onClearFilters={clearFilters}
-        />
-      </Card>
+      <StoreFilters
+        fromDate={fromDate}
+        toDate={toDate}
+        country={country}
+        city={city}
+        statusFilter={statusFilter}
+        hasFilters={hasFilters}
+        onFromDateChange={setFromDate}
+        onToDateChange={setToDate}
+        onCountryChange={setCountry}
+        onCityChange={setCity}
+        onStatusFilterChange={setStatusFilter}
+        onClearFilters={clearFilters}
+        onApplyFilters={applyFilters}
+        onCancelFilters={cancelFilters}
+      />
 
       <Card className="overflow-hidden rounded-xl shadow-sm">
         <CardHeader className="bg-muted/20 flex items-center justify-between border-b px-6 py-5">
