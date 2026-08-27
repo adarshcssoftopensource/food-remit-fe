@@ -18,6 +18,7 @@ import { useMemo, useState } from "react";
 import { employeeColumns } from "./columns/employee-columns";
 import { EmployeeDialog } from "./components/employee-dialog";
 import { useGetEmployees } from "./hooks/use-get-employees";
+import { ROUTES } from "@/config/routes";
 
 export function EmployeeManagementFeature() {
   const [page, setPage] = useState(1);
@@ -42,7 +43,10 @@ export function EmployeeManagementFeature() {
 
   const columns = useMemo(() => employeeColumns((img) => setSelectedImage(img)), []);
 
-  const breadcrumbs = [{ label: "Dashboard", href: "/" }, { label: "Employee Management" }];
+  const breadcrumbs = [
+    { label: "Dashboard", href: ROUTES.ADMIN.DASHBOARD },
+    { label: "Employee Management" },
+  ];
 
   return (
     <div className="flex flex-col space-y-6">
