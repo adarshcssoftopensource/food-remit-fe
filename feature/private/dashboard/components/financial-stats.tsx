@@ -2,8 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { DASHBOARD_ROUTES } from "@/constants/dashboard";
-import { ArrowUpRight, Banknote, Coins, PackageCheck } from "lucide-react";
-import Link from "next/link";
+import { Banknote, Coins, PackageCheck } from "lucide-react";
 import type { DashboardFinancialStats } from "../types/dashboard.types";
 import { DashboardCard } from "./common/dashboard-card";
 
@@ -16,7 +15,6 @@ export function FinancialStats({ stats, isLoading = false }: FinancialStatsProps
   const financialItems = [
     {
       title: "Amount Collected Today",
-      href: DASHBOARD_ROUTES.ORDER_HISTORY,
       value: stats?.amountCollectedToday ?? "0 USD",
       icon: Coins,
       iconBg: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
@@ -24,7 +22,6 @@ export function FinancialStats({ stats, isLoading = false }: FinancialStatsProps
     },
     {
       title: "Items Sent Today",
-      href: DASHBOARD_ROUTES.SENT_ORDERS,
       value: stats?.itemsSentToday ?? 0,
       icon: PackageCheck,
       iconBg: "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400",
@@ -48,9 +45,8 @@ export function FinancialStats({ stats, isLoading = false }: FinancialStatsProps
         {financialItems.map((item) => {
           const Icon = item.icon;
           return (
-            <Link
+            <div
               key={item.title}
-              href={item.href}
               className={`group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-5 transition-colors transition-shadow transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 ${item.accentBorder}`}
             >
               <div className="flex items-center justify-between">
@@ -64,7 +60,6 @@ export function FinancialStats({ stats, isLoading = false }: FinancialStatsProps
                     {item.title}
                   </p>
                 </div>
-                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-4 w-4 text-slate-300 transition-colors transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
               </div>
 
               <div className="mt-4">
@@ -76,7 +71,7 @@ export function FinancialStats({ stats, isLoading = false }: FinancialStatsProps
                   </span>
                 )}
               </div>
-            </Link>
+            </div>
           );
         })}
       </div>

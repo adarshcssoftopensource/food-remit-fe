@@ -137,7 +137,7 @@ export function CategoriesManagement() {
     appliedCountry !== "all" ||
     appliedCity !== "all" ||
     appliedDepartment !== "all" ||
-    applied.searchQuery
+    debouncedSearch
   );
 
   const clearFilters = () => {

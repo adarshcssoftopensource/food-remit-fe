@@ -124,7 +124,7 @@ export function ItemsManagement() {
     appliedCity !== "all" ||
     appliedDepartment !== "all" ||
     appliedCategory !== "all" ||
-    applied.searchQuery
+    debouncedSearch
   );
 
   const clearFilters = () => {

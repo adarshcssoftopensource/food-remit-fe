@@ -66,7 +66,9 @@ export function DataTablesSection({
             <LifeBuoy className="h-4.5 w-4.5" />
           </div>
         }
-        action={<DashboardActionButton href={DASHBOARD_ROUTES.TICKETS} label="View All" />}
+        action={
+          <DashboardActionButton href={ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT} label="View All" />
+        }
         contentClassName="p-5 sm:p-6"
       >
         {isLoading ? (

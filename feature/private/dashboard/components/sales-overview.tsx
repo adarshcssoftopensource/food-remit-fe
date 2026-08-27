@@ -2,8 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { DASHBOARD_ROUTES } from "@/constants/dashboard";
-import { ArrowUpRight, ShoppingBag, TrendingUp, UserPlus } from "lucide-react";
-import Link from "next/link";
+import { ShoppingBag, TrendingUp, UserPlus } from "lucide-react";
 import type { DashboardSalesOverview } from "../types/dashboard.types";
 import { DashboardCard } from "./common/dashboard-card";
 
@@ -16,7 +15,6 @@ export function SalesOverview({ stats, isLoading = false }: SalesOverviewProps) 
   const salesItems = [
     {
       title: "Sales Total",
-      href: DASHBOARD_ROUTES.ORDER_HISTORY,
       value: stats?.salesGraph ?? "0 USD",
       icon: TrendingUp,
       iconBg: "bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400",
@@ -32,7 +30,6 @@ export function SalesOverview({ stats, isLoading = false }: SalesOverviewProps) 
     },
     {
       title: "Total Orders",
-      href: DASHBOARD_ROUTES.ORDER_HISTORY,
       value: stats?.totalOrders ?? 0,
       icon: ShoppingBag,
       iconBg: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
@@ -56,9 +53,8 @@ export function SalesOverview({ stats, isLoading = false }: SalesOverviewProps) 
         {salesItems.map((item) => {
           const Icon = item.icon;
           return (
-            <Link
+            <div
               key={item.title}
-              href={item.href}
               className={`group flex min-w-0 flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-4.5 transition-colors transition-shadow transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 ${item.accentBorder}`}
             >
               <div className="flex items-center justify-between">
@@ -72,7 +68,6 @@ export function SalesOverview({ stats, isLoading = false }: SalesOverviewProps) 
                     {item.title}
                   </p>
                 </div>
-                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-4 w-4 text-slate-300 transition-colors transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
               </div>
 
               <div className="mt-4">
@@ -84,7 +79,7 @@ export function SalesOverview({ stats, isLoading = false }: SalesOverviewProps) 
                   </span>
                 )}
               </div>
-            </Link>
+            </div>
           );
         })}
       </div>

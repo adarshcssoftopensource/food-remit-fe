@@ -42,11 +42,6 @@ export const ROUTES = {
     },
     ORDER_MANAGEMENT: {
       ROOT: "/order-management",
-      SENT_ORDERS: "/order-management/sent-orders",
-      REQUESTED_ORDERS: "/order-management/requested-orders",
-      PARTIAL_ORDERS: "/order-management/partial-orders",
-      COMPLETED_ORDERS: "/order-management/completed-orders",
-      HISTORY: "/order-management/history",
     },
     CONTENT_MANAGEMENT: {
       ROOT: "/content-management",

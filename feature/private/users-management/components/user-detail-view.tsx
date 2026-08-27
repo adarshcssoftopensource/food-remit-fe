@@ -84,6 +84,7 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
     { value: user?.country ?? "N/A", title: "Country" },
     { value: user?.state ?? "N/A", title: "State" },
     { value: user?.city ?? "N/A", title: "City" },
+    { value: user?.address ?? "N/A", title: "Address" },
     { value: `${user?.countryCode} ${user?.phoneNumber}`, title: "Phone" },
     { value: user?.userType, title: "User Type" },
     { value: user?.userStatus, title: "Status" },

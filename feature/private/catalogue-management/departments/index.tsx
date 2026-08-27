@@ -128,7 +128,7 @@ export function DepartmentsManagement() {
     applied.status !== "all" ||
     appliedCountry !== "all" ||
     appliedCity !== "all" ||
-    applied.searchQuery
+    debouncedSearch
   );
 
   const clearFilters = () => {
