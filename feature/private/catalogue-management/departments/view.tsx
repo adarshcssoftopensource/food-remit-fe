@@ -163,7 +163,7 @@ export function DepartmentView({ id }: DepartmentViewProps) {
 
                 <InfoCard
                   icon={<MapPin className="h-5 w-5" />}
-                  label="Address"
+                  label="City"
                   value={
                     department.scopeLabel ||
                     (department.city?.name || department.cityName

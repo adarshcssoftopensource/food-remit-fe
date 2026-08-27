@@ -36,6 +36,7 @@ export function normalizeUser(item: Record<string, unknown>): UserData {
     state: String(item.state ?? ""),
     city: String(item.city ?? ""),
     createdAt,
+    address: String(item.address),
     userStatus: isActive ? "ACTIVE" : "INACTIVE",
     profileImage: item.profileImage ? String(item.profileImage) : undefined,
   };

@@ -6,7 +6,7 @@ import { useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { PageHeader } from "@/components/common/page-header";
-import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
+import { CountrySelect } from "@/components/common/country-select";
 import { errorToast, successToast } from "@/components/toaster";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -266,25 +266,15 @@ export function AssignCityManagerToStore() {
                 <Controller
                   name="country"
                   control={control}
-                  render={({ field }) => {
-                    const currentCountryName =
-                      countriesData.find((c) => c.id === field.value)?.name || field.value;
-
-                    return (
-                      <ResidentialCountrySelect
-                        value={currentCountryName}
-                        onValueChange={(name) => {
-                          const matchedCountry = countriesData.find(
-                            (c) => c.name.toLowerCase() === name.toLowerCase(),
-                          );
-                          field.onChange(matchedCountry ? matchedCountry.id : name);
-                        }}
-                        invalid={!!errors.country}
-                        className="h-12! bg-slate-50"
-                        disableAutoDetect
-                      />
-                    );
-                  }}
+                  render={({ field }) => (
+                    <CountrySelect
+                      value={field.value}
+                      onValueChange={(val) => field.onChange(val)}
+                      invalid={!!errors.country}
+                      placeholder="Select a country"
+                      className="h-12! bg-slate-50"
+                    />
+                  )}
                 />
                 {errors.country && (
                   <p className="text-xs font-medium text-red-500">{errors.country.message}</p>

@@ -22,6 +22,7 @@ import {
 } from "./components";
 import { useDashboardFilters } from "./hooks/use-dashboard-filters";
 import { useGetDashboardStats } from "./hooks/use-get-dashboard-stats";
+import { ROUTES } from "@/config/routes";
 
 export function Dashboard() {
   const { filters, hasFilters, activeFilterCount, setCountryId, setCityId, resetFilters } =
@@ -95,7 +96,7 @@ export function Dashboard() {
                 </div>
               }
               action={
-                <DashboardActionButton href={DASHBOARD_ROUTES.COMPLETED_ORDERS} label="View All" />
+                <DashboardActionButton href={ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT} label="View All" />
               }
               contentClassName="p-0 overflow-x-auto"
             >

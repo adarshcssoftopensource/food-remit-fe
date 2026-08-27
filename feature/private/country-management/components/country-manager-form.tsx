@@ -5,6 +5,7 @@ import { Globe2, Home, Mail, UserRound } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
+import { CountrySelect } from "@/components/common/country-select";
 import { ImageUpload } from "@/components/common/image-upload";
 import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { Button } from "@/components/ui/button";
@@ -146,27 +147,13 @@ export function CountryManagerForm({
                 <FieldLabel className="mb-1.5 text-sm font-semibold">
                   Assign Country <span className="text-red-500">*</span>
                 </FieldLabel>
-                <Select
+                <CountrySelect
                   value={field.value}
                   onValueChange={field.onChange}
                   disabled={mode === "edit"}
-                >
-                  <SelectTrigger className={inputClass}>
-                    <SelectValue placeholder="Select country to assign">
-                      {field.value
-                        ? (countriesData.find((c) => c.id === field.value || c.name === field.value)
-                            ?.name ?? field.value)
-                        : undefined}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countriesData.map((country) => (
-                      <SelectItem key={country.id} value={country.id}>
-                        {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  invalid={!!errors.assignedCountry}
+                  placeholder="Select country to assign"
+                />
                 {fieldError(errors.assignedCountry?.message)}
               </div>
             )}

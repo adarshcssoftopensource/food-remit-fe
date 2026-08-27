@@ -75,11 +75,13 @@ export function useDraftTableFilters(defaultPageSize = DEFAULT_PAGE_SIZE) {
     fromDate: undefined as Date | undefined,
     toDate: undefined as Date | undefined,
     status: "all",
-    searchQuery: "",
   });
 
+  // Search is instant (debounced 500ms) — no Apply button click needed
+  const debouncedSearch = useDebounce(searchQuery, 500);
+
   const applyFilters = () => {
-    setApplied({ fromDate, toDate, status, searchQuery });
+    setApplied({ fromDate, toDate, status });
     setPage(1);
   };
 
@@ -87,7 +89,7 @@ export function useDraftTableFilters(defaultPageSize = DEFAULT_PAGE_SIZE) {
     setFromDate(applied.fromDate);
     setToDate(applied.toDate);
     setStatus(applied.status);
-    setSearchQuery(applied.searchQuery);
+    // searchQuery is intentionally NOT rolled back — search is always live
   };
 
   const resetBaseFilters = () => {
@@ -95,11 +97,10 @@ export function useDraftTableFilters(defaultPageSize = DEFAULT_PAGE_SIZE) {
     setToDate(undefined);
     setStatus("all");
     setSearchQuery("");
-    setApplied({ fromDate: undefined, toDate: undefined, status: "all", searchQuery: "" });
+    setApplied({ fromDate: undefined, toDate: undefined, status: "all" });
     setPage(1);
   };
 
-  const debouncedSearch = useDebounce(applied.searchQuery, 500);
   const formattedFromDate = applied.fromDate ? format(applied.fromDate, "yyyy-MM-dd") : undefined;
   const formattedToDate = applied.toDate ? format(applied.toDate, "yyyy-MM-dd") : undefined;
 

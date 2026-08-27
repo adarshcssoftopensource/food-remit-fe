@@ -13,6 +13,7 @@ export type UserData = {
   country: string;
   state: string;
   city: string;
+  address: string;
 };
 
 export interface UserStats {

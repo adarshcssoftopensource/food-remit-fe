@@ -161,13 +161,8 @@ export function CategoryView({ id }: CategoryViewProps) {
                   value={category.department?.departmentName || "Unknown"}
                 />
                 <InfoCard
-                  icon={<Layers className="h-5 w-5" />}
-                  label="Parent Category"
-                  value={category.parentCategoryName || category.parent?.categoryName || "None"}
-                />
-                <InfoCard
                   icon={<MapPin className="h-5 w-5" />}
-                  label="Scope"
+                  label="City"
                   value={
                     category.scopeLabel ||
                     (category.cityName ? `City · ${category.cityName}` : "Global (All Cities)")

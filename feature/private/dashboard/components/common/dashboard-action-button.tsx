@@ -12,10 +12,10 @@ interface DashboardActionButtonProps {
 }
 
 export function DashboardActionButton({
-  href,
   label = "View All",
   icon: Icon = ArrowRight,
   className,
+  href,
 }: DashboardActionButtonProps) {
   return (
     <Link

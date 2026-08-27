@@ -5,6 +5,7 @@ import { Globe2, Home, Mail, MapPin, UserRound } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
+import { CountrySelect } from "@/components/common/country-select";
 import { ImageUpload } from "@/components/common/image-upload";
 import { ResidentialCountrySelect } from "@/components/common/residential-country-select";
 import { Button } from "@/components/ui/button";
@@ -157,30 +158,16 @@ export function CityManagerForm({
                 <FieldLabel className="mb-1.5 text-sm font-semibold">
                   Country <span className="text-red-500">*</span>
                 </FieldLabel>
-                <Select
-                  disabled={mode === "edit"}
+                <CountrySelect
                   value={field.value}
                   onValueChange={(v) => {
                     field.onChange(v ?? "");
                     setValue("assignedCities", []);
                   }}
-                >
-                  <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50/80">
-                    <SelectValue placeholder="Select country to assign">
-                      {field.value
-                        ? (countriesData.find((c) => c.id === field.value || c.name === field.value)
-                            ?.name ?? field.value)
-                        : undefined}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countriesData.map((opt) => (
-                      <SelectItem key={opt.id} value={opt.id}>
-                        {opt.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  disabled={mode === "edit"}
+                  invalid={!!errors.country}
+                  placeholder="Select country to assign"
+                />
                 {fieldError(errors.country?.message)}
               </div>
             )}

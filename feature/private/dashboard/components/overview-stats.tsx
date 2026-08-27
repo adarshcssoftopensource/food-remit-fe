@@ -4,6 +4,7 @@ import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { HandPlatter, Package, Users } from "lucide-react";
 import type { DashboardOverviewStats } from "../types/dashboard.types";
 import { DashboardStatCard } from "./common/dashboard-stat-card";
+import { ROUTES } from "@/config/routes";
 
 interface OverviewStatsProps {
   stats?: DashboardOverviewStats;
@@ -14,7 +15,7 @@ export function OverviewStats({ stats, isLoading = false }: OverviewStatsProps) 
   const cards = [
     {
       title: "Food Sent",
-      href: DASHBOARD_ROUTES.SENT_ORDERS,
+      href: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
       icon: Package,
       accentColor: "emerald" as const,
       iconBgClassName:
@@ -29,7 +30,7 @@ export function OverviewStats({ stats, isLoading = false }: OverviewStatsProps) 
     },
     {
       title: "Food Requested",
-      href: DASHBOARD_ROUTES.REQUESTED_ORDERS,
+      href: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
       icon: HandPlatter,
       accentColor: "cyan" as const,
       iconBgClassName: "bg-cyan-500/10 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400",

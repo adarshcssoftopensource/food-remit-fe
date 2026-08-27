@@ -240,7 +240,6 @@ export function StoreForm({
                       className="h-11 cursor-not-allowed rounded-xl border-slate-200 bg-slate-50 opacity-70"
                       value={0}
                       onChange={() => field.onChange(0)}
-
                     />
                   </FormField>
                 )}
