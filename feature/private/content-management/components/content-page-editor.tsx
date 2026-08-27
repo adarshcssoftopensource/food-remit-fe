@@ -4,6 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FileText, PencilLine, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import dynamic from "next/dynamic";
+import "react-quill-new/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 import { PageHeader } from "@/components/common/page-header";
 import { successToast } from "@/components/toaster";
@@ -69,7 +73,7 @@ export function ContentPageEditor({ pageKey }: ContentPageEditorProps) {
       ) : null}
 
       {page ? (
-        <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
+        <Card className="overflow-hidden rounded-2xl border-slate-200/80 pt-0 shadow-sm">
           <CardHeader className="from-primary/8 border-b bg-linear-to-r via-emerald-50/40 to-transparent py-5">
             <div className="flex items-center gap-3">
               <div className="bg-primary/15 text-primary flex size-11 items-center justify-center rounded-xl">
@@ -82,7 +86,7 @@ export function ContentPageEditor({ pageKey }: ContentPageEditorProps) {
                 <p className="text-muted-foreground mt-0.5 text-sm">
                   {page.title || page.description
                     ? `Last updated: ${new Date(page.updatedAt).toLocaleString()}`
-                    : "No content yet — add it from the button above."}
+                    : "No content yet - add it from the button above."}
                 </p>
               </div>
             </div>
@@ -104,9 +108,15 @@ export function ContentPageEditor({ pageKey }: ContentPageEditorProps) {
                       <p className="text-xs font-bold tracking-wide text-slate-400 uppercase">
                         Description
                       </p>
-                      <p className="mt-2 text-sm leading-relaxed whitespace-pre-wrap text-slate-600">
-                        {page.description || "—"}
-                      </p>
+                      <div className="mt-2 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] transition-colors hover:bg-slate-50 dark:border-slate-800/80 dark:bg-slate-900/40">
+                        <ReactQuill
+                          value={page.description || ""}
+                          readOnly={true}
+                          theme="snow"
+                          modules={{ toolbar: false }}
+                          className="[&_.ql-container]:bg-transparent [&_.ql-container.ql-snow]:border-0! [&_.ql-editor]:p-0!"
+                        />
+                      </div>
                     </div>
                   </>
                 ) : (
@@ -216,14 +226,28 @@ function EditContentPageDialog({
                     <FieldLabel className="text-sm font-semibold">
                       Description <span className="text-red-500">*</span>
                     </FieldLabel>
-                    <Textarea
-                      {...field}
-                      rows={10}
+                    <ReactQuill
+                      theme="snow"
+                      value={field.value}
+                      onChange={field.onChange}
                       className={cn(
-                        "focus-visible:border-primary focus-visible:ring-primary/20 rounded-xl border-gray-200/80 bg-gray-50/50 text-sm hover:border-gray-300",
-                        errors.description && "border-red-400 bg-red-50",
+                        "rounded-xl bg-white [&_.ql-container]:rounded-b-xl [&_.ql-editor]:min-h-[200px] [&_.ql-toolbar]:rounded-t-xl",
+                        errors.description &&
+                          "[&_.ql-container]:border-red-400 [&_.ql-toolbar]:border-red-400",
                       )}
-                      placeholder="Enter description"
+                      modules={{
+                        toolbar: [
+                          [{ header: [1, 2, 3, false] }],
+                          ["bold", "italic", "underline", "strike", "blockquote"],
+                          [
+                            { list: "ordered" },
+                            { list: "bullet" },
+                            { indent: "-1" },
+                            { indent: "+1" },
+                          ],
+                          ["link", "clean"],
+                        ],
+                      }}
                     />
                     {errors.description ? (
                       <p className="text-xs font-medium text-red-500">

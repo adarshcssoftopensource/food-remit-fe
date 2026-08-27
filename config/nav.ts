@@ -10,6 +10,9 @@ import {
   Gift,
   Globe,
   GraduationCap,
+  Info,
+  Shield,
+  Scale,
   List,
   MapPin,
   MessageSquare,
@@ -237,17 +240,17 @@ export const cmsNavigationItems = [
   {
     title: "About Us",
     url: ROUTES.ADMIN.CONTENT_MANAGEMENT.ABOUT_US,
-    icon: FileText,
+    icon: Info,
   },
   {
     title: "Privacy Policy",
     url: ROUTES.ADMIN.CONTENT_MANAGEMENT.PRIVACY_POLICY,
-    icon: FileText,
+    icon: Shield,
   },
   {
     title: "Terms Of Use",
     url: ROUTES.ADMIN.CONTENT_MANAGEMENT.TERMS_OF_USE,
-    icon: FileText,
+    icon: Scale,
   },
   {
     title: "FAQ",
