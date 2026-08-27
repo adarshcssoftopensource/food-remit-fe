@@ -80,6 +80,7 @@ export const ROUTES = {
     TUTORIAL_MANAGEMENT: "/tutorial-management",
     PROFILE: "/profile",
     SETTINGS: "/settings",
+    EMPLOYEE_MANAGEMENT: "/employee-management",
   },
 } as const;
 

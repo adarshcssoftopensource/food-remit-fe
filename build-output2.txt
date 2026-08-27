@@ -1,0 +1,25 @@
+
+> foodremit-fe@0.1.0 build /home/nipun/Next js/Food Remit/food-remit-fe
+> next build
+
+▲ Next.js 16.2.11 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 16.6s
+  Running TypeScript ...
+Failed to type check.
+
+./components/common/address-autocomplete-input.tsx:217:9
+Type error: Type '{ children: Element; onOpenAutoFocus: (e: any) => any; onCloseAutoFocus: (e: any) => any; align: "start"; side: "bottom"; sideOffset: number; className: string; }' is not assignable to type 'IntrinsicAttributes & PopoverPopupProps & Pick<PopoverPositionerProps, "align" | "alignOffset" | "side" | "sideOffset" | "collisionPadding">'.
+  Property 'onOpenAutoFocus' does not exist on type 'IntrinsicAttributes & PopoverPopupProps & Pick<PopoverPositionerProps, "align" | "alignOffset" | "side" | "sideOffset" | "collisionPadding">'.
+
+  [90m215 |[0m
+  [90m216 |[0m       <[33mPopoverContent[0m
+[31m[1m>[0m [90m217 |[0m         onOpenAutoFocus={(e) => e.preventDefault()}
+  [90m    |[0m         [31m[1m^[0m
+  [90m218 |[0m         onCloseAutoFocus={(e) => e.preventDefault()}
+  [90m219 |[0m         align=[32m"start"[0m
+  [90m220 |[0m         side=[32m"bottom"[0m
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.
