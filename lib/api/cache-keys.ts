@@ -46,6 +46,7 @@ export const API_CACHE_KEYS = {
   // Employees
   EMPLOYEES: ["EMPLOYEES"],
   EMPLOYEE_BY_ID: (id: string) => ["employee", id],
+  EMPLOYEE_ORDERS: (id: string) => ["employee-orders", id],
 
   // Catalogue
   DEPARTMENTS: ["departments"],

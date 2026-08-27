@@ -48,6 +48,7 @@ export const ROUTES = {
       COMPLETED_ORDERS: "/order-management/completed-orders",
       HISTORY: "/order-management/history",
     },
+    MY_ORDERS: "/my-orders",
     CONTENT_MANAGEMENT: {
       ROOT: "/content-management",
       LANDING_PAGE: "/content-management/landing-page",

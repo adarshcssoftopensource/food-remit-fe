@@ -7,8 +7,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ROUTES } from "@/config/routes";
 import { type Employee } from "@/feature/private/employee-management/types/employee-management";
-import { Edit, MoreHorizontal } from "lucide-react";
+import { Edit, Eye, MoreHorizontal } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmployeeDialog } from "./employee-dialog";
 
@@ -18,6 +20,7 @@ interface EmployeeActionsCellProps {
 
 export function EmployeeActionsCell({ employee }: EmployeeActionsCellProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -29,6 +32,13 @@ export function EmployeeActionsCell({ employee }: EmployeeActionsCellProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={() => router.push(`${ROUTES.ADMIN.EMPLOYEE_MANAGEMENT}/${employee.id}`)}
+            className="cursor-pointer"
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            View
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsEditOpen(true)} className="cursor-pointer">
             <Edit className="mr-2 h-4 w-4" />
             Edit

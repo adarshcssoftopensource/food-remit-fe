@@ -138,6 +138,11 @@ export const navigationItems = [
     icon: Box,
   },
   {
+    title: "My Orders",
+    url: ROUTES.ADMIN.MY_ORDERS,
+    icon: Box,
+  },
+  {
     title: "Ticket Management",
     url: ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT,
     icon: Ticket,

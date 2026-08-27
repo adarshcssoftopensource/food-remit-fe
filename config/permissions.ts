@@ -19,6 +19,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   [ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT]: "countryManagement",
   [ROUTES.ADMIN.CITY_MANAGEMENT.ROOT]: "cityManagement",
   [ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT]: "orderManagement",
+  [ROUTES.ADMIN.MY_ORDERS]: "myOrders",
   [ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT]: "contentManagement",
   [ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT]: "ticketManagement",
   [ROUTES.ADMIN.REPORT_MANAGEMENT.ROOT]: "reportManagement",

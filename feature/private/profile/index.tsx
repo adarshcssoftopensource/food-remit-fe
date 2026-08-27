@@ -1,18 +1,39 @@
 "use client";
 
 import { PageHeader } from "@/components/common/page-header";
+import { useProfile } from "@/components/providers/profile-provider";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ROUTES } from "@/config/routes";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { ChangePassword } from "./components/change-password";
 import { ProfileForm } from "./components/profile-form";
 import { ProfileHeader } from "./components/profile-header";
 import { ProfilePermissions } from "./components/profile-permissions";
 
 export function ProfilePage() {
+  const { profile } = useProfile();
+  const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+
   return (
     <div className="w-full space-y-6">
       <PageHeader
         title="My Profile"
         description="Manage your account settings, personal details, and security preferences."
+        action={
+          isEmployee && (
+            <Link href={ROUTES.ADMIN.MY_ORDERS}>
+              <Button
+                variant="outline"
+                className="h-10 rounded-xl px-4 text-sm font-semibold shadow-sm transition-all hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to My Orders
+              </Button>
+            </Link>
+          )
+        }
       />
 
       <ProfileHeader />
@@ -32,7 +53,7 @@ export function ProfilePage() {
 
         <TabsContent value="general" className="mt-0 space-y-6">
           <ProfileForm />
-          <ProfilePermissions />
+          {!isEmployee && <ProfilePermissions />}
         </TabsContent>
 
         <TabsContent value="security" className="mt-0">

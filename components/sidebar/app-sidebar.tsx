@@ -109,12 +109,28 @@ export function AppSidebar() {
 
   const allowedNavItems = React.useMemo(() => {
     return activeNavItems
+      .filter((item) => {
+        const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+        if (item.title === "My Orders") return isEmployee;
+        if (item.title === "Order Management") return !isEmployee;
+        return true;
+      })
       .map((item) => {
         // If the item has sub-items, filter them first based on permissions
         if (item.items && item.items.length > 0) {
-          const filteredSubs = item.items.filter((sub) =>
-            hasPathPermission(sub.url, profile?.permissions, isSuperAdmin),
-          );
+          const filteredSubs = item.items.filter((sub) => {
+            if (!hasPathPermission(sub.url, profile?.permissions, isSuperAdmin)) {
+              return false;
+            }
+            const isStoreManager =
+              profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
+            if (item.title === "Catalogue Management" && isStoreManager) {
+              if (sub.title === "Departments" || sub.title === "Categories") {
+                return false;
+              }
+            }
+            return true;
+          });
           return { ...item, items: filteredSubs };
         }
         return item;
@@ -150,6 +166,10 @@ export function AppSidebar() {
   const handleMobileClose = () => {
     if (isMobile) toggleSidebar();
   };
+
+  if (profile?.roleCode === "EMPLOYEE" || profile?.role === "employee") {
+    return null;
+  }
 
   return (
     <Sidebar
