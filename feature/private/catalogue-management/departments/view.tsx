@@ -2,7 +2,6 @@
 
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
-import { ScopeBadge } from "@/components/common/scope-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
@@ -135,11 +134,6 @@ export function DepartmentView({ id }: DepartmentViewProps) {
                     </span>
                     {department.status === "ACTIVE" ? "Active" : "Inactive"}
                   </span>
-                  <ScopeBadge
-                    isGlobal={department.isGlobal}
-                    scopeLabel={department.scopeLabel}
-                    cityName={department.city?.name || department.cityName}
-                  />
                 </div>
               </div>
             </CardHeader>

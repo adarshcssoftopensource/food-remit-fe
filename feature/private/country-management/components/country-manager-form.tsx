@@ -133,6 +133,47 @@ export function CountryManagerForm({
     <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col">
       <div className="flex-1 space-y-5 overflow-y-auto bg-slate-50/30 p-6">
         <SectionShell
+          icon={Globe2}
+          title="Assignment"
+          subtitle="Country this manager will handle"
+          accent="bg-amber-100 text-amber-700"
+        >
+          <Controller
+            name="assignedCountry"
+            control={control}
+            render={({ field }) => (
+              <div className="max-w-md">
+                <FieldLabel className="mb-1.5 text-sm font-semibold">
+                  Assign Country <span className="text-red-500">*</span>
+                </FieldLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={mode === "edit"}
+                >
+                  <SelectTrigger className={inputClass}>
+                    <SelectValue placeholder="Select country to assign">
+                      {field.value
+                        ? (countriesData.find((c) => c.id === field.value || c.name === field.value)
+                            ?.name ?? field.value)
+                        : undefined}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countriesData.map((country) => (
+                      <SelectItem key={country.id} value={country.id}>
+                        {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {fieldError(errors.assignedCountry?.message)}
+              </div>
+            )}
+          />
+        </SectionShell>
+
+        <SectionShell
           icon={UserRound}
           title="Profile Photo"
           subtitle="Upload a clear headshot for the country manager profile"
@@ -408,47 +449,6 @@ export function CountryManagerForm({
             </div>
           </SectionShell>
         </div>
-
-        <SectionShell
-          icon={Globe2}
-          title="Assignment"
-          subtitle="Country this manager will handle"
-          accent="bg-amber-100 text-amber-700"
-        >
-          <Controller
-            name="assignedCountry"
-            control={control}
-            render={({ field }) => (
-              <div className="max-w-md">
-                <FieldLabel className="mb-1.5 text-sm font-semibold">
-                  Assign Country <span className="text-red-500">*</span>
-                </FieldLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  disabled={mode === "edit"}
-                >
-                  <SelectTrigger className={inputClass}>
-                    <SelectValue placeholder="Select country to assign">
-                      {field.value
-                        ? (countriesData.find((c) => c.id === field.value || c.name === field.value)
-                            ?.name ?? field.value)
-                        : undefined}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countriesData.map((country) => (
-                      <SelectItem key={country.id} value={country.id}>
-                        {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {fieldError(errors.assignedCountry?.message)}
-              </div>
-            )}
-          />
-        </SectionShell>
       </div>
 
       <div className="sticky bottom-0 z-10 flex justify-center border-t bg-white px-6 py-4 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">

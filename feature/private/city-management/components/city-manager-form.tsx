@@ -144,6 +144,119 @@ export function CityManagerForm({
     <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col">
       <div className="flex-1 space-y-5 overflow-y-auto p-6">
         <SectionShell
+          icon={Globe2}
+          title="Assignment"
+          subtitle="Country coverage and cities this manager will handle"
+          accent="bg-amber-100 text-amber-700"
+        >
+          <Controller
+            name="country"
+            control={control}
+            render={({ field }) => (
+              <div className="max-w-md">
+                <FieldLabel className="mb-1.5 text-sm font-semibold">
+                  Country <span className="text-red-500">*</span>
+                </FieldLabel>
+                <Select
+                  disabled={mode === "edit"}
+                  value={field.value}
+                  onValueChange={(v) => {
+                    field.onChange(v ?? "");
+                    setValue("assignedCities", []);
+                  }}
+                >
+                  <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50/80">
+                    <SelectValue placeholder="Select country to assign">
+                      {field.value
+                        ? (countriesData.find((c) => c.id === field.value || c.name === field.value)
+                            ?.name ?? field.value)
+                        : undefined}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countriesData.map((opt) => (
+                      <SelectItem key={opt.id} value={opt.id}>
+                        {opt.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {fieldError(errors.country?.message)}
+              </div>
+            )}
+          />
+
+          <Controller
+            name="assignedCities"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <FieldLabel className="text-sm font-semibold">
+                    Assign Cities <span className="text-red-500">*</span>
+                  </FieldLabel>
+                  {assignedCities.length > 0 ? (
+                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-800">
+                      {assignedCities.length} selected
+                    </span>
+                  ) : null}
+                </div>
+                {!country ? (
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-10 text-center">
+                    <MapPin className="mb-2 size-8 text-slate-300" />
+                    <p className="text-sm font-medium text-slate-600">Select a country first</p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      City options will appear for that country
+                    </p>
+                  </div>
+                ) : assignableCities.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-10 text-center">
+                    <MapPin className="mb-2 size-8 text-slate-300" />
+                    <p className="text-sm font-medium text-slate-600">
+                      No city available for this country for assign
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      All cities might already be assigned or none exist for the selected country.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid max-h-52 gap-2 overflow-y-auto rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {assignableCities.map((city) => {
+                      const active = field.value.includes(city.id);
+                      return (
+                        <label
+                          key={city.id}
+                          className={cn(
+                            "flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm transition",
+                            active
+                              ? "border-amber-300 bg-amber-50 font-semibold text-amber-900 shadow-sm"
+                              : "border-transparent bg-white text-slate-700 hover:border-slate-200 hover:shadow-sm",
+                          )}
+                        >
+                          <Checkbox
+                            checked={active}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                field.onChange([...field.value, city.id]);
+                              } else {
+                                field.onChange(field.value.filter((c) => c !== city.id));
+                              }
+                            }}
+                            className="size-4 rounded-lg data-[state=checked]:border-amber-600 data-[state=checked]:bg-amber-600"
+                          />
+                          <span className="flex-1 truncate">{city.name}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+                {fieldError(errors.assignedCities?.message)}
+              </div>
+            )}
+          />
+        </SectionShell>
+
+        <SectionShell
           icon={UserRound}
           title="Profile Photo"
           subtitle="Upload a clear headshot for the city manager profile"
@@ -419,119 +532,6 @@ export function CityManagerForm({
             </div>
           </SectionShell>
         </div>
-
-        <SectionShell
-          icon={Globe2}
-          title="Assignment"
-          subtitle="Country coverage and cities this manager will handle"
-          accent="bg-amber-100 text-amber-700"
-        >
-          <Controller
-            name="country"
-            control={control}
-            render={({ field }) => (
-              <div className="max-w-md">
-                <FieldLabel className="mb-1.5 text-sm font-semibold">
-                  Country <span className="text-red-500">*</span>
-                </FieldLabel>
-                <Select
-                  disabled={mode === "edit"}
-                  value={field.value}
-                  onValueChange={(v) => {
-                    field.onChange(v ?? "");
-                    setValue("assignedCities", []);
-                  }}
-                >
-                  <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50/80">
-                    <SelectValue placeholder="Select country to assign">
-                      {field.value
-                        ? (countriesData.find((c) => c.id === field.value || c.name === field.value)
-                            ?.name ?? field.value)
-                        : undefined}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countriesData.map((opt) => (
-                      <SelectItem key={opt.id} value={opt.id}>
-                        {opt.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {fieldError(errors.country?.message)}
-              </div>
-            )}
-          />
-
-          <Controller
-            name="assignedCities"
-            control={control}
-            render={({ field }) => (
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <FieldLabel className="text-sm font-semibold">
-                    Assign Cities <span className="text-red-500">*</span>
-                  </FieldLabel>
-                  {assignedCities.length > 0 ? (
-                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-800">
-                      {assignedCities.length} selected
-                    </span>
-                  ) : null}
-                </div>
-                {!country ? (
-                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-10 text-center">
-                    <MapPin className="mb-2 size-8 text-slate-300" />
-                    <p className="text-sm font-medium text-slate-600">Select a country first</p>
-                    <p className="mt-1 text-xs text-slate-400">
-                      City options will appear for that country
-                    </p>
-                  </div>
-                ) : assignableCities.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-10 text-center">
-                    <MapPin className="mb-2 size-8 text-slate-300" />
-                    <p className="text-sm font-medium text-slate-600">
-                      No city available for this country for assign
-                    </p>
-                    <p className="mt-1 text-xs text-slate-400">
-                      All cities might already be assigned or none exist for the selected country.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid max-h-52 gap-2 overflow-y-auto rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {assignableCities.map((city) => {
-                      const active = field.value.includes(city.id);
-                      return (
-                        <label
-                          key={city.id}
-                          className={cn(
-                            "flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm transition",
-                            active
-                              ? "border-amber-300 bg-amber-50 font-semibold text-amber-900 shadow-sm"
-                              : "border-transparent bg-white text-slate-700 hover:border-slate-200 hover:shadow-sm",
-                          )}
-                        >
-                          <Checkbox
-                            checked={active}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                field.onChange([...field.value, city.id]);
-                              } else {
-                                field.onChange(field.value.filter((c) => c !== city.id));
-                              }
-                            }}
-                            className="size-4 rounded-lg data-[state=checked]:border-amber-600 data-[state=checked]:bg-amber-600"
-                          />
-                          <span className="flex-1 truncate">{city.name}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                )}
-                {fieldError(errors.assignedCities?.message)}
-              </div>
-            )}
-          />
-        </SectionShell>
       </div>
 
       <div className="sticky bottom-0 z-10 flex justify-center border-t bg-white px-6 py-4 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">

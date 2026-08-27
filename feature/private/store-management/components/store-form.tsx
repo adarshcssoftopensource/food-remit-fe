@@ -67,7 +67,7 @@ export function StoreForm({
       address2: initialValues?.address2 ?? "",
       storeCountry: initialValues?.storeCountry ?? "",
       storeCity: initialValues?.storeCity ?? "",
-      storeTax: initialValues?.storeTax ?? undefined,
+      storeTax: 0,
       foodRemitCommission: initialValues?.foodRemitCommission ?? undefined,
       managerImage: initialValues?.managerImage ?? undefined,
       managerFirstName: initialValues?.managerFirstName ?? "",
@@ -227,20 +227,19 @@ export function StoreForm({
                 name="storeTax"
                 control={control}
                 render={({ field }) => (
-                  <FormField label="Store Tax %" error={errors.storeTax?.message}>
+                  <FormField label="Government Store Tax" error={errors.storeTax?.message}>
                     <Input
                       {...field}
                       id="storeTax"
                       type="number"
                       min={0}
                       max={100}
+                      disabled
                       step={0.01}
-                      placeholder="Store Tax %"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
-                      value={field.value ?? ""}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
-                      }
+                      placeholder="Government Store Tax"
+                      className="h-11 cursor-not-allowed rounded-xl border-slate-200 bg-slate-50 opacity-70"
+                      value={0}
+                      onChange={(e) => field.onChange(0)}
                     />
                   </FormField>
                 )}

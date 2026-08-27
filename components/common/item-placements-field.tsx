@@ -57,10 +57,18 @@ export function ItemPlacementsField({
   const [draftCountryId, setDraftCountryId] = useState("");
   const [draftDepartmentId, setDraftDepartmentId] = useState("");
   const [draftCategoryId, setDraftCategoryId] = useState("");
+  const [draftPrice, setDraftPrice] = useState("");
 
   const { countries } = useGetCountriesDropdown();
   const { data: departmentsData } = useGetDepartmentsDropdown(draftCountryId || undefined);
   const { data: categoriesData } = useGetCategoriesDropdown(draftDepartmentId || undefined);
+
+  const draftCountry = countries.find((c) => c.id === draftCountryId);
+  const draftCurrencyMeta = resolveCurrencyDisplay({
+    currency: draftCountry?.currency,
+    countryName: draftCountry?.name || draftCountry?.countryName,
+    countryCode: draftCountry?.countryCode,
+  });
 
   const departments = useMemo(
     () => (Array.isArray(departmentsData?.data) ? departmentsData.data : []),
@@ -72,8 +80,8 @@ export function ItemPlacementsField({
   );
 
   const handleAdd = () => {
-    if (!draftCountryId || !draftDepartmentId || !draftCategoryId) {
-      toast.error("Select country, department and category first");
+    if (!draftCountryId || !draftDepartmentId || !draftCategoryId || !draftPrice) {
+      toast.error("Select country, department, category, and enter price first");
       return;
     }
 
@@ -108,7 +116,7 @@ export function ItemPlacementsField({
         countryId: draftCountryId,
         departmentId: draftDepartmentId,
         categoryId: draftCategoryId,
-        price: "",
+        price: draftPrice,
         currency: currencyMeta.code,
         currencySymbol: currencyMeta.symbol,
         countryName: country?.name || country?.countryName || "Country",
@@ -120,6 +128,7 @@ export function ItemPlacementsField({
     setDraftCountryId("");
     setDraftDepartmentId("");
     setDraftCategoryId("");
+    setDraftPrice("");
   };
 
   const updatePrice = (key: string, price: string) => {
@@ -132,7 +141,7 @@ export function ItemPlacementsField({
 
   return (
     <div className={cn("flex flex-col gap-4", className)}>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <CountrySelect
           value={draftCountryId}
           onValueChange={(val) => {
@@ -159,6 +168,17 @@ export function ItemPlacementsField({
           placeholder="Select category"
           disabled={!draftDepartmentId}
         />
+        <div className="min-w-0">
+          <CurrencyPriceInput
+            value={draftPrice}
+            onChange={setDraftPrice}
+            currency={draftCurrencyMeta?.code}
+            currencySymbol={draftCurrencyMeta?.symbol}
+            disabled={!draftCountryId}
+            placeholder="Price"
+            className="h-11"
+          />
+        </div>
         <Button type="button" onClick={handleAdd} className="h-11 rounded-xl font-semibold">
           <Plus data-icon="inline-start" />
           Add

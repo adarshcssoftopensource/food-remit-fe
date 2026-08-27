@@ -5,6 +5,7 @@ import { StatusBadge } from "@/components/common/status-badge";
 import {
   CalendarDays,
   CheckCircle2,
+  ChevronDown,
   Mail,
   Phone,
   ShieldCheck,
@@ -14,10 +15,12 @@ import {
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ROUTES } from "@/config/routes";
 import { formatDate } from "@/lib/date";
 import { getInitials } from "@/lib/get-initials";
 import { cn } from "@/lib/utils";
+import { useMemo, useState } from "react";
 
 import { colorMap } from "@/constants/sub-admin-management";
 import { DetailSkeleton } from "./components/detail-skeleton";
@@ -28,11 +31,80 @@ interface SubAdminDetailPageProps {
   id: string;
 }
 
+function PermissionCard({ permission, isAssigned }: { permission: any; isAssigned: boolean }) {
+  return (
+    <div
+      className={cn(
+        "group flex flex-col gap-2 rounded-xl border p-4 transition-all duration-200",
+        isAssigned
+          ? "border-emerald-200 bg-linear-to-r from-emerald-50/50 to-transparent hover:border-emerald-300 hover:shadow-sm dark:border-emerald-900/30 dark:from-emerald-500/5 dark:hover:border-emerald-800/50"
+          : "border-slate-200 bg-slate-50/50 hover:border-slate-300 dark:border-slate-700/50 dark:bg-slate-800/30 dark:hover:border-slate-600/50",
+      )}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className={cn(
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+            isAssigned
+              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
+              : "bg-slate-200 text-slate-400 dark:bg-slate-700 dark:text-slate-500",
+          )}
+        >
+          {isAssigned ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p
+            className={cn(
+              "truncate text-sm font-semibold",
+              isAssigned
+                ? "text-slate-800 dark:text-slate-100"
+                : "text-slate-500 dark:text-slate-400",
+            )}
+          >
+            {permission.label}
+          </p>
+          <p
+            className={cn(
+              "mt-0.5 truncate text-[10px] font-medium tracking-wider uppercase",
+              isAssigned
+                ? "text-emerald-600/70 dark:text-emerald-400/70"
+                : "text-slate-400 dark:text-slate-500",
+            )}
+          >
+            {permission.key}
+          </p>
+        </div>
+      </div>
+      <span
+        className={cn(
+          "ml-11 w-fit rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase ring-1 transition-all",
+          isAssigned
+            ? "bg-emerald-100 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:ring-emerald-500/30"
+            : "bg-slate-200 text-slate-500 ring-slate-300 dark:bg-slate-700 dark:text-slate-400 dark:ring-slate-600",
+        )}
+      >
+        {isAssigned ? "Granted" : "Not Granted"}
+      </span>
+    </div>
+  );
+}
+
 export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
   const { data, isLoading } = useGetSubAdminById(id);
   const { data: permissionsData } = useSubAdminPermissions(true);
   const admin = data?.data;
   const allPermissions = permissionsData?.data || [];
+
+  const [isNotGrantedOpen, setIsNotGrantedOpen] = useState(false);
+
+  const grantedPermissions = useMemo(() => {
+    if (!admin?.permissions) return [];
+    return allPermissions.filter((p) => admin.permissions.some((ap) => ap.key === p.key));
+  }, [allPermissions, admin]);
+
+  const notGrantedPermissions = useMemo(() => {
+    return allPermissions.filter((p) => !admin?.permissions?.some((ap) => ap.key === p.key));
+  }, [allPermissions, admin]);
 
   if (isLoading) return <DetailSkeleton />;
   if (!admin) return null;
@@ -208,14 +280,16 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
                   <p className="text-xs text-slate-400">All page permissions</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  {admin.permissions?.length || 0} Granted
-                </div>
-                <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                  <span className="h-2 w-2 rounded-full bg-slate-400" />
-                  {allPermissions.length - (admin.permissions?.length || 0)} Not Granted
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                    {admin.permissions?.length || 0} Granted
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                    <span className="h-2 w-2 rounded-full bg-slate-400" />
+                    {allPermissions.length - (admin.permissions?.length || 0)} Not Granted
+                  </div>
                 </div>
               </div>
             </div>
@@ -223,70 +297,45 @@ export function SubAdminDetailPage({ id }: SubAdminDetailPageProps) {
 
           <CardContent className="p-5">
             {allPermissions.length ? (
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {allPermissions.map((permission) => {
-                  const isAssigned = admin.permissions?.some((p) => p.key === permission.key);
-                  return (
-                    <div
-                      key={permission.key}
-                      className={cn(
-                        "group flex flex-col gap-2 rounded-xl border p-4 transition-all duration-200",
-                        isAssigned
-                          ? "border-emerald-200 bg-linear-to-r from-emerald-50/50 to-transparent hover:border-emerald-300 hover:shadow-sm dark:border-emerald-900/30 dark:from-emerald-500/5 dark:hover:border-emerald-800/50"
-                          : "border-slate-200 bg-slate-50/50 hover:border-slate-300 dark:border-slate-700/50 dark:bg-slate-800/30 dark:hover:border-slate-600/50",
-                      )}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div
+              <div className="flex flex-col gap-6">
+                {grantedPermissions.length > 0 && (
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {grantedPermissions.map((permission) => (
+                      <PermissionCard
+                        key={permission.key}
+                        permission={permission}
+                        isAssigned={true}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {notGrantedPermissions.length > 0 && (
+                  <Collapsible open={isNotGrantedOpen} onOpenChange={setIsNotGrantedOpen}>
+                    <CollapsibleTrigger>
+                      <button className="flex w-full items-center justify-between rounded-xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:bg-slate-900">
+                        <span>View Not Granted Permissions ({notGrantedPermissions.length})</span>
+                        <ChevronDown
                           className={cn(
-                            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
-                            isAssigned
-                              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
-                              : "bg-slate-200 text-slate-400 dark:bg-slate-700 dark:text-slate-500",
+                            "h-5 w-5 text-slate-500 transition-transform duration-200",
+                            isNotGrantedOpen && "rotate-180",
                           )}
-                        >
-                          {isAssigned ? (
-                            <CheckCircle2 className="h-4 w-4" />
-                          ) : (
-                            <XCircle className="h-4 w-4" />
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p
-                            className={cn(
-                              "truncate text-sm font-semibold",
-                              isAssigned
-                                ? "text-slate-800 dark:text-slate-100"
-                                : "text-slate-500 dark:text-slate-400",
-                            )}
-                          >
-                            {permission.label}
-                          </p>
-                          <p
-                            className={cn(
-                              "mt-0.5 truncate text-[10px] font-medium tracking-wider uppercase",
-                              isAssigned
-                                ? "text-emerald-600/70 dark:text-emerald-400/70"
-                                : "text-slate-400 dark:text-slate-500",
-                            )}
-                          >
-                            {permission.key}
-                          </p>
-                        </div>
+                        />
+                      </button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-4">
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                        {notGrantedPermissions.map((permission) => (
+                          <PermissionCard
+                            key={permission.key}
+                            permission={permission}
+                            isAssigned={false}
+                          />
+                        ))}
                       </div>
-                      <span
-                        className={cn(
-                          "ml-11 w-fit rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase ring-1 transition-all",
-                          isAssigned
-                            ? "bg-emerald-100 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:ring-emerald-500/30"
-                            : "bg-slate-200 text-slate-500 ring-slate-300 dark:bg-slate-700 dark:text-slate-400 dark:ring-slate-600",
-                        )}
-                      >
-                        {isAssigned ? "Granted" : "Not Granted"}
-                      </span>
-                    </div>
-                  );
-                })}
+                    </CollapsibleContent>
+                  </Collapsible>
+                )}
               </div>
             ) : (
               <div className="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-5 text-center dark:border-slate-800 dark:bg-slate-900/40">

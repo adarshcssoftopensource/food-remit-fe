@@ -72,7 +72,7 @@ export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<
   },
   {
     accessorKey: "storeTax",
-    header: "Store Tax",
+    header: "Government Store Tax",
     cell: ({ row }) => <TaxCell value={row.original.storeTax} />,
   },
   {

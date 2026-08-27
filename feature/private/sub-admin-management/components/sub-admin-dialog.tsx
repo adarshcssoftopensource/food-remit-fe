@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { resolveFromValue } from "@/components/ui/phone-input";
 import { Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useCreateSubAdmin } from "../hooks/use-create-sub-admin";
@@ -18,7 +19,6 @@ import { useUpdateSubAdmin } from "../hooks/use-update-sub-admin";
 import { type SubAdminFormValues } from "../schema/sub-admin.schema";
 import type { SubAdminData } from "../types/sub-admin.types";
 import { SubAdminForm } from "./sub-admin-form";
-import { resolveFromValue } from "@/components/ui/phone-input";
 
 interface SubAdminDialogProps {
   mode?: "add" | "edit";
@@ -108,7 +108,7 @@ export function SubAdminDialog({
           render={
             <Button className="rounded-xl px-4 font-semibold shadow-sm">
               <Plus className="mr-2 h-4 w-4" />
-              Add Sub/Co Admin
+              Add
             </Button>
           }
         />
@@ -126,7 +126,7 @@ export function SubAdminDialog({
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  {mode === "add" ? "Add Sub/Co Admin" : "Edit Sub/Co Admin"}
+                  {mode === "add" ? "Add" : "Edit Sub/Co Admin"}
                 </DialogTitle>
               </div>
 
