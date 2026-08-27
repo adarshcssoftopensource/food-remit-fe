@@ -9,14 +9,13 @@ import { formatDate } from "@/lib/date";
 import {
   ArrowLeft,
   Barcode,
+  BarChart3,
   Calendar,
-  Clock,
   CreditCard,
-  DollarSign,
   Expand,
+  Landmark,
   MapPin,
   Package,
-  Percent,
   Phone,
   Receipt,
   Repeat,
@@ -121,145 +120,231 @@ export function OrderDetailPage({ id }: { id: string }) {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card className="flex flex-col justify-between rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
-          <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
-            <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">
+      <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+        <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+          <CardTitle className="flex items-center justify-between text-base font-bold tracking-tight text-slate-900 dark:text-white">
+            <span className="flex items-center">
               <Package className="mr-2.5 size-5 text-emerald-500" />
-              Order Summary & QR Verification
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="space-y-3.5">
+              Order Summary
+            </span>
+            {renderStatus(order.orderStatus)}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="flex flex-col md:flex-row">
+            {/* Left Side: Order Details */}
+            <div className="flex-1 p-6">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <div>
-                  <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                  <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                     Reference Number
                   </p>
-                  <p className="font-mono text-base font-bold text-slate-900 dark:text-white">
+                  <p className="mt-1 font-mono text-sm font-bold text-slate-900 dark:text-white">
                     {order.refrenceNumber || order.id}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                  <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                     Order ID
                   </p>
-                  <p className="truncate font-mono text-xs text-slate-600 dark:text-slate-300">
+                  <p className="mt-1 truncate font-mono text-xs font-semibold text-slate-600 dark:text-slate-300">
                     {order.id}
                   </p>
                 </div>
-                <div className="flex gap-4">
-                  <div>
-                    <p className="flex items-center text-xs font-medium text-slate-400">
-                      <Calendar className="mr-1 size-3" /> Date
-                    </p>
-                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                      {formatDate(order.createdAt)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="flex items-center text-xs font-medium text-slate-400">
-                      <Clock className="mr-1 size-3" /> Time
-                    </p>
-                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                      {order.time || "N/A"}
-                    </p>
-                  </div>
+                <div>
+                  <p className="flex items-center text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                    <Calendar className="mr-1 size-3" /> Date & Time
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-slate-800 dark:text-slate-200">
+                    {formatDate(order.createdAt)} • {order.time || "N/A"}
+                  </p>
                 </div>
                 <div>
-                  <p className="flex items-center text-xs font-medium text-slate-400">
+                  <p className="flex items-center text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                     <Tag className="mr-1 size-3" /> Food Type
                   </p>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <p className="mt-1 text-sm font-bold text-slate-800 dark:text-slate-200">
                     {order.foodType || "Sent Food Order"}
                   </p>
                 </div>
                 <div>
-                  <p className="flex items-center text-xs font-medium text-slate-400">
+                  <p className="flex items-center text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                     <Repeat className="mr-1 size-3" /> Recurring
                   </p>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <p className="mt-1 text-sm font-bold text-slate-800 dark:text-slate-200">
                     {order.recurring || "No"}
                   </p>
                 </div>
-                <div>
-                  <p className="mb-1 text-xs font-medium text-slate-400">Current Status</p>
-                  {renderStatus(order.orderStatus)}
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center justify-center rounded-xl border border-slate-100 bg-slate-50/80 p-4 text-center dark:border-slate-800 dark:bg-slate-800/40">
-                <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                  <img src={order.qrCode} alt="Order QR Code" className="size-36 object-contain" />
-                </div>
-                <span className="mt-2.5 inline-flex items-center text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                  <ShieldCheck className="mr-1 size-3.5" /> Backend Generated QR
-                </span>
-                <p className="mt-0.5 text-[10px] text-slate-400">
-                  Contains Order & Product Details
-                </p>
               </div>
             </div>
-          </CardContent>
+
+            {/* Right Side: QR Code */}
+            <div className="flex w-full shrink-0 flex-col items-center justify-center border-t border-slate-100 bg-slate-50/50 p-6 md:w-72 md:border-t-0 md:border-l dark:border-slate-800 dark:bg-slate-800/30">
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={order.qrCode} alt="Order QR Code" className="size-28 object-contain" />
+              </div>
+              <span className="mt-3 inline-flex items-center text-[11px] font-bold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+                <ShieldCheck className="mr-1.5 size-3.5" /> Backend Generated QR
+              </span>
+              <p className="mt-1 text-[10px] text-slate-400">Contains Order & Product Details</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* The 3 Financial boxes */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {/* Customer Payment */}
+        <Card className="rounded-2xl border border-blue-100 bg-white shadow-sm dark:border-blue-900/30 dark:bg-slate-900">
+          <div className="flex items-center justify-between border-b border-blue-50/50 bg-blue-50/30 px-5 py-3 dark:border-blue-900/20 dark:bg-blue-950/20">
+            <div className="flex items-center gap-2">
+              <div className="flex size-6 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
+                1
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Customer Payment</h3>
+            </div>
+            <CreditCard className="size-4 text-blue-500" />
+          </div>
+          <div className="flex flex-col gap-3 p-5">
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">Merchandise Subtotal</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.customerPayment?.merchandiseSubtotal || "0.00"}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">
+                Store Tax ({order.customerPayment?.storeTaxPercent || "0"}%)
+              </span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.customerPayment?.storeTax || "0.00"}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">Processing Fee</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.customerPayment?.processingFee || "0.00"}
+              </span>
+            </div>
+
+            <hr className="my-1 border-dashed border-slate-200 dark:border-slate-700" />
+
+            <div>
+              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                Total Customer Paid
+              </p>
+              <p className="text-xl font-black text-blue-600 dark:text-blue-400">
+                {order.customerPayment?.totalCustomerPaid || "0.00"}
+              </p>
+            </div>
+
+            <div className="mt-2 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/50">
+              <p className="text-[10px] font-medium text-slate-400">Payment Method</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">
+                {order.customerPayment?.paymentMethod || "N/A"}
+              </p>
+
+              <p className="mt-2 text-[10px] font-medium text-slate-400">Payment Status</p>
+              <span className="mt-1 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                {order.customerPayment?.paymentStatus || "N/A"}
+              </span>
+            </div>
+          </div>
         </Card>
 
-        <Card className="flex flex-col justify-between rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
-          <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
-            <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">
-              <DollarSign className="mr-2.5 size-5 text-purple-500" />
-              Financial & Fee Breakdown
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 p-6">
-            <div className="rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-50/80 to-indigo-50/80 p-4 dark:border-purple-900/30 dark:from-purple-950/20 dark:to-indigo-950/20">
-              <p className="text-xs font-semibold tracking-wider text-purple-600 uppercase dark:text-purple-400">
-                Total Order Amount
-              </p>
-              <p className="text-3xl font-black text-purple-950 dark:text-purple-100">
-                {order.price || "0.00 USD"}
-              </p>
+        {/* Food Remit Earnings */}
+        <Card className="rounded-2xl border border-purple-100 bg-white shadow-sm dark:border-purple-900/30 dark:bg-slate-900">
+          <div className="flex items-center justify-between border-b border-purple-50/50 bg-purple-50/30 px-5 py-3 dark:border-purple-900/20 dark:bg-purple-950/20">
+            <div className="flex items-center gap-2">
+              <div className="flex size-6 items-center justify-center rounded-full bg-purple-500 text-xs font-bold text-white">
+                2
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                Food Remit Earnings
+              </h3>
+            </div>
+            <BarChart3 className="size-4 text-purple-500" />
+          </div>
+          <div className="flex flex-col gap-3 p-5">
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">
+                Markup ({order.foodRemitEarnings?.markupPercent || "0"}%)
+              </span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.foodRemitEarnings?.markupAmount || "0.00"}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">
+                Commission ({order.foodRemitEarnings?.commissionPercent || "0"}%)
+              </span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.foodRemitEarnings?.commissionAmount || "0.00"}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">Processing Fee</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.foodRemitEarnings?.processingFee || "0.00"}
+              </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-800/40">
-                <p className="flex items-center text-xs font-medium text-slate-400">
-                  <CreditCard className="mr-1.5 size-3.5 text-purple-500" /> Mode of Payment
-                </p>
-                <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
-                  {order.modeOfPayment || "Online Payment"}
-                </p>
-              </div>
-              <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-800/40">
-                <p className="flex items-center text-xs font-medium text-slate-400">
-                  <Receipt className="mr-1.5 size-3.5 text-indigo-500" /> Processing Fee
-                </p>
-                <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
-                  {order.processingFee || "0.00 USD"}
-                </p>
-              </div>
-            </div>
+            <hr className="my-1 border-dashed border-slate-200 dark:border-slate-700" />
 
-            <div className="space-y-2.5 rounded-xl border border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30">
-              <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center text-slate-500">
-                  <Percent className="mr-1.5 size-3.5 text-slate-400" /> Total Tax
-                </span>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {order.totalTax || "0.00 USD"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center text-slate-500">
-                  <Tag className="mr-1.5 size-3.5 text-slate-400" /> Total Item Tax
-                </span>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {order.totalItemTax || "0.00 USD"}
-                </span>
-              </div>
+            <div className="mt-2">
+              <p className="text-xs font-semibold text-purple-600 dark:text-purple-400">
+                Total Food Remit Revenue
+              </p>
+              <p className="text-xl font-black text-purple-600 dark:text-purple-400">
+                {order.foodRemitEarnings?.totalFoodRemitRevenue || "0.00"}
+              </p>
             </div>
-          </CardContent>
+          </div>
         </Card>
 
+        {/* Vendor Settlement */}
+        <Card className="rounded-2xl border border-emerald-100 bg-white shadow-sm dark:border-emerald-900/30 dark:bg-slate-900">
+          <div className="flex items-center justify-between border-b border-emerald-50/50 bg-emerald-50/30 px-5 py-3 dark:border-emerald-900/20 dark:bg-emerald-950/20">
+            <div className="flex items-center gap-2">
+              <div className="flex size-6 items-center justify-center rounded-full bg-emerald-500 text-xs font-bold text-white">
+                3
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                Vendor Settlement
+              </h3>
+            </div>
+            <Landmark className="size-4 text-emerald-500" />
+          </div>
+          <div className="flex flex-col gap-3 p-5">
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">Vendor Base Amount</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.vendorSettlement?.vendorBaseAmount || "0.00"}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs text-red-500">
+              <span>(-) Commission ({order.vendorSettlement?.commissionPercent || "0"}%)</span>
+              <span className="font-semibold">
+                {order.vendorSettlement?.commissionAmount || "0.00"}
+              </span>
+            </div>
+
+            <hr className="my-1 border-dashed border-slate-200 dark:border-slate-700" />
+
+            <div className="mt-2">
+              <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                Vendor Merchandise Proceeds
+              </p>
+              <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
+                {order.vendorSettlement?.vendorProceeds || "0.00"}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
           <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
             <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">

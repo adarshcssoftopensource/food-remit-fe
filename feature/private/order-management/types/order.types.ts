@@ -42,4 +42,27 @@ export interface OrderData {
   receiverPhoneNumber?: string;
   receiverAddress?: string;
   storeAddress?: string;
+  customerPayment?: {
+    merchandiseSubtotal: string;
+    storeTaxPercent: string;
+    storeTax: string;
+    processingFee: string;
+    totalCustomerPaid: string;
+    paymentMethod: string;
+    paymentStatus: string;
+  };
+  foodRemitEarnings?: {
+    markupPercent: string;
+    markupAmount: string;
+    commissionPercent: string;
+    commissionAmount: string;
+    processingFee: string;
+    totalFoodRemitRevenue: string;
+  };
+  vendorSettlement?: {
+    vendorBaseAmount: string;
+    commissionPercent: string;
+    commissionAmount: string;
+    vendorProceeds: string;
+  };
 }
