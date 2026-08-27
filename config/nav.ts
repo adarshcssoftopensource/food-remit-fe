@@ -106,6 +106,11 @@ export const navigationItems = [
     ],
   },
   {
+    title: "Employee Management",
+    url: ROUTES.ADMIN.EMPLOYEE_MANAGEMENT,
+    icon: Users,
+  },
+  {
     title: "Country Management",
     url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT,
     icon: Globe,
@@ -130,6 +135,11 @@ export const navigationItems = [
   {
     title: "Order Management",
     url: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
+    icon: Box,
+  },
+  {
+    title: "My Orders",
+    url: ROUTES.ADMIN.MY_ORDERS,
     icon: Box,
   },
   {

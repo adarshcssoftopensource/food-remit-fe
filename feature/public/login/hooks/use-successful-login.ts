@@ -31,7 +31,9 @@ export const useSuccessfulLogin = () => {
       const isSuperAdmin = profile.roleCode === "SUPER_ADMIN" || profile.role === "super_admin";
 
       if (!isSuperAdmin && profile.permissions) {
-        if (profile.permissions["dashboard"] !== 1) {
+        if (profile.roleCode === "EMPLOYEE" || profile.role === "employee") {
+          targetRoute = ROUTES.ADMIN.MY_ORDERS;
+        } else if (profile.permissions["dashboard"] !== 1) {
           const firstAccessible = Object.entries(ROUTE_PERMISSION_MAP).find(
             ([, permKey]) => profile.permissions[permKey] === 1,
           );

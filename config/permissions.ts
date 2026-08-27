@@ -19,6 +19,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   [ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT]: "countryManagement",
   [ROUTES.ADMIN.CITY_MANAGEMENT.ROOT]: "cityManagement",
   [ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT]: "orderManagement",
+  [ROUTES.ADMIN.MY_ORDERS]: "myOrders",
   [ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT]: "contentManagement",
   [ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT]: "ticketManagement",
   [ROUTES.ADMIN.REPORT_MANAGEMENT.ROOT]: "reportManagement",
@@ -28,6 +29,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   [ROUTES.ADMIN.AMOUNT_LIMIT_MANAGEMENT]: "amountLimits",
   "/credits-management": "creditsManagement",
   [ROUTES.ADMIN.TUTORIAL_MANAGEMENT]: "imageManagement",
+  [ROUTES.ADMIN.EMPLOYEE_MANAGEMENT]: "employeeManagement",
 };
 
 function isAlwaysAllowedRoute(pathname: string): boolean {
@@ -41,6 +43,15 @@ export function hasPathPermission(
   permissions: Record<string, number | null | undefined> | null | undefined,
   isSuperAdmin: boolean = false,
 ): boolean {
+  // Explicitly deny Employee Management for super admin
+  if (
+    isSuperAdmin &&
+    (pathname === ROUTES.ADMIN.EMPLOYEE_MANAGEMENT ||
+      pathname.startsWith(`${ROUTES.ADMIN.EMPLOYEE_MANAGEMENT}/`))
+  ) {
+    return false;
+  }
+
   if (isSuperAdmin) return true;
 
   if (isAlwaysAllowedRoute(pathname)) return true;
