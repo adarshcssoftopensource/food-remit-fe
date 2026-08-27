@@ -324,7 +324,10 @@ export function OrderDetailPage({ id }: { id: string }) {
               </span>
             </div>
             <div className="flex justify-between text-xs text-red-500">
-              <span>(-) Commission ({order.vendorSettlement?.commissionPercent || "0"}%)</span>
+              <span>
+                {" "}
+                Food Remit Commission ({order.vendorSettlement?.commissionPercent || "0"}%)
+              </span>
               <span className="font-semibold">
                 {order.vendorSettlement?.commissionAmount || "0.00"}
               </span>
@@ -334,7 +337,7 @@ export function OrderDetailPage({ id }: { id: string }) {
 
             <div className="mt-2">
               <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                Vendor Merchandise Proceeds
+                Vendor Merchandise Payable
               </p>
               <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
                 {order.vendorSettlement?.vendorProceeds || "0.00"}
