@@ -1,12 +1,9 @@
 "use client";
 
-import { Filter, RotateCcw, ChevronDown } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
+import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TICKET_SECTION_META, type TicketSectionKey } from "@/constants/ticket-management";
 import { activeTicketColumns, closedTicketColumns } from "./columns/ticket-columns";
@@ -20,6 +17,7 @@ export function TicketManagementPage({ section }: TicketManagementPageProps) {
   const meta = TICKET_SECTION_META[section];
   const {
     applyFilters,
+    cancelFilters,
     clearFilters,
     filteredData,
     fromDate,
@@ -35,53 +33,24 @@ export function TicketManagementPage({ section }: TicketManagementPageProps) {
     <div className="space-y-6">
       <PageHeader title="Tickets Requests" description={meta.description} />
 
-      <Collapsible className="group">
-        <Card className="rounded-xl border bg-white shadow-sm">
-          <CollapsibleTrigger render={<div />}>
-            <CardHeader className="cursor-pointer border-b py-4 transition-colors hover:bg-slate-50/50">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
-                  <Filter className="text-primary h-4 w-4" />
-                </div>
-                <CardTitle className="text-lg font-semibold">Filter Tickets</CardTitle>
-
-                <div className="flex items-center gap-3">
-                  <ChevronDown className="h-5 w-5 text-slate-500 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                </div>
-              </div>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="p-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end lg:flex-nowrap">
-                <DateRangeFilter
-                  fromDate={fromDate}
-                  toDate={toDate}
-                  onFromDateChange={setFromDate}
-                  onToDateChange={setToDate}
-                  wrapperClassName="flex flex-col sm:flex-row flex-1 gap-3"
-                  itemClassName="flex-1 space-y-1 min-w-0"
-                  pickerClassName="h-10 w-full"
-                  labelClassName="text-muted-foreground text-xs font-medium uppercase"
-                />
-
-                <Button onClick={applyFilters} className="h-10 w-full shrink-0 sm:w-auto">
-                  Apply
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={clearFilters}
-                  disabled={!hasFilters}
-                  className="h-10 w-full shrink-0 sm:w-auto"
-                >
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  Clear
-                </Button>
-              </div>
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
+      <ModuleFilters
+        title="Filter Tickets"
+        description="Filter tickets by date range"
+        hasFilters={hasFilters}
+        onClearFilters={clearFilters}
+        onApplyFilters={applyFilters}
+        onCancelFilters={cancelFilters}
+        activeFilterCount={hasFilters ? 1 : 0}
+      >
+        <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+          <DateRangeFilter
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={setFromDate}
+            onToDateChange={setToDate}
+          />
+        </div>
+      </ModuleFilters>
 
       <Card className="rounded-xl shadow-sm">
         <CardHeader className="border-b">

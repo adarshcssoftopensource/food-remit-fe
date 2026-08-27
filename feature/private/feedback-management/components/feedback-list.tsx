@@ -8,53 +8,61 @@ import { MessageSquare } from "lucide-react";
 import { useMemo, useState } from "react";
 import { feedbackColumns } from "../columns/feedback-columns";
 
+import { useFilterState } from "@/hooks/use-filter-state";
+
 export function FeedbackList() {
-  const [country, setCountry] = useState("all");
-  const [city, setCity] = useState("all");
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    country: "all",
+    city: "all",
+  });
 
   const filteredFeedback = useMemo(() => {
     return MOCK_FEEDBACK.filter((item) => {
       if (
-        country !== "all" &&
-        country !== "All" &&
+        applied.country !== "all" &&
+        applied.country !== "All" &&
         (item as any).countryId &&
-        (item as any).countryId !== country
+        (item as any).countryId !== applied.country
       ) {
         return false;
       }
       if (
-        city !== "all" &&
-        city !== "All" &&
+        applied.city !== "all" &&
+        applied.city !== "All" &&
         (item as any).cityId &&
-        (item as any).cityId !== city
+        (item as any).cityId !== applied.city
       ) {
         return false;
       }
       return true;
     });
-  }, [country, city]);
+  }, [applied.country, applied.city]);
 
-  const hasFilters = (country !== "all" && country !== "All") || (city !== "all" && city !== "All");
+  const hasFilters =
+    (applied.country !== "all" && applied.country !== "All") ||
+    (applied.city !== "all" && applied.city !== "All");
 
   const clearFilters = () => {
-    setCountry("all");
-    setCity("all");
+    reset();
   };
 
   const activeFilterCount =
-    (country !== "all" && country !== "All" ? 1 : 0) + (city !== "all" && city !== "All" ? 1 : 0);
+    (applied.country !== "all" && applied.country !== "All" ? 1 : 0) +
+    (applied.city !== "all" && applied.city !== "All" ? 1 : 0);
 
   return (
     <div className="space-y-6">
       <ModuleFilters
         title="Filter Feedback"
         description="Filter feedback responses by country and city"
-        countryId={country}
-        onCountryChange={setCountry}
-        cityId={city}
-        onCityChange={setCity}
+        countryId={draft.country}
+        onCountryChange={(v) => setDraft((p) => ({ ...p, country: v }))}
+        cityId={draft.city}
+        onCityChange={(v) => setDraft((p) => ({ ...p, city: v }))}
         hasFilters={hasFilters}
         onClearFilters={clearFilters}
+        onApplyFilters={apply}
+        onCancelFilters={cancel}
         activeFilterCount={activeFilterCount}
       />
 

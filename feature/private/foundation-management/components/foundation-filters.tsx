@@ -15,6 +15,8 @@ interface FoundationFiltersProps {
   onCountryChange: (country: string) => void;
   onCityChange: (city: string) => void;
   onClearFilters: () => void;
+  onApplyFilters?: () => void;
+  onCancelFilters?: () => void;
 }
 
 export function FoundationFilters({
@@ -28,6 +30,8 @@ export function FoundationFilters({
   onCountryChange,
   onCityChange,
   onClearFilters,
+  onApplyFilters,
+  onCancelFilters,
 }: FoundationFiltersProps) {
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -47,6 +51,8 @@ export function FoundationFilters({
       onCityChange={(val) => onCityChange(val === "all" ? "All Cities" : val)}
       hasFilters={hasFilters}
       onClearFilters={onClearFilters}
+      onApplyFilters={onApplyFilters}
+      onCancelFilters={onCancelFilters}
       activeFilterCount={activeFilterCount}
     >
       <div className="min-w-[280px] flex-1 sm:min-w-[320px]">

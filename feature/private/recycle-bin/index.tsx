@@ -6,9 +6,12 @@ import { Button } from "@/components/ui/button";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDebounce } from "@/lib/debounce";
 import { RowSelectionState, SortingState } from "@tanstack/react-table";
-import { Building2, FolderTree, Globe, MapPin, Package, Store, Users } from "lucide-react";
+import { Building2, Check, FolderTree, Globe, MapPin, Package, Store, Users } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { ModuleFilters } from "@/components/common/filters/module-filters";
+import { DrawerClose } from "@/components/ui/drawer";
+import { Label } from "@/components/ui/label";
 import { RecycleBinTable } from "./components/recycle-bin-table";
 import { RecycleEntityType, useGetRecycledData } from "./hooks/use-get-recycled-data";
 import {
@@ -125,29 +128,45 @@ export function RecycledUsersManagement() {
         description="View, restore, or permanently delete soft-deleted records across all modules."
       />
 
-      {/* Entity Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3 dark:border-slate-800">
-        {ENTITY_TABS.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <Button
-              key={tab.id}
-              variant={isActive ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 rounded-xl text-xs font-semibold transition-all ${
-                isActive
-                  ? "bg-slate-900 text-white shadow-md hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                  : "bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400"
-              }`}
-            >
-              <Icon className="h-3.75 w-3.75" />
-              {tab.label}
-            </Button>
-          );
-        })}
-      </div>
+      <ModuleFilters
+        title={ENTITY_TABS.find((t) => t.id === activeTab)?.label || "Filter Recycle Bin"}
+        description="Select the module to view recycled records."
+        hasFilters={activeTab !== "users"}
+        activeFilterCount={activeTab !== "users" ? 1 : 0}
+      >
+        <div className="min-w-44 flex-1 space-y-3">
+          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            Module
+          </Label>
+          <div className="flex flex-col gap-2">
+            {ENTITY_TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <DrawerClose
+                  key={tab.id}
+                  render={
+                    <button
+                      onClick={() => handleTabChange(tab.id)}
+                      className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                        isActive
+                          ? "text-secondary bg-teal-900 shadow-md dark:bg-teal-50 dark:text-teal-900"
+                          : "bg-slate-50 text-slate-600 hover:bg-slate-100 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:bg-slate-800"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className="h-4 w-4" />
+                        {tab.label}
+                      </div>
+                      {isActive && <Check className="h-4 w-4" />}
+                    </button>
+                  }
+                />
+              );
+            })}
+          </div>
+        </div>
+      </ModuleFilters>
 
       <RecycleBinTable
         entityType={activeTab}

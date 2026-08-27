@@ -1,5 +1,5 @@
 import { successToast } from "@/components/toaster";
-import { useTableFilters } from "@/hooks/use-table-filters";
+import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { useMemo, useState } from "react";
 import { useCreateCityManager, useUpdateCityManager } from "./use-create-city-manager";
 import { useGetCityManagers } from "./use-get-city-managers";
@@ -27,10 +27,27 @@ export function useCityManagerFilters() {
     setSorting,
     setPage,
     setLimit,
-  } = useTableFilters(DEFAULT_PAGE_SIZE);
+    applied,
+    applyFilters,
+    cancelFilters,
+  } = useDraftTableFilters(DEFAULT_PAGE_SIZE);
 
   const [country, setCountry] = useState("all");
   const [city, setCity] = useState("all");
+  const [appliedCountry, setAppliedCountry] = useState("all");
+  const [appliedCity, setAppliedCity] = useState("all");
+
+  const applyAllFilters = () => {
+    applyFilters();
+    setAppliedCountry(country);
+    setAppliedCity(city);
+  };
+
+  const cancelAllFilters = () => {
+    cancelFilters();
+    setCountry(appliedCountry);
+    setCity(appliedCity);
+  };
 
   const {
     data: cityManagers,
@@ -43,11 +60,11 @@ export function useCityManagerFilters() {
     search: debouncedSearch,
     sortBy,
     sortOrder,
-    status: statusFilter,
+    status: applied.status,
     fromDate: formattedFromDate,
     toDate: formattedToDate,
-    countryId: country,
-    cityId: city,
+    countryId: appliedCountry,
+    cityId: appliedCity,
   });
 
   const createMutation = useCreateCityManager();
@@ -66,17 +83,19 @@ export function useCityManagerFilters() {
   }, [cityManagers]);
 
   const hasFilters = Boolean(
-    fromDate ||
-    toDate ||
-    (statusFilter !== "All" && statusFilter !== "all") ||
-    (country !== "all" && country !== "All") ||
-    (city !== "all" && city !== "All"),
+    applied.fromDate ||
+    applied.toDate ||
+    (applied.status !== "All" && applied.status !== "all") ||
+    (appliedCountry !== "all" && appliedCountry !== "All") ||
+    (appliedCity !== "all" && appliedCity !== "All"),
   );
 
   const clearFilters = () => {
     resetBaseFilters();
     setCountry("all");
     setCity("all");
+    setAppliedCountry("all");
+    setAppliedCity("all");
   };
 
   const addCityManager = async (formData: FormData) => {
@@ -99,6 +118,8 @@ export function useCityManagerFilters() {
   return {
     addCityManager,
     clearFilters,
+    applyFilters: applyAllFilters,
+    cancelFilters: cancelAllFilters,
     country,
     setCountry,
     city,

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { ROUTES } from "@/config/routes";
 import { CATALOGUE_STATUS_OPTIONS, CATEGORY_STAT_CONFIG } from "@/constants/catalogue-management";
-import { useTableFilters } from "@/hooks/use-table-filters";
+import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { Building2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -45,15 +45,36 @@ export function CategoriesManagement() {
     setSearchQuery,
     setSorting,
     debouncedSearch,
-    formattedFromDate,
     formattedToDate,
     sortBy,
     sortOrder,
-  } = useTableFilters();
+    applied,
+    applyFilters,
+    cancelFilters,
+    resetBaseFilters,
+  } = useDraftTableFilters();
 
   const [country, setCountry] = useState("all");
   const [city, setCity] = useState("all");
   const [department, setDepartment] = useState("all");
+
+  const [appliedCountry, setAppliedCountry] = useState("all");
+  const [appliedCity, setAppliedCity] = useState("all");
+  const [appliedDepartment, setAppliedDepartment] = useState("all");
+
+  const applyAllFilters = () => {
+    applyFilters();
+    setAppliedCountry(country);
+    setAppliedCity(city);
+    setAppliedDepartment(department);
+  };
+
+  const cancelAllFilters = () => {
+    cancelFilters();
+    setCountry(appliedCountry);
+    setCity(appliedCity);
+    setDepartment(appliedDepartment);
+  };
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<CategoryData | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -65,11 +86,11 @@ export function CategoriesManagement() {
       page: currentPage,
       limit: pageSize,
       search: debouncedSearch || undefined,
-      countryId: country !== "all" && country !== "All" ? country : undefined,
-      departmentId: department !== "all" ? department : undefined,
-      status: status !== "all" ? status : undefined,
-      fromDate: formattedFromDate,
-      toDate: formattedToDate,
+      countryId: appliedCountry !== "all" && appliedCountry !== "All" ? appliedCountry : undefined,
+      departmentId: appliedDepartment !== "all" ? appliedDepartment : undefined,
+      status: applied.status !== "all" ? applied.status : undefined,
+      fromDate: applied.fromDate ? new Date(applied.fromDate).toISOString() : undefined,
+      toDate: applied.toDate ? new Date(applied.toDate).toISOString() : undefined,
       sortBy,
       sortOrder,
     };
@@ -77,11 +98,11 @@ export function CategoriesManagement() {
     currentPage,
     pageSize,
     debouncedSearch,
-    country,
-    department,
-    status,
-    formattedFromDate,
-    formattedToDate,
+    appliedCountry,
+    appliedDepartment,
+    applied.status,
+    applied.fromDate,
+    applied.toDate,
     sortBy,
     sortOrder,
   ]);
@@ -91,12 +112,17 @@ export function CategoriesManagement() {
   const categories = useMemo(() => {
     const rawCategories = res?.data ?? [];
     return rawCategories.filter((c) => {
-      if (city !== "all" && city !== "All" && (c as any).cityId && (c as any).cityId !== city) {
+      if (
+        appliedCity !== "all" &&
+        appliedCity !== "All" &&
+        (c as any).cityId &&
+        (c as any).cityId !== appliedCity
+      ) {
         return false;
       }
       return true;
     });
-  }, [res?.data, city]);
+  }, [res?.data, appliedCity]);
 
   const stats = {
     total: res?.stats?.total ?? 0,
@@ -105,34 +131,41 @@ export function CategoriesManagement() {
   };
 
   const hasFilters = !!(
-    fromDate ||
-    toDate ||
-    status !== "all" ||
-    country !== "all" ||
-    city !== "all" ||
-    department !== "all" ||
-    searchQuery
+    applied.fromDate ||
+    applied.toDate ||
+    applied.status !== "all" ||
+    appliedCountry !== "all" ||
+    appliedCity !== "all" ||
+    appliedDepartment !== "all" ||
+    applied.searchQuery
   );
 
   const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatus("all");
+    resetBaseFilters();
     setCountry("all");
     setCity("all");
     setDepartment("all");
-    setSearchQuery("");
+    setAppliedCountry("all");
+    setAppliedCity("all");
+    setAppliedDepartment("all");
   };
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (fromDate || toDate) count++;
-    if (country !== "all" && country !== "All") count++;
-    if (city !== "all" && city !== "All") count++;
-    if (department !== "all") count++;
-    if (status !== "all") count++;
+    if (applied.fromDate || applied.toDate) count++;
+    if (appliedCountry !== "all" && appliedCountry !== "All") count++;
+    if (appliedCity !== "all" && appliedCity !== "All") count++;
+    if (appliedDepartment !== "all") count++;
+    if (applied.status !== "all") count++;
     return count;
-  }, [fromDate, toDate, country, city, department, status]);
+  }, [
+    applied.fromDate,
+    applied.toDate,
+    appliedCountry,
+    appliedCity,
+    appliedDepartment,
+    applied.status,
+  ]);
 
   const handleEdit = useCallback((category: CategoryData) => {
     setEditingCategory(category);
@@ -201,6 +234,8 @@ export function CategoriesManagement() {
         onCityChange={setCity}
         hasFilters={hasFilters}
         onClearFilters={clearFilters}
+        onApplyFilters={applyAllFilters}
+        onCancelFilters={cancelAllFilters}
         activeFilterCount={activeFilterCount}
       >
         <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">

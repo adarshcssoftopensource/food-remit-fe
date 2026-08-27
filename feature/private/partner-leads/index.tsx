@@ -10,6 +10,7 @@ import { ROUTES } from "@/config/routes";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { STATS_CONFIG } from "@/constants/partner.leads";
 import { useDebounce } from "@/lib/debounce";
+import { useFilterState } from "@/hooks/use-filter-state";
 import { SortingState } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -23,8 +24,11 @@ export function PartnerLeadsManagement() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(DEFAULT_PAGE_SIZE);
-  const [country, setCountry] = useState("all");
-  const [city, setCity] = useState("all");
+
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    country: "all",
+    city: "all",
+  });
 
   const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
   const sortOrder = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
@@ -40,39 +44,40 @@ export function PartnerLeadsManagement() {
   const filteredLeads = useMemo(() => {
     return leads.filter((lead) => {
       if (
-        country !== "all" &&
-        country !== "All" &&
+        applied.country !== "all" &&
+        applied.country !== "All" &&
         (lead as any).countryId &&
-        (lead as any).countryId !== country
+        (lead as any).countryId !== applied.country
       ) {
         return false;
       }
       if (
-        city !== "all" &&
-        city !== "All" &&
+        applied.city !== "all" &&
+        applied.city !== "All" &&
         (lead as any).cityId &&
-        (lead as any).cityId !== city
+        (lead as any).cityId !== applied.city
       ) {
         return false;
       }
       return true;
     });
-  }, [leads, country, city]);
+  }, [leads, applied.country, applied.city]);
 
   const hasFilters = Boolean(
-    (country !== "all" && country !== "All") || (city !== "all" && city !== "All") || searchValue,
+    (applied.country !== "all" && applied.country !== "All") ||
+    (applied.city !== "all" && applied.city !== "All") ||
+    searchValue,
   );
 
   const handleClearFilters = () => {
-    setCountry("all");
-    setCity("all");
+    reset();
     setSearchValue("");
     setPage(1);
   };
 
   const activeFilterCount =
-    (country !== "all" && country !== "All" ? 1 : 0) +
-    (city !== "all" && city !== "All" ? 1 : 0) +
+    (applied.country !== "all" && applied.country !== "All" ? 1 : 0) +
+    (applied.city !== "all" && applied.city !== "All" ? 1 : 0) +
     (searchValue ? 1 : 0);
 
   const handleViewDetails = useCallback(
@@ -115,12 +120,14 @@ export function PartnerLeadsManagement() {
       <ModuleFilters
         title="Filter Leads Pipeline"
         description="Filter partnership leads by country and city"
-        countryId={country}
-        onCountryChange={setCountry}
-        cityId={city}
-        onCityChange={setCity}
+        countryId={draft.country}
+        onCountryChange={(v) => setDraft((p) => ({ ...p, country: v }))}
+        cityId={draft.city}
+        onCityChange={(v) => setDraft((p) => ({ ...p, city: v }))}
         hasFilters={hasFilters}
         onClearFilters={handleClearFilters}
+        onApplyFilters={apply}
+        onCancelFilters={cancel}
         activeFilterCount={activeFilterCount}
       />
 

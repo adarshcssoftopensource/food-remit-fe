@@ -1,45 +1,48 @@
 "use client";
 
+import { useFilterState } from "@/hooks/use-filter-state";
+import { useMemo } from "react";
+
 import { PHILANTHROPHISTS } from "@/constants/philanthrophist-management";
-import { useMemo, useState } from "react";
 
 export function usePhilanthrophistFilters() {
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
+    fromDate: undefined as Date | undefined,
+    toDate: undefined as Date | undefined,
+    country: "",
+    city: "",
+  });
 
   const data = useMemo(
     () =>
       PHILANTHROPHISTS.filter((person) => {
         const registeredOn = new Date(person.registeredOn);
-        if (fromDate && registeredOn < fromDate) return false;
-        if (toDate && registeredOn > toDate) return false;
-        if (country && person.country !== country) return false;
-        if (city && person.city !== city) return false;
+        if (applied.fromDate && registeredOn < applied.fromDate) return false;
+        if (applied.toDate && registeredOn > applied.toDate) return false;
+        if (applied.country && person.country !== applied.country) return false;
+        if (applied.city && person.city !== applied.city) return false;
         return true;
       }),
-    [fromDate, toDate, country, city],
+    [applied.fromDate, applied.toDate, applied.country, applied.city],
   );
 
   const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setCountry("");
-    setCity("");
+    reset();
   };
 
   return {
-    fromDate,
-    setFromDate,
-    toDate,
-    setToDate,
-    country,
-    setCountry,
-    city,
-    setCity,
+    fromDate: draft.fromDate,
+    setFromDate: (d: Date | undefined) => setDraft((p) => ({ ...p, fromDate: d })),
+    toDate: draft.toDate,
+    setToDate: (d: Date | undefined) => setDraft((p) => ({ ...p, toDate: d })),
+    country: draft.country,
+    setCountry: (c: string) => setDraft((p) => ({ ...p, country: c })),
+    city: draft.city,
+    setCity: (c: string) => setDraft((p) => ({ ...p, city: c })),
     data,
-    hasFilters: Boolean(fromDate || toDate || country || city),
+    hasFilters: Boolean(applied.fromDate || applied.toDate || applied.country || applied.city),
     clearFilters,
+    applyFilters: apply,
+    cancelFilters: cancel,
   };
 }

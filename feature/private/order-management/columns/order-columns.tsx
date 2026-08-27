@@ -16,9 +16,13 @@ export const orderColumns: ColumnDef<OrderData>[] = [
     ),
   },
   {
-    accessorKey: "id",
+    accessorKey: "refrenceNumber",
     header: "Reference No",
-    cell: ({ row }) => <span className="font-mono text-xs">{row.original.id.substring(0, 8)}</span>,
+    cell: ({ row }) => (
+      <span className="font-mono text-xs">
+        {row.original.refrenceNumber || row.original.id.substring(0, 8)}
+      </span>
+    ),
   },
   {
     accessorKey: "createdAt",

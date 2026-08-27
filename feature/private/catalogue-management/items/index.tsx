@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { ROUTES } from "@/config/routes";
 import { CATALOGUE_STATUS_OPTIONS, ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
-import { useTableFilters } from "@/hooks/use-table-filters";
+import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { Package, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -45,15 +45,39 @@ export function ItemsManagement() {
     searchQuery: search,
     setSearchQuery: setSearch,
     debouncedSearch,
-    formattedFromDate,
     formattedToDate,
-  } = useTableFilters();
+    applied,
+    applyFilters,
+    cancelFilters,
+    resetBaseFilters,
+  } = useDraftTableFilters();
 
   const router = useRouter();
   const [country, setCountry] = useState("all");
   const [city, setCity] = useState("all");
   const [department, setDepartment] = useState("all");
   const [category, setCategory] = useState("all");
+
+  const [appliedCountry, setAppliedCountry] = useState("all");
+  const [appliedCity, setAppliedCity] = useState("all");
+  const [appliedDepartment, setAppliedDepartment] = useState("all");
+  const [appliedCategory, setAppliedCategory] = useState("all");
+
+  const applyAllFilters = () => {
+    applyFilters();
+    setAppliedCountry(country);
+    setAppliedCity(city);
+    setAppliedDepartment(department);
+    setAppliedCategory(category);
+  };
+
+  const cancelAllFilters = () => {
+    cancelFilters();
+    setCountry(appliedCountry);
+    setCity(appliedCity);
+    setDepartment(appliedDepartment);
+    setCategory(appliedCategory);
+  };
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ItemData | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -61,28 +85,28 @@ export function ItemsManagement() {
     page,
     limit,
     search: debouncedSearch,
-    countryId: country !== "all" ? country : undefined,
-    departmentId: department !== "all" ? department : undefined,
-    categoryId: category !== "all" ? category : undefined,
-    status: status !== "all" ? status : undefined,
-    fromDate: formattedFromDate,
-    toDate: formattedToDate,
+    countryId: appliedCountry !== "all" ? appliedCountry : undefined,
+    departmentId: appliedDepartment !== "all" ? appliedDepartment : undefined,
+    categoryId: appliedCategory !== "all" ? appliedCategory : undefined,
+    status: applied.status !== "all" ? applied.status : undefined,
+    fromDate: applied.fromDate ? new Date(applied.fromDate).toISOString() : undefined,
+    toDate: applied.toDate ? new Date(applied.toDate).toISOString() : undefined,
   });
 
   const filteredData = useMemo(() => {
     const rawFilteredData = itemsResponse?.data || [];
     return rawFilteredData.filter((item) => {
       if (
-        city !== "all" &&
-        city !== "All" &&
+        appliedCity !== "all" &&
+        appliedCity !== "All" &&
         (item as any).cityId &&
-        (item as any).cityId !== city
+        (item as any).cityId !== appliedCity
       ) {
         return false;
       }
       return true;
     });
-  }, [itemsResponse?.data, city]);
+  }, [itemsResponse?.data, appliedCity]);
 
   const pagination = itemsResponse?.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 };
 
@@ -93,37 +117,46 @@ export function ItemsManagement() {
   };
 
   const hasFilters = !!(
-    fromDate ||
-    toDate ||
-    status !== "all" ||
-    country !== "all" ||
-    city !== "all" ||
-    department !== "all" ||
-    category !== "all" ||
-    search
+    applied.fromDate ||
+    applied.toDate ||
+    applied.status !== "all" ||
+    appliedCountry !== "all" ||
+    appliedCity !== "all" ||
+    appliedDepartment !== "all" ||
+    appliedCategory !== "all" ||
+    applied.searchQuery
   );
 
   const clearFilters = () => {
-    setFromDate(undefined);
-    setToDate(undefined);
-    setStatus("all");
+    resetBaseFilters();
     setCountry("all");
     setCity("all");
     setDepartment("all");
     setCategory("all");
-    setSearch("");
+    setAppliedCountry("all");
+    setAppliedCity("all");
+    setAppliedDepartment("all");
+    setAppliedCategory("all");
   };
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (fromDate || toDate) count++;
-    if (country !== "all" && country !== "All") count++;
-    if (city !== "all" && city !== "All") count++;
-    if (department !== "all") count++;
-    if (category !== "all") count++;
-    if (status !== "all") count++;
+    if (applied.fromDate || applied.toDate) count++;
+    if (appliedCountry !== "all" && appliedCountry !== "All") count++;
+    if (appliedCity !== "all" && appliedCity !== "All") count++;
+    if (appliedDepartment !== "all") count++;
+    if (appliedCategory !== "all") count++;
+    if (applied.status !== "all") count++;
     return count;
-  }, [fromDate, toDate, country, city, department, category, status]);
+  }, [
+    applied.fromDate,
+    applied.toDate,
+    appliedCountry,
+    appliedCity,
+    appliedDepartment,
+    appliedCategory,
+    applied.status,
+  ]);
 
   const handleEdit = useCallback((item: ItemData) => {
     setEditingItem(item);
@@ -193,6 +226,8 @@ export function ItemsManagement() {
         onCityChange={setCity}
         hasFilters={hasFilters}
         onClearFilters={clearFilters}
+        onApplyFilters={applyAllFilters}
+        onCancelFilters={cancelAllFilters}
         activeFilterCount={activeFilterCount}
       >
         <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">

@@ -36,6 +36,8 @@ export default function CountryManagementPage() {
   const {
     addCountryManager,
     clearFilters,
+    applyFilters,
+    cancelFilters,
     country,
     setCountry,
     city,
@@ -152,6 +154,8 @@ export default function CountryManagementPage() {
         hideCityFilter={true}
         hasFilters={hasFilters}
         onClearFilters={clearFilters}
+        onApplyFilters={applyFilters}
+        onCancelFilters={cancelFilters}
         activeFilterCount={activeFilterCount}
       >
         <div className="min-w-70 flex-1 sm:min-w-[320px]">

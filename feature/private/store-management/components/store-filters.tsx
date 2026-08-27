@@ -26,6 +26,8 @@ interface StoreFiltersProps {
   onCityChange: (city: string) => void;
   onStatusFilterChange: (status: string) => void;
   onClearFilters: () => void;
+  onApplyFilters: () => void;
+  onCancelFilters: () => void;
 }
 
 const STORE_STATUS_OPTIONS = [
@@ -47,6 +49,8 @@ export function StoreFilters({
   onCityChange,
   onStatusFilterChange,
   onClearFilters,
+  onApplyFilters,
+  onCancelFilters,
 }: StoreFiltersProps) {
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -67,6 +71,8 @@ export function StoreFilters({
       onCityChange={(val) => onCityChange(val === "all" ? "All Cities" : val)}
       hasFilters={hasFilters}
       onClearFilters={onClearFilters}
+      onApplyFilters={onApplyFilters}
+      onCancelFilters={onCancelFilters}
       activeFilterCount={activeFilterCount}
     >
       <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
