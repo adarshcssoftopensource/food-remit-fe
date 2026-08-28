@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import apiClient from "@/lib/api/client";
 import { ORDER_ENDPOINTS } from "@/lib/api/endpoints/order.endpoints";
+import { useQuery } from "@tanstack/react-query";
 import { OrderData } from "../types/order.types";
 
 interface GetOrdersParams {
@@ -18,6 +18,7 @@ interface GetOrdersParams {
   sortOrder?: string;
   userId?: string;
   recieverId?: string;
+  excludeEmployeeId?: string;
 }
 
 interface OrdersResponse {

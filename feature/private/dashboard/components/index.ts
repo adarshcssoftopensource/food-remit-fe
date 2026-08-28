@@ -18,3 +18,4 @@ export * from "./overview-stats";
 export * from "./sales-overview";
 export * from "./store-listings";
 export * from "./trending-orders";
+export * from "./store-manager-dashboard";

@@ -25,7 +25,11 @@ export function ProfileHeader() {
       <div className="flex flex-col items-start gap-5 px-6 pb-6 sm:flex-row sm:items-end">
         <div className="relative -mt-12 h-24 w-24 shrink-0 rounded-2xl shadow-md ring-4 ring-white dark:ring-slate-900">
           <Avatar className="h-full w-full rounded-2xl shadow-sm">
-            <AvatarImage src="" alt={displayName} />
+            <AvatarImage
+              src={profile?.image || ""}
+              alt={displayName}
+              className="rounded-2xl object-cover"
+            />
             <AvatarFallback className="rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-2xl font-black text-white">
               {initials}
             </AvatarFallback>

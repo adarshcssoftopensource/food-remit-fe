@@ -22,6 +22,7 @@ export interface AdminProfile {
   roleCode: string;
   phoneNumber: string;
   permissions: ProfilePermissions;
+  image?: string | null;
 }
 
 interface ProfileContextType {

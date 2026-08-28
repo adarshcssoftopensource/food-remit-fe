@@ -6,7 +6,7 @@ import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
 import { useProfile } from "@/components/providers/profile-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { orderColumns } from "@/feature/private/order-management/columns/order-columns";
+import { myOrderColumns } from "@/feature/private/order-management/columns/my-order-columns";
 import { useOrderManagement } from "@/feature/private/order-management/hooks/use-order-management";
 
 export function OrdersManagementPage() {
@@ -73,7 +73,7 @@ export function OrdersManagementPage() {
           </CardHeader>
           <CardContent className="p-4">
             <DataTable
-              columns={orderColumns}
+              columns={myOrderColumns}
               data={filteredData}
               searchKey="id"
               searchValue={searchQuery}

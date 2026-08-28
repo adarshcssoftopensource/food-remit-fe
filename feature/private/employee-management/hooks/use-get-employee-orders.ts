@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import apiClient from "@/lib/api/client";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import apiClient from "@/lib/api/client";
 import { EMPLOYEE_ENDPOINTS } from "@/lib/api/endpoints/employee.endpoints";
+import { useQuery } from "@tanstack/react-query";
 
 interface EmployeeOrdersResponse {
   message: string;
@@ -21,6 +21,9 @@ interface UseGetEmployeeOrdersParams {
   limit?: number;
   fromDate?: string;
   toDate?: string;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
 }
 
 export function useGetEmployeeOrders({
@@ -29,13 +32,22 @@ export function useGetEmployeeOrders({
   limit = 10,
   fromDate,
   toDate,
+  search,
+  sortBy,
+  sortOrder,
 }: UseGetEmployeeOrdersParams) {
   return useQuery({
-    queryKey: [...API_CACHE_KEYS.EMPLOYEE_ORDERS(employeeId), { page, limit, fromDate, toDate }],
+    queryKey: [
+      ...API_CACHE_KEYS.EMPLOYEE_ORDERS(employeeId),
+      { page, limit, fromDate, toDate, search, sortBy, sortOrder },
+    ],
     queryFn: async () => {
       const params: Record<string, string | number> = { page, limit };
       if (fromDate) params.fromDate = fromDate;
       if (toDate) params.toDate = toDate;
+      if (search) params.search = search;
+      if (sortBy) params.sortBy = sortBy;
+      if (sortOrder) params.sortOrder = sortOrder;
 
       const { data } = await apiClient.get<EmployeeOrdersResponse>(
         EMPLOYEE_ENDPOINTS.GET_EMPLOYEE_ORDERS(employeeId),

@@ -124,14 +124,24 @@ export function AppTopBar() {
           >
             <div
               className={cn(
-                "flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl",
+                "flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-xl",
                 "bg-linear-to-br from-emerald-600 to-teal-700",
                 "text-white",
                 "text-xs font-bold",
                 "shadow-xs ring-2 ring-emerald-500/20",
               )}
             >
-              {initials}
+              {profile?.image ? (
+                <Image
+                  src={profile.image}
+                  alt={displayName}
+                  className="h-full w-full object-cover"
+                  height={40}
+                  width={40}
+                />
+              ) : (
+                initials
+              )}
             </div>
 
             <div className="hidden flex-col items-start text-left sm:flex">
