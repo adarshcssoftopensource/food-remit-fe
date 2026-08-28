@@ -63,6 +63,8 @@ export interface OrderData {
     vendorBaseAmount: string;
     commissionPercent: string;
     commissionAmount: string;
+    govtTax?: string;
+    creditCardFee?: string;
     vendorProceeds: string;
   };
 }

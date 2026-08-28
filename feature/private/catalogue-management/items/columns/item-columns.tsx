@@ -120,7 +120,7 @@ export function getItemColumns(
     },
     {
       id: "adminShare",
-      header: "Markup Value",
+      header: "Food Remit Markup",
       cell: ({ row }) => <ItemAdminShareCell item={row.original} />,
     },
     {

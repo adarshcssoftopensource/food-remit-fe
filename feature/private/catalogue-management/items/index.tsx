@@ -301,14 +301,18 @@ export function ItemsManagement() {
       <ModuleFilters
         title="Filter Items"
         description="Refine items by date, country, city, department, category, and status"
-        countryId={country}
-        onCountryChange={(val) => {
-          setCountry(val);
-          setDepartment("all");
-          setCategory("all");
-        }}
-        cityId={city}
-        onCityChange={setCity}
+        countryId={isStoreManager ? undefined : country}
+        onCountryChange={
+          isStoreManager
+            ? undefined
+            : (val) => {
+                setCountry(val);
+                setDepartment("all");
+                setCategory("all");
+              }
+        }
+        cityId={isStoreManager ? undefined : city}
+        onCityChange={isStoreManager ? undefined : setCity}
         hasFilters={hasFilters}
         onClearFilters={clearFilters}
         onApplyFilters={applyAllFilters}
