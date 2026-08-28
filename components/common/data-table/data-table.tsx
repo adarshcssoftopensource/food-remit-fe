@@ -174,7 +174,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {searchKey && (
+      {(searchKey || onSearchChange) && (
         <div className="flex items-center">
           <div className="relative w-full sm:max-w-sm">
             <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
@@ -183,13 +183,13 @@ export function DataTable<TData, TValue>({
               value={
                 onSearchChange
                   ? searchValue
-                  : ((table.getColumn(searchKey)?.getFilterValue() as string) ?? "")
+                  : ((table.getColumn(searchKey!)?.getFilterValue() as string) ?? "")
               }
               onChange={(event) => {
                 if (onSearchChange) {
                   onSearchChange(event.target.value);
                 } else {
-                  table.getColumn(searchKey)?.setFilterValue(event.target.value);
+                  table.getColumn(searchKey!)?.setFilterValue(event.target.value);
                 }
               }}
               className="pl-9 text-slate-900 dark:text-slate-100"

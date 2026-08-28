@@ -28,6 +28,7 @@ export const ROUTES = {
       CATEGORIES: "/catalogue-management/categories",
       ITEMS: "/catalogue-management/items",
     },
+    PRODUCT_BOXES: "/product-boxes",
     STORE_MANAGEMENT: {
       ROOT: "/store-management",
       ASSIGN_CITY_MANAGER: "/store-management/assign-city-manager",

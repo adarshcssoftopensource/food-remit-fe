@@ -111,8 +111,11 @@ export function AppSidebar() {
     return activeNavItems
       .filter((item) => {
         const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+        const isStoreManager =
+          profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
         if (item.title === "My Orders") return isEmployee;
         if (item.title === "Order Management") return !isEmployee;
+        if (item.title === "Product Boxes Management") return isStoreManager;
         return true;
       })
       .map((item) => {

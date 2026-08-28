@@ -24,6 +24,7 @@ import {
   User,
   UserCog,
   Users,
+  Package,
 } from "lucide-react";
 
 import { ROUTES } from "@/config/routes";
@@ -92,6 +93,11 @@ export const navigationItems = [
         url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS,
       },
     ],
+  },
+  {
+    title: "Product Boxes Management",
+    url: ROUTES.ADMIN.PRODUCT_BOXES,
+    icon: Package,
   },
   {
     title: "Store Management",
