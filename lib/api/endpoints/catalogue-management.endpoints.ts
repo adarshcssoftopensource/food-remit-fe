@@ -58,4 +58,7 @@ export const CATALOGUE_MANAGEMENT_ENDPOINTS = {
   PERMANENT_DELETE_ITEM: (id: string) => `/admin/items/${id}/permanent`,
   BULK_PERMANENT_DELETE_ITEMS: "/admin/items/recycle-bin/bulk-permanent-delete",
   BULK_DELETE_ITEMS: "/admin/items/bulk-delete",
+  DOWNLOAD_ITEM_CSV: "/admin/items/csv/download-format",
+  UPLOAD_ITEM_CSV: "/admin/items/csv/upload",
+  BULK_UPLOAD_ITEM_IMAGES: "/admin/items/images/bulk-upload",
 };

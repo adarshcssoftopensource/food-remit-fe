@@ -3,16 +3,12 @@ import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-management.endpoints";
 import { useQueryClient } from "@tanstack/react-query";
 
-export function useUpdateItem(id: string) {
+export function useUploadItemCsv() {
   const queryClient = useQueryClient();
 
-  return useApiMutation<any, FormData>(
-    "patch",
-    `${CATALOGUE_MANAGEMENT_ENDPOINTS.GET_ITEMS}/${id}`,
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ITEMS });
-      },
+  return useApiMutation<any, FormData>("post", CATALOGUE_MANAGEMENT_ENDPOINTS.UPLOAD_ITEM_CSV, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ITEMS });
     },
-  );
+  });
 }

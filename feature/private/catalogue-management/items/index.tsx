@@ -8,6 +8,8 @@ import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
+import { useProfile } from "@/components/providers/profile-provider";
+import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -22,15 +24,22 @@ import {
 import { ROUTES } from "@/config/routes";
 import { CATALOGUE_STATUS_OPTIONS, ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
-import { Package, Plus } from "lucide-react";
+import apiClient from "@/lib/api/client";
+import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-management.endpoints";
+import { Download, Image as ImageIcon, Package, Plus, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { getItemColumns } from "./columns/item-columns";
 import { ItemFormDialog } from "./components/item-form-dialog";
 import { useGetItems } from "./hooks/use-get-items";
+import { useUploadItemCsv } from "./hooks/use-upload-item-csv";
 import { ItemData } from "./types/item.types";
 
 export function ItemsManagement() {
+  const { profile } = useProfile();
+  const isStoreManager = profile?.role === "store_manager";
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadCsvMutation = useUploadItemCsv();
   const {
     fromDate,
     setFromDate,
@@ -179,24 +188,100 @@ export function ItemsManagement() {
     [handleEdit, handleViewDetails, handleImageClick],
   );
 
+  const handleDownloadCsv = async () => {
+    try {
+      const response = await apiClient.get(CATALOGUE_MANAGEMENT_ENDPOINTS.DOWNLOAD_ITEM_CSV, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "item_import_template.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      // Axios interceptor will handle the error toast
+    }
+  };
+
+  const handleCsvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    uploadCsvMutation.mutate(formData, {
+      onSuccess: () => {
+        successToast({ description: "CSV uploaded successfully" });
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      },
+      onError: () => {
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      },
+    });
+  };
+
   return (
     <div className="space-y-6">
       <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+      <input
+        type="file"
+        accept=".csv"
+        className="hidden"
+        ref={fileInputRef}
+        onChange={handleCsvFileChange}
+      />
 
       <PageHeader
         title="Items"
         description="Manage all catalogue items across categories, departments, and countries."
         action={
-          <Button
-            onClick={() => {
-              setEditingItem(null);
-              setDialogOpen(true);
-            }}
-            className="gap-2 rounded-xl"
-          >
-            <Plus className="h-4 w-4" />
-            Add Item
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            {isStoreManager && (
+              <>
+                <Button onClick={handleDownloadCsv} variant="outline" className="gap-2 rounded-xl">
+                  <Download className="h-4 w-4" />
+                  Format
+                </Button>
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  variant="outline"
+                  className="gap-2 rounded-xl"
+                  disabled={uploadCsvMutation.isPending}
+                >
+                  <Upload className="h-4 w-4" />
+                  Import CSV
+                </Button>
+                <Button
+                  onClick={() =>
+                    router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS}/upload-images`)
+                  }
+                  variant="outline"
+                  className="gap-2 rounded-xl"
+                >
+                  <ImageIcon className="h-4 w-4" />
+                  Upload Images
+                </Button>
+              </>
+            )}
+            <Button
+              onClick={() => {
+                setEditingItem(null);
+                setDialogOpen(true);
+              }}
+              className="gap-2 rounded-xl"
+            >
+              <Plus className="h-4 w-4" />
+              Add Item
+            </Button>
+          </div>
         }
       />
 
