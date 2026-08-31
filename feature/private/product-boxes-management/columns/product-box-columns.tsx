@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { formatDateTime } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -10,6 +11,7 @@ interface ProductBoxColumnsProps {
   onDelete: (box: ProductBox) => void;
   onToggleStatus: (box: ProductBox, checked: boolean) => void;
   onView: (box: ProductBox) => void;
+  onImageClick?: (image: string) => void;
 }
 
 export const getProductBoxColumns = ({
@@ -17,6 +19,7 @@ export const getProductBoxColumns = ({
   onDelete,
   onToggleStatus,
   onView,
+  onImageClick,
 }: ProductBoxColumnsProps): ColumnDef<ProductBox>[] => [
   {
     accessorKey: "sno",
@@ -30,15 +33,38 @@ export const getProductBoxColumns = ({
     cell: ({ row }) => {
       const imageUrl = row.original.image;
       return (
-        <div className="bg-muted flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border">
+        <div className="bg-muted group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border">
           {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={row.original.title}
-              width={48}
-              height={48}
-              className="h-full w-full object-cover"
-            />
+            <>
+              <Image
+                src={imageUrl}
+                alt={row.original.title}
+                width={48}
+                height={48}
+                className="h-full w-full object-cover"
+              />
+              {onImageClick && (
+                <button
+                  onClick={() => onImageClick(imageUrl)}
+                  className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/30 group-hover:opacity-100"
+                  title="View full screen"
+                >
+                  <svg
+                    className="h-4 w-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                    />
+                  </svg>
+                </button>
+              )}
+            </>
           ) : (
             <div className="text-muted-foreground text-xs">No image</div>
           )}
@@ -54,12 +80,14 @@ export const getProductBoxColumns = ({
   {
     accessorKey: "price",
     header: "Price",
-    cell: ({ row }) => <div className="text-foreground font-medium">${row.original.price}</div>, // Currency symbol usually comes from store, using $ for now or formatting
+    cell: ({ row }) => <div className="text-foreground font-medium">${row.original.price}</div>,
   },
   {
     accessorKey: "addedOn",
     header: "Created On",
-    cell: ({ row }) => <div className="text-muted-foreground">{row.original.addedOn}</div>,
+    cell: ({ row }) => (
+      <div className="text-muted-foreground">{formatDateTime(row.original.addedOn)}</div>
+    ),
   },
   {
     id: "actions",
@@ -68,14 +96,14 @@ export const getProductBoxColumns = ({
       const box = row.original;
       return (
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" title="View Box" onClick={() => onView(box)}>
+          <Button variant="outline" size="icon" title="View Box" onClick={() => onView(box)}>
             <Eye className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" title="Edit Box" onClick={() => onEdit(box)}>
+          <Button variant="outline" size="icon" title="Edit Box" onClick={() => onEdit(box)}>
             <Pencil className="h-4 w-4" />
           </Button>
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             title="Delete Box"
             onClick={() => onDelete(box)}

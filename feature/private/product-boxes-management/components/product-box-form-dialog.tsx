@@ -1,9 +1,8 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Boxes, ImageIcon, Package2, Save } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 
 import { ImageUpload } from "@/components/common/image-upload";
 import { Button } from "@/components/ui/button";
@@ -17,15 +16,15 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 import { ProductBox } from "../types/product-box.types";
 
 const productBoxSchemaBase = z.object({
@@ -288,14 +287,8 @@ export function ProductBoxFormDialog({
                                   }}
                                   onAllImagesChange={(all) => {
                                     const existing = all.find((i) => !i.file)?.url || null;
-                                    const newFiles = all
-                                      .filter((i) => !!i.file)
-                                      .map((i) => i.file!);
                                     form.setValue("existingImage", existing, {
-                                      shouldValidate: false,
-                                    });
-                                    form.setValue("imageFile", newFiles, {
-                                      shouldValidate: true,
+                                      shouldValidate: !!form.formState.isSubmitted,
                                     });
                                   }}
                                   label="Upload box image"
