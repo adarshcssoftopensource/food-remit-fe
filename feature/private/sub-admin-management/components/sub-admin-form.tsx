@@ -11,6 +11,7 @@ import { FormInput } from "@/feature/private/stories/components/form-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ShieldCheck } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 import { subAdminSchema, type SubAdminFormValues } from "../schema/sub-admin.schema";
 import { type SubAdminPermission } from "../types/sub-admin.types";
 import { PermissionsSkeleton } from "./permissions-skeleton";
@@ -189,6 +190,14 @@ export function SubAdminForm({
                             return (
                               <label
                                 key={permission.key}
+                                onClick={(e) => {
+                                  if (isCoAdmin) {
+                                    e.preventDefault();
+                                    toast.info(
+                                      "Please disable the toggle button before unchecking this section",
+                                    );
+                                  }
+                                }}
                                 className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
                                   active ? "border-primary bg-primary/5" : "hover:bg-muted"
                                 } `}

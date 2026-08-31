@@ -3,37 +3,9 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { StatusBadge } from "@/components/common/status-badge";
-import { Switch } from "@/components/ui/switch";
 import { type Employee } from "@/feature/private/employee-management/types/employee-management";
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
 import { EmployeeActionsCell } from "../components/employee-actions-cell";
-import { useUpdateEmployeeStatus } from "../hooks/use-update-employee-status";
-
-function StatusToggle({ employee }: { employee: Employee }) {
-  const { mutate: updateStatus, isPending } = useUpdateEmployeeStatus();
-  const [isActive, setIsActive] = useState(employee.accountStatus === "ACTIVE");
-
-  const handleToggle = (checked: boolean) => {
-    setIsActive(checked);
-    updateStatus(
-      {
-        id: employee.id,
-        status: checked ? "ACTIVE" : "INACTIVE",
-      },
-      {
-        onError: () => setIsActive(!checked),
-      },
-    );
-  };
-
-  return (
-    <div className="flex items-center space-x-2">
-      <Switch checked={isActive} onCheckedChange={handleToggle} disabled={isPending} />
-      <StatusBadge status={isActive ? "Active" : "Inactive"} />
-    </div>
-  );
-}
 
 export const employeeColumns = (onImageClick?: (image: string) => void): ColumnDef<Employee>[] => [
   {
@@ -105,7 +77,9 @@ export const employeeColumns = (onImageClick?: (image: string) => void): ColumnD
   {
     accessorKey: "accountStatus",
     header: "Status",
-    cell: ({ row }) => <StatusToggle employee={row.original} />,
+    cell: ({ row }) => (
+      <StatusBadge status={row.original.accountStatus === "ACTIVE" ? "Active" : "Inactive"} />
+    ),
     enableSorting: true,
   },
   {

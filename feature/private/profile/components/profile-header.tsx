@@ -1,14 +1,15 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProfile } from "@/components/providers/profile-provider";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatRole } from "@/lib/formatRole";
 import { Mail, ShieldCheck } from "lucide-react";
 
 export function ProfileHeader() {
   const { profile } = useProfile();
 
   const displayName = profile?.name || "Admin User";
-  const displayRole = profile?.roleCode === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin";
+  const displayRole = formatRole(profile?.role || "");
   const displayEmail = profile?.email || "admin@foodremit.com";
 
   const initials = displayName

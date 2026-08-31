@@ -81,6 +81,7 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
         onCheckedChange={handleStatusChange}
         disabled={isPending}
         className="data-[state=checked]:bg-green-500"
+        title={isActive ? "Active" : "Inactive"}
       />
 
       <ConfirmationDialog

@@ -91,7 +91,7 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
           onCheckedChange={handleStatusChange}
           disabled={updateStore.isPending}
           className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-slate-200"
-          title={isActive ? "Deactivate store" : "Activate store"}
+          title={isActive ? "Active" : "Inactive"}
         />
       </div>
 

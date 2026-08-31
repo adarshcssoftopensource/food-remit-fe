@@ -158,9 +158,16 @@ export function DataTablePagination<TData>({
 
         <Input
           type="number"
+          min={1}
+          max={maxPages}
           placeholder="No."
           className="h-9 w-20 rounded-xl px-2.5 text-xs font-semibold"
           defaultValue={activePage}
+          onKeyDown={(e) => {
+            if (["-", "+", "e", "E", "."].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
           onChange={(e) => {
             const page = Number(e.target.value);
             if (page >= 1 && page <= maxPages) {

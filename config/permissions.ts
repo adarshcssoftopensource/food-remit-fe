@@ -6,7 +6,7 @@ export const ALWAYS_ALLOWED_ROUTES = [ROUTES.ADMIN.PROFILE, ROUTES.ADMIN.SETTING
 export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   [ROUTES.ADMIN.DASHBOARD]: "dashboard",
   [ROUTES.ADMIN.USERS_MANAGEMENT]: "userManagement",
-  [ROUTES.ADMIN.RECYCLE_BIN]: "userManagement",
+  [ROUTES.ADMIN.RECYCLE_BIN]: "recycleBin",
   [ROUTES.ADMIN.PARTNER_LEADS]: "partnerLeads",
   [ROUTES.ADMIN.FOUNDATION_MANAGEMENT]: "organization",
   [ROUTES.ADMIN.PHILANTHROPIST_MANAGEMENT]: "philanthropistsManagement",

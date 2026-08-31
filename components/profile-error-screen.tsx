@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ShieldAlert } from "lucide-react";
+import { RefreshCw, ShieldAlert, LogOut } from "lucide-react";
+import { useLogout } from "@/hooks/use-logout";
 
 interface ProfileErrorScreenProps {
   errorMessage: string;
@@ -9,6 +10,9 @@ interface ProfileErrorScreenProps {
 }
 
 export function ProfileErrorScreen({ errorMessage, onRetry }: ProfileErrorScreenProps) {
+  const { handleLogout, isPending: isLoggingOut } = useLogout();
+  const isNetworkError = errorMessage?.toLowerCase().includes("network");
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-slate-50 px-4 py-8">
       <div className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-8 text-center">
@@ -31,6 +35,18 @@ export function ProfileErrorScreen({ errorMessage, onRetry }: ProfileErrorScreen
             <RefreshCw className="h-4 w-4" />
             Try Again
           </Button>
+
+          {!isNetworkError && (
+            <Button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              variant="outline"
+              className="flex h-11 items-center justify-center gap-2 rounded-xl font-semibold text-slate-600 shadow-sm hover:text-slate-900"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -25,11 +25,11 @@ export const DEFAULT_DASHBOARD_DATA: DashboardData = {
     subAdmins: 0,
   },
   financialStats: {
-    amountCollectedToday: "0 USD",
+    amountCollectedToday: "-",
     itemsSentToday: 0,
   },
   salesOverview: {
-    salesGraph: "0 USD",
+    salesGraph: "-",
     newUsers: 0,
     totalOrders: 0,
   },
