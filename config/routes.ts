@@ -9,6 +9,8 @@ export const ROUTES = {
   ADMIN: {
     DASHBOARD: "/dashboard",
     USERS_MANAGEMENT: "/users-management",
+    VENDORS: "/vendors",
+    VENDOR_ACCOUNTS: "/vendor-accounts",
     RECYCLE_BIN: "/recycle-bin",
     PARTNER_LEADS: "/partner-leads",
     FOUNDATION_MANAGEMENT: "/foundation-management",
@@ -78,6 +80,13 @@ export const ROUTES = {
     PROFILE: "/profile",
     SETTINGS: "/settings",
     EMPLOYEE_MANAGEMENT: "/employee-management",
+    INVENTORY: "/inventory",
+    PICKUP_ORDERS: "/pickup-orders",
+    DELIVERY_ORDERS: "/delivery-orders",
+    QR_FULFILLMENT: "/qr-fulfillment",
+    PAYOUTS: "/payouts",
+    SETTLEMENT_HISTORY: "/settlement-history",
+    BANK_ACCOUNT: "/bank-account",
   },
 } as const;
 

@@ -37,4 +37,5 @@ export interface GetProductBoxesResponse {
   total: number;
   page: number;
   lastPage: number;
+  totalRecords?: number;
 }

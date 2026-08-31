@@ -9,12 +9,13 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { cmsNavigationItems, navigationItems } from "@/config/nav";
+import { cmsNavigationItems, adminNavigationItems, vendorNavigationItems } from "@/config/nav";
 import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";
 
@@ -42,7 +43,6 @@ export function AppSidebar() {
 
       if (currentPath === sub.url) return true;
 
-      // Single sub-item group where parent route matches (e.g. /country-management/123 -> /country-management/list)
       if (
         item.items?.length === 1 &&
         (currentPath === item.url || currentPath.startsWith(item.url + "/"))
@@ -51,7 +51,6 @@ export function AppSidebar() {
       }
 
       if (currentPath.startsWith(sub.url + "/")) {
-        // If another sibling sub-item is also matched and has a longer (more specific) URL, this sub is not active
         const hasMoreSpecificMatch = item.items?.some(
           (otherSub) =>
             otherSub.url !== sub.url &&
@@ -78,11 +77,24 @@ export function AppSidebar() {
     [isSubItemActive],
   );
 
-  const activeNavItems = React.useMemo(() => {
-    return pathname?.startsWith(ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT) || isCmsContext
-      ? (cmsNavigationItems as unknown as typeof navigationItems)
-      : navigationItems;
-  }, [pathname, isCmsContext]);
+  type NavItem = {
+    group?: string;
+    title: string;
+    url: string;
+    icon: any;
+    isComingSoon?: boolean;
+    isNewFeature?: boolean;
+    items?: { title: string; url: string }[];
+  };
+
+  const activeNavItems: NavItem[] = React.useMemo(() => {
+    if (pathname?.startsWith(ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT) || isCmsContext) {
+      return cmsNavigationItems as unknown as NavItem[];
+    }
+    return (
+      profile?.role === "store_manager" ? vendorNavigationItems : adminNavigationItems
+    ) as NavItem[];
+  }, [pathname, isCmsContext, profile?.role]);
 
   const [openGroup, setOpenGroup] = React.useState<string | null>(() => {
     const active = activeNavItems.find(
@@ -92,7 +104,7 @@ export function AppSidebar() {
           (sub) =>
             pathname === sub.url ||
             (pathname?.startsWith(sub.url + "/") &&
-              !item.items.some(
+              !item.items?.some(
                 (o) =>
                   o.url !== sub.url &&
                   o.url.length > sub.url.length &&
@@ -113,13 +125,11 @@ export function AppSidebar() {
         const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
         const isStoreManager =
           profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
-        if (item.title === "My Orders") return isEmployee;
+        if (item.title === "My Orders") return isEmployee || isStoreManager;
         if (item.title === "Order Management") return !isEmployee;
-        if (item.title === "Product Boxes Management") return isStoreManager;
         return true;
       })
       .map((item) => {
-        // If the item has sub-items, filter them first based on permissions
         if (item.items && item.items.length > 0) {
           const filteredSubs = item.items.filter((sub) => {
             if (!hasPathPermission(sub.url, profile?.permissions, isSuperAdmin)) {
@@ -127,7 +137,7 @@ export function AppSidebar() {
             }
             const isStoreManager =
               profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
-            if (item.title === "Catalogue Management" && isStoreManager) {
+            if (item.title === "Product Catalog Oversight" && isStoreManager) {
               if (sub.title === "Departments" || sub.title === "Categories") {
                 return false;
               }
@@ -139,14 +149,12 @@ export function AppSidebar() {
         return item;
       })
       .filter((item) => {
-        // If it had sub-items but none are allowed, filter it out
         if (item.items && item.items.length === 0) {
           return false;
         }
-        // Otherwise check the item's main URL permission
         return hasPathPermission(item.url, profile?.permissions, isSuperAdmin);
       });
-  }, [activeNavItems, profile?.permissions, isSuperAdmin]);
+  }, [activeNavItems, profile?.permissions, isSuperAdmin, profile?.roleCode, profile?.role]);
 
   const filteredNavItems = React.useMemo(() => {
     if (!searchQuery) return allowedNavItems;
@@ -157,6 +165,19 @@ export function AppSidebar() {
       return false;
     });
   }, [allowedNavItems, searchQuery]);
+
+  // Group items by their group property
+  const groupedItems = React.useMemo(() => {
+    const groups: { [key: string]: NavItem[] } = {};
+    filteredNavItems.forEach((item) => {
+      const groupName = item.group || "OTHER";
+      if (!groups[groupName]) {
+        groups[groupName] = [];
+      }
+      groups[groupName].push(item);
+    });
+    return groups;
+  }, [filteredNavItems]);
 
   const isActive = (url: string) => {
     if (url === "/dashboard" && pathname === "/") return true;
@@ -189,34 +210,39 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2.5 py-2.5">
-        <SidebarGroup className="p-0">
-          <SidebarGroupContent>
-            <TooltipProvider delay={150}>
-              <SidebarMenu className="gap-1.5">
-                {!filteredNavItems.length && !isCollapsed && (
-                  <div className="py-6 text-center font-medium text-slate-400">
-                    No menu items found
-                  </div>
-                )}
-                {filteredNavItems.map((item) => (
-                  <SidebarNavItem
-                    key={item.title}
-                    item={item}
-                    isCollapsed={isCollapsed}
-                    pathname={pathname}
-                    searchQuery={searchQuery}
-                    openGroup={openGroup}
-                    onGroupToggle={handleGroupToggle}
-                    onMobileClose={handleMobileClose}
-                    isSubItemActive={isSubItemActive}
-                    hasGroupActiveChild={hasGroupActiveChild}
-                    isActive={isActive}
-                  />
-                ))}
-              </SidebarMenu>
-            </TooltipProvider>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {!filteredNavItems.length && !isCollapsed && (
+          <div className="py-6 text-center font-medium text-slate-400">No menu items found</div>
+        )}
+        <TooltipProvider delay={150}>
+          {Object.entries(groupedItems).map(([groupName, items]) => (
+            <SidebarGroup key={groupName} className="mb-4 p-0 last:mb-0">
+              {!isCollapsed && groupName !== "OTHER" && (
+                <SidebarGroupLabel className="px-2 pt-2 pb-1 text-[11px] font-bold tracking-wider text-slate-500 uppercase">
+                  {groupName}
+                </SidebarGroupLabel>
+              )}
+              <SidebarGroupContent>
+                <SidebarMenu className="gap-1.5">
+                  {items.map((item) => (
+                    <SidebarNavItem
+                      key={item.title}
+                      item={item}
+                      isCollapsed={isCollapsed}
+                      pathname={pathname}
+                      searchQuery={searchQuery}
+                      openGroup={openGroup}
+                      onGroupToggle={handleGroupToggle}
+                      onMobileClose={handleMobileClose}
+                      isSubItemActive={isSubItemActive}
+                      hasGroupActiveChild={hasGroupActiveChild}
+                      isActive={isActive}
+                    />
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
+        </TooltipProvider>
       </SidebarContent>
     </Sidebar>
   );

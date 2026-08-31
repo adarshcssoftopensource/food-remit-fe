@@ -15,7 +15,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   [ROUTES.ADMIN.STORIES.ADD]: "stories",
   [ROUTES.ADMIN.DONATION_LOGS]: "donationLogs",
   [ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ROOT]: "catalogueManagement",
-  [ROUTES.ADMIN.PRODUCT_BOXES]: "catalogueManagement",
+  [ROUTES.ADMIN.PRODUCT_BOXES]: "productBoxesManagement",
   [ROUTES.ADMIN.STORE_MANAGEMENT.ROOT]: "storeManagement",
   [ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT]: "countryManagement",
   [ROUTES.ADMIN.CITY_MANAGEMENT.ROOT]: "cityManagement",

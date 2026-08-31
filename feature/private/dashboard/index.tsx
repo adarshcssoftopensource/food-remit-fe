@@ -1,40 +1,31 @@
 "use client";
 
-import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { useProfile } from "@/components/providers/profile-provider";
-import { DASHBOARD_ROUTES } from "@/constants/dashboard";
-import { ShoppingBag } from "lucide-react";
 import {
-  DashboardActionButton,
-  DashboardCard,
-  DashboardErrorState,
-  DashboardFilters,
-  DataTablesSection,
-  FinancialStats,
-  ManagementStats,
-  MonthlyRevenue,
-  OverviewStats,
-  placedOrdersColumns,
-  SalesOverview,
-  StoreListings,
-  TrendingOrders,
-  StoreManagerDashboard,
-} from "./components";
-import { useDashboardFilters } from "./hooks/use-dashboard-filters";
-import { useGetDashboardStats } from "./hooks/use-get-dashboard-stats";
-import { ROUTES } from "@/config/routes";
+  Info,
+  Box,
+  RefreshCcw,
+  HandPlatter,
+  Users,
+  Globe,
+  MapPin,
+  Store,
+  Menu,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DashboardCard } from "./components";
+import { StoreManagerDashboard } from "./components/store-manager-dashboard";
 
 export function Dashboard() {
-  const { filters, hasFilters, activeFilterCount, setCountryId, setCityId, resetFilters } =
-    useDashboardFilters();
-
-  const { dashboardData, isLoading, isFetching, isError, error, refetch } =
-    useGetDashboardStats(filters);
-
   const { profile, isSuperAdmin } = useProfile();
-
-  const welcomeMessage = !isSuperAdmin && profile?.name ? `Welcome, ${profile.name}` : undefined;
 
   if (profile?.role === "store_manager") {
     return <StoreManagerDashboard />;
@@ -43,88 +34,179 @@ export function Dashboard() {
   return (
     <div className="relative min-h-[calc(100vh-8rem)] space-y-6">
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <PageHeader
-          title="Dashboard Overview"
-          description="Real-time performance analytics, logistics dispatch, and regional management metrics."
-          welcomeMessage={welcomeMessage}
-        />
+        <PageHeader title="Dashboard Overview" />
       </div>
 
-      <DashboardFilters
-        filters={filters}
-        hasFilters={hasFilters}
-        activeFilterCount={activeFilterCount}
-        onCountryChange={setCountryId}
-        onCityChange={setCityId}
-        onReset={resetFilters}
-        onRefresh={() => refetch()}
-        isFetching={isFetching}
-      />
-
-      {isError && (
-        <DashboardErrorState
-          message={
-            (error as Error)?.message ||
-            "Unable to fetch the latest dashboard statistics. Please check your network connection and retry."
-          }
-          onRetry={() => refetch()}
-        />
-      )}
-
-      <div className="relative max-w-full min-w-0 space-y-6">
-        <OverviewStats stats={dashboardData.overviewStats} isLoading={isLoading} />
-        <ManagementStats stats={dashboardData.managementStats} isLoading={isLoading} />
-
-        <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-2">
-          <FinancialStats stats={dashboardData.financialStats} isLoading={isLoading} />
-          <SalesOverview stats={dashboardData.salesOverview} isLoading={isLoading} />
+      <div className="flex items-start gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400">
+        <Info className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+        <div>
+          <h4 className="font-semibold text-emerald-900 dark:text-emerald-300">
+            Admin view: oversee marketplace and vendor activity
+          </h4>
+          <p className="text-sm">
+            Monitor platform performance, user activity, and marketplace health in real time.
+          </p>
         </div>
+      </div>
 
-        <DataTablesSection
-          recentOrdersRequested={dashboardData.recentOrdersRequested}
-          recentTickets={dashboardData.recentTickets}
-          isLoading={isLoading}
-        />
+      <div className="flex flex-col justify-between gap-4 rounded-xl border border-slate-200/60 bg-white p-4 shadow-sm sm:flex-row sm:items-center dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+            <Menu className="h-4 w-4" /> FILTERS
+          </div>
+          <Select defaultValue="all">
+            <SelectTrigger className="w-[180px] bg-slate-50/50">
+              <SelectValue placeholder="All Countries" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Countries</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select defaultValue="all">
+            <SelectTrigger className="w-[180px] bg-slate-50/50">
+              <SelectValue placeholder="All Cities" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Cities</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button variant="outline" className="gap-2">
+          <RefreshCcw className="h-4 w-4" /> Refresh Data
+        </Button>
+      </div>
 
-        <TrendingOrders orders={dashboardData.trendingOrders} isLoading={isLoading} />
-
-        <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="col-span-full min-w-0 lg:col-span-2">
-            <DashboardCard
-              title="Recently Placed Orders"
-              subtitle="Latest processed and paid marketplace orders"
-              accentColor="emerald"
-              className="min-w-0 overflow-hidden"
-              icon={
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-                  <ShoppingBag className="h-4.5 w-4.5" />
-                </div>
-              }
-              action={
-                <DashboardActionButton href={ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT} label="View All" />
-              }
-              contentClassName="p-0 overflow-x-auto"
-            >
-              <div className="w-full min-w-0 overflow-x-auto">
-                <DataTable
-                  columns={placedOrdersColumns}
-                  data={dashboardData.recentlyPlacedOrders}
-                  loading={isLoading}
-                  hidePagination={true}
-                />
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-bold tracking-wider text-slate-500 uppercase">
+                FOOD SENT <Info className="inline h-3 w-3 text-slate-400" />
+              </p>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-4xl font-black text-slate-900 dark:text-white">1</span>
+                <span className="text-sm font-medium text-slate-500">Today</span>
               </div>
-            </DashboardCard>
+            </div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10">
+              <Box className="h-6 w-6" />
+            </div>
           </div>
-
-          <div className="col-span-full min-w-0 lg:col-span-1">
-            <MonthlyRevenue isLoading={isLoading} />
+          <div className="mt-8 grid grid-cols-3 gap-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">WEEK</p>
+              <p className="mt-1 font-bold">1</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">MONTH</p>
+              <p className="mt-1 font-bold">1</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">YEAR</p>
+              <p className="mt-1 font-bold">1</p>
+            </div>
           </div>
         </div>
 
-        <StoreListings
-          stores={dashboardData.storesSummary?.newStoreListings}
-          isLoading={isLoading}
-        />
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-bold tracking-wider text-slate-500 uppercase">
+                FOOD REQUESTED <Info className="inline h-3 w-3 text-slate-400" />
+              </p>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-4xl font-black text-slate-900 dark:text-white">0</span>
+                <span className="text-sm font-medium text-slate-500">Today</span>
+              </div>
+            </div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10">
+              <HandPlatter className="h-6 w-6" />
+            </div>
+          </div>
+          <div className="mt-8 grid grid-cols-3 gap-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">WEEK</p>
+              <p className="mt-1 font-bold">0</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">MONTH</p>
+              <p className="mt-1 font-bold">0</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">YEAR</p>
+              <p className="mt-1 font-bold">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-bold tracking-wider text-slate-500 uppercase">
+                REGISTERED USERS <Info className="inline h-3 w-3 text-slate-400" />
+              </p>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-4xl font-black text-slate-900 dark:text-white">4</span>
+                <span className="text-sm font-medium text-slate-500">Total Accounts</span>
+              </div>
+            </div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 text-purple-600 dark:bg-purple-500/10">
+              <Users className="h-6 w-6" />
+            </div>
+          </div>
+          <div className="mt-8 grid grid-cols-3 gap-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">ACTIVE</p>
+              <p className="mt-1 font-bold">3</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">INACTIVE</p>
+              <p className="mt-1 font-bold">1</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">PENDING</p>
+              <p className="mt-1 font-bold">0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center gap-4 border-b border-slate-100 p-6 dark:border-slate-800">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10">
+            <Users className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold">MANAGEMENT OVERVIEW</h3>
+            <p className="text-sm text-slate-500">Key platform entities at a glance</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4 p-6 sm:grid-cols-3 lg:grid-cols-5">
+          {[
+            { label: "COUNTRIES", value: 2, icon: Globe, color: "text-blue-500" },
+            { label: "CITIES", value: 3, icon: MapPin, color: "text-teal-500" },
+            { label: "VENDORS", value: 16, icon: Store, color: "text-amber-500" },
+            { label: "VENDOR STORES", value: 27, icon: Box, color: "text-purple-500" },
+            { label: "PRODUCT CATEGORIES", value: 42, icon: Box, color: "text-emerald-500" },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="group flex cursor-pointer items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-4 transition-all hover:bg-white hover:shadow-md dark:border-slate-800 dark:bg-slate-800/50 dark:hover:bg-slate-800"
+            >
+              <div>
+                <div
+                  className={`mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-xs dark:bg-slate-700 ${item.color}`}
+                >
+                  <item.icon className="h-4 w-4" />
+                </div>
+                <p className="text-[11px] font-bold tracking-wider text-slate-500 uppercase">
+                  {item.label}
+                </p>
+                <p className="mt-1 text-2xl font-black">{item.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

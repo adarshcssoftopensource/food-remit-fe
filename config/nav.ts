@@ -29,54 +29,70 @@ import {
 
 import { ROUTES } from "@/config/routes";
 
-export const navigationItems = [
+export const adminNavigationItems = [
   {
+    group: "OVERVIEW",
     title: "Dashboard",
     url: ROUTES.ADMIN.DASHBOARD,
     icon: Monitor,
   },
   {
-    title: "Users Management",
+    group: "PLATFORM & ACCESS",
+    title: "Platform Users",
     url: ROUTES.ADMIN.USERS_MANAGEMENT,
     icon: User,
   },
   {
-    title: "Recycle Bin",
-    url: ROUTES.ADMIN.RECYCLE_BIN,
-    icon: Trash2,
+    group: "PLATFORM & ACCESS",
+    title: "Admin & Staff",
+    url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT,
+    icon: UserCog,
   },
-
   {
-    title: "Foundations & Charities Management",
+    group: "PLATFORM & ACCESS",
+    title: "Vendor Accounts",
+    url: ROUTES.ADMIN.VENDOR_ACCOUNTS,
+    icon: Store,
+  },
+  {
+    group: "PLATFORM & ACCESS",
+    title: "NGO / Foundation Accounts",
     url: ROUTES.ADMIN.FOUNDATION_MANAGEMENT,
     icon: Building,
     isComingSoon: true,
   },
   {
-    title: "Philanthropist Management",
+    group: "PLATFORM & ACCESS",
+    title: "Donor Accounts",
     url: ROUTES.ADMIN.PHILANTHROPIST_MANAGEMENT,
     icon: Users,
     isComingSoon: true,
   },
   {
-    title: "Sub/Co-admin Management",
-    url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT,
-    icon: UserCog,
+    group: "MARKETPLACE OVERSIGHT",
+    title: "Vendors",
+    url: ROUTES.ADMIN.VENDORS,
+    icon: Users,
   },
   {
-    title: "Stories",
-    url: ROUTES.ADMIN.STORIES.LIST,
-    icon: RefreshCcw,
-    isComingSoon: true,
+    group: "MARKETPLACE OVERSIGHT",
+    title: "Vendor Stores",
+    url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
+    icon: Store,
+    items: [
+      {
+        title: "Store",
+        url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
+      },
+      {
+        title: "Assign City-Manager To Stores",
+        url: ROUTES.ADMIN.STORE_MANAGEMENT.ASSIGN_CITY_MANAGER,
+      },
+    ],
   },
   {
-    title: "Donation Logs",
-    url: ROUTES.ADMIN.DONATION_LOGS,
-    icon: List,
-    isComingSoon: true,
-  },
-  {
-    title: "Catalogue Management",
+    group: "MARKETPLACE OVERSIGHT",
+    title: "Product Catalog Oversight",
     url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ROOT,
     icon: BookOpen,
     items: [
@@ -92,35 +108,21 @@ export const navigationItems = [
         title: "Items",
         url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS,
       },
-    ],
-  },
-  {
-    title: "Product Boxes Management",
-    url: ROUTES.ADMIN.PRODUCT_BOXES,
-    icon: Package,
-  },
-  {
-    title: "Store Management",
-    url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
-    icon: Store,
-    items: [
       {
-        title: "Store",
-        url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
-      },
-      {
-        title: "Assign City-Manager To Stores",
-        url: ROUTES.ADMIN.STORE_MANAGEMENT.ASSIGN_CITY_MANAGER,
+        title: "Baskets",
+        url: ROUTES.ADMIN.PRODUCT_BOXES,
       },
     ],
   },
   {
-    title: "Employee Management",
-    url: ROUTES.ADMIN.EMPLOYEE_MANAGEMENT,
-    icon: Users,
+    group: "MARKETPLACE OVERSIGHT",
+    title: "Marketplace Orders",
+    url: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
+    icon: Box,
   },
   {
-    title: "Country Management",
+    group: "MARKET CONFIGURATION",
+    title: "Countries & Markets",
     url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT,
     icon: Globe,
     items: [
@@ -131,7 +133,8 @@ export const navigationItems = [
     ],
   },
   {
-    title: "City Management",
+    group: "MARKET CONFIGURATION",
+    title: "Cities & Service Areas",
     url: ROUTES.ADMIN.CITY_MANAGEMENT.ROOT,
     icon: MapPin,
     items: [
@@ -142,17 +145,36 @@ export const navigationItems = [
     ],
   },
   {
-    title: "Order Management",
-    url: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
-    icon: Box,
+    group: "MARKET CONFIGURATION",
+    title: "Transaction Limits",
+    url: ROUTES.ADMIN.AMOUNT_LIMIT_MANAGEMENT,
+    icon: DollarSign,
   },
   {
-    title: "My Orders",
-    url: ROUTES.ADMIN.MY_ORDERS,
-    icon: Box,
+    group: "MARKET CONFIGURATION",
+    title: "Promotions",
+    url: ROUTES.ADMIN.COUPONS_MANAGEMENT,
+    icon: Gift,
   },
   {
-    title: "Ticket Management",
+    group: "MARKET CONFIGURATION",
+    title: "Wallet & Credits",
+    url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
+    icon: CreditCard,
+    items: [
+      {
+        title: "Pending Credits",
+        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
+      },
+      {
+        title: "Completed Credits",
+        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.COMPLETED_CREDITS,
+      },
+    ],
+  },
+  {
+    group: "SUPPORT & QUALITY",
+    title: "Support Tickets",
     url: ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT,
     icon: Ticket,
     items: [
@@ -167,7 +189,14 @@ export const navigationItems = [
     ],
   },
   {
-    title: "Report Management",
+    group: "SUPPORT & QUALITY",
+    title: "Platform Feedback",
+    url: ROUTES.ADMIN.FEEDBACK_MANAGEMENT,
+    icon: MessageSquare,
+  },
+  {
+    group: "SUPPORT & QUALITY",
+    title: "Reports & Moderation",
     url: ROUTES.ADMIN.REPORT_MANAGEMENT.ROOT,
     icon: ClipboardList,
     items: [
@@ -190,46 +219,19 @@ export const navigationItems = [
     ],
   },
   {
-    title: "Feedback Management",
-    url: ROUTES.ADMIN.FEEDBACK_MANAGEMENT,
-    icon: MessageSquare,
-  },
-  {
-    title: "Send Notification",
+    group: "COMMUNICATIONS",
+    title: "Notifications",
     url: ROUTES.ADMIN.SEND_NOTIFICATION,
     icon: Bell,
   },
   {
-    title: "Coupons Management",
-    url: ROUTES.ADMIN.COUPONS_MANAGEMENT,
-    icon: Gift,
-  },
-  {
-    title: "Amount Limit Management",
-    url: ROUTES.ADMIN.AMOUNT_LIMIT_MANAGEMENT,
-    icon: DollarSign,
-  },
-  {
-    title: "Credits Management",
-    url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
-    icon: CreditCard,
-    items: [
-      {
-        title: "Pending Credits",
-        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
-      },
-      {
-        title: "Completed Credits",
-        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.COMPLETED_CREDITS,
-      },
-    ],
-  },
-  {
-    title: "Flash Images Management",
+    group: "COMMUNICATIONS",
+    title: "App Banners",
     url: ROUTES.ADMIN.TUTORIAL_MANAGEMENT,
-    icon: GraduationCap,
+    icon: Monitor,
   },
   {
+    group: "PARTNER GROWTH",
     title: "Partner Leads CRM",
     url: ROUTES.ADMIN.PARTNER_LEADS,
     icon: Building,
@@ -237,28 +239,124 @@ export const navigationItems = [
   },
 ];
 
+export const vendorNavigationItems = [
+  {
+    group: "OVERVIEW",
+    title: "Dashboard",
+    url: ROUTES.ADMIN.DASHBOARD,
+    icon: Monitor,
+  },
+  {
+    group: "MY BUSINESS",
+    title: "My Stores",
+    url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
+    icon: Store,
+  },
+  {
+    group: "MY BUSINESS",
+    title: "My Catalog",
+    url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS,
+    icon: BookOpen,
+  },
+  {
+    group: "MY BUSINESS",
+    title: "Baskets",
+    url: ROUTES.ADMIN.PRODUCT_BOXES,
+    icon: Package,
+  },
+  {
+    group: "ORDERS & FULFILLMENT",
+    title: "My Orders",
+    url: ROUTES.ADMIN.MY_ORDERS,
+    icon: Box,
+  },
+  {
+    group: "ORDERS & FULFILLMENT",
+    title: "Order Management",
+    url: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
+    icon: Box,
+  },
+  {
+    group: "TEAM & SETTINGS",
+    title: "Staff & Permissions",
+    url: ROUTES.ADMIN.EMPLOYEE_MANAGEMENT,
+    icon: Users,
+  },
+  {
+    group: "MARKETING",
+    title: "Promotions",
+    url: ROUTES.ADMIN.COUPONS_MANAGEMENT,
+    icon: Gift,
+  },
+  {
+    group: "SUPPORT",
+    title: "Support Tickets",
+    url: ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT,
+    icon: Ticket,
+    items: [
+      {
+        title: "Active Requests",
+        url: ROUTES.ADMIN.TICKET_MANAGEMENT.ACTIVE_REQUESTS,
+      },
+      {
+        title: "Closed Requests",
+        url: ROUTES.ADMIN.TICKET_MANAGEMENT.CLOSED_REQUESTS,
+      },
+    ],
+  },
+  {
+    group: "SUPPORT",
+    title: "Reports",
+    url: ROUTES.ADMIN.REPORT_MANAGEMENT.ROOT,
+    icon: ClipboardList,
+    items: [
+      {
+        title: "Store Report",
+        url: ROUTES.ADMIN.REPORT_MANAGEMENT.STORE_REPORT,
+      },
+      {
+        title: "Customer Report",
+        url: ROUTES.ADMIN.REPORT_MANAGEMENT.CUSTOMER_REPORT,
+      },
+      {
+        title: "Orders Report",
+        url: ROUTES.ADMIN.REPORT_MANAGEMENT.ORDERS_REPORT,
+      },
+      {
+        title: "Coupons Report",
+        url: ROUTES.ADMIN.REPORT_MANAGEMENT.COUPONS_REPORT,
+      },
+    ],
+  },
+];
+
 export const cmsNavigationItems = [
   {
+    group: "CONTENT",
     title: "Landing Page",
     url: ROUTES.ADMIN.CONTENT_MANAGEMENT.LANDING_PAGE,
     icon: Monitor,
   },
   {
+    group: "CONTENT",
     title: "About Us",
     url: ROUTES.ADMIN.CONTENT_MANAGEMENT.ABOUT_US,
     icon: Info,
   },
   {
+    group: "CONTENT",
     title: "Privacy Policy",
     url: ROUTES.ADMIN.CONTENT_MANAGEMENT.PRIVACY_POLICY,
     icon: Shield,
   },
   {
+    group: "CONTENT",
     title: "Terms Of Use",
     url: ROUTES.ADMIN.CONTENT_MANAGEMENT.TERMS_OF_USE,
     icon: Scale,
   },
   {
+    group: "CONTENT",
     title: "FAQ",
     url: ROUTES.ADMIN.CONTENT_MANAGEMENT.FAQ,
     icon: FileText,
