@@ -17,12 +17,15 @@ export type ProfilePermissions = Record<string, number | null | undefined>;
 
 export interface AdminProfile {
   name: string;
+  firstName?: string | null;
+  lastName?: string | null;
   email: string;
   role: string;
   roleCode: string;
   phoneNumber: string;
   permissions: ProfilePermissions;
   image?: string | null;
+  address?: string | null;
 }
 
 interface ProfileContextType {

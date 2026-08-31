@@ -1,15 +1,44 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProfile } from "@/components/providers/profile-provider";
-import { Mail, ShieldCheck } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatRole } from "@/lib/formatRole";
+import { Camera, Mail, ShieldCheck, Loader2 } from "lucide-react";
+import { useRef } from "react";
+import { useUpdateProfile } from "../hooks/use-update-profile";
+import { successToast, errorToast } from "@/components/toaster";
+import { useQueryClient } from "@tanstack/react-query";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
 export function ProfileHeader() {
   const { profile } = useProfile();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const updateProfileMutation = useUpdateProfile();
+  const queryClient = useQueryClient();
 
   const displayName = profile?.name || "Admin User";
-  const displayRole = profile?.roleCode === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin";
+  const displayRole = formatRole(profile?.role || "");
   const displayEmail = profile?.email || "admin@foodremit.com";
+
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      await updateProfileMutation.mutateAsync(formData);
+      successToast({ title: "Profile image updated successfully!" });
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE });
+    } catch {
+      errorToast({ title: "Failed to update profile image." });
+    }
+
+    // Clear input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const initials = displayName
     .split(" ")
@@ -23,7 +52,7 @@ export function ProfileHeader() {
       <div className="h-32 w-full bg-linear-to-r from-emerald-600/30 via-teal-600/20 to-emerald-500/10" />
 
       <div className="flex flex-col items-start gap-5 px-6 pb-6 sm:flex-row sm:items-end">
-        <div className="relative -mt-12 h-24 w-24 shrink-0 rounded-2xl shadow-md ring-4 ring-white dark:ring-slate-900">
+        <div className="group relative -mt-12 h-24 w-24 shrink-0 overflow-hidden rounded-2xl shadow-md ring-4 ring-white dark:ring-slate-900">
           <Avatar className="h-full w-full rounded-2xl shadow-sm">
             <AvatarImage
               src={profile?.image || ""}
@@ -34,6 +63,22 @@ export function ProfileHeader() {
               {initials}
             </AvatarFallback>
           </Avatar>
+
+          <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+            {updateProfileMutation.isPending ? (
+              <Loader2 className="h-6 w-6 animate-spin text-white" />
+            ) : (
+              <Camera className="h-6 w-6 text-white" />
+            )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/png,image/jpeg,image/webp"
+              className="hidden"
+              onChange={handleImageChange}
+              disabled={updateProfileMutation.isPending}
+            />
+          </label>
         </div>
 
         <div className="flex-1 space-y-1 sm:mb-2">

@@ -10,6 +10,18 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "*.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.s3.*.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "foodremit-667761191441-ap-south-1-an.s3.ap-south-1.amazonaws.com",
       },
       {

@@ -2,9 +2,22 @@ import { getFullPhoneError } from "@/lib/phone";
 import { z } from "zod";
 
 export const profileDetailsSchema = z.object({
-  firstName: z.string().min(1, "First Name is required"),
-  lastName: z.string().min(1, "Last Name is required"),
-  email: z.string().email("Invalid email address"),
+  firstName: z
+    .string()
+    .min(2, "Minimum 2 characters are required")
+    .max(50, "Maximum 50 characters are allowed"),
+  lastName: z
+    .string()
+    .min(2, "Minimum 2 characters are required")
+    .max(50, "Maximum 50 characters are allowed"),
+
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .max(100, "Maximum 100 characters are allowed")
+    .email("Invalid email address"),
+
   contactNumber: z
     .string()
     .min(1, "Contact Number is required")
@@ -14,6 +27,9 @@ export const profileDetailsSchema = z.object({
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: error });
       }
     }),
+
+  address: z.string().max(200, "Maximum 200 characters are allowed").optional(),
+  image: z.any().optional(),
 });
 
 export type ProfileDetailsValues = z.infer<typeof profileDetailsSchema>;

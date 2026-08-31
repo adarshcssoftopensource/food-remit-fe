@@ -2,11 +2,14 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { DASHBOARD_ROUTES } from "@/constants/dashboard";
-import { Flame, Image as ImageIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import type { DashboardTrendingOrder } from "../types/dashboard.types";
+import { useEffect, useRef, useState } from "react";
+import type {
+  DashboardTrendingItemCountryPrice,
+  DashboardTrendingOrder,
+} from "../types/dashboard.types";
 import { DashboardActionButton } from "./common/dashboard-action-button";
 import { DashboardCard } from "./common/dashboard-card";
 import { DashboardEmptyState } from "./common/dashboard-empty-state";
@@ -14,6 +17,84 @@ import { DashboardEmptyState } from "./common/dashboard-empty-state";
 interface TrendingOrdersProps {
   orders?: DashboardTrendingOrder[];
   isLoading?: boolean;
+}
+
+function CountryPricesScroll({ prices }: { prices: DashboardTrendingItemCountryPrice[] }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showControls, setShowControls] = useState(false);
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      const el = scrollRef.current;
+      if (el) {
+        setShowControls(el.scrollWidth > el.clientWidth + 2);
+      }
+    };
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [prices]);
+
+  const handleScroll = (direction: "left" | "right", e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (scrollRef.current) {
+      const scrollAmount = direction === "left" ? -120 : 120;
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
+  if (!prices || prices.length === 0) return null;
+
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+          {prices.length > 1 ? "Country Prices" : "Price"}
+        </span>
+        {showControls && (
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={(e) => handleScroll("left", e)}
+              className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              title="Scroll left"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => handleScroll("right", e)}
+              className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              title="Scroll right"
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div
+        ref={scrollRef}
+        className="flex scrollbar-none items-center gap-1.5 overflow-x-auto py-0.5 whitespace-nowrap"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {prices.map((p, i) => (
+          <span
+            key={p.countryId || i}
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-emerald-200/60 bg-emerald-50/90 px-2.5 py-1 text-xs font-bold text-emerald-800 dark:border-emerald-800/40 dark:bg-emerald-950/60 dark:text-emerald-300"
+          >
+            {prices.length > 1 && (
+              <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                {p.countryName}:
+              </span>
+            )}
+            <span>{p.formattedPrice}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function TrendingItemCard({ order }: { order: DashboardTrendingOrder }) {
@@ -62,13 +143,19 @@ function TrendingItemCard({ order }: { order: DashboardTrendingOrder }) {
             </p>
           </div>
 
-          <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
-            <span className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
-              Price
-            </span>
-            <span className="rounded-lg bg-emerald-50 px-2.5 py-0.5 text-xs font-black text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
-              {order.price}
-            </span>
+          <div className="border-t border-slate-100 pt-3 dark:border-slate-800">
+            {order.prices && order.prices.length > 0 ? (
+              <CountryPricesScroll prices={order.prices} />
+            ) : (
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+                  Price
+                </span>
+                <span className="rounded-lg bg-emerald-50 px-2.5 py-0.5 text-xs font-black text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+                  {order.price}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

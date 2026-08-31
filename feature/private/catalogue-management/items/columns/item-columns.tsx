@@ -34,7 +34,13 @@ export function getItemColumns(
       cell: ({ row }) => (
         <ImageNameCell
           name={row.original.productName}
-          image={row.original.productImage?.split(",")[0]?.trim()}
+          image={
+            row.original.productImageUrls?.[0] ||
+            row.original.productImageUrl ||
+            (row.original.productImage?.startsWith("http")
+              ? row.original.productImage.split(",")[0]?.trim()
+              : null)
+          }
           onImageClick={onImageClick}
           enableZoom={!!onImageClick}
         />

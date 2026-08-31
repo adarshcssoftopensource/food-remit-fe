@@ -88,11 +88,21 @@ export interface DashboardRecentlyPlacedOrder {
   price: string;
 }
 
+export interface DashboardTrendingItemCountryPrice {
+  countryId?: string;
+  countryName: string;
+  countryCode?: string;
+  currencySymbol: string;
+  price: number;
+  formattedPrice: string;
+}
+
 export interface DashboardTrendingOrder {
   id: string;
   name: string;
   orders: number;
   price: string;
+  prices?: DashboardTrendingItemCountryPrice[];
   productImage?: string | null;
   productImageUrl?: string | null;
   color?: string;

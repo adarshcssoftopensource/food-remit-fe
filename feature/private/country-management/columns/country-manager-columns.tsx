@@ -120,6 +120,7 @@ export function getCountryManagerColumns({
             checked={row.original.status === "Active"}
             onCheckedChange={(checked) => onToggleStatus(row.original.id, checked)}
             className="data-[state=checked]:bg-emerald-500"
+            title={row.original.status === "Active" ? "Active" : "Inactive"}
           />
         </div>
       ),

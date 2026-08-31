@@ -87,6 +87,7 @@ export const getProductBoxColumns = ({
             <Switch
               checked={box.status}
               onCheckedChange={(checked) => onToggleStatus(box, checked)}
+              title={box.status ? "Active" : "Inactive"}
             />
           </div>
         </div>

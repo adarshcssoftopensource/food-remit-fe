@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Mail, User } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 
+import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,8 @@ export function ProfileForm() {
   const updateProfileMutation = useUpdateProfile();
 
   const nameParts = (profile?.name || "").trim().split(" ");
-  const firstName = nameParts[0] || "";
-  const lastName = nameParts.slice(1).join(" ") || "";
+  const firstName = profile?.firstName || nameParts[0] || "";
+  const lastName = profile?.lastName || nameParts.slice(1).join(" ") || "";
 
   const {
     control,
@@ -38,6 +39,8 @@ export function ProfileForm() {
       lastName,
       email: profile?.email || "",
       contactNumber: profile?.phoneNumber || "",
+      address: profile?.address || "",
+      image: undefined,
     },
     mode: "onChange",
   });
@@ -46,11 +49,17 @@ export function ProfileForm() {
 
   const onSubmit = async (data: ProfileDetailsValues) => {
     try {
-      await updateProfileMutation.mutateAsync({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        contactNumber: data.contactNumber,
-      });
+      const formData = new FormData();
+      formData.append("firstName", data.firstName);
+      formData.append("lastName", data.lastName);
+      formData.append("name", `${data.firstName} ${data.lastName}`.trim());
+      formData.append("contactNumber", data.contactNumber);
+
+      if (data.address !== undefined) {
+        formData.append("address", data.address);
+      }
+
+      await updateProfileMutation.mutateAsync(formData);
       successToast({ title: "Profile updated successfully!" });
       queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE });
       reset(data); // reset isDirty
@@ -165,6 +174,7 @@ export function ProfileForm() {
                   </FieldLabel>
                   <PhoneInputComponent
                     value={field.value}
+                    disabled
                     onChange={(value) => field.onChange(value)}
                     onBlur={field.onBlur}
                     error={!!errors.contactNumber}
@@ -173,6 +183,29 @@ export function ProfileForm() {
                     <p className="text-xs font-medium text-red-500">
                       {errors.contactNumber.message}
                     </p>
+                  )}
+                </div>
+              )}
+            />
+
+            <Controller
+              name="address"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel htmlFor="address" className="text-sm font-semibold">
+                    Address
+                  </FieldLabel>
+                  <AddressAutocompleteInput
+                    id="address"
+                    value={field.value || ""}
+                    onChange={(val) => field.onChange(val)}
+                    addressFormat="full"
+                    placeholder="Search address..."
+                    invalid={!!errors.address}
+                  />
+                  {errors.address && (
+                    <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
                   )}
                 </div>
               )}

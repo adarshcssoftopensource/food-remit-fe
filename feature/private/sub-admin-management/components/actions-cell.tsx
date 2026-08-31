@@ -62,6 +62,7 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
           disabled={isStatusUpdating}
           onCheckedChange={handleStatusToggle}
           className="data-[state=checked]:bg-emerald-500"
+          title={isActive ? "Active" : "Inactive"}
         />
       </div>
 

@@ -98,6 +98,7 @@ export function ItemAvailabilityCell({ item }: { item: ItemData }) {
         )
       }
       className="data-[state=checked]:bg-green-500"
+      title={isActive ? "Active" : "Inactive"}
     />
   );
 }
@@ -119,6 +120,7 @@ export function ItemAdminShareCell({ item }: { item: ItemData }) {
         )
       }
       className="data-[state=checked]:bg-green-500"
+      title={isActive ? "Active" : "Inactive"}
     />
   );
 }
@@ -141,6 +143,7 @@ export function ItemDiscountAvailabilityCell({ item }: { item: ItemData }) {
         )
       }
       className="data-[state=checked]:bg-green-500"
+      title={isActive ? "Active" : "Inactive"}
     />
   );
 }
