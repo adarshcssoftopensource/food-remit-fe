@@ -298,7 +298,9 @@ export function useItemForm(
       }
 
       if (item) {
-        const response = (await updateItem(formData as any)) as {
+        const response = (await updateItem(
+          formData as unknown as Parameters<typeof updateItem>[0],
+        )) as {
           status?: boolean | string;
           message?: string;
         };
@@ -308,7 +310,9 @@ export function useItemForm(
         }
         toast.success(response?.message || "Item updated successfully");
       } else {
-        const response = (await createItem(formData as any)) as {
+        const response = (await createItem(
+          formData as unknown as Parameters<typeof createItem>[0],
+        )) as {
           status?: boolean | string;
           message?: string;
         };
