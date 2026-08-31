@@ -23,6 +23,7 @@ export interface AdminProfile {
   phoneNumber: string;
   permissions: ProfilePermissions;
   image?: string | null;
+  address?: string | null;
 }
 
 interface ProfileContextType {

@@ -15,7 +15,7 @@ interface UpdateProfileResponse {
 }
 
 export function useUpdateProfile() {
-  return useApiMutation<UpdateProfileResponse, UpdateProfilePayload>(
+  return useApiMutation<UpdateProfileResponse, UpdateProfilePayload | FormData>(
     "patch",
     AUTH_ENDPOINTS.PROFILE,
   );

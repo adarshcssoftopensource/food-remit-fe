@@ -38,6 +38,8 @@ export function ProfileForm() {
       lastName,
       email: profile?.email || "",
       contactNumber: profile?.phoneNumber || "",
+      address: profile?.address || "",
+      image: undefined,
     },
     mode: "onChange",
   });
@@ -46,11 +48,16 @@ export function ProfileForm() {
 
   const onSubmit = async (data: ProfileDetailsValues) => {
     try {
-      await updateProfileMutation.mutateAsync({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        contactNumber: data.contactNumber,
-      });
+      const formData = new FormData();
+      formData.append("firstName", data.firstName);
+      formData.append("lastName", data.lastName);
+      formData.append("contactNumber", data.contactNumber);
+
+      if (data.address) {
+        formData.append("address", data.address);
+      }
+
+      await updateProfileMutation.mutateAsync(formData);
       successToast({ title: "Profile updated successfully!" });
       queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE });
       reset(data); // reset isDirty
@@ -165,6 +172,7 @@ export function ProfileForm() {
                   </FieldLabel>
                   <PhoneInputComponent
                     value={field.value}
+                    disabled
                     onChange={(value) => field.onChange(value)}
                     onBlur={field.onBlur}
                     error={!!errors.contactNumber}
@@ -177,6 +185,29 @@ export function ProfileForm() {
                 </div>
               )}
             />
+
+            {profile?.address && (
+              <Controller
+                name="address"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel htmlFor="address" className="text-sm font-semibold">
+                      Address
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="address"
+                      placeholder="Enter your address"
+                      className="h-12 rounded-xl border-gray-200/80 bg-gray-50/50 px-4 text-sm transition-colors duration-300 placeholder:text-gray-400/80"
+                    />
+                    {errors.address && (
+                      <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
+                    )}
+                  </div>
+                )}
+              />
+            )}
           </div>
 
           <div className="mt-8 flex justify-end">

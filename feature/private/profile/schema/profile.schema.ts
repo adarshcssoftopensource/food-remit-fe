@@ -27,6 +27,9 @@ export const profileDetailsSchema = z.object({
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: error });
       }
     }),
+
+  address: z.string().max(200, "Maximum 200 characters are allowed").optional(),
+  image: z.any().optional(),
 });
 
 export type ProfileDetailsValues = z.infer<typeof profileDetailsSchema>;
