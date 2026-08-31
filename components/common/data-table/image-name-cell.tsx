@@ -24,6 +24,19 @@ export function ImageNameCell({
 
   const isProfile = type === "profile";
 
+  let validImage: string | null = null;
+  if (image && typeof image === "string") {
+    const trimmed = image.trim();
+    if (
+      trimmed.startsWith("http://") ||
+      trimmed.startsWith("https://") ||
+      trimmed.startsWith("/") ||
+      trimmed.startsWith("data:")
+    ) {
+      validImage = trimmed;
+    }
+  }
+
   return (
     <div className={`flex items-center ${isProfile ? "gap-2.5" : "gap-3"}`}>
       <div
@@ -31,10 +44,10 @@ export function ImageNameCell({
           isProfile ? "size-8 rounded-full" : "bg-primary/5 h-10 w-10 rounded-xl"
         }`}
       >
-        {image ? (
+        {validImage ? (
           <>
             <Image
-              src={image}
+              src={validImage}
               alt={name}
               className={isProfile ? "h-full w-full object-cover" : "h-6 w-6 object-contain"}
               height={40}
@@ -42,7 +55,7 @@ export function ImageNameCell({
             />
             {enableZoom && onImageClick && (
               <button
-                onClick={() => onImageClick(image)}
+                onClick={() => onImageClick(validImage)}
                 className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/30 group-hover:opacity-100"
                 title="View full screen"
               >

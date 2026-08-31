@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Mail, User } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 
+import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,8 @@ export function ProfileForm() {
   const updateProfileMutation = useUpdateProfile();
 
   const nameParts = (profile?.name || "").trim().split(" ");
-  const firstName = nameParts[0] || "";
-  const lastName = nameParts.slice(1).join(" ") || "";
+  const firstName = profile?.firstName || nameParts[0] || "";
+  const lastName = profile?.lastName || nameParts.slice(1).join(" ") || "";
 
   const {
     control,
@@ -51,9 +52,10 @@ export function ProfileForm() {
       const formData = new FormData();
       formData.append("firstName", data.firstName);
       formData.append("lastName", data.lastName);
+      formData.append("name", `${data.firstName} ${data.lastName}`.trim());
       formData.append("contactNumber", data.contactNumber);
 
-      if (data.address) {
+      if (data.address !== undefined) {
         formData.append("address", data.address);
       }
 
@@ -186,28 +188,28 @@ export function ProfileForm() {
               )}
             />
 
-            {profile?.address && (
-              <Controller
-                name="address"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel htmlFor="address" className="text-sm font-semibold">
-                      Address
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="address"
-                      placeholder="Enter your address"
-                      className="h-12 rounded-xl border-gray-200/80 bg-gray-50/50 px-4 text-sm transition-colors duration-300 placeholder:text-gray-400/80"
-                    />
-                    {errors.address && (
-                      <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
-                    )}
-                  </div>
-                )}
-              />
-            )}
+            <Controller
+              name="address"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel htmlFor="address" className="text-sm font-semibold">
+                    Address
+                  </FieldLabel>
+                  <AddressAutocompleteInput
+                    id="address"
+                    value={field.value || ""}
+                    onChange={(val) => field.onChange(val)}
+                    addressFormat="full"
+                    placeholder="Search address..."
+                    invalid={!!errors.address}
+                  />
+                  {errors.address && (
+                    <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
+                  )}
+                </div>
+              )}
+            />
           </div>
 
           <div className="mt-8 flex justify-end">

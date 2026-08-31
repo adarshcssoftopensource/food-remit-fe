@@ -17,6 +17,8 @@ export type ProfilePermissions = Record<string, number | null | undefined>;
 
 export interface AdminProfile {
   name: string;
+  firstName?: string | null;
+  lastName?: string | null;
   email: string;
   role: string;
   roleCode: string;

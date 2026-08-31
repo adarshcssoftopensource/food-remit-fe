@@ -31,10 +31,16 @@ const itemSchema = z
     nutritionInfo: z.string().optional(),
     discountPercentage: z
       .string()
-      .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, {
-        message: "Please enter a valid percentage between 0 and 100",
-      })
-      .optional(),
+      .optional()
+      .refine(
+        (val) =>
+          !val ||
+          val.trim() === "" ||
+          (!isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100),
+        {
+          message: "Please enter a valid percentage between 0 and 100",
+        },
+      ),
 
     baseQuantity: z.string().min(1, "Base quantity is required"),
     unit: z.string().min(1, "Unit is required"),
@@ -69,7 +75,7 @@ const itemSchema = z
       });
     }
 
-    data.placements.forEach((row, index) => {
+    data.placements.forEach((row) => {
       const price = Number(row.price);
       if (!row.price.trim() || Number.isNaN(price) || price < 0) {
         ctx.addIssue({
@@ -144,11 +150,8 @@ export function useItemForm(
   const isSubmitting = isCreating || isUpdating;
 
   const getInitialImages = (currentItem?: ItemData | null) => {
-    if (
-      (currentItem as any)?.productImageUrls &&
-      (currentItem as any).productImageUrls.length > 0
-    ) {
-      return (currentItem as any).productImageUrls as string[];
+    if (currentItem?.productImageUrls && currentItem.productImageUrls.length > 0) {
+      return currentItem.productImageUrls;
     }
     if (currentItem?.productImageUrl) {
       return [currentItem.productImageUrl];
@@ -160,11 +163,11 @@ export function useItemForm(
   };
 
   const getInitialInfoImage = (currentItem?: ItemData | null) => {
-    return (currentItem as any)?.productInfoImageUrl || currentItem?.productInfoImage || "";
+    return currentItem?.productInfoImageUrl || currentItem?.productInfoImage || "";
   };
 
   const getInitialNutritionImage = (currentItem?: ItemData | null) => {
-    return (currentItem as any)?.nutritionInfoImageUrl || currentItem?.nutritionInfoImage || "";
+    return currentItem?.nutritionInfoImageUrl || currentItem?.nutritionInfoImage || "";
   };
 
   const form = useForm<ItemFormValues>({
@@ -176,7 +179,10 @@ export function useItemForm(
       upcCode: item?.upcCode ?? "",
       productInfo: item?.productInfo ?? "",
       nutritionInfo: item?.nutritionInfo ?? "",
-      discountPercentage: item?.discountPercentage?.toString() ?? "",
+      discountPercentage:
+        item?.discountPercentage !== null && item?.discountPercentage !== undefined
+          ? item.discountPercentage.toString()
+          : "0",
       baseQuantity: item?.baseQuantity?.toString() ?? "",
       unit: item?.unit ?? "",
       placements: mapItemPlacements(item),
@@ -199,7 +205,10 @@ export function useItemForm(
           upcCode: item?.upcCode ?? "",
           productInfo: item?.productInfo ?? "",
           nutritionInfo: item?.nutritionInfo ?? "",
-          discountPercentage: item?.discountPercentage?.toString() ?? "",
+          discountPercentage:
+            item?.discountPercentage !== null && item?.discountPercentage !== undefined
+              ? item.discountPercentage.toString()
+              : "0",
           baseQuantity: item?.baseQuantity?.toString() ?? "",
           unit: item?.unit ?? "",
           placements: mapItemPlacements(item),
