@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useState } from "react";
 import { TruncatedTextCell } from "./truncated-text-cell";
 
 type ImageNameCellProps = {
@@ -16,6 +17,8 @@ export function ImageNameCell({
   onImageClick,
   enableZoom = false,
 }: ImageNameCellProps) {
+  const [imageError, setImageError] = useState(false);
+
   const initials = name
     .split(" ")
     .map((word) => word[0]?.toUpperCase())
@@ -25,7 +28,7 @@ export function ImageNameCell({
   const isProfile = type === "profile";
 
   let validImage: string | null = null;
-  if (image && typeof image === "string") {
+  if (image && typeof image === "string" && !imageError) {
     const trimmed = image.trim();
     if (
       trimmed.startsWith("http://") ||
@@ -49,9 +52,11 @@ export function ImageNameCell({
             <Image
               src={validImage}
               alt={name}
-              className={isProfile ? "h-full w-full object-cover" : "h-6 w-6 object-contain"}
+              className="h-full w-full object-cover"
               height={40}
               width={40}
+              unoptimized
+              onError={() => setImageError(true)}
             />
             {enableZoom && onImageClick && (
               <button
