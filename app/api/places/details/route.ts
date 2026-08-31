@@ -44,6 +44,9 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(url.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status}`);
+    }
     const data = (await response.json()) as GooglePlaceDetailsResponse;
 
     if (data.status !== "OK" || !data.result) {

@@ -3,7 +3,7 @@
 import { APP_ASSETS } from "@/config/assets";
 import Image from "next/image";
 
-export function ProfileLoadingScreen() {
+export function ProfileLoadingScreen({ isText = true }: { isText?: boolean }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-linear-to-br from-slate-50 via-white to-emerald-50">
       <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-200/30 blur-3xl" />
@@ -25,11 +25,13 @@ export function ProfileLoadingScreen() {
           </div>
         </div>
 
-        <div className="text-center">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-800">Loading Profile</h2>
+        {isText && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-800">Loading Profile</h2>
 
-          <p className="mt-2 text-sm text-slate-500">Setting up your workspace...</p>
-        </div>
+            <p className="mt-2 text-sm text-slate-500">Setting up your workspace...</p>
+          </div>
+        )}
       </div>
     </div>
   );

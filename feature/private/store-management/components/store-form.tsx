@@ -452,7 +452,7 @@ export function StoreForm({
         <Button
           type="submit"
           isLoading={isSubmitting}
-          className="h-12 rounded-xl px-12 text-base font-semibold shadow-md transition-colors transition-transform hover:scale-[1.02]"
+          className="h-12 rounded-xl px-12 text-base font-semibold shadow-md transition-transform hover:scale-[1.02]"
         >
           {submitLabel}
         </Button>

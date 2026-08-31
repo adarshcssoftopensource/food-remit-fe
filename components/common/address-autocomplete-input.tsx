@@ -96,7 +96,7 @@ export function AddressAutocompleteInput({
           setIsOpen(false);
         }
       } finally {
-        if (!cancelled) setIsFetching(false);
+        setIsFetching(false);
       }
     };
 

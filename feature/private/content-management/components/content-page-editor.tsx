@@ -23,7 +23,6 @@ import {
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useGetContentPage } from "../hooks/use-get-content-page";
 import { useUpdateContentPage } from "../hooks/use-update-content-page";
@@ -231,7 +230,7 @@ function EditContentPageDialog({
                       value={field.value}
                       onChange={field.onChange}
                       className={cn(
-                        "rounded-xl bg-white [&_.ql-container]:rounded-b-xl [&_.ql-editor]:min-h-[200px] [&_.ql-toolbar]:rounded-t-xl",
+                        "rounded-xl bg-white [&_.ql-container]:rounded-b-xl [&_.ql-editor]:min-h-50 [&_.ql-toolbar]:rounded-t-xl",
                         errors.description &&
                           "[&_.ql-container]:border-red-400 [&_.ql-toolbar]:border-red-400",
                       )}

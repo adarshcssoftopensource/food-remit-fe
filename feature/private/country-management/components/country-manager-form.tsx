@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
 import { applyPlaceToLocationFields } from "@/lib/places/apply-place-to-location-fields";
 import { cn } from "@/lib/utils";
 import { City, Country, State } from "country-state-city";
@@ -121,8 +120,6 @@ export function CountryManagerForm({
     selectedCountryObj && selectedStateObj
       ? City.getCitiesOfState(selectedCountryObj.isoCode, selectedStateObj.isoCode)
       : [];
-
-  const { countries: countriesData } = useGetCountriesDropdown();
 
   const fieldError = (message?: string) =>
     message ? <p className="mt-1 text-xs font-medium text-red-500">{message}</p> : null;
@@ -442,7 +439,7 @@ export function CountryManagerForm({
         <Button
           type="submit"
           isLoading={isSubmitting}
-          className="h-12 rounded-xl px-12 text-base font-semibold shadow-md transition-colors transition-transform hover:scale-[1.02]"
+          className="h-12 rounded-xl px-12 text-base font-semibold shadow-md transition-transform hover:scale-[1.02]"
         >
           {submitLabel}
         </Button>

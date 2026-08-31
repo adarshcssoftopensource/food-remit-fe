@@ -17,6 +17,7 @@ import { StatsSection, TestimonialsSection } from "./components/stats-section";
 import { SuccessSection, TrustSection } from "./components/success-section";
 import { RevenueSection, WhyJoinSection } from "./components/why-join-section";
 import { mergeLandingContent } from "./lib/merge-landing-content";
+import { ProfileLoadingScreen } from "@/components/profile-loading-screen";
 
 export function VendorLandingPage() {
   const { data, isLoading, isError } = useGetLandingPage(false);
@@ -25,7 +26,7 @@ export function VendorLandingPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-svh items-center justify-center bg-white text-sm text-slate-500">
-        Loading…
+        <ProfileLoadingScreen isText={false} />
       </div>
     );
   }
