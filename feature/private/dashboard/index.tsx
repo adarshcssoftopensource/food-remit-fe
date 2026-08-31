@@ -19,6 +19,7 @@ import {
   SalesOverview,
   StoreListings,
   TrendingOrders,
+  StoreManagerDashboard,
 } from "./components";
 import { useDashboardFilters } from "./hooks/use-dashboard-filters";
 import { useGetDashboardStats } from "./hooks/use-get-dashboard-stats";
@@ -34,6 +35,10 @@ export function Dashboard() {
   const { profile, isSuperAdmin } = useProfile();
 
   const welcomeMessage = !isSuperAdmin && profile?.name ? `Welcome, ${profile.name}` : undefined;
+
+  if (profile?.role === "store_manager") {
+    return <StoreManagerDashboard />;
+  }
 
   return (
     <div className="relative min-h-[calc(100vh-8rem)] space-y-6">

@@ -245,7 +245,7 @@ export function OrderDetailPage({ id }: { id: string }) {
                 {order.customerPayment?.paymentMethod || "N/A"}
               </p>
 
-              <p className="mt-2 text-[10px] font-medium text-slate-400">Payment Status</p>
+              <p className="mt-2 text-[10px] font-medium text-slate-400">Paid</p>
               <span className="mt-1 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
                 {order.customerPayment?.paymentStatus || "N/A"}
               </span>
@@ -332,6 +332,22 @@ export function OrderDetailPage({ id }: { id: string }) {
                 {order.vendorSettlement?.commissionAmount || "0.00"}
               </span>
             </div>
+            {order.vendorSettlement?.govtTax && (
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500">Govt Tax</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {order.vendorSettlement.govtTax}
+                </span>
+              </div>
+            )}
+            {order.vendorSettlement?.creditCardFee && (
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500">Credit Card Fee</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {order.vendorSettlement.creditCardFee}
+                </span>
+              </div>
+            )}
 
             <hr className="my-1 border-dashed border-slate-200 dark:border-slate-700" />
 

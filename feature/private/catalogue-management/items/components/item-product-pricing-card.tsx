@@ -228,7 +228,9 @@ export function ItemProductPricingCard({
                     </span>
                   </p>
                 </div>
-                <p className="text-[11px] text-slate-400 sm:text-xs">Tax = Set Markup Per Item</p>
+                <p className="text-[11px] text-slate-400 sm:text-xs">
+                  Tax = Set Food Remit Markup Per Item
+                </p>
               </div>
             </div>
 

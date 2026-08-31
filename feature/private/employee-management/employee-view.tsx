@@ -1,45 +1,45 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Mail,
-  Phone,
-  MapPin,
-  User,
-  Package,
-  CheckCircle2,
-  Clock,
-  Loader2,
-  ShoppingBag,
-  UserCheck,
-  XCircle,
-  Calendar,
-  X,
-} from "lucide-react";
+import { DataTable } from "@/components/common/data-table/data-table";
+import { PageHeader } from "@/components/common/page-header";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { PageHeader } from "@/components/common/page-header";
-import { Skeleton } from "@/components/ui/skeleton";
-import { DataTable } from "@/components/common/data-table/data-table";
-import { ColumnDef } from "@tanstack/react-table";
-import { formatDate } from "@/lib/date";
-import { useGetEmployee } from "./hooks/use-get-employee";
-import { useGetEmployeeOrders } from "./hooks/use-get-employee-orders";
-import { useAssignOrder, useUnassignOrder } from "./hooks/use-assign-order";
-import { useGetOrders } from "@/feature/private/order-management/hooks/use-get-orders";
-import { OrderData } from "@/feature/private/order-management/types/order.types";
-import { getInitials } from "@/lib/get-initials";
-import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGetOrders } from "@/feature/private/order-management/hooks/use-get-orders";
+import { OrderData } from "@/feature/private/order-management/types/order.types";
+import { formatDate } from "@/lib/date";
+import { useDebounce } from "@/lib/debounce";
+import { getInitials } from "@/lib/get-initials";
+import { cn } from "@/lib/utils";
+import { ColumnDef, SortingState } from "@tanstack/react-table";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Mail,
+  MapPin,
+  Package,
+  Phone,
+  ShoppingBag,
+  User,
+  UserCheck,
+  XCircle,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useAssignOrder, useUnassignOrder } from "./hooks/use-assign-order";
+import { useGetEmployee } from "./hooks/use-get-employee";
+import { useGetEmployeeOrders } from "./hooks/use-get-employee-orders";
 
 interface EmployeeViewPageProps {
   id: string;
@@ -51,10 +51,24 @@ export function EmployeeViewPage({ id }: EmployeeViewPageProps) {
   const [assignPage, setAssignPage] = useState(1);
   const [assignedPage, setAssignedPage] = useState(1);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
-  const [assigningOrderId, setAssigningOrderId] = useState<string | null>(null);
+  const [assigningOrder, setAssigningOrder] = useState<OrderData | null>(null);
+  const [storeSearch, setStoreSearch] = useState("");
+  const [assignedSearch, setAssignedSearch] = useState("");
+  const debouncedStoreSearch = useDebounce(storeSearch, 500);
+  const debouncedAssignedSearch = useDebounce(assignedSearch, 500);
+  const [storeSorting, setStoreSorting] = useState<SortingState>([]);
+  const [assignedSorting, setAssignedSorting] = useState<SortingState>([]);
 
+  // Store orders (unassigned to this employee) — backend filters via excludeEmployeeId
   const { data: storeOrders, isLoading: storeOrdersLoading } = useGetOrders(
-    { page: assignPage, limit: 10 },
+    {
+      page: assignPage,
+      limit: 10,
+      search: debouncedStoreSearch || undefined,
+      excludeEmployeeId: id,
+      sortBy: storeSorting[0]?.id,
+      sortOrder: storeSorting[0]?.desc ? "desc" : "asc",
+    },
     true,
   );
 
@@ -62,17 +76,19 @@ export function EmployeeViewPage({ id }: EmployeeViewPageProps) {
     employeeId: id,
     page: assignedPage,
     limit: 10,
+    search: debouncedAssignedSearch || undefined,
+    sortBy: assignedSorting[0]?.id,
+    sortOrder: assignedSorting[0]?.desc ? "desc" : "asc",
   });
 
   const { mutateAsync: assignOrder, isPending: isAssigning } = useAssignOrder(id);
   const { mutateAsync: unassignOrder, isPending: isUnassigning } = useUnassignOrder(id);
 
   const handleAssign = async (orderId: string) => {
-    setAssigningOrderId(orderId);
     try {
       await assignOrder(orderId);
     } finally {
-      setAssigningOrderId(null);
+      setAssigningOrder(null);
       setIsAssignDialogOpen(false);
     }
   };
@@ -176,13 +192,13 @@ export function EmployeeViewPage({ id }: EmployeeViewPageProps) {
       id: "assign",
       header: "Action",
       cell: ({ row }) => {
-        const isLoading = assigningOrderId === row.original.id && isAssigning;
+        const isLoading = assigningOrder?.id === row.original.id && isAssigning;
         return (
           <Button
             size="sm"
-            className="h-8 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-3 text-xs font-semibold text-white shadow-sm transition-all hover:from-emerald-700 hover:to-teal-700"
+            className="h-8 rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 px-3 text-xs font-semibold text-white shadow-sm transition-all hover:from-emerald-700 hover:to-teal-700"
             onClick={() => {
-              setAssigningOrderId(row.original.id);
+              setAssigningOrder(row.original);
               setIsAssignDialogOpen(true);
             }}
             disabled={isLoading}
@@ -357,7 +373,7 @@ export function EmployeeViewPage({ id }: EmployeeViewPageProps) {
                       Phone
                     </p>
                     <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
-                      {employee.countryCode ? `+${employee.countryCode} ` : ""}
+                      {employee.countryCode ? `${employee.countryCode} ` : ""}
                       {employee.phoneNumber || "N/A"}
                     </p>
                   </div>
@@ -423,6 +439,32 @@ export function EmployeeViewPage({ id }: EmployeeViewPageProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
+          {/* Search for assigned orders */}
+          <div className="relative mb-4">
+            <svg
+              className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              value={assignedSearch}
+              onChange={(e) => {
+                setAssignedSearch(e.target.value);
+                setAssignedPage(1);
+              }}
+              placeholder="Search by order ID or sender / receiver name…"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/80 py-2.5 pr-4 pl-9 text-sm text-slate-800 placeholder-slate-400 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-900/30"
+            />
+          </div>
           <DataTable
             columns={assignedOrderColumns}
             data={assignedOrdersData?.data ?? []}
@@ -432,6 +474,9 @@ export function EmployeeViewPage({ id }: EmployeeViewPageProps) {
             rowsPerPage={10}
             onPageChange={setAssignedPage}
             onRowsPerPageChange={() => {}}
+            onSortingChange={setAssignedSorting}
+            manualSorting
+            manualFiltering
           />
         </CardContent>
       </Card>
@@ -448,11 +493,22 @@ export function EmployeeViewPage({ id }: EmployeeViewPageProps) {
               variant="outline"
               className="ml-auto rounded-full border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-bold text-blue-700 dark:border-blue-500/30 dark:bg-blue-950/40 dark:text-blue-400"
             >
-              {storeOrders?.pagination?.total ?? 0} total
+              {storeOrders?.pagination?.total ?? 0} available
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
+          <div className="relative mb-4">
+            <Input
+              type="text"
+              value={storeSearch}
+              onChange={(e) => {
+                setStoreSearch(e.target.value);
+                setAssignPage(1);
+              }}
+              placeholder="Search by order ID or sender / receiver name…"
+            />
+          </div>
           <DataTable
             columns={storeOrderColumns}
             data={storeOrders?.data ?? []}
@@ -462,101 +518,111 @@ export function EmployeeViewPage({ id }: EmployeeViewPageProps) {
             rowsPerPage={10}
             onPageChange={setAssignPage}
             onRowsPerPageChange={() => {}}
+            onSortingChange={setStoreSorting}
+            manualSorting
+            manualFiltering
           />
         </CardContent>
       </Card>
 
       {/* Assign Confirmation Dialog */}
       <Dialog open={isAssignDialogOpen} onOpenChange={setIsAssignDialogOpen}>
-        <DialogContent className="max-w-md rounded-3xl border border-white/70 bg-white/95 p-0 shadow-2xl backdrop-blur-2xl dark:border-slate-800/80 dark:bg-slate-900/95">
-          {/* Dialog decorative gradient top bar */}
-          <div className="absolute inset-x-0 top-0 h-1 rounded-t-3xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+        <DialogContent className="max-w-md overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-0 shadow-2xl sm:max-w-lg dark:border-slate-800 dark:bg-slate-950">
+          {/* Decorative Background Effects */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-50/50 via-white to-white dark:from-emerald-950/20 dark:via-slate-950 dark:to-slate-950" />
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-500" />
 
-          <div className="p-6 sm:p-8">
-            <div className="mb-6 flex items-center justify-between">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 shadow-lg shadow-emerald-600/30">
-                <UserCheck className="size-7 text-white" />
-              </div>
-              <button
-                onClick={() => setIsAssignDialogOpen(false)}
-                className="flex size-8 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
-              >
-                <X className="size-4" />
-              </button>
+          <div className="relative px-8 pt-10 pb-8">
+            <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg ring-8 shadow-emerald-500/25 ring-emerald-50/50 dark:ring-emerald-950/50">
+              <UserCheck className="size-10 text-white" />
             </div>
 
-            <DialogHeader className="space-y-2 text-left">
-              <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
-                Assign Order to Employee
+            <DialogHeader className="mb-8 space-y-3 text-center">
+              <DialogTitle className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                Assign Store Order
               </DialogTitle>
-              <DialogDescription className="text-sm text-slate-500 dark:text-slate-400">
+              <DialogDescription className="mx-auto max-w-[280px] text-[15px] leading-relaxed text-slate-500 dark:text-slate-400">
                 You are about to assign this order to{" "}
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                  {fullName}
-                </span>
-                . They will see this order in their My Orders dashboard.
+                <span className="font-bold text-slate-900 dark:text-white">{fullName}</span>.
               </DialogDescription>
             </DialogHeader>
 
-            {/* Employee preview */}
-            <div className="my-6 flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-900/30 dark:bg-emerald-950/20">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-base font-black text-white shadow-sm">
-                {initials}
-              </div>
-              <div>
-                <p className="font-bold text-slate-900 dark:text-white">{fullName}</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{employee.email}</p>
-              </div>
-              <div className="ml-auto">
-                <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
+            <div className="mb-8 flex flex-col gap-3">
+              <div className="group relative flex items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50/80 p-4 transition-colors hover:border-emerald-100 hover:bg-emerald-50/50 dark:border-slate-800/80 dark:bg-slate-900/50 dark:hover:border-emerald-900/30 dark:hover:bg-emerald-900/20">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-[1rem] bg-gradient-to-br from-emerald-500 to-teal-600 text-lg font-black text-white shadow-sm transition-transform group-hover:scale-105">
+                  {initials}
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <p className="truncate text-base font-bold text-slate-900 dark:text-white">
+                    {fullName}
+                  </p>
+                  <p className="truncate text-sm font-medium text-slate-500 dark:text-slate-400">
+                    {employee.email}
+                  </p>
+                </div>
+                <Badge
+                  variant="outline"
+                  className="rounded-full border-emerald-200 bg-emerald-50 text-[10px] font-bold tracking-wide text-emerald-700 uppercase dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-400"
+                >
                   Employee
-                </span>
+                </Badge>
               </div>
+
+              {/* Order ref preview */}
+              {assigningOrder && (
+                <div className="group relative flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50/80 p-4 transition-colors hover:border-blue-100 hover:bg-blue-50/50 sm:flex-row sm:items-center sm:gap-4 dark:border-slate-800/80 dark:bg-slate-900/50 dark:hover:border-blue-900/30 dark:hover:bg-blue-900/20">
+                  <div className="flex size-14 shrink-0 items-center justify-center rounded-[1rem] bg-white shadow-sm ring-1 ring-slate-200/50 transition-transform group-hover:scale-105 dark:bg-slate-800 dark:ring-slate-700">
+                    <Package className="size-6 text-slate-700 dark:text-slate-300" />
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <p className="mb-0.5 text-[11px] font-bold tracking-widest text-slate-400 uppercase">
+                      Order Overview
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-mono text-lg font-bold text-slate-900 dark:text-white">
+                        #{assigningOrder.id.substring(0, 8).toUpperCase()}
+                      </p>
+                      <span className="rounded bg-slate-200/50 px-1.5 py-0.5 text-xs font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        {assigningOrder.price || "0.00 USD"}
+                      </span>
+                    </div>
+                    <p className="mt-1 truncate text-xs font-medium text-slate-500">
+                      From{" "}
+                      <span className="font-bold text-slate-700 dark:text-slate-300">
+                        {assigningOrder.userName || "N/A"}
+                      </span>{" "}
+                      to{" "}
+                      <span className="font-bold text-slate-700 dark:text-slate-300">
+                        {assigningOrder.recieverName || "N/A"}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Order ref preview */}
-            {assigningOrderId && (
-              <div className="mb-6 flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-800/30">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                  <Package className="size-5" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                    Order Reference
-                  </p>
-                  <p className="font-mono text-sm font-bold text-slate-900 dark:text-white">
-                    #{assigningOrderId.substring(0, 8).toUpperCase()}
-                  </p>
-                </div>
-                <div className="ml-auto flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-bold text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
-                  <Calendar className="size-3" />
-                  Pending
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
               <Button
                 variant="outline"
-                className="h-11 flex-1 rounded-xl border-slate-200 font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                className="h-14 flex-1 rounded-[1.25rem] border-2 border-slate-200 text-base font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100"
                 onClick={() => setIsAssignDialogOpen(false)}
               >
                 Cancel
               </Button>
               <Button
-                className="h-11 flex-1 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:from-emerald-700 hover:to-teal-700"
-                onClick={() => assigningOrderId && handleAssign(assigningOrderId)}
+                className="h-14 flex-[1.5] rounded-[1.25rem] bg-gradient-to-r from-emerald-500 to-teal-600 text-base font-bold text-white shadow-lg shadow-emerald-500/25 transition-all hover:from-emerald-600 hover:to-teal-700 hover:shadow-emerald-600/30"
+                onClick={() => assigningOrder && handleAssign(assigningOrder.id)}
                 disabled={isAssigning}
               >
                 {isAssigning ? (
                   <>
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                    Assigning…
+                    <Loader2 className="mr-2 size-5 animate-spin" />
+                    Assigning Order...
                   </>
                 ) : (
                   <>
-                    <UserCheck className="mr-2 size-4" />
-                    Confirm Assign
+                    <UserCheck className="mr-2 size-5" />
+                    Confirm Assignment
                   </>
                 )}
               </Button>

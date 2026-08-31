@@ -1,6 +1,6 @@
+import { OrderSectionKey } from "@/constants/order-management";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
-import { OrderSectionKey } from "@/constants/order-management";
 import { useState } from "react";
 import { useGetOrders } from "./use-get-orders";
 
@@ -57,6 +57,8 @@ export function useOrderManagement(section?: OrderSectionKey) {
     status = "5"; // 5 represents partial/accepted
   } else if (section === "completed-orders") {
     status = "6"; // 6 represents completed
+  } else if (section === "fulfilment") {
+    status = "2,3,4"; // 2 = Preparing, 3/4 = Out for Delivery / Picked
   } else if (section === "history") {
     // History shows all orders across statuses
   }

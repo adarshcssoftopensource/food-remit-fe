@@ -1,6 +1,7 @@
 import { AUTH_TOKEN_COOKIE } from "@/config/cookie";
 import { ROUTES } from "@/config/routes";
 import { NextRequest, NextResponse } from "next/server";
+import { jwtDecode } from "jwt-decode";
 
 const PUBLIC_PATHS = [
   ROUTES.AUTH.LOGIN,
@@ -48,7 +49,22 @@ export default function middleware(request: NextRequest) {
 
   // Auth screens are guests-only. `/` stays public as the vendor landing page.
   if (isPublicPath(pathname) && authenticated) {
-    const response = NextResponse.redirect(new URL(ROUTES.ADMIN.DASHBOARD, request.url));
+    let target: string = ROUTES.ADMIN.DASHBOARD;
+
+    // Decode token to check role for specific redirects (like employees)
+    const token = request.cookies.get(AUTH_TOKEN_COOKIE)?.value;
+    if (token) {
+      try {
+        const payload = jwtDecode<{ roleCode?: string; role?: string }>(token);
+        if (payload?.roleCode === "EMPLOYEE" || payload?.role === "employee") {
+          target = ROUTES.ADMIN.MY_ORDERS;
+        }
+      } catch (e) {
+        // Fallback to dashboard if decoding fails
+      }
+    }
+
+    const response = NextResponse.redirect(new URL(target, request.url));
     response.headers.set("Cache-Control", "no-store, max-age=0");
     return response;
   }

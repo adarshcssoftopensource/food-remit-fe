@@ -12,7 +12,12 @@ export type OrderRow = {
 };
 
 export type OrderSectionKey =
-  "sent-orders" | "requested-orders" | "partial-orders" | "completed-orders" | "history";
+  | "sent-orders"
+  | "requested-orders"
+  | "partial-orders"
+  | "completed-orders"
+  | "fulfilment"
+  | "history";
 
 export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; description: string }> = {
   "sent-orders": {
@@ -31,6 +36,10 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
     title: "Completed Orders",
     description: "View successfully completed orders.",
   },
+  fulfilment: {
+    title: "Fulfilment",
+    description: "Orders that have been paid and are being prepared or picked up.",
+  },
   history: {
     title: "History",
     description: "Browse historical order activity.",
@@ -42,5 +51,6 @@ export const ORDER_TABS: { label: string; value: OrderSectionKey }[] = [
   { label: "Requested Orders", value: "requested-orders" },
   { label: "Partial Orders", value: "partial-orders" },
   { label: "Completed Orders", value: "completed-orders" },
+  { label: "Fulfilment", value: "fulfilment" },
   { label: "History", value: "history" },
 ];

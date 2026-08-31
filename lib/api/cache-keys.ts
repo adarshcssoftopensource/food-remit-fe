@@ -55,6 +55,8 @@ export const API_CACHE_KEYS = {
   CATEGORY_BY_ID: (id: string) => ["category", id],
   ITEMS: ["items"],
   ITEM_BY_ID: (id: string) => ["item", id],
+  PRODUCT_BOXES: ["product-boxes"],
+  PRODUCT_BOX_BY_ID: (id: string) => ["product-box", id],
 
   // Dashboard
   DASHBOARD: ["dashboard"],

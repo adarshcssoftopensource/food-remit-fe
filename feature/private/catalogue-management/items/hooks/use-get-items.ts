@@ -1,4 +1,5 @@
 import { useApiQuery } from "@/hooks/useApi";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-management.endpoints";
 import { GetItemsResponse, UseGetItemsArgs } from "../types/item.types";
 
@@ -20,5 +21,8 @@ export function useGetItems(args: UseGetItemsArgs) {
   const queryString = queryParams.toString();
   const url = `${CATALOGUE_MANAGEMENT_ENDPOINTS.GET_ITEMS}${queryString ? `?${queryString}` : ""}`;
 
-  return useApiQuery<GetItemsResponse>(["items", ...Object.values(args).map(String)], url);
+  return useApiQuery<GetItemsResponse>(
+    [...API_CACHE_KEYS.ITEMS, ...Object.values(args).map(String)],
+    url,
+  );
 }
