@@ -64,4 +64,12 @@ export const API_CACHE_KEYS = {
   // Orders
   ORDERS: ["orders"],
   ORDER_BY_ID: (id: string) => ["order", id],
+
+  // Tickets
+  TICKETS: ["tickets"],
+  TICKET_BY_ID: (id: string) => ["ticket", id],
+
+  // Feedback
+  FEEDBACK: ["feedback"],
+  FEEDBACK_BY_ID: (id: string) => ["feedback", id],
 };

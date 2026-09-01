@@ -155,16 +155,6 @@ export const navigationItems = [
     title: "Ticket Management",
     url: ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT,
     icon: Ticket,
-    items: [
-      {
-        title: "Active Requests",
-        url: ROUTES.ADMIN.TICKET_MANAGEMENT.ACTIVE_REQUESTS,
-      },
-      {
-        title: "Closed Requests",
-        url: ROUTES.ADMIN.TICKET_MANAGEMENT.CLOSED_REQUESTS,
-      },
-    ],
   },
   {
     title: "Report Management",
