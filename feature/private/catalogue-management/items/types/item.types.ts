@@ -93,6 +93,7 @@ export interface ItemData {
   productId?: string;
   barcodeValue?: string;
   barcodeImage?: string | null;
+  qrCodeImage?: string | null;
 
   createdAt: string;
   updatedAt: string;
