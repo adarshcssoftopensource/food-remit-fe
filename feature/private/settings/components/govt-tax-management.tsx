@@ -61,6 +61,11 @@ export function GovtTaxManagement() {
   const numericTax = parseFloat(liveTax);
   const isValidTax = !isNaN(numericTax) && numericTax >= 0 && numericTax <= 100;
 
+  const rawDisplayValue = isValidTax ? liveTax || currentTax : currentTax;
+  const formattedDisplayTax = rawDisplayValue
+    ? (Math.round(parseFloat(rawDisplayValue) * 100) / 100).toString()
+    : "0";
+
   const onSubmit: SubmitHandler<GovtTaxFormValues> = async (data) => {
     if (isReadOnly) return;
     try {
@@ -92,7 +97,7 @@ export function GovtTaxManagement() {
           </div>
           <div className="mt-2 flex items-end gap-1">
             <p className="text-3xl font-black text-slate-800 dark:text-slate-100">
-              {isLoading ? "..." : isValidTax ? liveTax || currentTax : currentTax}
+              {isLoading ? "..." : formattedDisplayTax}
             </p>
             <p className="mb-1 text-lg font-bold text-amber-600 dark:text-amber-400">%</p>
           </div>
@@ -186,6 +191,9 @@ export function GovtTaxManagement() {
                         const parts = val.split(".");
                         if (parts.length > 2) {
                           val = parts[0] + "." + parts.slice(1).join("");
+                        }
+                        if (parts[1] && parts[1].length > 2) {
+                          val = parts[0] + "." + parts[1].slice(0, 2);
                         }
                         if (parseFloat(val) > 100) {
                           val = "100";

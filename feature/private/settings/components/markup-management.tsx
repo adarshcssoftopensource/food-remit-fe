@@ -55,6 +55,11 @@ export function MarkupManagement() {
   const numericValue = parseFloat(liveValue);
   const isValid = !isNaN(numericValue) && numericValue >= 0 && numericValue <= 100;
 
+  const rawDisplayValue = isValid ? liveValue || currentMarkup : currentMarkup;
+  const formattedDisplayMarkup = rawDisplayValue
+    ? (Math.round(parseFloat(rawDisplayValue) * 100) / 100).toString()
+    : "0";
+
   const onSubmit: SubmitHandler<MarkupFormValues> = async (data) => {
     if (isStoreManager) return;
     try {
@@ -84,7 +89,7 @@ export function MarkupManagement() {
           </p>
           <div className="mt-1 flex items-end gap-1">
             <p className="text-3xl font-black text-slate-700">
-              {isLoading ? "..." : isValid ? liveValue || currentMarkup : currentMarkup}
+              {isLoading ? "..." : formattedDisplayMarkup}
             </p>
             <p className="mb-1 text-lg font-bold text-slate-400">%</p>
           </div>
@@ -171,6 +176,9 @@ export function MarkupManagement() {
                         const parts = val.split(".");
                         if (parts.length > 2) {
                           val = parts[0] + "." + parts.slice(1).join("");
+                        }
+                        if (parts[1] && parts[1].length > 2) {
+                          val = parts[0] + "." + parts[1].slice(0, 2);
                         }
                         if (parseFloat(val) > 100) {
                           val = "100";
