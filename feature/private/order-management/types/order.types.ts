@@ -2,6 +2,7 @@ export interface OrderDataItem {
   itemId?: string;
   itemName?: string;
   productBarcode?: string;
+  upcCode?: string;
   productPicture?: string;
   price?: string | number;
   quantity?: number;

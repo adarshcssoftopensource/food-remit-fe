@@ -10,9 +10,15 @@ interface ImageLightboxProps {
   src: string | null;
   onClose: () => void;
   alt?: string;
+  maxWidthClass?: string;
 }
 
-export function ImageLightbox({ src, onClose, alt = "Full size" }: ImageLightboxProps) {
+export function ImageLightbox({
+  src,
+  onClose,
+  alt = "Full size",
+  maxWidthClass,
+}: ImageLightboxProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -35,40 +41,45 @@ export function ImageLightbox({ src, onClose, alt = "Full size" }: ImageLightbox
     return null;
   }
 
+  const isQrCode =
+    src.includes("qrserver.com") ||
+    src.toLowerCase().includes("qr") ||
+    src.startsWith("data:image");
+
+  const effectiveMaxWidth =
+    maxWidthClass || (isQrCode ? "max-w-[260px] sm:max-w-[300px]" : "max-w-[45vw]");
+
   return createPortal(
     <button
       type="button"
       aria-label="Close lightbox"
-      className="fixed inset-0 flex items-center justify-center backdrop-blur-md"
-      style={{ zIndex: 99999, background: "rgba(15,15,20,0.45)" }}
+      className="fixed inset-0 flex items-center justify-center p-4 backdrop-blur-md"
+      style={{ zIndex: 99999, background: "rgba(15,15,20,0.55)" }}
       onClick={onClose}
     >
       <div
-        className="relative max-h-[95vh] max-w-[95vw] overflow-hidden rounded-3xl shadow-2xl"
+        className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-3xl bg-white/95 p-3 shadow-2xl backdrop-blur-xl dark:bg-slate-900/95"
         style={{
-          background: "rgba(255,255,255,0.08)",
-          border: "1px solid rgba(255,255,255,0.15)",
+          border: "1px solid rgba(255,255,255,0.2)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <Button
           onClick={onClose}
           variant={"ghost"}
-          className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full text-white backdrop-blur-md transition-colors transition-transform hover:scale-110"
-          style={{
-            background: "rgba(0,0,0,0.35)",
-            border: "1px solid rgba(255,255,255,0.2)",
-          }}
+          className="absolute top-2.5 right-2.5 z-10 flex h-7 w-7 items-center justify-center rounded-full text-slate-600 backdrop-blur-md transition-transform hover:scale-110 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-800"
         >
           <X className="h-4 w-4" />
         </Button>
-        <Image
-          src={src}
-          alt={alt}
-          width={1200}
-          height={1200}
-          className="max-h-[93vh] max-w-[45vw] object-contain"
-        />
+        <div className="flex items-center justify-center p-2">
+          <Image
+            src={src}
+            alt={alt}
+            width={600}
+            height={600}
+            className={`max-h-[80vh] w-full rounded-2xl object-contain ${effectiveMaxWidth}`}
+          />
+        </div>
       </div>
     </button>,
     document.body,

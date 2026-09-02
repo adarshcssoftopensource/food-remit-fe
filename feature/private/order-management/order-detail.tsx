@@ -8,7 +8,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/date";
 import {
   ArrowLeft,
-  Barcode,
   BarChart3,
   Calendar,
   CreditCard,
@@ -17,6 +16,7 @@ import {
   MapPin,
   Package,
   Phone,
+  QrCode,
   Receipt,
   Repeat,
   ShieldCheck,
@@ -499,7 +499,7 @@ export function OrderDetailPage({ id }: { id: string }) {
                   <tr>
                     <th className="px-6 py-4">Product Picture</th>
                     <th className="px-6 py-4">Product Name</th>
-                    <th className="px-6 py-4">Product Barcode</th>
+                    <th className="px-6 py-4">Product QR Code</th>
                     <th className="px-6 py-4">Unit Price</th>
                     <th className="px-6 py-4">Quantity</th>
                     <th className="px-6 py-4 text-right">Total Price</th>
@@ -563,10 +563,47 @@ export function OrderDetailPage({ id }: { id: string }) {
                           </p>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-1.5 font-mono text-sm font-bold tracking-wider text-amber-400 shadow-xs dark:border-slate-800 dark:bg-slate-950">
-                            <Barcode className="size-4 shrink-0 text-amber-400" />
-                            <span>{item.productBarcode || "N/A"}</span>
-                          </div>
+                          {(() => {
+                            const qrCodeText =
+                              item.productBarcode || item.upcCode || item.itemId || "N/A";
+                            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+                              qrCodeText,
+                            )}`;
+
+                            return (
+                              <div className="flex items-center gap-3">
+                                <div className="group relative inline-block">
+                                  <div className="flex size-12 items-center justify-center rounded-xl border border-slate-200 bg-white p-1 shadow-xs transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-950">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                      src={qrImageUrl}
+                                      alt={`QR Code ${qrCodeText}`}
+                                      className="size-10 rounded-md object-contain"
+                                    />
+                                  </div>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setLightboxImage(qrImageUrl)}
+                                    className="absolute -top-1 -right-1 h-6 w-6 rounded-full border border-white bg-slate-900/80 p-0 text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 hover:bg-slate-900"
+                                    title="Zoom QR Code"
+                                  >
+                                    <Expand className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <div className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
+                                    <QrCode className="size-3.5 shrink-0 text-emerald-500" />
+                                    <span>{qrCodeText}</span>
+                                  </div>
+                                  <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                                    Product Reference QR
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </td>
                         <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
                           {unitStr} {priceNum.toFixed(2)}
