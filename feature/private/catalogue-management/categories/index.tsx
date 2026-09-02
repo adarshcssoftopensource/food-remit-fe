@@ -27,9 +27,16 @@ import { useCallback, useMemo, useState } from "react";
 import { getCategoryColumns } from "./columns/category-columns";
 import { CategoryFormDialog } from "./components/category-form-dialog";
 import { useGetCategories, type UseGetCategoriesArgs } from "./hooks/use-get-categories";
+import { useProfile } from "@/components/providers/profile-provider";
 import type { CategoryData } from "./types/category.types";
 
 export function CategoriesManagement() {
+  const { profile } = useProfile();
+  const isStoreManager =
+    profile?.role === "store_manager" ||
+    profile?.roleCode === "STORE_MANAGER" ||
+    profile?.role === "store_admin" ||
+    profile?.roleCode === "STORE_ADMIN";
   const {
     fromDate,
     setFromDate,
@@ -238,19 +245,21 @@ export function CategoriesManagement() {
         onCancelFilters={cancelAllFilters}
         activeFilterCount={activeFilterCount}
       >
-        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Department
-          </Label>
-          <DepartmentSelect
-            countryId={country !== "all" ? country : undefined}
-            value={department === "all" ? "" : department}
-            onValueChange={(val) => setDepartment(val || "all")}
-            placeholder="All Departments"
-            disabled={country === "all"}
-            className="h-10 rounded-xl px-3"
-          />
-        </div>
+        {!isStoreManager && (
+          <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
+            <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              Department
+            </Label>
+            <DepartmentSelect
+              countryId={country !== "all" ? country : undefined}
+              value={department === "all" ? "" : department}
+              onValueChange={(val) => setDepartment(val || "all")}
+              placeholder="All Departments"
+              disabled={country === "all"}
+              className="h-10 rounded-xl px-3"
+            />
+          </div>
+        )}
         <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
           <DateRangeFilter
             fromDate={fromDate}

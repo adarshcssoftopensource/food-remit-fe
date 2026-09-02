@@ -73,11 +73,14 @@ export interface ItemData {
   countryId: string;
   departmentId: string;
   categoryId: string;
+  storeId?: string | null;
+  storeName?: string | null;
   placements?: ItemPlacementData[];
 
   country?: { id: string; name: string };
   department?: { id: string; departmentName: string };
   category?: { id: string; categoryName: string };
+  store?: { id: string; storeName: string } | null;
 
   createdBy?: string | null;
   isGlobal?: boolean;

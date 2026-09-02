@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from "react";
 
-import { Building2, Globe2, Loader2, MapPin, Search, X } from "lucide-react";
+import { Building2, Globe2, Loader2, MapPin, Search, Store, X } from "lucide-react";
 
 import { CountrySelect } from "@/components/common/country-select";
 import { ImageUpload } from "@/components/common/image-upload";
+import { StoreSelect } from "@/components/common/store-select";
 import { useProfile } from "@/components/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -165,6 +166,7 @@ export function DepartmentFormDialog({
                         onValueChange={(value) => {
                           field.onChange(value);
                           form.setValue("cityIds", []);
+                          form.setValue("storeId", "");
                         }}
                         valueKey="id"
                         placeholder="Select country"
@@ -321,6 +323,33 @@ export function DepartmentFormDialog({
                     )}
                   />
                 )}
+
+                <FormField
+                  control={form.control}
+                  name="storeId"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                        Store{" "}
+                        <span className="ml-1 font-medium text-slate-400 normal-case">
+                          (optional — select store for store-specific department)
+                        </span>
+                      </FormLabel>
+
+                      <StoreSelect
+                        value={field.value || ""}
+                        onValueChange={(val) => field.onChange(val)}
+                        countryId={countryId}
+                        cityId={cityIds.length > 0 ? cityIds[0] : undefined}
+                        includeAll={true}
+                        allLabel="All Stores (Location Wide)"
+                        placeholder="Select store..."
+                      />
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}

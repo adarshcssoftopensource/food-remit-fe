@@ -49,7 +49,11 @@ export function getItemColumns(
     {
       id: "storeName",
       header: "Store Name",
-      cell: () => <span className="text-sm font-medium text-slate-700">Main Store</span>,
+      cell: ({ row }) => (
+        <span className="text-sm font-medium text-slate-700">
+          {row.original.storeName || row.original.store?.storeName || "-"}
+        </span>
+      ),
     },
     {
       id: "departmentName",
