@@ -1,11 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, Check, Info, Landmark, Percent, Receipt, RotateCcw, Save } from "lucide-react";
+import { Building2, Info, Landmark, Lock, Percent, Receipt, RotateCcw, Save } from "lucide-react";
 import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,6 +28,10 @@ const govtTaxSchema = z.object({
 type GovtTaxFormValues = z.infer<typeof govtTaxSchema>;
 
 export function GovtTaxManagement() {
+  const { isSuperAdmin } = useProfile();
+  // Super Admin cannot edit Govt Tax (Read-Only for Super Admin)
+  const isReadOnly = isSuperAdmin;
+
   const { data: markupData, isLoading } = useGetMarkup();
   const { mutateAsync: updateMarkup, isPending } = useUpdateMarkup();
 
@@ -57,6 +62,7 @@ export function GovtTaxManagement() {
   const isValidTax = !isNaN(numericTax) && numericTax >= 0 && numericTax <= 100;
 
   const onSubmit: SubmitHandler<GovtTaxFormValues> = async (data) => {
+    if (isReadOnly) return;
     try {
       const res = await updateMarkup({
         tax: data.tax,
@@ -123,18 +129,26 @@ export function GovtTaxManagement() {
 
       {/* Main Form Card */}
       <Card className="overflow-hidden rounded-2xl border border-slate-200/70 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-        <div className="flex items-center gap-3.5 border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800/80 dark:bg-slate-900/60">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600 shadow-xs dark:bg-amber-950/60 dark:text-amber-400">
-            <Landmark className="h-5 w-5" />
+        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800/80 dark:bg-slate-900/60">
+          <div className="flex items-center gap-3.5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600 shadow-xs dark:bg-amber-950/60 dark:text-amber-400">
+              <Landmark className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                Govt Tax Added Here
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                The tax added here will directly impact the items of the store
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
-              Govt Tax Added Here
-            </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              The tax added here will directly impact the items of the store
-            </p>
-          </div>
+          {isReadOnly && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+              <Lock className="h-3.5 w-3.5" />
+              Read-Only
+            </span>
+          )}
         </div>
 
         <CardContent className="p-6 sm:p-7">
@@ -151,7 +165,6 @@ export function GovtTaxManagement() {
                     Store Tax Percentage <span className="text-red-500">*</span>
                   </FieldLabel>
                   <div className="relative">
-                    <Percent className="pointer-events-none absolute top-1/2 left-3.5 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <Input
                       {...field}
                       id="storeTax"
@@ -160,10 +173,28 @@ export function GovtTaxManagement() {
                       min="0"
                       max="100"
                       placeholder="6.00"
+                      disabled={isReadOnly}
+                      readOnly={isReadOnly}
                       aria-invalid={!!errors.tax}
-                      className="h-11 [appearance:textfield] rounded-xl border-slate-200 bg-white pr-14 pl-10 text-base font-semibold text-slate-800 shadow-xs focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      onKeyDown={(e) => {
+                        if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
+                          e.preventDefault();
+                        }
+                      }}
+                      onChange={(e) => {
+                        let val = e.target.value.replace(/[^0-9.]/g, "");
+                        const parts = val.split(".");
+                        if (parts.length > 2) {
+                          val = parts[0] + "." + parts.slice(1).join("");
+                        }
+                        if (parseFloat(val) > 100) {
+                          val = "100";
+                        }
+                        field.onChange(val);
+                      }}
+                      className="h-11 [appearance:textfield] rounded-xl border-slate-200 bg-white pr-14 pl-4 text-base font-semibold text-slate-800 shadow-xs focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-80 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:disabled:bg-slate-900 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
-                    <div className="pointer-events-none absolute top-1/2 right-2.5 z-10 -translate-y-1/2 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                    <div className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-extrabold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                       %
                     </div>
                   </div>
@@ -177,36 +208,37 @@ export function GovtTaxManagement() {
                 </div>
               )}
             />
-
-            <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-3 dark:border-slate-800">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => reset({ tax: currentTax })}
-                className="h-10 gap-2 rounded-xl px-5 font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                disabled={!isDirty || isPending}
-              >
-                <RotateCcw className="h-4 w-4" />
-                Reset
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending || !isDirty}
-                className="h-10 min-w-[140px] gap-2 rounded-xl bg-amber-500 font-semibold text-white shadow-md shadow-amber-500/20 transition-all hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700"
-              >
-                {isPending ? (
-                  <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Saving...
-                  </span>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    Save Settings
-                  </>
-                )}
-              </Button>
-            </div>
+            {!isReadOnly && (
+              <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-3 dark:border-slate-800">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => reset({ tax: currentTax })}
+                  className="h-10 gap-2 rounded-xl px-5 font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  disabled={!isDirty || isPending || isReadOnly}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending || !isDirty || isReadOnly}
+                  className="h-10 min-w-[140px] gap-2 rounded-xl bg-amber-500 font-semibold text-white shadow-md shadow-amber-500/20 transition-all hover:bg-amber-600 disabled:opacity-60 dark:bg-amber-600 dark:hover:bg-amber-700"
+                >
+                  {isPending ? (
+                    <span className="flex items-center gap-2">
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      Saving...
+                    </span>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4" />
+                      Save Settings
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>

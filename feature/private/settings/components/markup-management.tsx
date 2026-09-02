@@ -161,11 +161,27 @@ export function MarkupManagement() {
                       disabled={isStoreManager}
                       readOnly={isStoreManager}
                       aria-invalid={!!errors.markupPercentage}
-                      className="h-11 [appearance:textfield] pr-14 pl-9 disabled:bg-slate-100 disabled:opacity-80 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      onKeyDown={(e) => {
+                        if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
+                          e.preventDefault();
+                        }
+                      }}
+                      onChange={(e) => {
+                        let val = e.target.value.replace(/[^0-9.]/g, "");
+                        const parts = val.split(".");
+                        if (parts.length > 2) {
+                          val = parts[0] + "." + parts.slice(1).join("");
+                        }
+                        if (parseFloat(val) > 100) {
+                          val = "100";
+                        }
+                        field.onChange(val);
+                      }}
+                      className="h-11 pr-12 pl-9 disabled:bg-slate-100 disabled:opacity-80"
                     />
-                    <div className="pointer-events-none absolute top-1/2 right-2.5 z-10 -translate-y-1/2 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 text-sm font-semibold text-slate-400">
                       %
-                    </div>
+                    </span>
                   </div>
                   {errors.markupPercentage && (
                     <p className="text-xs font-medium text-red-500">
