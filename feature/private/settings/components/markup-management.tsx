@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Info, Percent, TrendingUp } from "lucide-react";
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,14 @@ import { useGetMarkup } from "../hooks/use-get-markup";
 import { useUpdateMarkup } from "../hooks/use-update-markup";
 import { MarkupFormValues, markupSchema } from "../schema/markup.schema";
 
+import { Switch } from "@/components/ui/switch";
+
 export function MarkupManagement() {
   const { data: markupData, isLoading } = useGetMarkup();
   const { mutateAsync: updateMarkup, isPending } = useUpdateMarkup();
 
   const currentMarkup = markupData?.data?.markupPercentage || "10";
+  const currentIsFeeRefundable = (markupData?.data as any)?.isFeeRefundable ?? true;
 
   const {
     control,
@@ -29,14 +32,17 @@ export function MarkupManagement() {
     watch,
     formState: { errors, isDirty },
   } = useForm<MarkupFormValues>({
-    resolver: zodResolver(markupSchema),
-    defaultValues: { markupPercentage: currentMarkup },
+    resolver: zodResolver(markupSchema) as any,
+    defaultValues: { markupPercentage: currentMarkup, isFeeRefundable: currentIsFeeRefundable },
     mode: "onChange",
   });
 
   useEffect(() => {
-    if (markupData?.data?.markupPercentage) {
-      reset({ markupPercentage: markupData.data.markupPercentage });
+    if (markupData?.data) {
+      reset({
+        markupPercentage: markupData.data.markupPercentage || "10",
+        isFeeRefundable: (markupData.data as any).isFeeRefundable ?? true,
+      });
     }
   }, [markupData, reset]);
 
@@ -44,13 +50,19 @@ export function MarkupManagement() {
   const numericValue = parseFloat(liveValue);
   const isValid = !isNaN(numericValue) && numericValue >= 0 && numericValue <= 100;
 
-  const onSubmit = async (data: MarkupFormValues) => {
+  const onSubmit: SubmitHandler<MarkupFormValues> = async (data) => {
     try {
-      const res = await updateMarkup({ markupPercentage: data.markupPercentage });
-      reset({ markupPercentage: data.markupPercentage });
+      const res = await updateMarkup({
+        markupPercentage: data.markupPercentage,
+        isFeeRefundable: data.isFeeRefundable,
+      });
+      reset({
+        markupPercentage: data.markupPercentage,
+        isFeeRefundable: data.isFeeRefundable,
+      });
       successToast({
-        title: "Markup Updated",
-        description: res?.message || `Commission markup set to ${data.markupPercentage}%.`,
+        title: "Settings Updated",
+        description: res?.message || `Markup & Refund Policy updated successfully.`,
       });
     } catch (error) {
       console.error(error);
@@ -71,6 +83,24 @@ export function MarkupManagement() {
             <p className="mb-1 text-lg font-bold text-slate-400">%</p>
           </div>
         </div>
+        <div className="rounded-xl border border-slate-100 bg-linear-to-br from-slate-50 to-white p-4">
+          <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+            Cancellation Policy
+          </p>
+          <div className="mt-1 flex items-center gap-2">
+            <span
+              className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-bold ${
+                watch("isFeeRefundable")
+                  ? "bg-emerald-100 text-emerald-800"
+                  : "bg-amber-100 text-amber-800"
+              }`}
+            >
+              {watch("isFeeRefundable")
+                ? "Option A: Fee Refundable"
+                : "Option B: Fee Non-Refundable"}
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3">
@@ -88,9 +118,9 @@ export function MarkupManagement() {
             <TrendingUp className="h-4 w-4 text-rose-600" />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-800">Set Tax (Markup)</p>
+            <p className="text-sm font-bold text-slate-800">Set Tax (Markup) & Refund Policy</p>
             <p className="text-xs text-slate-500">
-              Add-on tax % on every item — base price stays original
+              Add-on tax % on every item & cancellation fee refundability toggle
             </p>
           </div>
         </div>
@@ -131,11 +161,38 @@ export function MarkupManagement() {
               )}
             />
 
+            <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4">
+              <Controller
+                name="isFeeRefundable"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="space-y-0.5">
+                      <FieldLabel className="text-sm font-semibold text-slate-800">
+                        Processing Fee Refundable (Cancellation Policy)
+                      </FieldLabel>
+                      <p className="text-xs text-slate-500">
+                        {field.value
+                          ? "Option A (Default): Processing fee is 100% refunded to customer on order cancellation."
+                          : "Option B (Non-Refundable): Food Remit retains the processing fee, refunding item & tax total to customer card via Stripe."}
+                      </p>
+                    </div>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </div>
+                )}
+              />
+            </div>
+
             <div className="flex justify-end gap-3 pt-2">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => reset({ markupPercentage: currentMarkup })}
+                onClick={() =>
+                  reset({
+                    markupPercentage: currentMarkup,
+                    isFeeRefundable: currentIsFeeRefundable,
+                  })
+                }
                 className="px-6"
                 disabled={!isDirty}
               >
@@ -147,7 +204,7 @@ export function MarkupManagement() {
                 className="shadow-primary/20 gap-2 px-6 shadow-md"
               >
                 <TrendingUp className="h-4 w-4" />
-                Save Markup
+                Save Settings
               </Button>
             </div>
           </form>

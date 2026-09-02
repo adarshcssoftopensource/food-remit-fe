@@ -207,15 +207,33 @@ export function OrderDetailPage({ id }: { id: string }) {
             <CreditCard className="size-4 text-blue-500" />
           </div>
           <div className="flex flex-col gap-3 p-5">
+            {order.customerPayment?.vendorBaseSubtotal && (
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500">Vendor Base Subtotal</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {order.customerPayment.vendorBaseSubtotal}
+                </span>
+              </div>
+            )}
+            {order.customerPayment?.itemMarkupAmount && (
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500">
+                  Markup ({order.customerPayment?.itemMarkupPercent || "0"}%)
+                </span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {order.customerPayment.itemMarkupAmount}
+                </span>
+              </div>
+            )}
             <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Merchandise Subtotal</span>
+              <span className="text-slate-500">Customer Merchandise Subtotal</span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.customerPayment?.merchandiseSubtotal || "0.00"}
               </span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">
-                Store Tax ({order.customerPayment?.storeTaxPercent || "0"}%)
+                Govt Store Tax ({order.customerPayment?.storeTaxPercent || "0"}%)
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.customerPayment?.storeTax || "0.00"}
@@ -269,7 +287,7 @@ export function OrderDetailPage({ id }: { id: string }) {
           <div className="flex flex-col gap-3 p-5">
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">
-                Markup ({order.foodRemitEarnings?.markupPercent || "0"}%)
+                Item Markup ({order.foodRemitEarnings?.markupPercent || "0"}%)
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.foodRemitEarnings?.markupAmount || "0.00"}
@@ -277,7 +295,7 @@ export function OrderDetailPage({ id }: { id: string }) {
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">
-                Commission ({order.foodRemitEarnings?.commissionPercent || "0"}%)
+                Vendor Commission ({order.foodRemitEarnings?.commissionPercent || "0"}%)
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.foodRemitEarnings?.commissionAmount || "0.00"}
@@ -325,26 +343,23 @@ export function OrderDetailPage({ id }: { id: string }) {
             </div>
             <div className="flex justify-between text-xs text-red-500">
               <span>
-                {" "}
                 Food Remit Commission ({order.vendorSettlement?.commissionPercent || "0"}%)
               </span>
               <span className="font-semibold">
                 {order.vendorSettlement?.commissionAmount || "0.00"}
               </span>
             </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">Vendor Merchandise Proceeds</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.vendorSettlement?.vendorProceeds || "0.00"}
+              </span>
+            </div>
             {order.vendorSettlement?.govtTax && (
               <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Govt Tax</span>
+                <span className="text-slate-500">Govt Store Tax</span>
                 <span className="font-semibold text-slate-900 dark:text-white">
                   {order.vendorSettlement.govtTax}
-                </span>
-              </div>
-            )}
-            {order.vendorSettlement?.creditCardFee && (
-              <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Credit Card Fee</span>
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {order.vendorSettlement.creditCardFee}
                 </span>
               </div>
             )}
@@ -353,10 +368,12 @@ export function OrderDetailPage({ id }: { id: string }) {
 
             <div className="mt-2">
               <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                Vendor Merchandise Payable
+                Total Vendor Settlement
               </p>
               <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
-                {order.vendorSettlement?.vendorProceeds || "0.00"}
+                {order.vendorSettlement?.totalVendorSettlement ||
+                  order.vendorSettlement?.vendorProceeds ||
+                  "0.00"}
               </p>
             </div>
           </div>

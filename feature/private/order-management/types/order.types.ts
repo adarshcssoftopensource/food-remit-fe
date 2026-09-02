@@ -43,6 +43,9 @@ export interface OrderData {
   receiverAddress?: string;
   storeAddress?: string;
   customerPayment?: {
+    vendorBaseSubtotal?: string;
+    itemMarkupPercent?: string;
+    itemMarkupAmount?: string;
     merchandiseSubtotal: string;
     storeTaxPercent: string;
     storeTax: string;
@@ -66,5 +69,6 @@ export interface OrderData {
     govtTax?: string;
     creditCardFee?: string;
     vendorProceeds: string;
+    totalVendorSettlement?: string;
   };
 }
