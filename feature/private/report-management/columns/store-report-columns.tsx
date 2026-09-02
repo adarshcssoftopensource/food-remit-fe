@@ -21,7 +21,18 @@ export const storeReportColumns: ColumnDef<StoreReportRow>[] = [
       </span>
     ),
   },
-  { accessorKey: "storeName", header: "Store Name" },
+  {
+    accessorKey: "storeName",
+    header: "Store Name",
+    cell: ({ row }) => (
+      <TruncatedTextCell
+        text={row.original.storeName}
+        maxWords={3}
+        className="text-xs font-semibold text-slate-900 dark:text-white"
+      />
+    ),
+  },
+
   { accessorKey: "country", header: "Country" },
   { accessorKey: "state", header: "State/Province" },
   { accessorKey: "city", header: "City" },

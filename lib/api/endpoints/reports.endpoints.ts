@@ -10,4 +10,7 @@ export const REPORT_ENDPOINTS = {
     `${ADMIN}/reports/stores/${storeId}/items/${itemId}/transactions`,
   EXPORT_ITEM_TRANSACTIONS: (storeId: string, itemId: string) =>
     `${ADMIN}/reports/stores/${storeId}/items/${itemId}/transactions/export`,
+  GET_ORDER_REPORTS: `${ADMIN}/reports/orders`,
+  EXPORT_ORDER_REPORTS: `${ADMIN}/reports/orders/export`,
+  GET_ORDER_REPORT_DETAIL: (id: string) => `${ADMIN}/reports/orders/${id}`,
 } as const;

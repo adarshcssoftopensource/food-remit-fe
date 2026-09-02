@@ -102,6 +102,7 @@ export interface ItemData {
 export interface UseGetItemsArgs {
   search?: string;
   countryId?: string;
+  cityId?: string;
   departmentId?: string;
   categoryId?: string;
   status?: string;

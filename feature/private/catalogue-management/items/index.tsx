@@ -95,6 +95,7 @@ export function ItemsManagement() {
     limit,
     search: debouncedSearch,
     countryId: appliedCountry !== "all" ? appliedCountry : undefined,
+    cityId: appliedCity !== "all" ? appliedCity : undefined,
     departmentId: appliedDepartment !== "all" ? appliedDepartment : undefined,
     categoryId: appliedCategory !== "all" ? appliedCategory : undefined,
     status: applied.status !== "all" ? applied.status : undefined,
@@ -102,20 +103,7 @@ export function ItemsManagement() {
     toDate: applied.toDate ? new Date(applied.toDate).toISOString() : undefined,
   });
 
-  const filteredData = useMemo(() => {
-    const rawFilteredData = itemsResponse?.data || [];
-    return rawFilteredData.filter((item) => {
-      if (
-        appliedCity !== "all" &&
-        appliedCity !== "All" &&
-        (item as any).cityId &&
-        (item as any).cityId !== appliedCity
-      ) {
-        return false;
-      }
-      return true;
-    });
-  }, [itemsResponse?.data, appliedCity]);
+  const filteredData = useMemo(() => itemsResponse?.data || [], [itemsResponse?.data]);
 
   const pagination = itemsResponse?.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 };
 
@@ -312,7 +300,15 @@ export function ItemsManagement() {
               }
         }
         cityId={isStoreManager ? undefined : city}
-        onCityChange={isStoreManager ? undefined : setCity}
+        onCityChange={
+          isStoreManager
+            ? undefined
+            : (val) => {
+                setCity(val);
+                setDepartment("all");
+                setCategory("all");
+              }
+        }
         hasFilters={hasFilters}
         onClearFilters={clearFilters}
         onApplyFilters={applyAllFilters}

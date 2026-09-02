@@ -37,6 +37,7 @@ import { storeReportColumns } from "./columns/store-report-columns";
 import { ReportDateFilters } from "./components/report-date-filters";
 import { useReportDateFilters } from "./hooks/use-report-date-filters";
 import { useStoreReport } from "./hooks/use-store-report";
+import { OrderReportsPage } from "./components/order-reports-page";
 
 type ReportManagementPageProps = {
   section: ReportSectionKey;
@@ -305,6 +306,10 @@ function StoreReportsPage() {
 export function ReportManagementPage({ section }: ReportManagementPageProps) {
   if (section === "store-report") {
     return <StoreReportsPage />;
+  }
+
+  if (section === "orders-report") {
+    return <OrderReportsPage />;
   }
 
   return <EmptyReportsTable section={section} />;
