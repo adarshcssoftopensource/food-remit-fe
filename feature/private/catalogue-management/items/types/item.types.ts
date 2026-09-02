@@ -22,6 +22,8 @@ export interface ItemPricingData {
   taxPercent: number;
   taxAmount: number;
   taxLabel?: string;
+  markupPercent: number;
+  markupAmount: number;
   netPriceIncludingTax: number;
   discountPercent: number;
   discountAmount: number;

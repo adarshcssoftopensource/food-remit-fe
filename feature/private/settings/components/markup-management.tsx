@@ -16,9 +16,14 @@ import { useGetMarkup } from "../hooks/use-get-markup";
 import { useUpdateMarkup } from "../hooks/use-update-markup";
 import { MarkupFormValues, markupSchema } from "../schema/markup.schema";
 
+import { useProfile } from "@/components/providers/profile-provider";
 import { Switch } from "@/components/ui/switch";
 
 export function MarkupManagement() {
+  const { profile, isSuperAdmin } = useProfile();
+  const isStoreManager =
+    profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager" || !isSuperAdmin;
+
   const { data: markupData, isLoading } = useGetMarkup();
   const { mutateAsync: updateMarkup, isPending } = useUpdateMarkup();
 
@@ -51,6 +56,7 @@ export function MarkupManagement() {
   const isValid = !isNaN(numericValue) && numericValue >= 0 && numericValue <= 100;
 
   const onSubmit: SubmitHandler<MarkupFormValues> = async (data) => {
+    if (isStoreManager) return;
     try {
       const res = await updateMarkup({
         markupPercentage: data.markupPercentage,
@@ -113,16 +119,23 @@ export function MarkupManagement() {
       </div>
 
       <Card className="overflow-hidden rounded-2xl border border-slate-200/60 shadow-sm">
-        <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-100">
-            <TrendingUp className="h-4 w-4 text-rose-600" />
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-100">
+              <TrendingUp className="h-4 w-4 text-rose-600" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-800">Set Tax (Markup) & Refund Policy</p>
+              <p className="text-xs text-slate-500">
+                Add-on tax % on every item & cancellation fee refundability toggle
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-bold text-slate-800">Set Tax (Markup) & Refund Policy</p>
-            <p className="text-xs text-slate-500">
-              Add-on tax % on every item & cancellation fee refundability toggle
-            </p>
-          </div>
+          {isStoreManager && (
+            <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800">
+              Read-Only
+            </span>
+          )}
         </div>
 
         <CardContent className="p-6">
@@ -145,12 +158,14 @@ export function MarkupManagement() {
                       min="0"
                       max="100"
                       placeholder="e.g. 12.5"
+                      disabled={isStoreManager}
+                      readOnly={isStoreManager}
                       aria-invalid={!!errors.markupPercentage}
-                      className="h-11 pr-12 pl-9"
+                      className="h-11 [appearance:textfield] pr-14 pl-9 disabled:bg-slate-100 disabled:opacity-80 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
-                    <span className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 text-sm font-semibold text-slate-400">
+                    <div className="pointer-events-none absolute top-1/2 right-2.5 z-10 -translate-y-1/2 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                       %
-                    </span>
+                    </div>
                   </div>
                   {errors.markupPercentage && (
                     <p className="text-xs font-medium text-red-500">
@@ -177,36 +192,42 @@ export function MarkupManagement() {
                           : "Option B (Non-Refundable): Food Remit retains the processing fee, refunding item & tax total to customer card via Stripe."}
                       </p>
                     </div>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={isStoreManager}
+                    />
                   </div>
                 )}
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  reset({
-                    markupPercentage: currentMarkup,
-                    isFeeRefundable: currentIsFeeRefundable,
-                  })
-                }
-                className="px-6"
-                disabled={!isDirty}
-              >
-                Reset
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending || !isDirty}
-                className="shadow-primary/20 gap-2 px-6 shadow-md"
-              >
-                <TrendingUp className="h-4 w-4" />
-                Save Settings
-              </Button>
-            </div>
+            {!isStoreManager && (
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    reset({
+                      markupPercentage: currentMarkup,
+                      isFeeRefundable: currentIsFeeRefundable,
+                    })
+                  }
+                  className="px-6"
+                  disabled={!isDirty}
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending || !isDirty}
+                  className="shadow-primary/20 gap-2 px-6 shadow-md"
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  Save Settings
+                </Button>
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>

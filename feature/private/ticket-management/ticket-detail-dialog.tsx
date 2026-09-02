@@ -196,33 +196,9 @@ export function TicketDetailDialog({ ticketId, open, onOpenChange }: TicketDetai
               </div>
             </div>
 
-            {/* Scrollable Messages Area ONLY */}
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-6">
-              {/* Pinned Initial Complaint Card */}
-              {ticket.description && (
-                <div className="relative space-y-2 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 text-xs shadow-xs">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-amber-800 dark:text-amber-300">
-                      <AlertCircle className="size-4 text-amber-600 dark:text-amber-400" />
-                      <span>Initial Complaint Issue</span>
-                    </div>
-                    {ticket.addedOn && (
-                      <span className="flex items-center gap-1 text-[11px] font-medium text-amber-700/80 dark:text-amber-400/80">
-                        <Clock className="size-3" />
-                        {new Date(ticket.addedOn).toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                  <p className="pl-6 leading-relaxed font-normal whitespace-pre-wrap text-slate-800 dark:text-slate-200">
-                    {ticket.description}
-                  </p>
-                </div>
-              )}
-
-              {/* Chat Messages */}
               {ticket.chats.map((chat) => (
                 <div key={chat.id} className="space-y-3">
-                  {/* Customer Message */}
                   {chat.userMessage && (
                     <div className="flex items-start justify-start gap-3">
                       <div className="mt-1 flex size-8 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-slate-200 text-xs font-bold text-slate-700 shadow-xs dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200">

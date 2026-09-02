@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/common/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CitiesManagement } from "./components/cities-management";
 import { CountriesManagement } from "./components/countries-management";
+import { GovtTaxManagement } from "./components/govt-tax-management";
 import { MarkupManagement } from "./components/markup-management";
 import { ProcessingFee } from "./components/processing-fee";
 
@@ -36,6 +37,11 @@ export function SettingsPage() {
         value: "markup",
         label: "Markup (%)",
         component: <MarkupManagement />,
+      },
+      {
+        value: "govt-tax",
+        label: "Govt Tax",
+        component: <GovtTaxManagement />,
       },
     ];
 
