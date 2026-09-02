@@ -1,6 +1,7 @@
 "use client";
 
-import { FileSpreadsheet, TableProperties } from "lucide-react";
+import { useState } from "react";
+import { FileSpreadsheet, Loader2, TableProperties } from "lucide-react";
 import { useFilterState } from "@/hooks/use-filter-state";
 
 import { DataTable } from "@/components/common/data-table/data-table";
@@ -24,6 +25,9 @@ import {
   type OrderReportRow,
   type ReportSectionKey,
 } from "@/constants/report-management";
+import { exportToExcel } from "@/lib/export-excel";
+import apiClient from "@/lib/api/client";
+import { REPORT_ENDPOINTS } from "@/lib/api/endpoints/reports.endpoints";
 import {
   couponReportColumns,
   customerReportColumns,
@@ -38,17 +42,24 @@ type ReportManagementPageProps = {
   section: ReportSectionKey;
 };
 
-function ExportButton() {
+function ExportButton({ onClick, isLoading }: { onClick?: () => void; isLoading?: boolean }) {
   return (
-    <Button className="h-10 gap-2 rounded-xl px-4 font-semibold">
-      <FileSpreadsheet className="h-4 w-4" />
-      Export Excel
+    <Button
+      disabled={isLoading}
+      onClick={onClick}
+      isLoading={isLoading}
+      className="h-9 gap-2 rounded-full bg-emerald-600 px-4 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700"
+    >
+      <FileSpreadsheet className="size-4" />
+
+      <span>Export Excel</span>
     </Button>
   );
 }
 
 function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "store-report"> }) {
   const meta = REPORT_SECTION_META[section];
+  const [isExporting, setIsExporting] = useState(false);
   const {
     applyFilters,
     cancelFilters,
@@ -78,6 +89,16 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
   const handleCancel = () => {
     cancelFilters();
     cancel();
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      exportToExcel(meta.title.replace(/\s+/g, "_"), [], [{ label: "ID", key: "id" }]);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const table =
@@ -164,7 +185,7 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
             </div>
           </div>
 
-          <ExportButton />
+          <ExportButton onClick={handleExport} isLoading={isExporting} />
         </CardHeader>
         <CardContent className="p-4">{table}</CardContent>
       </Card>
@@ -174,6 +195,7 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
 
 function StoreReportsPage() {
   const meta = REPORT_SECTION_META["store-report"];
+  const [isExporting, setIsExporting] = useState(false);
   const {
     applyFilters,
     city,
@@ -189,6 +211,50 @@ function StoreReportsPage() {
     toDate,
     cancelFilters,
   } = useStoreReport();
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const fromDateStr = fromDate ? fromDate.toISOString() : undefined;
+      const toDateStr = toDate ? toDate.toISOString() : undefined;
+
+      const { data } = await apiClient.get(REPORT_ENDPOINTS.EXPORT_STORE_REPORTS, {
+        params: {
+          country: country === "All" ? undefined : country,
+          city: city === "All" ? undefined : city,
+          fromDate: fromDateStr,
+          toDate: toDateStr,
+        },
+      });
+
+      const exportList = data?.data || filteredData || [];
+
+      exportToExcel("Store_Reports", exportList, [
+        { label: "S.No", key: (_, index) => index + 1 },
+        { label: "Store Name", key: "storeName" },
+        { label: "Country", key: "country" },
+        { label: "State/Province", key: "state" },
+        { label: "City", key: "city" },
+        { label: "Address", key: "address" },
+        { label: "Phone", key: "phone" },
+        { label: "Total Orders", key: "totalOrder" },
+        { label: "Total Sales", key: (item) => item.earnings?.totalSales || "$0.00" },
+      ]);
+    } catch {
+      exportToExcel("Store_Reports", filteredData, [
+        { label: "S.No", key: (_, index) => index + 1 },
+        { label: "Store Name", key: "storeName" },
+        { label: "Country", key: "country" },
+        { label: "State/Province", key: "state" },
+        { label: "City", key: "city" },
+        { label: "Address", key: "address" },
+        { label: "Phone", key: "phone" },
+        { label: "Total Orders", key: "totalOrder" },
+      ]);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -226,7 +292,7 @@ function StoreReportsPage() {
             </div>
           </div>
 
-          <ExportButton />
+          <ExportButton onClick={handleExport} isLoading={isExporting} />
         </CardHeader>
         <CardContent className="p-4">
           <DataTable columns={storeReportColumns} data={filteredData} searchKey={meta.searchKey} />

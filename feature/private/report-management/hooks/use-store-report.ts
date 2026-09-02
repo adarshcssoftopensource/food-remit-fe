@@ -1,7 +1,6 @@
-import { MOCK_STORE_REPORTS, type StoreReportRow } from "@/constants/report-management";
 import { useFilterState } from "@/hooks/use-filter-state";
-import { useMemo } from "react";
 import { useReportDateFilters } from "./use-report-date-filters";
+import { useGetStoreReports } from "./use-get-store-reports";
 
 export function useStoreReport() {
   const dateFilters = useReportDateFilters();
@@ -10,13 +9,21 @@ export function useStoreReport() {
     city: "All",
   });
 
-  const filteredData = useMemo(() => {
-    return MOCK_STORE_REPORTS.filter((store: StoreReportRow) => {
-      if (applied.country !== "All" && store.country !== applied.country) return false;
-      if (applied.city !== "All" && store.city !== applied.city) return false;
-      return true;
-    });
-  }, [applied.city, applied.country]);
+  const queryParams = {
+    country: applied.country === "All" ? undefined : applied.country,
+    city: applied.city === "All" ? undefined : applied.city,
+    fromDate: dateFilters.fromDate ? dateFilters.fromDate.toISOString() : undefined,
+    toDate: dateFilters.toDate ? dateFilters.toDate.toISOString() : undefined,
+  };
+
+  const {
+    data: storeReportResponse,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetStoreReports(queryParams);
+
+  const filteredData = storeReportResponse?.data || [];
 
   const hasFilters = dateFilters.hasFilters || applied.country !== "All" || applied.city !== "All";
 
@@ -42,6 +49,9 @@ export function useStoreReport() {
     country: draft.country,
     filteredData,
     hasFilters,
+    isLoading,
+    isError,
+    refetch,
     setCity: (c: string) => setDraft((p) => ({ ...p, city: c })),
     setCountry: (c: string) => setDraft((p) => ({ ...p, country: c })),
     applyFilters,
