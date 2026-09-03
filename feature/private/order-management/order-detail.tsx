@@ -156,7 +156,14 @@ export function OrderDetailPage({ id }: { id: string }) {
                     <Calendar className="mr-1 size-3" /> Date & Time
                   </p>
                   <p className="mt-1 text-sm font-bold text-slate-800 dark:text-slate-200">
-                    {formatDate(order.createdAt)} • {order.time || "N/A"}
+                    {formatDate(order.createdAt)} •{" "}
+                    {order.createdAt
+                      ? new Date(order.createdAt).toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })
+                      : order.time || "N/A"}
                   </p>
                 </div>
                 <div>
