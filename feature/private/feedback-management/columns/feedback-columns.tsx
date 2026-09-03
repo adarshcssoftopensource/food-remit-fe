@@ -59,6 +59,24 @@ export const feedbackColumns: ColumnDef<FeedbackRowData>[] = [
     },
   },
   {
+    accessorKey: "useApplicationAgain",
+    header: "Use Again",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-slate-600 dark:text-slate-400">
+        {row.original.useApplicationAgain || "N/A"}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "recommend",
+    header: "Recommed Application",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-slate-600 dark:text-slate-400">{row.original.recommend || "N/A"}</span>
+    ),
+  },
+  {
     accessorKey: "status",
     header: "Status",
     enableSorting: true,
