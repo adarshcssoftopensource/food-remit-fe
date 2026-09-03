@@ -35,7 +35,7 @@ export function LandingPageCmsPage() {
         <div className="grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
           <SectionNav activeSection={activeSection} onSelect={setActiveSection} />
 
-          <Card className="flex min-h-0 flex-col overflow-hidden rounded-2xl border-slate-200/80 bg-white/95 shadow-sm">
+          <Card className="flex min-h-0 flex-col overflow-hidden rounded-2xl border-slate-200/80 bg-white/95 pt-0 shadow-sm">
             <div className="from-primary/6 shrink-0 border-b border-slate-100 bg-linear-to-r via-transparent to-emerald-50/40 px-5 py-3.5">
               <div className="flex items-center gap-2.5">
                 <div className="bg-primary/12 text-primary flex size-8 items-center justify-center rounded-lg">

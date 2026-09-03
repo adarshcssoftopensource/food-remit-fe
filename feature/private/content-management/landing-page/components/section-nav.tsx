@@ -20,6 +20,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { LANDING_CMS_SECTIONS, type LandingSectionKey } from "../types";
+import { Button } from "@/components/ui/button";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Sparkles,
@@ -63,22 +64,23 @@ export function SectionNav({ activeSection, onSelect }: SectionNavProps) {
           const active = activeSection === item.key;
           const Icon = iconMap[item.icon];
           return (
-            <button
+            <Button
               key={item.key}
               type="button"
+              variant="ghost"
               onClick={() => onSelect(item.key)}
               className={cn(
-                "relative w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-all",
+                "relative h-auto w-full justify-start rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-all",
                 active
-                  ? "shadow-primary/25 bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-sm"
+                  ? "shadow-primary/25 bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-sm hover:from-emerald-600 hover:to-teal-700 hover:text-white"
                   : "hover:bg-primary/8 hover:text-primary text-slate-600",
               )}
             >
-              <div className={cn("flex items-center gap-2", active && "pl-1.5")}>
+              <div className="flex items-center gap-2">
                 {Icon && <Icon className="h-4 w-4 shrink-0" />}
                 <span>{item.label}</span>
               </div>
-            </button>
+            </Button>
           );
         })}
       </nav>
