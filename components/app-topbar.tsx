@@ -155,6 +155,18 @@ export function AppTopBar() {
               >
                 {displayName}
               </span>
+              {profile?.stores && profile.stores.length > 0 && (
+                <span
+                  className={cn(
+                    "max-w-36 truncate text-[10px] font-medium",
+                    isProfilePage || isSettingsPage
+                      ? "text-emerald-100"
+                      : "text-slate-500 dark:text-slate-400",
+                  )}
+                >
+                  {profile.stores.map((s) => s.storeName).join(", ")}
+                </span>
+              )}
             </div>
 
             <ChevronDown
