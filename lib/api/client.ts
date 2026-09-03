@@ -10,6 +10,7 @@ import type {
 } from "axios";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import { AUTH_ENDPOINTS } from "./endpoints/auth.endpoints";
 
 interface ApiErrorResponse {
@@ -42,8 +43,19 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = typeof window !== "undefined" ? Cookies.get(AUTH_TOKEN_COOKIE) : null;
   if (!config.headers) config.headers = {} as AxiosRequestHeaders;
 
-  if (token && !config.url?.includes(AUTH_ENDPOINTS.REFRESH_TOKEN)) {
-    (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
+  if (token) {
+    if (!config.url?.includes(AUTH_ENDPOINTS.REFRESH_TOKEN)) {
+      (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
+    }
+
+    if (config.method && config.method.toLowerCase() !== "get") {
+      try {
+        const decoded: any = jwtDecode(token);
+        if (decoded?.isReadOnly) {
+          return Promise.reject(new Error("ACTION_NOT_ALLOWED_READ_ONLY"));
+        }
+      } catch (e) {}
+    }
   }
   return config;
 });
@@ -102,6 +114,13 @@ axiosInstance.interceptors.response.use(
       } finally {
         isRefreshing = false;
       }
+    }
+
+    if (error.message === "ACTION_NOT_ALLOWED_READ_ONLY") {
+      errorToast({
+        description: "You are in View Only mode. Actions are disabled.",
+      });
+      return Promise.reject(error);
     }
 
     const message =

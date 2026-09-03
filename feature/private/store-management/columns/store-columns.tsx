@@ -51,6 +51,7 @@ export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<
     header: "Store Address",
     cell: ({ row }) => (
       <TruncatedTextCell
+        maxWords={4}
         text={`${row.original.storeAddress}${row.original.address2 ? `, ${row.original.address2}` : ""}`}
         className="max-w-45 cursor-default text-sm"
       />
