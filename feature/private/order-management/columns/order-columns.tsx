@@ -61,7 +61,7 @@ export const orderColumns: ColumnDef<OrderData>[] = [
     header: "Price",
     cell: ({ row }) => (
       <span className="font-semibold text-slate-900 dark:text-slate-100">
-        {row.original.price || "0.00 USD"}
+        {row.original.price || "$0.00"}
       </span>
     ),
   },

@@ -1,6 +1,7 @@
 "use client";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
+import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -8,17 +9,20 @@ import { ROUTES } from "@/config/routes";
 import { type StoreData } from "@/feature/private/store-management/types/store-management";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { useQueryClient } from "@tanstack/react-query";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { ExternalLink, Eye, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useUpdateStore } from "../hooks/use-update-store";
 import { useDeleteStore } from "../hooks/use-delete-store";
+import { useImpersonateStore } from "../hooks/use-impersonate-store";
+import { useUpdateStore } from "../hooks/use-update-store";
 import { EditStoreDialog } from "./edit-store-dialog";
 
 export function StoreActionsCell({ store }: { store: StoreData }) {
   const router = useRouter();
+  const { isSuperAdmin } = useProfile();
   const queryClient = useQueryClient();
   const updateStore = useUpdateStore(store.id);
+  const impersonate = useImpersonateStore();
   const { mutateAsync: deleteStore, isPending: isDeleting } = useDeleteStore(store.id);
   const [isActive, setIsActive] = useState(store.status === "Active");
   const [editOpen, setEditOpen] = useState(false);
@@ -49,6 +53,13 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
         title: "Store Deleted",
         description: response?.message || "Store has been deleted successfully.",
       });
+    } catch {}
+  };
+
+  const handleImpersonate = async () => {
+    try {
+      await impersonate.mutateAsync(store.id);
+      successToast({ title: "Impersonating Store Manager..." });
     } catch {}
   };
 
@@ -85,7 +96,6 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
         >
           <Trash2 className="size-4" />
         </Button>
-
         <Switch
           checked={isActive}
           onCheckedChange={handleStatusChange}
@@ -93,6 +103,19 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
           className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-slate-200"
           title={isActive ? "Active" : "Inactive"}
         />
+
+        {isSuperAdmin && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-8 rounded-full text-slate-500 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
+            onClick={handleImpersonate}
+            disabled={impersonate.isPending}
+            title="Bypass / Impersonate"
+          >
+            <ExternalLink className="size-4" />
+          </Button>
+        )}
       </div>
 
       <EditStoreDialog store={store} open={editOpen} onOpenChange={setEditOpen} />

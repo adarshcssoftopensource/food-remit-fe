@@ -49,6 +49,7 @@ export interface OrderData {
     itemMarkupPercent?: string;
     itemMarkupAmount?: string;
     merchandiseSubtotal: string;
+    discountAmount?: string;
     storeTaxPercent: string;
     storeTax: string;
     processingFee: string;

@@ -34,6 +34,7 @@ export interface AdminProfile {
     cityName?: string | null;
     countryName?: string | null;
   }[];
+  isReadOnly?: boolean;
 }
 
 interface ProfileContextType {
@@ -42,6 +43,7 @@ interface ProfileContextType {
   isError: boolean;
   isSuperAdmin: boolean;
   hasPermission: (permissionKey: keyof ProfilePermissions | string) => boolean;
+  isReadOnly: boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
@@ -111,6 +113,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         isError: false,
         isSuperAdmin,
         hasPermission,
+        isReadOnly: profileData.isReadOnly || false,
       }}
     >
       {children}

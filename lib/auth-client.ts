@@ -6,7 +6,7 @@ export interface SetAuthSessionInput {
   expiresInSeconds?: number;
 }
 
-function buildCookieOptions(expiresInDays?: number): Cookies.CookieAttributes {
+export function buildCookieOptions(expiresInDays?: number): Cookies.CookieAttributes {
   return {
     path: "/",
     secure: process.env.NODE_ENV === "production",
