@@ -31,11 +31,25 @@ const departmentSchema = z
 
 export type DepartmentFormValues = z.infer<typeof departmentSchema>;
 
+interface ProfileStore {
+  id: string;
+  storeName: string;
+  city: string;
+  country: string;
+}
+
+export interface DepartmentFormProfile {
+  role?: string;
+  roleCode?: string;
+  stores?: ProfileStore[];
+}
+
 export function useDepartmentForm(
   open: boolean,
   department: DepartmentData | null | undefined,
   onOpenChange: (open: boolean) => void,
   onSubmitCallback?: (values: DepartmentFormValues) => void,
+  profile?: DepartmentFormProfile | null,
 ) {
   const { mutateAsync: createDepartment, isPending: isCreating } = useCreateDepartment();
   const { mutateAsync: updateDepartment, isPending: isUpdating } = useUpdateDepartment(
@@ -44,37 +58,45 @@ export function useDepartmentForm(
 
   const isSubmitting = isCreating || isUpdating;
 
+  const role = profile?.role || "";
+  const roleCode = profile?.roleCode || "";
+  const isStoreScoped =
+    role === "store_manager" ||
+    role === "employee" ||
+    roleCode === "STORE_MANAGER" ||
+    roleCode === "EMPLOYEE";
+
+  // For Store Managers, auto-resolve country and store from their first assigned store
+  const storeManagerStore = isStoreScoped && profile?.stores?.length ? profile.stores[0] : null;
+  const autoCountryId = storeManagerStore?.country || "";
+  const autoStoreId = storeManagerStore?.id || "";
+
+  const getDefaultValues = (dep: DepartmentData | null | undefined) => ({
+    countryId: dep?.country?.id ?? (isStoreScoped ? autoCountryId : ""),
+    cityIds:
+      dep?.cities && dep.cities.length > 0
+        ? dep.cities.map((c) => c.id)
+        : dep?.cityId || dep?.city?.id
+          ? [dep.cityId || dep.city?.id]
+          : [],
+    storeId: dep?.storeId || dep?.store?.id || (isStoreScoped ? autoStoreId : ""),
+    departmentName: dep?.departmentName ?? "",
+    iconFile: [],
+    hasExistingIcon: !!(dep?.departmentIcon || dep?.departmentIconUrl),
+  });
+
   const form = useForm<DepartmentFormValues>({
     resolver: zodResolver(departmentSchema),
     mode: "onChange",
-    defaultValues: {
-      countryId: department?.country?.id ?? "",
-      cityIds:
-        department?.cityId || department?.city?.id
-          ? [department.cityId || department.city?.id]
-          : [],
-      storeId: department?.storeId || department?.store?.id || "",
-      departmentName: department?.departmentName ?? "",
-      iconFile: [],
-      hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
-    },
+    defaultValues: getDefaultValues(department),
   });
 
   useEffect(() => {
     if (open) {
-      form.reset({
-        countryId: department?.country?.id ?? "",
-        cityIds:
-          department?.cityId || department?.city?.id
-            ? [department.cityId || department.city?.id]
-            : [],
-        storeId: department?.storeId || department?.store?.id || "",
-        departmentName: department?.departmentName ?? "",
-        iconFile: [],
-        hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
-      });
+      form.reset(getDefaultValues(department));
     }
-  }, [open, department, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, department]);
 
   const handleSubmit = async (values: DepartmentFormValues) => {
     try {
@@ -82,14 +104,21 @@ export function useDepartmentForm(
       formData.append("countryId", values.countryId);
       formData.append("departmentName", values.departmentName);
 
-      if (values.cityIds && values.cityIds.length > 0) {
-        values.cityIds.forEach((cityId) => {
-          formData.append("cityIds[]", cityId);
-        });
-      }
-
-      if (values.storeId) {
-        formData.append("storeId", values.storeId);
+      if (isStoreScoped) {
+        // Store Manager: backend auto-assigns their store's city — never send cityIds
+        if (values.storeId) {
+          formData.append("storeId", values.storeId);
+        }
+      } else {
+        // Non-store roles: always send cityIds so backend knows when to clear
+        if (values.cityIds && values.cityIds.length > 0) {
+          formData.append("cityIds", JSON.stringify(values.cityIds));
+        } else {
+          formData.append("cityIds", JSON.stringify([]));
+        }
+        if (values.storeId) {
+          formData.append("storeId", values.storeId);
+        }
       }
 
       if (values.iconFile && values.iconFile.length > 0) {
@@ -128,6 +157,8 @@ export function useDepartmentForm(
   return {
     form,
     isSubmitting,
+    isStoreScoped,
+    storeManagerStore,
     handleSubmit: form.handleSubmit(handleSubmit),
   };
 }

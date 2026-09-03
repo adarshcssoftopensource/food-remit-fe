@@ -163,10 +163,7 @@ export function CategoryView({ id }: CategoryViewProps) {
                 <InfoCard
                   icon={<MapPin className="h-5 w-5" />}
                   label="City"
-                  value={
-                    category.scopeLabel ||
-                    (category.cityName ? `City · ${category.cityName}` : "Global (All Cities)")
-                  }
+                  value={category.cityName || "All Cities"}
                 />
                 <InfoCard
                   icon={<User className="h-5 w-5" />}

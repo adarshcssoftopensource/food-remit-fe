@@ -28,8 +28,10 @@ export interface DepartmentData {
   scopeType?: "global" | "city" | "store";
   scopeLabel?: string | null;
   cityId?: string | null;
+  cityIds?: string[];
 
   city?: { id: string; name: string } | null;
+  cities?: { id: string; name: string }[];
   store?: { id: string; storeName: string } | null;
   parent?: { id: string; departmentName: string } | null;
   children?: any[];
@@ -84,6 +86,7 @@ export interface CreateDepartmentPayload {
   departmentName: string;
   countryId: string;
   cityId?: string;
+  cityIds?: string[];
   storeId?: string;
   parentId?: string;
   departmentIcon?: File | string | null;

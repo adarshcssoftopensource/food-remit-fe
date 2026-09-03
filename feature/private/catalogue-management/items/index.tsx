@@ -175,9 +175,15 @@ export function ItemsManagement() {
     setLightboxSrc(image);
   }, []);
 
+  const isStoreScoped =
+    profile?.role === "store_manager" ||
+    profile?.role === "employee" ||
+    profile?.roleCode === "STORE_MANAGER" ||
+    profile?.roleCode === "EMPLOYEE";
+
   const columns = useMemo(
-    () => getItemColumns(handleEdit, handleViewDetails, handleImageClick),
-    [handleEdit, handleViewDetails, handleImageClick],
+    () => getItemColumns(handleEdit, handleViewDetails, handleImageClick, isStoreScoped),
+    [handleEdit, handleViewDetails, handleImageClick, isStoreScoped],
   );
 
   const handleDownloadCsv = async () => {

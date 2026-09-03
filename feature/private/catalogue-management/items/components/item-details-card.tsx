@@ -39,6 +39,18 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
             value={item.country?.name || "Unknown"}
           />
           <InfoCard
+            icon={<MapPin className="h-4 w-4 text-sky-500" />}
+            label="City"
+            value={(item.department as any)?.city?.name || "All Cities"}
+          />
+          {(item.department as any)?.store?.storeName && (
+            <InfoCard
+              icon={<Building2 className="h-4 w-4 text-indigo-500" />}
+              label="Store"
+              value={(item.department as any).store.storeName}
+            />
+          )}
+          <InfoCard
             icon={<Building2 className="h-4 w-4 text-blue-500" />}
             label="Department"
             value={item.department?.departmentName || "None"}

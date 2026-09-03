@@ -5,13 +5,15 @@ import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { DepartmentActionsCell } from "../components/department-actions-cell";
 import { DepartmentData } from "../types/department.types";
+import { Globe, Eye, MapPin } from "lucide-react";
 
 export function getDepartmentColumns(
   onEdit: (dept: DepartmentData) => void,
   onView: (dept: DepartmentData) => void,
   onImageClick?: (image: string) => void,
+  isStoreScoped?: boolean,
 ): ColumnDef<DepartmentData>[] {
-  return [
+  const columns: ColumnDef<DepartmentData>[] = [
     {
       id: "serial",
       header: "S.No",
@@ -35,12 +37,6 @@ export function getDepartmentColumns(
             onImageClick={onImageClick}
             enableZoom={!!onImageClick}
           />
-          <ScopeBadge
-            isGlobal={row.original.isGlobal}
-            scopeLabel={row.original.scopeLabel}
-            cityName={row.original.cityName || row.original.city?.name}
-            storeName={row.original.storeName || row.original.store?.storeName}
-          />
         </div>
       ),
     },
@@ -53,6 +49,34 @@ export function getDepartmentColumns(
           {row.original.country?.name || row.original.countryName || "-"}
         </span>
       ),
+    },
+    {
+      accessorKey: "city",
+      header: "City",
+      enableSorting: true,
+      cell: ({ row }) => {
+        if (row.original.isGlobal) {
+          return (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              <Globe className="h-3 w-3" />
+              All Cities ({row.original.countryName || "Global"})
+            </span>
+          );
+        }
+        if (row.original.cities && row.original.cities.length > 1) {
+          return (
+            <button className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50">
+              <MapPin className="h-3 w-3" />
+              {row.original.cities.length} Cities
+            </button>
+          );
+        }
+        return (
+          <span className="text-primary text-sm font-medium">
+            {row.original.cityName || row.original.city?.name || "-"}
+          </span>
+        );
+      },
     },
     {
       id: "createdBy",
@@ -99,4 +123,6 @@ export function getDepartmentColumns(
       ),
     },
   ];
+
+  return isStoreScoped ? columns.filter((col) => col.id !== "createdBy") : columns;
 }
