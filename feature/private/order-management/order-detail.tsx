@@ -231,6 +231,12 @@ export function OrderDetailPage({ id }: { id: string }) {
               </span>
             </div>
             <div className="flex justify-between text-xs">
+              <span className="text-slate-500">Discount Applied</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                -{order.customerPayment?.discountAmount || "0.00"}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
               <span className="text-slate-500">
                 Store Govt tax ({order.customerPayment?.storeTaxPercent || "0%"})
               </span>
