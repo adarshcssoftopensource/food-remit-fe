@@ -127,11 +127,6 @@ export function AppSidebar() {
             }
             const isStoreManager =
               profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
-            if (item.title === "Catalogue Management" && isStoreManager) {
-              if (sub.title === "Departments" || sub.title === "Categories") {
-                return false;
-              }
-            }
             return true;
           });
           return { ...item, items: filteredSubs };

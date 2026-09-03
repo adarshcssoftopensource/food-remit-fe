@@ -15,8 +15,9 @@ export function getItemColumns(
   onEdit: (item: ItemData) => void,
   onView: (item: ItemData) => void,
   onImageClick?: (image: string) => void,
+  isStoreScoped?: boolean,
 ): ColumnDef<ItemData>[] {
-  return [
+  const columns: ColumnDef<ItemData>[] = [
     {
       id: "serial",
       header: "S.no",
@@ -156,4 +157,6 @@ export function getItemColumns(
       cell: ({ row }) => <ItemActionsCell item={row.original} onEdit={onEdit} onView={onView} />,
     },
   ];
+
+  return isStoreScoped ? columns.filter((col) => col.id !== "createdBy") : columns;
 }

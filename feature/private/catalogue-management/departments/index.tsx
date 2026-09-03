@@ -22,6 +22,7 @@ import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/ca
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { Building2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useProfile } from "@/components/providers/profile-provider";
 import { useCallback, useMemo, useState } from "react";
 import { getDepartmentColumns } from "./columns/department-columns";
 import { DepartmentFormDialog } from "./components/department-form-dialog";
@@ -164,9 +165,12 @@ export function DepartmentsManagement() {
     setLightboxSrc(image);
   }, []);
 
+  const { profile } = useProfile();
+  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+
   const columns = useMemo(
-    () => getDepartmentColumns(handleEdit, handleViewDetails, handleImageClick),
-    [handleEdit, handleViewDetails, handleImageClick],
+    () => getDepartmentColumns(handleEdit, handleViewDetails, handleImageClick, isStoreScoped),
+    [handleEdit, handleViewDetails, handleImageClick, isStoreScoped],
   );
 
   return (
@@ -259,9 +263,6 @@ export function DepartmentsManagement() {
                   <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
                     Departments
                   </CardTitle>
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:bg-slate-800 dark:text-slate-400">
-                    Directory
-                  </span>
                 </div>
                 <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
                   {departments.length} department{departments.length !== 1 ? "s" : ""} found

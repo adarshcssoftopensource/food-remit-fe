@@ -10,8 +10,9 @@ export function getCategoryColumns(
   onEdit: (dept: CategoryData) => void,
   onView: (dept: CategoryData) => void,
   onImageClick?: (image: string) => void,
+  isStoreScoped?: boolean,
 ): ColumnDef<CategoryData>[] {
-  return [
+  const columns: ColumnDef<CategoryData>[] = [
     {
       id: "serial",
       header: "S.No",
@@ -35,11 +36,6 @@ export function getCategoryColumns(
             onImageClick={onImageClick}
             enableZoom={!!onImageClick}
           />
-          <ScopeBadge
-            isGlobal={row.original.isGlobal}
-            scopeLabel={row.original.scopeLabel}
-            cityName={row.original.cityName}
-          />
         </div>
       ),
     },
@@ -49,7 +45,7 @@ export function getCategoryColumns(
       enableSorting: true,
       cell: ({ row }) => (
         <span className="text-primary text-sm font-medium">
-          {row.original.departmentDisplayName || row.original.department?.departmentName || "-"}
+          {row.original.department?.departmentName || "-"}
         </span>
       ),
     },
@@ -99,4 +95,6 @@ export function getCategoryColumns(
       ),
     },
   ];
+
+  return isStoreScoped ? columns.filter((col) => col.id !== "createdBy") : columns;
 }

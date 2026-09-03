@@ -190,9 +190,11 @@ export function CategoriesManagement() {
     setLightboxSrc(image);
   }, []);
 
+  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+
   const columns = useMemo(
-    () => getCategoryColumns(handleEdit, handleViewDetails, handleImageClick),
-    [handleEdit, handleViewDetails, handleImageClick],
+    () => getCategoryColumns(handleEdit, handleViewDetails, handleImageClick, isStoreScoped),
+    [handleEdit, handleViewDetails, handleImageClick, isStoreScoped],
   );
 
   return (
@@ -300,11 +302,8 @@ export function CategoriesManagement() {
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                    Discount Availability
+                    Categories
                   </CardTitle>
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:bg-slate-800 dark:text-slate-400">
-                    Directory
-                  </span>
                 </div>
                 <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
                   {categories.length} categories found

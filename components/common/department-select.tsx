@@ -19,13 +19,20 @@ interface DepartmentSelectProps {
   countryId?: string;
 }
 
+import { useProfile } from "@/components/providers/profile-provider";
+
 function formatDepartmentLabel(raw?: string | null) {
   if (!raw) return "";
-  // Ensure "Pasta(All Cities)" → "Pasta (All Cities)"
   return raw.replace(/([^\s])\(/g, "$1 (");
 }
 
-function getDepartmentLabel(dept: DepartmentDropdownItem) {
+function getDepartmentLabel(dept: DepartmentDropdownItem, isStoreScoped?: boolean) {
+  if (isStoreScoped) {
+    if (dept.departmentName) return formatDepartmentLabel(dept.departmentName);
+    const label = dept.displayName || dept.name || "";
+    return formatDepartmentLabel(label.replace(/\s*\(.*?\)$/, ""));
+  }
+
   if (dept.displayName || dept.name) {
     return formatDepartmentLabel(dept.displayName || dept.name);
   }
@@ -46,29 +53,36 @@ export function DepartmentSelect({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const { profile } = useProfile();
+  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+
   const { data, isLoading } = useGetDepartmentsDropdown(countryId);
   const departments: DepartmentDropdownItem[] = Array.isArray(data?.data) ? data.data : [];
 
   const sortedDepartments = useMemo(() => {
     return [...departments].sort((a, b) =>
-      getDepartmentLabel(a).localeCompare(getDepartmentLabel(b), undefined, {
-        sensitivity: "base",
-      }),
+      getDepartmentLabel(a, isStoreScoped).localeCompare(
+        getDepartmentLabel(b, isStoreScoped),
+        undefined,
+        {
+          sensitivity: "base",
+        },
+      ),
     );
-  }, [departments]);
+  }, [departments, isStoreScoped]);
 
   const filteredDepartments = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return sortedDepartments;
     return sortedDepartments.filter((dept) =>
-      getDepartmentLabel(dept).toLowerCase().includes(query),
+      getDepartmentLabel(dept, isStoreScoped).toLowerCase().includes(query),
     );
-  }, [sortedDepartments, searchQuery]);
+  }, [sortedDepartments, searchQuery, isStoreScoped]);
 
   const selectedLabel = useMemo(() => {
     const selected = departments.find((d) => d.id === value);
-    return selected ? getDepartmentLabel(selected) : "";
-  }, [departments, value]);
+    return selected ? getDepartmentLabel(selected, isStoreScoped) : "";
+  }, [departments, value, isStoreScoped]);
 
   return (
     <Popover
@@ -131,7 +145,7 @@ export function DepartmentSelect({
             </div>
           ) : filteredDepartments.length ? (
             filteredDepartments.map((dept) => {
-              const label = getDepartmentLabel(dept);
+              const label = getDepartmentLabel(dept, isStoreScoped);
               const isSelected = value === dept.id;
               return (
                 <Button
