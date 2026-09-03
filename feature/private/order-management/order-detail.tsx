@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
@@ -687,7 +685,7 @@ export function OrderDetailPage({ id }: { id: string }) {
         </CardContent>
       </Card>
 
-      {(order.customerSignature || order.identityProf) && (
+      {/* {(order.customerSignature || order.identityProf) && (
         <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
           <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
             <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">
@@ -754,7 +752,7 @@ export function OrderDetailPage({ id }: { id: string }) {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       <ImageLightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />
     </div>
