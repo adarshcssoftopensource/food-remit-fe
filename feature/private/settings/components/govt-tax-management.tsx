@@ -13,8 +13,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-import { useGetMarkup } from "../hooks/use-get-markup";
-import { useUpdateMarkup } from "../hooks/use-update-markup";
+import { useGetStore } from "@/feature/private/store-management/hooks/use-get-stores";
+import { useUpdateStore } from "@/feature/private/store-management/hooks/use-update-store";
 
 const govtTaxSchema = z.object({
   tax: z
@@ -28,14 +28,17 @@ const govtTaxSchema = z.object({
 type GovtTaxFormValues = z.infer<typeof govtTaxSchema>;
 
 export function GovtTaxManagement() {
-  const { isSuperAdmin } = useProfile();
-  // Super Admin cannot edit Govt Tax (Read-Only for Super Admin)
+  const { isSuperAdmin, profile } = useProfile();
   const isReadOnly = isSuperAdmin;
 
-  const { data: markupData, isLoading } = useGetMarkup();
-  const { mutateAsync: updateMarkup, isPending } = useUpdateMarkup();
+  const storeId = profile?.stores?.[0]?.id || "";
+  const { data: storeData, isLoading } = useGetStore(storeId);
+  const { mutateAsync: updateStore, isPending } = useUpdateStore(storeId);
 
-  const currentTax = (markupData?.data as any)?.tax || "6.00";
+  const currentTax =
+    storeData?.storeTax !== undefined && storeData?.storeTax !== null
+      ? String(storeData.storeTax)
+      : "0";
 
   const {
     control,
@@ -50,12 +53,15 @@ export function GovtTaxManagement() {
   });
 
   useEffect(() => {
-    if (markupData?.data) {
+    if (storeData !== null) {
       reset({
-        tax: (markupData.data as any).tax || "6.00",
+        tax:
+          storeData.storeTax !== undefined && storeData.storeTax !== null
+            ? String(storeData.storeTax)
+            : "0",
       });
     }
-  }, [markupData, reset]);
+  }, [storeData, reset]);
 
   const liveTax = watch("tax") ?? "";
   const numericTax = parseFloat(liveTax);
@@ -67,11 +73,11 @@ export function GovtTaxManagement() {
     : "0";
 
   const onSubmit: SubmitHandler<GovtTaxFormValues> = async (data) => {
-    if (isReadOnly) return;
+    if (isReadOnly || !storeId) return;
     try {
-      const res = await updateMarkup({
-        tax: data.tax,
-      } as any);
+      const formData = new FormData();
+      formData.append("storeTax", data.tax);
+      const res = await updateStore(formData as any);
       reset({ tax: data.tax });
       successToast({
         title: "Govt Tax Settings Saved",
