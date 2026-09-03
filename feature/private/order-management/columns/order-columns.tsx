@@ -95,8 +95,8 @@ export const orderColumns: ColumnDef<OrderData>[] = [
         colorClass =
           "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400";
         dotClass = "bg-blue-500";
-      } else if (status === 6) {
-        label = "Completed";
+      } else if (status === 6 || status === 8) {
+        label = status === 8 ? "Paid" : "Completed";
         colorClass =
           "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400";
         dotClass = "bg-emerald-500";

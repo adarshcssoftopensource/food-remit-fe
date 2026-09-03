@@ -88,7 +88,7 @@ export function TicketDetailDialog({ ticketId, open, onOpenChange }: TicketDetai
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex h-[85vh] max-h-[85vh] max-w-3xl flex-col overflow-hidden rounded-3xl border border-slate-200/80 p-0 shadow-2xl dark:border-slate-800">
         {/* Fixed Header */}
-        <DialogHeader className="shrink-0 border-b border-slate-100 bg-gradient-to-r from-emerald-500/5 via-slate-50/50 to-emerald-500/10 px-6 py-4 pr-12 dark:border-slate-800/80 dark:from-slate-900 dark:to-slate-900/90">
+        <DialogHeader className="shrink-0 border-b border-slate-100 bg-linear-to-r from-emerald-500/5 via-slate-50/50 to-emerald-500/10 px-6 py-4 pr-12 dark:border-slate-800/80 dark:from-slate-900 dark:to-slate-900/90">
           <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div className="space-y-1">
               <div className="flex items-center gap-2.5">

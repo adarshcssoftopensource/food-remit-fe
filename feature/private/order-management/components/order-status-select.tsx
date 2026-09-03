@@ -86,6 +86,11 @@ const STATUS_DISPLAY: Record<number, { label: string; color: string; dot: string
     color: "text-red-700 bg-red-50 border-red-200",
     dot: "bg-red-500",
   },
+  8: {
+    label: "Paid",
+    color: "text-emerald-700 bg-emerald-50 border-emerald-200",
+    dot: "bg-emerald-500",
+  },
 };
 
 interface OrderStatusSelectProps {
