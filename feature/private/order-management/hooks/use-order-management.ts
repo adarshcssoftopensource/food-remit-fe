@@ -47,14 +47,15 @@ export function useOrderManagement(section?: OrderSectionKey) {
   };
 
   let status: string | undefined = undefined;
-  const excludeStatus: string | undefined = undefined;
+  let excludeStatus: string | undefined = undefined;
   let type: string | number | undefined = undefined;
 
   if (section === "sent-orders") {
-    type = 1;
+    // Both type 1 (Sent Food) and type 2 (Request Food) can be "Sent Orders" once paid (status 8)
     status = "8";
   } else if (section === "requested-orders") {
     type = 2;
+    excludeStatus = "8"; // Exclude paid requests from the requested tab
   } else if (section === "partial-orders") {
     status = "5"; // 5 represents partial/accepted
   } else if (section === "completed-orders") {
