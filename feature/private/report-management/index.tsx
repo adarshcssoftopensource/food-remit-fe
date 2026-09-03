@@ -211,6 +211,14 @@ function StoreReportsPage() {
     setToDate,
     toDate,
     cancelFilters,
+    pagination,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    search,
+    setSearch,
+    isLoading,
   } = useStoreReport();
 
   const handleExport = async () => {
@@ -221,6 +229,9 @@ function StoreReportsPage() {
 
       const { data } = await apiClient.get(REPORT_ENDPOINTS.EXPORT_STORE_REPORTS, {
         params: {
+          page,
+          limit: pageSize,
+          search: search.trim() || undefined,
           country: country === "All" ? undefined : country,
           city: city === "All" ? undefined : city,
           fromDate: fromDateStr,
@@ -287,8 +298,7 @@ function StoreReportsPage() {
                 {meta.title}
               </CardTitle>
               <p className="text-muted-foreground text-xs">
-                {filteredData.length} entr
-                {filteredData.length !== 1 ? "ies" : "y"} found
+                {pagination.total} total {pagination.total === 1 ? "entry" : "entries"} found
               </p>
             </div>
           </div>
@@ -296,7 +306,27 @@ function StoreReportsPage() {
           <ExportButton onClick={handleExport} isLoading={isExporting} />
         </CardHeader>
         <CardContent className="p-4">
-          <DataTable columns={storeReportColumns} data={filteredData} searchKey={meta.searchKey} />
+          <DataTable
+            columns={storeReportColumns}
+            data={filteredData}
+            searchKey={meta.searchKey}
+            loading={isLoading}
+            searchValue={search}
+            onSearchChange={(v) => {
+              setSearch(v);
+              setPage(1);
+            }}
+            currentPage={page}
+            totalPages={pagination.totalPages}
+            rowsPerPage={pageSize}
+            onPageChange={setPage}
+            onRowsPerPageChange={(newLimit) => {
+              setPageSize(newLimit);
+              setPage(1);
+            }}
+            manualFiltering={true}
+            manualPagination={true}
+          />
         </CardContent>
       </Card>
     </div>

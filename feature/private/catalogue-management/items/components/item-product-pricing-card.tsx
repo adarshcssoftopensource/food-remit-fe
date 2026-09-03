@@ -54,22 +54,22 @@ export function ItemProductPricingCard({
   const lines: ReceiptLine[] = pricing
     ? [
         {
-          label: "Product Base Price",
+          label: "Item base price",
           value: formatMoney(pricing.basePrice, symbol),
           muted: true,
         },
         {
-          label: `Govt Tax (${pricing.taxPercent}%)`,
+          label: `Store Govt tax(${pricing.taxPercent}%)`,
           value: `+ ${formatMoney(pricing.taxAmount, symbol)}`,
           addon: true,
         },
         {
-          label: `Markup Tax (${pricing.markupPercent}%)`,
+          label: `Food Remit Markup(${pricing.markupPercent}%)`,
           value: `+ ${formatMoney(pricing.markupAmount, symbol)}`,
           addon: true,
         },
         {
-          label: "Net Price (Including Tax)",
+          label: "Net Price(including tax)",
           value: formatMoney(pricing.netPriceIncludingTax, symbol),
           subtotal: true,
         },
