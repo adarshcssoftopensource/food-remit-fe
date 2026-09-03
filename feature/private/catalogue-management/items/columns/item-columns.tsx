@@ -100,7 +100,7 @@ export function getItemColumns(
         const extra = placements.length > 1 ? ` +${placements.length - 1}` : "";
         return (
           <span className="text-sm font-medium text-slate-700">
-            {first.currency || first.currencySymbol || ""} {priceText}
+            {first.currencySymbol || ""} {priceText}
             {extra ? <span className="ml-1 text-xs text-slate-400">{extra}</span> : null}
           </span>
         );

@@ -12,7 +12,8 @@ import { useProfile } from "@/components/providers/profile-provider";
 import { useMemo } from "react";
 
 export function SettingsPage() {
-  const { hasPermission } = useProfile();
+  const { hasPermission, profile } = useProfile();
+  const isStoreManager = profile?.roleCode === "STORE_MANAGER";
 
   const tabs = useMemo(() => {
     const allTabs = [
@@ -38,15 +39,20 @@ export function SettingsPage() {
         label: "Markup (%)",
         component: <MarkupManagement />,
       },
-      {
-        value: "govt-tax",
-        label: "Govt Tax",
-        component: <GovtTaxManagement />,
-      },
+      ...(isStoreManager
+        ? [
+            {
+              value: "govt-tax",
+              label: "Govt Tax",
+              component: <GovtTaxManagement />,
+            },
+          ]
+        : []),
     ];
 
     return allTabs.filter((tab) => !tab.permission || hasPermission(tab.permission));
-  }, [hasPermission]);
+  }, [hasPermission, isStoreManager]);
+
   return (
     <div className="space-y-6">
       <PageHeader
