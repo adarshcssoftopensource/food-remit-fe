@@ -58,6 +58,22 @@ export function ItemProductPricingCard({
           value: formatMoney(pricing.basePrice, currencySymbol),
           muted: true,
         },
+        {
+          label: pricing.discountEnabled ? `Discount (${pricing.discountPercent}%)` : "Discount",
+          value: pricing.discountEnabled
+            ? `− ${formatMoney(pricing.discountAmount, currencySymbol)}`
+            : "N/A",
+          negative: pricing.discountEnabled,
+          muted: !pricing.discountEnabled,
+        },
+        {
+          label: "Price After Discount",
+          value: formatMoney(
+            pricing.basePrice - (pricing.discountEnabled ? pricing.discountAmount : 0),
+            currencySymbol,
+          ),
+          subtotal: true,
+        },
         ...(item.storeId
           ? [
               {
@@ -71,24 +87,6 @@ export function ItemProductPricingCard({
           label: `Food Remit Markup(${pricing.markupPercent}%)`,
           value: `+ ${formatMoney(pricing.markupAmount, currencySymbol)}`,
           addon: true,
-        },
-        {
-          label: "Net Price(including tax)",
-          value: formatMoney(pricing.netPriceIncludingTax, currencySymbol),
-          subtotal: true,
-        },
-        {
-          label: pricing.discountEnabled ? `Discount (${pricing.discountPercent}%)` : "Discount",
-          value: pricing.discountEnabled
-            ? `− ${formatMoney(pricing.discountAmount, currencySymbol)}`
-            : "Not available",
-          negative: pricing.discountEnabled,
-          muted: !pricing.discountEnabled,
-        },
-        {
-          label: "Price After Discount",
-          value: formatMoney(pricing.priceAfterDiscount, currencySymbol),
-          subtotal: true,
         },
       ]
     : [];
