@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,16 +12,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import {
   CheckCircle2,
-  Clock,
-  MessageSquare,
-  Send,
-  User,
-  Store,
-  Package,
   Headphones,
-  AlertCircle,
   Lock,
+  MessageSquare,
+  Package,
+  Send,
+  Store,
+  User,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useGetTicketDetail } from "./hooks/use-get-ticket-detail";
 import { useCloseTicket, useSendTicketReply } from "./hooks/use-ticket-actions";
 
@@ -221,7 +219,7 @@ export function TicketDetailDialog({ ticketId, open, onOpenChange }: TicketDetai
                             </span>
                           )}
                         </div>
-                        <p className="pt-0.5 leading-relaxed whitespace-pre-wrap text-slate-700 dark:text-slate-300">
+                        <p className="pt-0.5 leading-relaxed break-all whitespace-pre-wrap text-slate-700 dark:text-slate-300">
                           {chat.userMessage}
                         </p>
                       </div>
