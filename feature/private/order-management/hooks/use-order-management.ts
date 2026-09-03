@@ -47,18 +47,18 @@ export function useOrderManagement(section?: OrderSectionKey) {
   };
 
   let status: string | undefined = undefined;
-  let excludeStatus: string | undefined = undefined;
+  const excludeStatus: string | undefined = undefined;
   let type: string | number | undefined = undefined;
 
   if (section === "sent-orders") {
     type = 1;
-    excludeStatus = "6";
+    status = "8";
   } else if (section === "requested-orders") {
     type = 2;
   } else if (section === "partial-orders") {
     status = "5"; // 5 represents partial/accepted
   } else if (section === "completed-orders") {
-    status = "6,8"; // 6 represents completed, 8 represents paid
+    status = "6"; // 6 represents completed
   } else if (section === "fulfilment") {
     status = "2,3,4"; // 2 = Preparing, 3/4 = Out for Delivery / Picked
   } else if (section === "history") {
