@@ -83,4 +83,6 @@ export interface OrderData {
     inStockItemsCount?: number;
     totalItemsCount?: number;
   };
+  customerSignature?: string;
+  identityProf?: string;
 }
