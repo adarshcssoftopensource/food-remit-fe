@@ -47,10 +47,12 @@ export function useOrderManagement(section?: OrderSectionKey) {
   };
 
   let status: string | undefined = undefined;
+  let excludeStatus: string | undefined = undefined;
   let type: string | number | undefined = undefined;
 
   if (section === "sent-orders") {
     type = 1;
+    excludeStatus = "6";
   } else if (section === "requested-orders") {
     type = 2;
   } else if (section === "partial-orders") {
@@ -74,6 +76,7 @@ export function useOrderManagement(section?: OrderSectionKey) {
     sortBy,
     sortOrder,
     status,
+    excludeStatus,
     type,
     fromDate: formattedFromDate,
     toDate: formattedToDate,

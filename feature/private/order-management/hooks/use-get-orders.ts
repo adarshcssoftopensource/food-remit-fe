@@ -9,6 +9,7 @@ interface GetOrdersParams {
   limit?: number;
   search?: string;
   status?: string;
+  excludeStatus?: string;
   type?: number | string;
   fromDate?: string;
   toDate?: string;
