@@ -20,14 +20,17 @@ export interface DepartmentData {
 
   countryName?: string | null;
   cityName?: string | null;
+  storeId?: string | null;
+  storeName?: string | null;
   parentDepartmentName?: string | null;
   createdBy?: string | null;
   isGlobal?: boolean;
-  scopeType?: "global" | "city";
+  scopeType?: "global" | "city" | "store";
   scopeLabel?: string | null;
   cityId?: string | null;
 
   city?: { id: string; name: string } | null;
+  store?: { id: string; storeName: string } | null;
   parent?: { id: string; departmentName: string } | null;
   children?: any[];
 }
@@ -39,6 +42,8 @@ export interface DepartmentDropdownItem {
   displayName?: string;
   cityId?: string | null;
   cityName?: string | null;
+  storeId?: string | null;
+  storeName?: string | null;
   isGlobal?: boolean;
   scopeLabel?: string | null;
   createdBy?: string | null;
@@ -48,6 +53,7 @@ export interface UseGetDepartmentsArgs {
   search?: string;
   countryId?: string;
   cityId?: string;
+  storeId?: string;
   parentId?: string;
   status?: string;
   fromDate?: string;
@@ -78,6 +84,7 @@ export interface CreateDepartmentPayload {
   departmentName: string;
   countryId: string;
   cityId?: string;
+  storeId?: string;
   parentId?: string;
   departmentIcon?: File | string | null;
   status?: DepartmentStatus;

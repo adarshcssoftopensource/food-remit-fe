@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Info, Percent, TrendingUp } from "lucide-react";
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,19 @@ import { useGetMarkup } from "../hooks/use-get-markup";
 import { useUpdateMarkup } from "../hooks/use-update-markup";
 import { MarkupFormValues, markupSchema } from "../schema/markup.schema";
 
+import { useProfile } from "@/components/providers/profile-provider";
+import { Switch } from "@/components/ui/switch";
+
 export function MarkupManagement() {
+  const { profile, isSuperAdmin } = useProfile();
+  const isStoreManager =
+    profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager" || !isSuperAdmin;
+
   const { data: markupData, isLoading } = useGetMarkup();
   const { mutateAsync: updateMarkup, isPending } = useUpdateMarkup();
 
   const currentMarkup = markupData?.data?.markupPercentage || "10";
+  const currentIsFeeRefundable = (markupData?.data as any)?.isFeeRefundable ?? true;
 
   const {
     control,
@@ -29,14 +37,17 @@ export function MarkupManagement() {
     watch,
     formState: { errors, isDirty },
   } = useForm<MarkupFormValues>({
-    resolver: zodResolver(markupSchema),
-    defaultValues: { markupPercentage: currentMarkup },
+    resolver: zodResolver(markupSchema) as any,
+    defaultValues: { markupPercentage: currentMarkup, isFeeRefundable: currentIsFeeRefundable },
     mode: "onChange",
   });
 
   useEffect(() => {
-    if (markupData?.data?.markupPercentage) {
-      reset({ markupPercentage: markupData.data.markupPercentage });
+    if (markupData?.data) {
+      reset({
+        markupPercentage: markupData.data.markupPercentage || "10",
+        isFeeRefundable: (markupData.data as any).isFeeRefundable ?? true,
+      });
     }
   }, [markupData, reset]);
 
@@ -44,13 +55,25 @@ export function MarkupManagement() {
   const numericValue = parseFloat(liveValue);
   const isValid = !isNaN(numericValue) && numericValue >= 0 && numericValue <= 100;
 
-  const onSubmit = async (data: MarkupFormValues) => {
+  const rawDisplayValue = isValid ? liveValue || currentMarkup : currentMarkup;
+  const formattedDisplayMarkup = rawDisplayValue
+    ? (Math.round(parseFloat(rawDisplayValue) * 100) / 100).toString()
+    : "0";
+
+  const onSubmit: SubmitHandler<MarkupFormValues> = async (data) => {
+    if (isStoreManager) return;
     try {
-      const res = await updateMarkup({ markupPercentage: data.markupPercentage });
-      reset({ markupPercentage: data.markupPercentage });
+      const res = await updateMarkup({
+        markupPercentage: data.markupPercentage,
+        isFeeRefundable: data.isFeeRefundable,
+      });
+      reset({
+        markupPercentage: data.markupPercentage,
+        isFeeRefundable: data.isFeeRefundable,
+      });
       successToast({
-        title: "Markup Updated",
-        description: res?.message || `Commission markup set to ${data.markupPercentage}%.`,
+        title: "Settings Updated",
+        description: res?.message || `Markup & Refund Policy updated successfully.`,
       });
     } catch (error) {
       console.error(error);
@@ -66,9 +89,27 @@ export function MarkupManagement() {
           </p>
           <div className="mt-1 flex items-end gap-1">
             <p className="text-3xl font-black text-slate-700">
-              {isLoading ? "..." : isValid ? liveValue || currentMarkup : currentMarkup}
+              {isLoading ? "..." : formattedDisplayMarkup}
             </p>
             <p className="mb-1 text-lg font-bold text-slate-400">%</p>
+          </div>
+        </div>
+        <div className="rounded-xl border border-slate-100 bg-linear-to-br from-slate-50 to-white p-4">
+          <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+            Cancellation Policy
+          </p>
+          <div className="mt-1 flex items-center gap-2">
+            <span
+              className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-bold ${
+                watch("isFeeRefundable")
+                  ? "bg-emerald-100 text-emerald-800"
+                  : "bg-amber-100 text-amber-800"
+              }`}
+            >
+              {watch("isFeeRefundable")
+                ? "Option A: Fee Refundable"
+                : "Option B: Fee Non-Refundable"}
+            </span>
           </div>
         </div>
       </div>
@@ -83,16 +124,23 @@ export function MarkupManagement() {
       </div>
 
       <Card className="overflow-hidden rounded-2xl border border-slate-200/60 shadow-sm">
-        <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-100">
-            <TrendingUp className="h-4 w-4 text-rose-600" />
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-100">
+              <TrendingUp className="h-4 w-4 text-rose-600" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-800">Set Tax (Markup) & Refund Policy</p>
+              <p className="text-xs text-slate-500">
+                Add-on tax % on every item & cancellation fee refundability toggle
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-bold text-slate-800">Set Tax (Markup)</p>
-            <p className="text-xs text-slate-500">
-              Add-on tax % on every item — base price stays original
-            </p>
-          </div>
+          {isStoreManager && (
+            <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800">
+              Read-Only
+            </span>
+          )}
         </div>
 
         <CardContent className="p-6">
@@ -115,8 +163,29 @@ export function MarkupManagement() {
                       min="0"
                       max="100"
                       placeholder="e.g. 12.5"
+                      disabled={isStoreManager}
+                      readOnly={isStoreManager}
                       aria-invalid={!!errors.markupPercentage}
-                      className="h-11 pr-12 pl-9"
+                      onKeyDown={(e) => {
+                        if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
+                          e.preventDefault();
+                        }
+                      }}
+                      onChange={(e) => {
+                        let val = e.target.value.replace(/[^0-9.]/g, "");
+                        const parts = val.split(".");
+                        if (parts.length > 2) {
+                          val = parts[0] + "." + parts.slice(1).join("");
+                        }
+                        if (parts[1] && parts[1].length > 2) {
+                          val = parts[0] + "." + parts[1].slice(0, 2);
+                        }
+                        if (parseFloat(val) > 100) {
+                          val = "100";
+                        }
+                        field.onChange(val);
+                      }}
+                      className="h-11 pr-12 pl-9 disabled:bg-slate-100 disabled:opacity-80"
                     />
                     <span className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 text-sm font-semibold text-slate-400">
                       %
@@ -131,25 +200,58 @@ export function MarkupManagement() {
               )}
             />
 
-            <div className="flex justify-end gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => reset({ markupPercentage: currentMarkup })}
-                className="px-6"
-                disabled={!isDirty}
-              >
-                Reset
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending || !isDirty}
-                className="shadow-primary/20 gap-2 px-6 shadow-md"
-              >
-                <TrendingUp className="h-4 w-4" />
-                Save Markup
-              </Button>
+            <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4">
+              <Controller
+                name="isFeeRefundable"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="space-y-0.5">
+                      <FieldLabel className="text-sm font-semibold text-slate-800">
+                        Processing Fee Refundable (Cancellation Policy)
+                      </FieldLabel>
+                      <p className="text-xs text-slate-500">
+                        {field.value
+                          ? "Option A (Default): Processing fee is 100% refunded to customer on order cancellation."
+                          : "Option B (Non-Refundable): Food Remit retains the processing fee, refunding item & tax total to customer card via Stripe."}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={isStoreManager}
+                    />
+                  </div>
+                )}
+              />
             </div>
+
+            {!isStoreManager && (
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    reset({
+                      markupPercentage: currentMarkup,
+                      isFeeRefundable: currentIsFeeRefundable,
+                    })
+                  }
+                  className="px-6"
+                  disabled={!isDirty}
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending || !isDirty}
+                  className="shadow-primary/20 gap-2 px-6 shadow-md"
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  Save Settings
+                </Button>
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>

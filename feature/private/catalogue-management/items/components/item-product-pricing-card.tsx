@@ -59,8 +59,13 @@ export function ItemProductPricingCard({
           muted: true,
         },
         {
-          label: `Tax (${pricing.taxPercent}%)`,
+          label: `Govt Tax (${pricing.taxPercent}%)`,
           value: `+ ${formatMoney(pricing.taxAmount, symbol)}`,
+          addon: true,
+        },
+        {
+          label: `Markup Tax (${pricing.markupPercent}%)`,
+          value: `+ ${formatMoney(pricing.markupAmount, symbol)}`,
           addon: true,
         },
         {

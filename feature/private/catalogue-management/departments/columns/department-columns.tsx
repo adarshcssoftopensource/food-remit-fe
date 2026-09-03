@@ -39,6 +39,7 @@ export function getDepartmentColumns(
             isGlobal={row.original.isGlobal}
             scopeLabel={row.original.scopeLabel}
             cityName={row.original.cityName || row.original.city?.name}
+            storeName={row.original.storeName || row.original.store?.storeName}
           />
         </div>
       ),

@@ -129,26 +129,6 @@ export function CitySelect({
           onTouchMove={(e) => e.stopPropagation()}
           style={{ overscrollBehavior: "contain" }}
         >
-          {includeAll && !searchQuery && (
-            <Button
-              variant="ghost"
-              onClick={() => {
-                onValueChange("All");
-                setIsOpen(false);
-                setSearchQuery("");
-              }}
-              className={cn(
-                "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
-                (value === "All" || value === "all" || !value) &&
-                  "bg-primary/10 text-primary font-medium",
-              )}
-            >
-              <MapPin className="size-4 shrink-0 text-slate-400" />
-              <span className="flex-1">{allLabel}</span>
-              {(value === "All" || value === "all" || !value) && <Check className="size-4" />}
-            </Button>
-          )}
-
           {isLoading ? (
             <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-500">
               <Loader2 className="size-4 animate-spin" />

@@ -27,11 +27,13 @@ export function useReportDateFilters() {
     applyFilters: apply,
     cancelFilters: cancel,
     clearFilters,
-    fromDate: draft.fromDate,
+    fromDate: applied.fromDate,
+    toDate: applied.toDate,
+    draftFromDate: draft.fromDate,
+    draftToDate: draft.toDate,
     hasFilters,
     isWithinRange,
     setFromDate: (d: Date | undefined) => setDraft((p) => ({ ...p, fromDate: d })),
     setToDate: (d: Date | undefined) => setDraft((p) => ({ ...p, toDate: d })),
-    toDate: draft.toDate,
   };
 }

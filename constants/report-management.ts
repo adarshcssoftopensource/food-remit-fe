@@ -7,6 +7,7 @@ export type StoreReportRow = {
   address: string;
   totalOrder: number;
   phone: string;
+  status?: string;
   image?: string;
   manager: {
     name: string;

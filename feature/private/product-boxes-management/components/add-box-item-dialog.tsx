@@ -15,6 +15,7 @@ interface AddBoxItemDialogProps {
   onAdd: (itemId: string) => void;
   isSubmitting?: boolean;
   existingItemIds: string[];
+  onImageClick?: (image: string) => void;
 }
 
 export function AddBoxItemDialog({
@@ -23,6 +24,7 @@ export function AddBoxItemDialog({
   onAdd,
   isSubmitting,
   existingItemIds,
+  onImageClick,
 }: AddBoxItemDialogProps) {
   const {
     page,
@@ -66,15 +68,38 @@ export function AddBoxItemDialog({
             }
           }
           return (
-            <div className="bg-muted flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border">
+            <div className="bg-muted group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border">
               {imgUrl ? (
-                <Image
-                  src={imgUrl}
-                  alt={item.productName || "Product image"}
-                  width={48}
-                  height={48}
-                  className="h-full w-full object-cover"
-                />
+                <>
+                  <Image
+                    src={imgUrl}
+                    alt={item.productName || "Product image"}
+                    width={48}
+                    height={48}
+                    className="h-full w-full object-cover"
+                  />
+                  {onImageClick && (
+                    <button
+                      onClick={() => onImageClick(imgUrl!)}
+                      className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/30 group-hover:opacity-100"
+                      title="View full screen"
+                    >
+                      <svg
+                        className="h-4 w-4 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </>
               ) : (
                 <span className="text-muted-foreground text-[10px]">No img</span>
               )}
@@ -106,7 +131,7 @@ export function AddBoxItemDialog({
         },
       },
     ],
-    [existingItemIds, isSubmitting, onAdd],
+    [existingItemIds, isSubmitting, onAdd, onImageClick],
   );
 
   return (

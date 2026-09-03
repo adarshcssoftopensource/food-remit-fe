@@ -11,6 +11,7 @@ const departmentSchema = z
   .object({
     countryId: z.string().min(1, "Country is required"),
     cityIds: z.array(z.string()).optional(),
+    storeId: z.string().optional(),
     departmentName: z
       .string()
       .min(2, "Department name must be at least 2 characters")
@@ -52,6 +53,7 @@ export function useDepartmentForm(
         department?.cityId || department?.city?.id
           ? [department.cityId || department.city?.id]
           : [],
+      storeId: department?.storeId || department?.store?.id || "",
       departmentName: department?.departmentName ?? "",
       iconFile: [],
       hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
@@ -66,6 +68,7 @@ export function useDepartmentForm(
           department?.cityId || department?.city?.id
             ? [department.cityId || department.city?.id]
             : [],
+        storeId: department?.storeId || department?.store?.id || "",
         departmentName: department?.departmentName ?? "",
         iconFile: [],
         hasExistingIcon: !!(department?.departmentIcon || department?.departmentIconUrl),
@@ -83,6 +86,10 @@ export function useDepartmentForm(
         values.cityIds.forEach((cityId) => {
           formData.append("cityIds[]", cityId);
         });
+      }
+
+      if (values.storeId) {
+        formData.append("storeId", values.storeId);
       }
 
       if (values.iconFile && values.iconFile.length > 0) {

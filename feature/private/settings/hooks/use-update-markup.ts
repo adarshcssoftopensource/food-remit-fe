@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 interface UpdateMarkupPayload {
   markupPercentage: string;
+  isFeeRefundable?: boolean;
 }
 
 interface UpdateMarkupResponse {
@@ -12,6 +13,7 @@ interface UpdateMarkupResponse {
   status: boolean;
   data: {
     markupPercentage: string;
+    isFeeRefundable?: boolean;
   };
 }
 

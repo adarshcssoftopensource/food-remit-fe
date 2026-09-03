@@ -18,6 +18,8 @@ type ReportDateFiltersProps = {
   onCancel?: () => void;
   onClear: () => void;
   children?: React.ReactNode;
+  hideCountryFilter?: boolean;
+  hideCityFilter?: boolean;
 };
 
 export function ReportDateFilters({
@@ -34,23 +36,28 @@ export function ReportDateFilters({
   onCancel,
   onClear,
   children,
-}: ReportDateFiltersProps) {
+  hideCountryFilter = false,
+  hideCityFilter = false,
+  customFilterCount = 0,
+}: ReportDateFiltersProps & { customFilterCount?: number }) {
   const activeFilterCount = useMemo(() => {
-    let count = 0;
+    let count = customFilterCount;
     if (fromDate || toDate) count++;
     if (countryId && countryId !== "all" && countryId !== "All") count++;
     if (cityId && cityId !== "all" && cityId !== "All") count++;
     return count;
-  }, [fromDate, toDate, countryId, cityId]);
+  }, [fromDate, toDate, countryId, cityId, customFilterCount]);
 
   return (
     <ModuleFilters
       title="Filter Reports"
-      description="Refine report generation by date range, country, and city"
+      description="Refine report generation by date range and filters"
       countryId={countryId}
       onCountryChange={onCountryChange}
       cityId={cityId}
       onCityChange={onCityChange}
+      hideCountryFilter={hideCountryFilter}
+      hideCityFilter={hideCityFilter}
       hasFilters={hasFilters}
       onApplyFilters={onApply}
       onCancelFilters={onCancel}

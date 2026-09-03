@@ -10,6 +10,7 @@ export function useGetItems(args: UseGetItemsArgs) {
   if (args.limit) queryParams.append("limit", args.limit.toString());
   if (args.search) queryParams.append("search", args.search);
   if (args.countryId) queryParams.append("countryId", args.countryId);
+  if (args.cityId) queryParams.append("cityId", args.cityId);
   if (args.departmentId) queryParams.append("departmentId", args.departmentId);
   if (args.categoryId) queryParams.append("categoryId", args.categoryId);
   if (args.status) queryParams.append("status", args.status);

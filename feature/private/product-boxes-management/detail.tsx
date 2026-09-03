@@ -2,6 +2,7 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { DataTable } from "@/components/common/data-table/data-table";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
@@ -60,6 +61,7 @@ export function ProductBoxDetail({ boxId }: ProductBoxDetailProps) {
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [itemToRemove, setItemToRemove] = useState<ProductBoxItem | null>(null);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   const handleRemoveItem = useCallback((item: ProductBoxItem) => {
     setItemToRemove(item);
@@ -88,7 +90,11 @@ export function ProductBoxDetail({ boxId }: ProductBoxDetailProps) {
   );
 
   const columns = useMemo(
-    () => getProductBoxItemColumns({ onRemove: handleRemoveItem }),
+    () =>
+      getProductBoxItemColumns({
+        onRemove: handleRemoveItem,
+        onImageClick: setZoomedImage,
+      }),
     [handleRemoveItem],
   );
 
@@ -289,6 +295,8 @@ export function ProductBoxDetail({ boxId }: ProductBoxDetailProps) {
         isLoading={removeItemMutation.isPending}
         variant="destructive"
       />
+
+      <ImageLightbox src={zoomedImage} onClose={() => setZoomedImage(null)} alt="Product Image" />
     </div>
   );
 }

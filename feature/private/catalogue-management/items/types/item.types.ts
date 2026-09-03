@@ -22,6 +22,8 @@ export interface ItemPricingData {
   taxPercent: number;
   taxAmount: number;
   taxLabel?: string;
+  markupPercent: number;
+  markupAmount: number;
   netPriceIncludingTax: number;
   discountPercent: number;
   discountAmount: number;
@@ -71,11 +73,14 @@ export interface ItemData {
   countryId: string;
   departmentId: string;
   categoryId: string;
+  storeId?: string | null;
+  storeName?: string | null;
   placements?: ItemPlacementData[];
 
   country?: { id: string; name: string };
   department?: { id: string; departmentName: string };
   category?: { id: string; categoryName: string };
+  store?: { id: string; storeName: string } | null;
 
   createdBy?: string | null;
   isGlobal?: boolean;
@@ -93,6 +98,7 @@ export interface ItemData {
   productId?: string;
   barcodeValue?: string;
   barcodeImage?: string | null;
+  qrCodeImage?: string | null;
 
   createdAt: string;
   updatedAt: string;
@@ -101,6 +107,7 @@ export interface ItemData {
 export interface UseGetItemsArgs {
   search?: string;
   countryId?: string;
+  cityId?: string;
   departmentId?: string;
   categoryId?: string;
   status?: string;

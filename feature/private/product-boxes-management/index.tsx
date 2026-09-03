@@ -2,6 +2,7 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { DataTable } from "@/components/common/data-table/data-table";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
@@ -48,6 +49,7 @@ export function ProductBoxesManagement() {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedBox, setSelectedBox] = useState<ProductBox | null>(null);
   const [boxToDelete, setBoxToDelete] = useState<ProductBox | null>(null);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   const createMutation = useCreateProductBox();
   const updateMutation = useUpdateProductBox(selectedBox?.id || "");
@@ -92,6 +94,10 @@ export function ProductBoxesManagement() {
     [router],
   );
 
+  const handleImageClick = useCallback((image: string) => {
+    setLightboxSrc(image);
+  }, []);
+
   const columns = useMemo(
     () =>
       getProductBoxColumns({
@@ -99,8 +105,9 @@ export function ProductBoxesManagement() {
         onDelete: handleDelete,
         onToggleStatus: handleToggleStatus,
         onView: handleView,
+        onImageClick: handleImageClick,
       }),
-    [handleEdit, handleDelete, handleToggleStatus, handleView],
+    [handleEdit, handleDelete, handleToggleStatus, handleView, handleImageClick],
   );
 
   const handleFormSubmit = (data: FormData) => {
@@ -131,6 +138,8 @@ export function ProductBoxesManagement() {
 
   return (
     <div className="space-y-6">
+      <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+
       <PageHeader
         title="Product Boxes Management"
         description="Manage product boxes and their items."

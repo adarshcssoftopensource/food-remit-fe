@@ -26,6 +26,7 @@ export interface AdminProfile {
   permissions: ProfilePermissions;
   image?: string | null;
   address?: string | null;
+  stores?: { id: string; storeName: string; city: string; country: string }[];
 }
 
 interface ProfileContextType {

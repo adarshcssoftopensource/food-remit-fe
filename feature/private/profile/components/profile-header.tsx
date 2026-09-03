@@ -3,7 +3,7 @@
 import { useProfile } from "@/components/providers/profile-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatRole } from "@/lib/formatRole";
-import { Camera, Mail, ShieldCheck, Loader2 } from "lucide-react";
+import { Camera, Mail, ShieldCheck, Loader2, Store } from "lucide-react";
 import { useRef } from "react";
 import { useUpdateProfile } from "../hooks/use-update-profile";
 import { successToast, errorToast } from "@/components/toaster";
@@ -19,6 +19,7 @@ export function ProfileHeader() {
   const displayName = profile?.name || "Admin User";
   const displayRole = formatRole(profile?.role || "");
   const displayEmail = profile?.email || "admin@foodremit.com";
+  const displayStores = profile?.stores ? profile.stores.map((s) => s.storeName).join(", ") : null;
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -88,7 +89,15 @@ export function ProfileHeader() {
               <ShieldCheck className="h-4 w-4" />
             </div>
           </div>
-          <p className="text-muted-foreground text-sm font-medium">{displayRole}</p>
+          <div className="flex flex-col gap-1">
+            <p className="text-muted-foreground text-sm font-medium">{displayRole}</p>
+            {displayStores && (
+              <div className="flex w-fit items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-0.5 text-sm font-medium text-emerald-700">
+                <Store className="h-3.5 w-3.5" />
+                <span>{displayStores}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 sm:mb-2 sm:items-end">

@@ -2,6 +2,7 @@ export interface OrderDataItem {
   itemId?: string;
   itemName?: string;
   productBarcode?: string;
+  upcCode?: string;
   productPicture?: string;
   price?: string | number;
   quantity?: number;
@@ -43,6 +44,9 @@ export interface OrderData {
   receiverAddress?: string;
   storeAddress?: string;
   customerPayment?: {
+    vendorBaseSubtotal?: string;
+    itemMarkupPercent?: string;
+    itemMarkupAmount?: string;
     merchandiseSubtotal: string;
     storeTaxPercent: string;
     storeTax: string;
@@ -66,5 +70,6 @@ export interface OrderData {
     govtTax?: string;
     creditCardFee?: string;
     vendorProceeds: string;
+    totalVendorSettlement?: string;
   };
 }

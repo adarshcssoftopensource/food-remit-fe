@@ -56,7 +56,7 @@ export function useOrderManagement(section?: OrderSectionKey) {
   } else if (section === "partial-orders") {
     status = "5"; // 5 represents partial/accepted
   } else if (section === "completed-orders") {
-    status = "6"; // 6 represents completed
+    status = "6,8"; // 6 represents completed, 8 represents paid
   } else if (section === "fulfilment") {
     status = "2,3,4"; // 2 = Preparing, 3/4 = Out for Delivery / Picked
   } else if (section === "history") {
