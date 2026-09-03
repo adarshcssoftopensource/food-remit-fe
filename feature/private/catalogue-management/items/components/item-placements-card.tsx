@@ -23,8 +23,8 @@ function formatPrice(row: ItemPlacementData) {
     currency: row.currency,
     countryName: row.country?.name,
   });
-  const symbol = row.currencySymbol || meta.symbol;
-  const code = row.currency || meta.code;
+  const symbol = row.currency || meta.code || row.currencySymbol;
+  const code = row.currencySymbol || meta.symbol || row.currency;
   const amount = Number(row.price);
   const priceText = Number.isFinite(amount) ? amount.toLocaleString() : "-";
 
