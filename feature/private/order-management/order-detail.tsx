@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
@@ -33,6 +35,13 @@ export function OrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
   const { data: order, isLoading } = useGetOrder(id);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+
+  const getImageUrl = (path: string) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") || "";
+    return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
+  };
 
   const renderStatus = (status: number) => {
     let label = "Unknown";
@@ -376,6 +385,14 @@ export function OrderDetailPage({ id }: { id: string }) {
                 </span>
               </div>
             )}
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">
+                Food Remit Commission({order.vendorSettlement?.commissionPercent || "0%"})
+              </span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.vendorSettlement?.commissionAmount || "0.00"}
+              </span>
+            </div>
 
             <hr className="my-1 border-dashed border-slate-200 dark:border-slate-700" />
 
@@ -669,6 +686,75 @@ export function OrderDetailPage({ id }: { id: string }) {
           )}
         </CardContent>
       </Card>
+
+      {(order.customerSignature || order.identityProf) && (
+        <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+          <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+            <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">
+              <ShieldCheck className="mr-2.5 size-5 text-indigo-500" />
+              Order Fulfillment Evidence
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {order.customerSignature && (
+                <div className="space-y-3">
+                  <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                    Customer Signature
+                  </p>
+                  <div className="group relative inline-block">
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src={getImageUrl(order.customerSignature)}
+                        alt="Customer Signature"
+                        fill
+                        unoptimized
+                        className="rounded-xl border border-slate-200 bg-white object-contain p-2 shadow-xs dark:border-slate-700 dark:bg-slate-950"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setLightboxImage(getImageUrl(order.customerSignature!))}
+                      className="absolute top-2 right-2 h-8 w-8 rounded-full border border-white bg-slate-900/80 p-0 text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 hover:bg-slate-900"
+                    >
+                      <Expand className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {order.identityProf && (
+                <div className="space-y-3">
+                  <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                    Identity Proof
+                  </p>
+                  <div className="group relative inline-block">
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src={getImageUrl(order.identityProf)}
+                        alt="Identity Proof"
+                        fill
+                        unoptimized
+                        className="rounded-xl border border-slate-200 bg-white object-contain p-2 shadow-xs dark:border-slate-700 dark:bg-slate-950"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setLightboxImage(getImageUrl(order.identityProf!))}
+                      className="absolute top-2 right-2 h-8 w-8 rounded-full border border-white bg-slate-900/80 p-0 text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 hover:bg-slate-900"
+                    >
+                      <Expand className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <ImageLightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />
     </div>
