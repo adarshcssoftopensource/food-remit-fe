@@ -209,14 +209,17 @@ export function OrderDetailPage({ id }: { id: string }) {
           <div className="flex flex-col gap-3 p-5">
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">
-                Items= Total Item price(base price+ markup price)
+                Item Price (Including Markup {order.customerPayment?.itemMarkupPercent || "0%"}
+                ){" "}
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.customerPayment?.merchandiseSubtotal || "0.00"}
               </span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Store Govt tax</span>
+              <span className="text-slate-500">
+                Store Govt tax ({order.customerPayment?.storeTaxPercent || "0%"})
+              </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.customerPayment?.storeTax || "0.00"}
               </span>
@@ -235,6 +238,18 @@ export function OrderDetailPage({ id }: { id: string }) {
               <p className="text-xl font-black text-blue-600 dark:text-blue-400">
                 {order.customerPayment?.totalCustomerPaid || "0.00"}
               </p>
+              {order.customerPayment?.refundAmount && (
+                <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
+                  <span className="font-semibold">Refunded (Out of stock)</span>
+                  <span className="font-bold">-{order.customerPayment.refundAmount}</span>
+                </div>
+              )}
+              {order.customerPayment?.actualRetainedAmount && (
+                <div className="mt-1 flex items-center justify-between text-xs text-blue-700 dark:text-blue-300">
+                  <span className="font-semibold">Actual Amount Retained</span>
+                  <span className="font-bold">{order.customerPayment.actualRetainedAmount}</span>
+                </div>
+              )}
             </div>
 
             <div className="mt-2 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/50">
@@ -267,7 +282,7 @@ export function OrderDetailPage({ id }: { id: string }) {
           <div className="flex flex-col gap-3 p-5">
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">
-                Food Remit Markup({order.foodRemitEarnings?.markupPercent || "0"}%)
+                Food Remit Markup({order.foodRemitEarnings?.markupPercent || "0%"})
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.foodRemitEarnings?.markupAmount || "0.00"}
@@ -275,7 +290,7 @@ export function OrderDetailPage({ id }: { id: string }) {
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">
-                Food Remit commissions({order.foodRemitEarnings?.commissionPercent || "0"}%)
+                Food Remit commissions({order.foodRemitEarnings?.commissionPercent || "0%"})
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.foodRemitEarnings?.commissionAmount || "0.00"}
@@ -295,6 +310,18 @@ export function OrderDetailPage({ id }: { id: string }) {
               <p className="text-xl font-black text-purple-600 dark:text-purple-400">
                 {order.foodRemitEarnings?.totalFoodRemitRevenue || "0.00"}
               </p>
+              {order.foodRemitEarnings?.refundDeduction && (
+                <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
+                  <span className="font-semibold">Refund Deduction</span>
+                  <span className="font-bold">-{order.foodRemitEarnings.refundDeduction}</span>
+                </div>
+              )}
+              {order.foodRemitEarnings?.actualRevenue && (
+                <div className="mt-1 flex items-center justify-between text-xs text-purple-700 dark:text-purple-300">
+                  <span className="font-semibold">Actual Revenue</span>
+                  <span className="font-bold">{order.foodRemitEarnings.actualRevenue}</span>
+                </div>
+              )}
             </div>
           </div>
         </Card>
@@ -316,7 +343,10 @@ export function OrderDetailPage({ id }: { id: string }) {
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Number of Items:</span>
               <span className="font-semibold text-slate-900 dark:text-white">
-                {order.items?.length || 0}
+                {order.vendorSettlement?.inStockItemsCount !== undefined &&
+                order.vendorSettlement?.totalItemsCount !== undefined
+                  ? `${order.vendorSettlement.inStockItemsCount} of ${order.vendorSettlement.totalItemsCount}`
+                  : order.items?.length || 0}
               </span>
             </div>
             <div className="flex justify-between text-xs">
@@ -327,7 +357,13 @@ export function OrderDetailPage({ id }: { id: string }) {
             </div>
             {order.vendorSettlement?.govtTax && (
               <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Store Govt tax</span>
+                <span className="text-slate-500">
+                  Store Govt tax(
+                  {order.vendorSettlement?.govtTax
+                    ? order.customerPayment?.storeTaxPercent || "0%"
+                    : ""}
+                  )
+                </span>
                 <span className="font-semibold text-slate-900 dark:text-white">
                   {order.vendorSettlement.govtTax}
                 </span>
@@ -343,6 +379,18 @@ export function OrderDetailPage({ id }: { id: string }) {
                   order.vendorSettlement?.vendorProceeds ||
                   "0.00"}
               </p>
+              {order.vendorSettlement?.refundDeduction && (
+                <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
+                  <span className="font-semibold">Refund Deduction</span>
+                  <span className="font-bold">-{order.vendorSettlement.refundDeduction}</span>
+                </div>
+              )}
+              {order.vendorSettlement?.actualVendorEarnings && (
+                <div className="mt-1 flex items-center justify-between text-xs text-emerald-700 dark:text-emerald-300">
+                  <span className="font-semibold">Actual Settlement</span>
+                  <span className="font-bold">{order.vendorSettlement.actualVendorEarnings}</span>
+                </div>
+              )}
             </div>
           </div>
         </Card>

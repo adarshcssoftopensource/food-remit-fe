@@ -55,6 +55,8 @@ export interface OrderData {
     totalCustomerPaid: string;
     paymentMethod: string;
     paymentStatus: string;
+    refundAmount?: string;
+    actualRetainedAmount?: string;
   };
   foodRemitEarnings?: {
     markupPercent: string;
@@ -63,6 +65,9 @@ export interface OrderData {
     commissionAmount: string;
     processingFee: string;
     totalFoodRemitRevenue: string;
+    cancellationStatus?: string;
+    refundDeduction?: string;
+    actualRevenue?: string;
   };
   vendorSettlement?: {
     vendorBaseAmount: string;
@@ -72,5 +77,10 @@ export interface OrderData {
     creditCardFee?: string;
     vendorProceeds: string;
     totalVendorSettlement?: string;
+    settlementStatus?: string;
+    refundDeduction?: string;
+    actualVendorEarnings?: string;
+    inStockItemsCount?: number;
+    totalItemsCount?: number;
   };
 }
