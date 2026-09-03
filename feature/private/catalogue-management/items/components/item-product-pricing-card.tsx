@@ -34,7 +34,7 @@ export function ItemProductPricingCard({
   onSelectCountryId,
 }: ItemProductPricingCardProps) {
   const pricing = item.pricing;
-  const symbol = pricing?.currencySymbol || pricing?.currency || "$";
+  const symbol = pricing?.currency || pricing?.currencySymbol || "-";
   const countryLabel = pricing?.countryName || item.pricingCountry?.name || "your location";
   const currency = pricing?.currency || "—";
 
