@@ -10,6 +10,7 @@ export interface OrderDataItem {
   taxStatus?: string;
   discountedItemPrice?: string | number;
   type?: number;
+  inStock?: boolean;
 }
 
 export interface OrderData {

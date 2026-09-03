@@ -500,6 +500,7 @@ export function OrderDetailPage({ id }: { id: string }) {
                     <th className="px-6 py-4">Product Picture</th>
                     <th className="px-6 py-4">Product Name</th>
                     <th className="px-6 py-4">Product QR Code</th>
+                    <th className="px-6 py-4">Stock Status</th>
                     <th className="px-6 py-4">Unit Price</th>
                     <th className="px-6 py-4">Quantity</th>
                     <th className="px-6 py-4 text-right">Total Price</th>
@@ -604,6 +605,21 @@ export function OrderDetailPage({ id }: { id: string }) {
                               </div>
                             );
                           })()}
+                        </td>
+                        <td className="px-6 py-4">
+                          {item.inStock === true ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                              <span className="size-1.5 rounded-full bg-emerald-500" />
+                              In Stock
+                            </span>
+                          ) : item.inStock === false ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
+                              <span className="size-1.5 rounded-full bg-rose-500" />
+                              Out of Stock
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-400 dark:text-slate-500">N/A</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
                           {unitStr} {priceNum.toFixed(2)}
