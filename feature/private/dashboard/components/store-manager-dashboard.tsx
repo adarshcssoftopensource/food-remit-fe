@@ -119,11 +119,11 @@ export function StoreManagerDashboard() {
       accentColor: "indigo" as const,
       iconBgClassName:
         "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400",
-      mainValue: dashboardData?.totalEarnings?.total ?? "0 USD",
+      mainValue: dashboardData?.totalEarnings?.total ?? "0.00",
       mainLabel: "All Time",
       subStats: [
-        { label: "Today", value: dashboardData?.totalEarnings?.today ?? "0 USD" },
-        { label: "This Week", value: dashboardData?.totalEarnings?.thisWeek ?? "0 USD" },
+        { label: "Today", value: dashboardData?.totalEarnings?.today ?? "0.00" },
+        { label: "This Week", value: dashboardData?.totalEarnings?.thisWeek ?? "0.00" },
       ],
     },
   ];
@@ -216,7 +216,7 @@ export function StoreManagerDashboard() {
                         Total Amount for {day.dateStr}
                       </span>
                       <span className="text-lg font-bold text-indigo-700 dark:text-indigo-400">
-                        {day.totalAmount.toFixed(2)} USD
+                        {day.formattedTotalAmount || day.totalAmount}
                       </span>
                     </div>
                     <div className="w-full overflow-x-auto rounded-xl border border-slate-100 dark:border-slate-800">
