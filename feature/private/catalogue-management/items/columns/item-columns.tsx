@@ -65,10 +65,16 @@ export function getItemColumns(
             maxWords={2}
             className="text-sm text-slate-600"
             text={
-              row.original.departmentDisplayName || row.original.department?.departmentName || "-"
+              isStoreScoped
+                ? row.original.department?.departmentName ||
+                  row.original.departmentDisplayName ||
+                  "-"
+                : row.original.departmentDisplayName ||
+                  row.original.department?.departmentName ||
+                  "-"
             }
           />
-          {(row.original.scopeLabel || row.original.isGlobal !== undefined) && (
+          {!isStoreScoped && (row.original.scopeLabel || row.original.isGlobal !== undefined) && (
             <div>
               <ScopeBadge isGlobal={row.original.isGlobal} scopeLabel={row.original.scopeLabel} />
             </div>
@@ -158,5 +164,10 @@ export function getItemColumns(
     },
   ];
 
-  return isStoreScoped ? columns.filter((col) => col.id !== "createdBy") : columns;
+  return isStoreScoped
+    ? columns.filter((col) => {
+        const colId = col.id || (col as any).accessorKey;
+        return colId !== "createdBy" && colId !== "storeName";
+      })
+    : columns;
 }

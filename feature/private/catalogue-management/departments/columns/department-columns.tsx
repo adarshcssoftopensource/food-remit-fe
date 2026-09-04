@@ -124,5 +124,10 @@ export function getDepartmentColumns(
     },
   ];
 
-  return isStoreScoped ? columns.filter((col) => col.id !== "createdBy") : columns;
+  return isStoreScoped
+    ? columns.filter((col) => {
+        const colId = col.id || (col as any).accessorKey;
+        return colId !== "createdBy" && colId !== "country" && colId !== "city";
+      })
+    : columns;
 }

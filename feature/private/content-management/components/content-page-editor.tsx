@@ -230,7 +230,7 @@ function EditContentPageDialog({
                       value={field.value}
                       onChange={field.onChange}
                       className={cn(
-                        "rounded-xl bg-white [&_.ql-container]:rounded-b-xl [&_.ql-editor]:min-h-50 [&_.ql-toolbar]:rounded-t-xl",
+                        "rounded-xl bg-white [&_.ql-container]:rounded-b-xl [&_.ql-editor]:max-h-[400px] [&_.ql-editor]:min-h-[200px] [&_.ql-editor]:overflow-y-auto [&_.ql-toolbar]:rounded-t-xl",
                         errors.description &&
                           "[&_.ql-container]:border-red-400 [&_.ql-toolbar]:border-red-400",
                       )}

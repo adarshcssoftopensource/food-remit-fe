@@ -77,14 +77,14 @@ export function ItemProductPricingCard({
         ...(item.storeId
           ? [
               {
-                label: `Store Govt tax(${pricing.taxPercent}%)`,
+                label: `Store Govt tax (${pricing.taxPercent}%)`,
                 value: `+ ${formatMoney(pricing.taxAmount, currencySymbol)}`,
                 addon: true,
               },
             ]
           : []),
         {
-          label: `Food Remit Markup(${pricing.markupPercent}%)`,
+          label: `Food Remit Markup (${pricing.markupPercent}%)`,
           value: `+ ${formatMoney(pricing.markupAmount, currencySymbol)}`,
           addon: true,
         },
