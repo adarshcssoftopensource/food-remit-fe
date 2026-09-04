@@ -138,7 +138,6 @@ export function ItemDiscountAvailabilityCell({ item }: { item: ItemData }) {
           {
             onSuccess: () =>
               successToast({ description: "Discount availability updated successfully" }),
-            onError: () => errorToast({ description: "Failed to update discount availability" }),
           },
         )
       }
