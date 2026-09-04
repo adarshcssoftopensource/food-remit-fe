@@ -166,7 +166,12 @@ export function DepartmentsManagement() {
   }, []);
 
   const { profile } = useProfile();
-  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+  const isStoreManager =
+    profile?.role === "store_manager" ||
+    profile?.roleCode === "STORE_MANAGER" ||
+    profile?.role === "store_admin" ||
+    profile?.roleCode === "STORE_ADMIN";
+  const isStoreScoped = isStoreManager;
 
   const columns = useMemo(
     () => getDepartmentColumns(handleEdit, handleViewDetails, handleImageClick, isStoreScoped),
@@ -214,6 +219,8 @@ export function DepartmentsManagement() {
         onCountryChange={setCountry}
         cityId={city}
         onCityChange={setCity}
+        hideCountryFilter={isStoreManager}
+        hideCityFilter={isStoreManager}
         hasFilters={hasFilters}
         onClearFilters={clearFilters}
         onApplyFilters={applyAllFilters}
