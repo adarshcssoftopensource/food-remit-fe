@@ -39,6 +39,11 @@ export interface OrderData {
   modeOfPayment?: string;
   foodType?: string;
   recurring?: string;
+  isRecurring?: boolean;
+  recurringFrequency?: string;
+  recurringStartDate?: string;
+  recurringEndDate?: string;
+  recurringTime?: string;
   senderPhoneNumber?: string;
   senderAddress?: string;
   receiverPhoneNumber?: string;

@@ -190,9 +190,49 @@ export function OrderDetailPage({ id }: { id: string }) {
                   </p>
                 </div>
               </div>
+
+              {/* Show detailed recurring info if it is recurring */}
+              {order.isRecurring && (
+                <div className="mt-6 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 dark:border-indigo-900/30 dark:bg-indigo-950/20">
+                  <h4 className="mb-3 flex items-center text-xs font-bold tracking-wider text-indigo-700 uppercase dark:text-indigo-400">
+                    <Repeat className="mr-2 size-3.5" /> Recurring Schedule Details
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                    <div>
+                      <p className="text-[10px] font-medium text-indigo-400/80 uppercase">
+                        Frequency
+                      </p>
+                      <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                        {order.recurringFrequency || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-medium text-indigo-400/80 uppercase">Time</p>
+                      <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                        {order.recurringTime || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-medium text-indigo-400/80 uppercase">
+                        Start Date
+                      </p>
+                      <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                        {order.recurringStartDate ? formatDate(order.recurringStartDate) : "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-medium text-indigo-400/80 uppercase">
+                        End Date
+                      </p>
+                      <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                        {order.recurringEndDate ? formatDate(order.recurringEndDate) : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Right Side: QR Code */}
             <div className="flex w-full shrink-0 flex-col items-center justify-center border-t border-slate-100 bg-slate-50/50 p-6 md:w-72 md:border-t-0 md:border-l dark:border-slate-800 dark:bg-slate-800/30">
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
