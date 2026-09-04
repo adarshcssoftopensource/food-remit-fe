@@ -24,6 +24,8 @@ import {
   Store,
   Tag,
   User,
+  CheckCircle2,
+  Clock,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -114,6 +116,21 @@ export function OrderDetailPage({ id }: { id: string }) {
       </div>
     );
   }
+  const recurringDateList = order?.recurringDateList || [];
+  const todayDate = new Date();
+  todayDate.setHours(0, 0, 0, 0);
+
+  const completedDates = recurringDateList.filter((d) => {
+    const date = new Date(d);
+    date.setHours(0, 0, 0, 0);
+    return date <= todayDate;
+  });
+
+  const pendingDates = recurringDateList.filter((d) => {
+    const date = new Date(d);
+    date.setHours(0, 0, 0, 0);
+    return date > todayDate;
+  });
 
   return (
     <div className="space-y-6">
@@ -206,12 +223,12 @@ export function OrderDetailPage({ id }: { id: string }) {
                         {order.recurringFrequency || "N/A"}
                       </p>
                     </div>
-                    <div>
+                    {/* <div>
                       <p className="text-[10px] font-medium text-indigo-400/80 uppercase">Time</p>
                       <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
                         {order.recurringTime || "N/A"}
                       </p>
-                    </div>
+                    </div> */}
                     <div>
                       <p className="text-[10px] font-medium text-indigo-400/80 uppercase">
                         Start Date
@@ -229,6 +246,64 @@ export function OrderDetailPage({ id }: { id: string }) {
                       </p>
                     </div>
                   </div>
+
+                  {recurringDateList.length > 0 && (
+                    <div className="mt-4 border-t border-indigo-200/50 pt-4 dark:border-indigo-800/50">
+                      <div className="mb-3 flex items-center justify-between">
+                        <p className="text-xs font-bold text-indigo-800 dark:text-indigo-300">
+                          Schedule Status ({completedDates.length}/{recurringDateList.length}{" "}
+                          Completed)
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                          <p className="mb-1.5 flex items-center text-[10px] font-medium text-emerald-600 uppercase dark:text-emerald-400">
+                            <CheckCircle2 className="mr-1 size-3" /> Paid / Completed (
+                            {completedDates.length})
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {completedDates.length > 0 ? (
+                              completedDates.map((date, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex items-center rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
+                                >
+                                  {formatDate(date)}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-[10px] text-slate-500 italic">
+                                No completed payments yet.
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="mb-1.5 flex items-center text-[10px] font-medium text-amber-600 uppercase dark:text-amber-400">
+                            <Clock className="mr-1 size-3" /> Pending ({pendingDates.length})
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {pendingDates.length > 0 ? (
+                              pendingDates.map((date, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex items-center rounded border border-dashed border-amber-200/50 bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/30 dark:text-amber-300"
+                                >
+                                  {formatDate(date)}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-[10px] text-slate-500 italic">
+                                No pending payments.
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

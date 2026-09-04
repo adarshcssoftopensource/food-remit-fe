@@ -44,6 +44,7 @@ export interface OrderData {
   recurringStartDate?: string;
   recurringEndDate?: string;
   recurringTime?: string;
+  recurringDateList?: string[];
   senderPhoneNumber?: string;
   senderAddress?: string;
   receiverPhoneNumber?: string;
