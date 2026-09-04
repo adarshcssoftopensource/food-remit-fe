@@ -117,20 +117,9 @@ export function OrderDetailPage({ id }: { id: string }) {
     );
   }
   const recurringDateList = order?.recurringDateList || [];
-  const todayDate = new Date();
-  todayDate.setHours(0, 0, 0, 0);
 
-  const completedDates = recurringDateList.filter((d) => {
-    const date = new Date(d);
-    date.setHours(0, 0, 0, 0);
-    return date <= todayDate;
-  });
-
-  const pendingDates = recurringDateList.filter((d) => {
-    const date = new Date(d);
-    date.setHours(0, 0, 0, 0);
-    return date > todayDate;
-  });
+  const completedDates = recurringDateList.filter((d) => d.status === 1);
+  const pendingDates = recurringDateList.filter((d) => d.status === 0);
 
   return (
     <div className="space-y-6">
@@ -264,12 +253,18 @@ export function OrderDetailPage({ id }: { id: string }) {
                           </p>
                           <div className="flex flex-wrap gap-1.5">
                             {completedDates.length > 0 ? (
-                              completedDates.map((date, idx) => (
+                              completedDates.map((d, idx) => (
                                 <span
                                   key={idx}
-                                  className="inline-flex items-center rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
+                                  className="inline-flex items-center gap-1 rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
+                                  title={d.paidOn ? `Paid on: ${formatDate(d.paidOn)}` : undefined}
                                 >
-                                  {formatDate(date)}
+                                  {formatDate(d.date)}
+                                  {d.paidOn && (
+                                    <span className="text-[9px] text-emerald-600 dark:text-emerald-400">
+                                      (Paid: {formatDate(d.paidOn)})
+                                    </span>
+                                  )}
                                 </span>
                               ))
                             ) : (
@@ -286,12 +281,12 @@ export function OrderDetailPage({ id }: { id: string }) {
                           </p>
                           <div className="flex flex-wrap gap-1.5">
                             {pendingDates.length > 0 ? (
-                              pendingDates.map((date, idx) => (
+                              pendingDates.map((d, idx) => (
                                 <span
                                   key={idx}
                                   className="inline-flex items-center rounded border border-dashed border-amber-200/50 bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/30 dark:text-amber-300"
                                 >
-                                  {formatDate(date)}
+                                  {formatDate(d.date)}
                                 </span>
                               ))
                             ) : (
