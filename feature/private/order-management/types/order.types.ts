@@ -10,6 +10,7 @@ export interface OrderDataItem {
   taxStatus?: string;
   discountedItemPrice?: string | number;
   type?: number;
+  inStock?: boolean;
 }
 
 export interface OrderData {
@@ -38,6 +39,12 @@ export interface OrderData {
   modeOfPayment?: string;
   foodType?: string;
   recurring?: string;
+  isRecurring?: boolean;
+  recurringFrequency?: string;
+  recurringStartDate?: string;
+  recurringEndDate?: string;
+  recurringTime?: string;
+  recurringDateList?: { date: string; status: number; paidOn?: string | null }[];
   senderPhoneNumber?: string;
   senderAddress?: string;
   receiverPhoneNumber?: string;
@@ -48,12 +55,15 @@ export interface OrderData {
     itemMarkupPercent?: string;
     itemMarkupAmount?: string;
     merchandiseSubtotal: string;
+    discountAmount?: string;
     storeTaxPercent: string;
     storeTax: string;
     processingFee: string;
     totalCustomerPaid: string;
     paymentMethod: string;
     paymentStatus: string;
+    refundAmount?: string;
+    actualRetainedAmount?: string;
   };
   foodRemitEarnings?: {
     markupPercent: string;
@@ -62,6 +72,9 @@ export interface OrderData {
     commissionAmount: string;
     processingFee: string;
     totalFoodRemitRevenue: string;
+    cancellationStatus?: string;
+    refundDeduction?: string;
+    actualRevenue?: string;
   };
   vendorSettlement?: {
     vendorBaseAmount: string;
@@ -71,5 +84,12 @@ export interface OrderData {
     creditCardFee?: string;
     vendorProceeds: string;
     totalVendorSettlement?: string;
+    settlementStatus?: string;
+    refundDeduction?: string;
+    actualVendorEarnings?: string;
+    inStockItemsCount?: number;
+    totalItemsCount?: number;
   };
+  customerSignature?: string;
+  identityProf?: string;
 }

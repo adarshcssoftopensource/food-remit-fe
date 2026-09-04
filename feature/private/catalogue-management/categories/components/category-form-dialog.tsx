@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import { Building2, Loader2 } from "lucide-react";
 
 import { CountrySelect } from "@/components/common/country-select";
 import { DepartmentSelect } from "@/components/common/department-select";
 import { ImageUpload } from "@/components/common/image-upload";
+import { useProfile } from "@/components/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -39,12 +41,21 @@ export function CategoryFormDialog({
   onSubmit,
 }: CategoryFormDialogProps) {
   const isEditing = !!category;
+  const { profile } = useProfile();
+  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+
   const { form, isSubmitting, handleSubmit } = useCategoryForm(
     open,
     category,
     onOpenChange,
     onSubmit,
   );
+
+  useEffect(() => {
+    if (open && isStoreScoped && profile?.stores?.[0]?.country) {
+      form.setValue("countryId", profile.stores[0].country);
+    }
+  }, [open, isStoreScoped, profile, form]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -81,30 +92,32 @@ export function CategoryFormDialog({
           <form onSubmit={handleSubmit} className="flex max-h-[calc(92vh-130px)] flex-col">
             <div className="overflow-y-auto px-6 py-6 sm:px-7">
               <div className="space-y-5">
-                <FormField
-                  control={form.control}
-                  name="countryId"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                        Country <span className="text-destructive">*</span>
-                      </FormLabel>
+                {!isStoreScoped && (
+                  <FormField
+                    control={form.control}
+                    name="countryId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                          Country <span className="text-destructive">*</span>
+                        </FormLabel>
 
-                      <CountrySelect
-                        disabled={isEditing}
-                        value={field.value}
-                        onValueChange={(val) => {
-                          field.onChange(val);
-                          form.setValue("departmentId", "");
-                        }}
-                        placeholder="Select country"
-                        className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
-                      />
+                        <CountrySelect
+                          disabled={isEditing}
+                          value={field.value}
+                          onValueChange={(val) => {
+                            field.onChange(val);
+                            form.setValue("departmentId", "");
+                          }}
+                          placeholder="Select country"
+                          className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
+                        />
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}

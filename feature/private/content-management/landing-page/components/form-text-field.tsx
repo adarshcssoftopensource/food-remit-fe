@@ -38,34 +38,39 @@ export function FormTextField<T extends FieldValues>({
     <Controller
       name={name}
       control={control}
-      render={({ field }) => (
-        <div className="flex flex-col gap-1.5">
-          <FieldLabel className="text-sm font-semibold text-slate-700">
-            {label} <span className="text-red-500">*</span>
-          </FieldLabel>
-          {multiline ? (
-            <Textarea
-              {...field}
-              value={field.value ?? ""}
-              rows={rows}
-              placeholder={placeholder}
-              aria-invalid={!!error}
-              className={cn(textareaClass, error && "border-red-400 bg-red-50")}
-              ref={inputRef as any}
-            />
-          ) : (
-            <Input
-              {...field}
-              value={field.value ?? ""}
-              placeholder={placeholder}
-              aria-invalid={!!error}
-              className={cn(inputClass, error && "border-red-400 bg-red-50")}
-              ref={inputRef as any}
-            />
-          )}
-          {error ? <p className="text-xs font-medium text-red-500">{error}</p> : null}
-        </div>
-      )}
+      render={({ field, fieldState: { error: fieldError } }) => {
+        const errorMessage = error || (fieldError?.message as string | undefined);
+        return (
+          <div className="flex flex-col gap-1.5">
+            <FieldLabel className="text-sm font-semibold text-slate-700">
+              {label} <span className="text-red-500">*</span>
+            </FieldLabel>
+            {multiline ? (
+              <Textarea
+                {...field}
+                value={field.value ?? ""}
+                rows={rows}
+                placeholder={placeholder}
+                aria-invalid={!!errorMessage}
+                className={cn(textareaClass, errorMessage && "border-red-400 bg-red-50")}
+                ref={inputRef as any}
+              />
+            ) : (
+              <Input
+                {...field}
+                value={field.value ?? ""}
+                placeholder={placeholder}
+                aria-invalid={!!errorMessage}
+                className={cn(inputClass, errorMessage && "border-red-400 bg-red-50")}
+                ref={inputRef as any}
+              />
+            )}
+            {errorMessage ? (
+              <p className="text-xs font-medium text-red-500">{errorMessage}</p>
+            ) : null}
+          </div>
+        );
+      }}
     />
   );
 }

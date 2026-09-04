@@ -175,9 +175,15 @@ export function ItemsManagement() {
     setLightboxSrc(image);
   }, []);
 
+  const isStoreScoped =
+    profile?.role === "store_manager" ||
+    profile?.role === "employee" ||
+    profile?.roleCode === "STORE_MANAGER" ||
+    profile?.roleCode === "EMPLOYEE";
+
   const columns = useMemo(
-    () => getItemColumns(handleEdit, handleViewDetails, handleImageClick),
-    [handleEdit, handleViewDetails, handleImageClick],
+    () => getItemColumns(handleEdit, handleViewDetails, handleImageClick, isStoreScoped),
+    [handleEdit, handleViewDetails, handleImageClick, isStoreScoped],
   );
 
   const handleDownloadCsv = async () => {
@@ -319,40 +325,38 @@ export function ItemsManagement() {
         onCancelFilters={cancelAllFilters}
         activeFilterCount={activeFilterCount}
       >
-        {!isStoreManager && (
-          <>
-            <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-              <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                Department
-              </Label>
-              <DepartmentSelect
-                countryId={country !== "all" ? country : undefined}
-                value={department === "all" ? "" : department}
-                onValueChange={(val) => {
-                  setDepartment(val || "all");
-                  setCategory("all");
-                }}
-                placeholder="All Departments"
-                disabled={country === "all"}
-                className="h-10 rounded-xl px-3"
-              />
-            </div>
+        <>
+          <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
+            <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              Department
+            </Label>
+            <DepartmentSelect
+              countryId={country !== "all" ? country : undefined}
+              value={department === "all" ? "" : department}
+              onValueChange={(val) => {
+                setDepartment(val || "all");
+                setCategory("all");
+              }}
+              placeholder="All Departments"
+              disabled={country === "all" && !isStoreManager}
+              className="h-10 rounded-xl px-3"
+            />
+          </div>
 
-            <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-              <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                Category
-              </Label>
-              <CategorySelect
-                departmentId={department !== "all" ? department : undefined}
-                value={category === "all" ? "" : category}
-                onValueChange={(val) => setCategory(val || "all")}
-                placeholder="All Categories"
-                disabled={department === "all"}
-                className="h-10 rounded-xl px-3"
-              />
-            </div>
-          </>
-        )}
+          <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
+            <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              Category
+            </Label>
+            <CategorySelect
+              departmentId={department !== "all" ? department : undefined}
+              value={category === "all" ? "" : category}
+              onValueChange={(val) => setCategory(val || "all")}
+              placeholder="All Categories"
+              disabled={department === "all"}
+              className="h-10 rounded-xl px-3"
+            />
+          </div>
+        </>
         <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
           <DateRangeFilter
             fromDate={fromDate}

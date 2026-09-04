@@ -24,6 +24,8 @@ import {
   Store,
   Tag,
   User,
+  CheckCircle2,
+  Clock,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -33,6 +35,13 @@ export function OrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
   const { data: order, isLoading } = useGetOrder(id);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+
+  const getImageUrl = (path: string) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") || "";
+    return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
+  };
 
   const renderStatus = (status: number) => {
     let label = "Unknown";
@@ -107,6 +116,10 @@ export function OrderDetailPage({ id }: { id: string }) {
       </div>
     );
   }
+  const recurringDateList = order?.recurringDateList || [];
+
+  const completedDates = recurringDateList.filter((d) => d.status === 1);
+  const pendingDates = recurringDateList.filter((d) => d.status === 0);
 
   return (
     <div className="space-y-6">
@@ -156,7 +169,14 @@ export function OrderDetailPage({ id }: { id: string }) {
                     <Calendar className="mr-1 size-3" /> Date & Time
                   </p>
                   <p className="mt-1 text-sm font-bold text-slate-800 dark:text-slate-200">
-                    {formatDate(order.createdAt)} • {order.time || "N/A"}
+                    {formatDate(order.createdAt)} •{" "}
+                    {order.createdAt
+                      ? new Date(order.createdAt).toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })
+                      : order.time || "N/A"}
                   </p>
                 </div>
                 <div>
@@ -176,9 +196,113 @@ export function OrderDetailPage({ id }: { id: string }) {
                   </p>
                 </div>
               </div>
+
+              {/* Show detailed recurring info if it is recurring */}
+              {order.isRecurring && (
+                <div className="mt-6 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 dark:border-indigo-900/30 dark:bg-indigo-950/20">
+                  <h4 className="mb-3 flex items-center text-xs font-bold tracking-wider text-indigo-700 uppercase dark:text-indigo-400">
+                    <Repeat className="mr-2 size-3.5" /> Recurring Schedule Details
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                    <div>
+                      <p className="text-[10px] font-medium text-indigo-400/80 uppercase">
+                        Frequency
+                      </p>
+                      <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                        {order.recurringFrequency || "N/A"}
+                      </p>
+                    </div>
+                    {/* <div>
+                      <p className="text-[10px] font-medium text-indigo-400/80 uppercase">Time</p>
+                      <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                        {order.recurringTime || "N/A"}
+                      </p>
+                    </div> */}
+                    <div>
+                      <p className="text-[10px] font-medium text-indigo-400/80 uppercase">
+                        Start Date
+                      </p>
+                      <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                        {order.recurringStartDate ? formatDate(order.recurringStartDate) : "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-medium text-indigo-400/80 uppercase">
+                        End Date
+                      </p>
+                      <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                        {order.recurringEndDate ? formatDate(order.recurringEndDate) : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {recurringDateList.length > 0 && (
+                    <div className="mt-4 border-t border-indigo-200/50 pt-4 dark:border-indigo-800/50">
+                      <div className="mb-3 flex items-center justify-between">
+                        <p className="text-xs font-bold text-indigo-800 dark:text-indigo-300">
+                          Schedule Status ({completedDates.length}/{recurringDateList.length}{" "}
+                          Completed)
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                          <p className="mb-1.5 flex items-center text-[10px] font-medium text-emerald-600 uppercase dark:text-emerald-400">
+                            <CheckCircle2 className="mr-1 size-3" /> Paid / Completed (
+                            {completedDates.length})
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {completedDates.length > 0 ? (
+                              completedDates.map((d, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex items-center gap-1 rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
+                                  title={d.paidOn ? `Paid on: ${formatDate(d.paidOn)}` : undefined}
+                                >
+                                  {formatDate(d.date)}
+                                  {d.paidOn && (
+                                    <span className="text-[9px] text-emerald-600 dark:text-emerald-400">
+                                      (Paid: {formatDate(d.paidOn)})
+                                    </span>
+                                  )}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-[10px] text-slate-500 italic">
+                                No completed payments yet.
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="mb-1.5 flex items-center text-[10px] font-medium text-amber-600 uppercase dark:text-amber-400">
+                            <Clock className="mr-1 size-3" /> Pending ({pendingDates.length})
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {pendingDates.length > 0 ? (
+                              pendingDates.map((d, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex items-center rounded border border-dashed border-amber-200/50 bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/30 dark:text-amber-300"
+                                >
+                                  {formatDate(d.date)}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-[10px] text-slate-500 italic">
+                                No pending payments.
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Right Side: QR Code */}
             <div className="flex w-full shrink-0 flex-col items-center justify-center border-t border-slate-100 bg-slate-50/50 p-6 md:w-72 md:border-t-0 md:border-l dark:border-slate-800 dark:bg-slate-800/30">
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -207,33 +331,28 @@ export function OrderDetailPage({ id }: { id: string }) {
             <CreditCard className="size-4 text-blue-500" />
           </div>
           <div className="flex flex-col gap-3 p-5">
-            {order.customerPayment?.vendorBaseSubtotal && (
-              <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Vendor Base Subtotal</span>
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {order.customerPayment.vendorBaseSubtotal}
-                </span>
-              </div>
-            )}
-            {order.customerPayment?.itemMarkupAmount && (
-              <div className="flex justify-between text-xs">
-                <span className="text-slate-500">
-                  Markup ({order.customerPayment?.itemMarkupPercent || "0"}%)
-                </span>
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {order.customerPayment.itemMarkupAmount}
-                </span>
-              </div>
-            )}
             <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Customer Merchandise Subtotal</span>
+              <span className="text-slate-500">
+                Item Price (Including Markup {order.customerPayment?.itemMarkupPercent || "0%"}
+                ){" "}
+              </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.customerPayment?.merchandiseSubtotal || "0.00"}
               </span>
             </div>
+            {order.customerPayment?.discountAmount &&
+              order.customerPayment.discountAmount !== "₹0.00" &&
+              order.customerPayment.discountAmount !== "$0.00" && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-500">Discount Applied</span>
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                    -{order.customerPayment.discountAmount}
+                  </span>
+                </div>
+              )}
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">
-                Govt Store Tax ({order.customerPayment?.storeTaxPercent || "0"}%)
+                Store Govt tax ({order.customerPayment?.storeTaxPercent || "0%"})
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.customerPayment?.storeTax || "0.00"}
@@ -249,12 +368,22 @@ export function OrderDetailPage({ id }: { id: string }) {
             <hr className="my-1 border-dashed border-slate-200 dark:border-slate-700" />
 
             <div>
-              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400">
-                Total Customer Paid
-              </p>
+              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400">Order Total</p>
               <p className="text-xl font-black text-blue-600 dark:text-blue-400">
                 {order.customerPayment?.totalCustomerPaid || "0.00"}
               </p>
+              {order.customerPayment?.refundAmount && (
+                <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
+                  <span className="font-semibold">Refunded (Out of stock)</span>
+                  <span className="font-bold">-{order.customerPayment.refundAmount}</span>
+                </div>
+              )}
+              {order.customerPayment?.actualRetainedAmount && (
+                <div className="mt-1 flex items-center justify-between text-xs text-blue-700 dark:text-blue-300">
+                  <span className="font-semibold">Actual Amount Retained</span>
+                  <span className="font-bold">{order.customerPayment.actualRetainedAmount}</span>
+                </div>
+              )}
             </div>
 
             <div className="mt-2 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/50">
@@ -287,7 +416,7 @@ export function OrderDetailPage({ id }: { id: string }) {
           <div className="flex flex-col gap-3 p-5">
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">
-                Item Markup ({order.foodRemitEarnings?.markupPercent || "0"}%)
+                Food Remit Markup({order.foodRemitEarnings?.markupPercent || "0%"})
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.foodRemitEarnings?.markupAmount || "0.00"}
@@ -295,7 +424,7 @@ export function OrderDetailPage({ id }: { id: string }) {
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">
-                Vendor Commission ({order.foodRemitEarnings?.commissionPercent || "0"}%)
+                Food Remit commissions({order.foodRemitEarnings?.commissionPercent || "0%"})
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.foodRemitEarnings?.commissionAmount || "0.00"}
@@ -311,12 +440,22 @@ export function OrderDetailPage({ id }: { id: string }) {
             <hr className="my-1 border-dashed border-slate-200 dark:border-slate-700" />
 
             <div className="mt-2">
-              <p className="text-xs font-semibold text-purple-600 dark:text-purple-400">
-                Total Food Remit Revenue
-              </p>
+              <p className="text-xs font-semibold text-purple-600 dark:text-purple-400">Total</p>
               <p className="text-xl font-black text-purple-600 dark:text-purple-400">
                 {order.foodRemitEarnings?.totalFoodRemitRevenue || "0.00"}
               </p>
+              {order.foodRemitEarnings?.refundDeduction && (
+                <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
+                  <span className="font-semibold">Refund Deduction</span>
+                  <span className="font-bold">-{order.foodRemitEarnings.refundDeduction}</span>
+                </div>
+              )}
+              {order.foodRemitEarnings?.actualRevenue && (
+                <div className="mt-1 flex items-center justify-between text-xs text-purple-700 dark:text-purple-300">
+                  <span className="font-semibold">Actual Revenue</span>
+                  <span className="font-bold">{order.foodRemitEarnings.actualRevenue}</span>
+                </div>
+              )}
             </div>
           </div>
         </Card>
@@ -336,45 +475,64 @@ export function OrderDetailPage({ id }: { id: string }) {
           </div>
           <div className="flex flex-col gap-3 p-5">
             <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Vendor Base Amount</span>
+              <span className="text-slate-500">Number of Items:</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.vendorSettlement?.inStockItemsCount !== undefined &&
+                order.vendorSettlement?.totalItemsCount !== undefined
+                  ? `${order.vendorSettlement.inStockItemsCount} of ${order.vendorSettlement.totalItemsCount}`
+                  : order.items?.length || 0}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">Base Price</span>
               <span className="font-semibold text-slate-900 dark:text-white">
                 {order.vendorSettlement?.vendorBaseAmount || "0.00"}
               </span>
             </div>
-            <div className="flex justify-between text-xs text-red-500">
-              <span>
-                Food Remit Commission ({order.vendorSettlement?.commissionPercent || "0"}%)
-              </span>
-              <span className="font-semibold">
-                {order.vendorSettlement?.commissionAmount || "0.00"}
-              </span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Vendor Merchandise Proceeds</span>
-              <span className="font-semibold text-slate-900 dark:text-white">
-                {order.vendorSettlement?.vendorProceeds || "0.00"}
-              </span>
-            </div>
             {order.vendorSettlement?.govtTax && (
               <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Govt Store Tax</span>
+                <span className="text-slate-500">
+                  Store Govt tax(
+                  {order.vendorSettlement?.govtTax
+                    ? order.customerPayment?.storeTaxPercent || "0%"
+                    : ""}
+                  )
+                </span>
                 <span className="font-semibold text-slate-900 dark:text-white">
                   {order.vendorSettlement.govtTax}
                 </span>
               </div>
             )}
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-500">
+                Food Remit Commission({order.vendorSettlement?.commissionPercent || "0%"})
+              </span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {order.vendorSettlement?.commissionAmount || "0.00"}
+              </span>
+            </div>
 
             <hr className="my-1 border-dashed border-slate-200 dark:border-slate-700" />
 
             <div className="mt-2">
-              <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                Total Vendor Settlement
-              </p>
+              <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Total</p>
               <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
                 {order.vendorSettlement?.totalVendorSettlement ||
                   order.vendorSettlement?.vendorProceeds ||
                   "0.00"}
               </p>
+              {order.vendorSettlement?.refundDeduction && (
+                <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
+                  <span className="font-semibold">Refund Deduction</span>
+                  <span className="font-bold">-{order.vendorSettlement.refundDeduction}</span>
+                </div>
+              )}
+              {order.vendorSettlement?.actualVendorEarnings && (
+                <div className="mt-1 flex items-center justify-between text-xs text-emerald-700 dark:text-emerald-300">
+                  <span className="font-semibold">Actual Settlement</span>
+                  <span className="font-bold">{order.vendorSettlement.actualVendorEarnings}</span>
+                </div>
+              )}
             </div>
           </div>
         </Card>
@@ -500,6 +658,7 @@ export function OrderDetailPage({ id }: { id: string }) {
                     <th className="px-6 py-4">Product Picture</th>
                     <th className="px-6 py-4">Product Name</th>
                     <th className="px-6 py-4">Product QR Code</th>
+                    <th className="px-6 py-4">Stock Status</th>
                     <th className="px-6 py-4">Unit Price</th>
                     <th className="px-6 py-4">Quantity</th>
                     <th className="px-6 py-4 text-right">Total Price</th>
@@ -605,6 +764,21 @@ export function OrderDetailPage({ id }: { id: string }) {
                             );
                           })()}
                         </td>
+                        <td className="px-6 py-4">
+                          {item.inStock === true ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                              <span className="size-1.5 rounded-full bg-emerald-500" />
+                              In Stock
+                            </span>
+                          ) : item.inStock === false ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
+                              <span className="size-1.5 rounded-full bg-rose-500" />
+                              Out of Stock
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-400 dark:text-slate-500">N/A</span>
+                          )}
+                        </td>
                         <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
                           {unitStr} {priceNum.toFixed(2)}
                         </td>
@@ -630,6 +804,75 @@ export function OrderDetailPage({ id }: { id: string }) {
           )}
         </CardContent>
       </Card>
+
+      {/* {(order.customerSignature || order.identityProf) && (
+        <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
+          <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+            <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">
+              <ShieldCheck className="mr-2.5 size-5 text-indigo-500" />
+              Order Fulfillment Evidence
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {order.customerSignature && (
+                <div className="space-y-3">
+                  <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                    Customer Signature
+                  </p>
+                  <div className="group relative inline-block">
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src={getImageUrl(order.customerSignature)}
+                        alt="Customer Signature"
+                        fill
+                        unoptimized
+                        className="rounded-xl border border-slate-200 bg-white object-contain p-2 shadow-xs dark:border-slate-700 dark:bg-slate-950"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setLightboxImage(getImageUrl(order.customerSignature!))}
+                      className="absolute top-2 right-2 h-8 w-8 rounded-full border border-white bg-slate-900/80 p-0 text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 hover:bg-slate-900"
+                    >
+                      <Expand className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {order.identityProf && (
+                <div className="space-y-3">
+                  <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                    Identity Proof
+                  </p>
+                  <div className="group relative inline-block">
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src={getImageUrl(order.identityProf)}
+                        alt="Identity Proof"
+                        fill
+                        unoptimized
+                        className="rounded-xl border border-slate-200 bg-white object-contain p-2 shadow-xs dark:border-slate-700 dark:bg-slate-950"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setLightboxImage(getImageUrl(order.identityProf!))}
+                      className="absolute top-2 right-2 h-8 w-8 rounded-full border border-white bg-slate-900/80 p-0 text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 hover:bg-slate-900"
+                    >
+                      <Expand className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )} */}
 
       <ImageLightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />
     </div>

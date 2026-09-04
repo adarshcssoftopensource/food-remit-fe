@@ -1,13 +1,14 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { CategorySelect } from "@/components/common/category-select";
 import { CountrySelect } from "@/components/common/country-select";
 import { CurrencyPriceInput } from "@/components/common/currency-price-input";
 import { DepartmentSelect } from "@/components/common/department-select";
+import { useProfile } from "@/components/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -125,7 +126,9 @@ export function ItemPlacementsField({
       },
     ]);
 
-    setDraftCountryId("");
+    if (!isStoreScoped) {
+      setDraftCountryId("");
+    }
     setDraftDepartmentId("");
     setDraftCategoryId("");
     setDraftPrice("");
@@ -139,18 +142,38 @@ export function ItemPlacementsField({
     onChange(rows.filter((row) => row.key !== key));
   };
 
+  const { profile } = useProfile();
+  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+
+  // Auto-select store country if store manager
+  useEffect(() => {
+    if (isStoreScoped && profile?.stores?.[0]?.country) {
+      if (draftCountryId !== profile.stores[0].country) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setDraftCountryId(profile.stores[0].country);
+      }
+    }
+  }, [isStoreScoped, profile, draftCountryId]);
+
   return (
     <div className={cn("flex flex-col gap-4", className)}>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <CountrySelect
-          value={draftCountryId}
-          onValueChange={(val) => {
-            setDraftCountryId(val);
-            setDraftDepartmentId("");
-            setDraftCategoryId("");
-          }}
-          placeholder="Select country"
-        />
+      <div
+        className={cn(
+          "grid gap-3 sm:grid-cols-2",
+          isStoreScoped ? "lg:grid-cols-4" : "lg:grid-cols-5",
+        )}
+      >
+        {!isStoreScoped && (
+          <CountrySelect
+            value={draftCountryId}
+            onValueChange={(val) => {
+              setDraftCountryId(val);
+              setDraftDepartmentId("");
+              setDraftCategoryId("");
+            }}
+            placeholder="Select country"
+          />
+        )}
         <DepartmentSelect
           countryId={draftCountryId}
           value={draftDepartmentId}

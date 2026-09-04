@@ -26,7 +26,15 @@ export interface AdminProfile {
   permissions: ProfilePermissions;
   image?: string | null;
   address?: string | null;
-  stores?: { id: string; storeName: string; city: string; country: string }[];
+  stores?: {
+    id: string;
+    storeName: string;
+    city: string;
+    country: string;
+    cityName?: string | null;
+    countryName?: string | null;
+  }[];
+  isReadOnly?: boolean;
 }
 
 interface ProfileContextType {
@@ -35,6 +43,7 @@ interface ProfileContextType {
   isError: boolean;
   isSuperAdmin: boolean;
   hasPermission: (permissionKey: keyof ProfilePermissions | string) => boolean;
+  isReadOnly: boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
@@ -104,6 +113,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         isError: false,
         isSuperAdmin,
         hasPermission,
+        isReadOnly: profileData.isReadOnly || false,
       }}
     >
       {children}

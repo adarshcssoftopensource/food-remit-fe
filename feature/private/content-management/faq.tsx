@@ -80,8 +80,8 @@ export function FaqManagementPage() {
       {isLoading ? (
         <FaqSkeleton />
       ) : (
-        <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
-          <CardHeader className="from-primary/8 border-b bg-linear-to-r via-emerald-50/40 to-transparent">
+        <Card className="overflow-hidden rounded-2xl border-slate-200/80 pt-0 shadow-sm">
+          <CardHeader className="from-primary/8 border-b bg-linear-to-r via-emerald-50/40 to-transparent py-5">
             <div className="flex items-center gap-3">
               <div className="bg-primary/15 text-primary flex size-10 items-center justify-center rounded-xl">
                 <CircleHelp className="size-5" />

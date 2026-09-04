@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
 import { useDeleteCategory } from "../hooks/use-delete-category";
 import { CategoryData } from "../types/category.types";
+import { useProfile } from "@/components/providers/profile-provider";
 
 interface CategoryActionsCellProps {
   category: CategoryData;
@@ -21,6 +22,8 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
   const [deleteOpen, setDeleteOpen] = useState(false);
   const { mutateAsync: updateStatus, isPending } = useUpdateCategoryStatus(category.id);
   const { mutateAsync: deleteCategory, isPending: isDeleting } = useDeleteCategory(category.id);
+  const { profile } = useProfile();
+  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
 
   const handleStatusChange = async (checked: boolean) => {
     setIsActive(checked);
@@ -45,15 +48,17 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
 
   return (
     <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-full text-slate-500"
-        onClick={() => onView(category)}
-        title="View category"
-      >
-        <Eye className="size-4" />
-      </Button>
+      {!isStoreScoped && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-8 rounded-full text-slate-500"
+          onClick={() => onView(category)}
+          title="View category"
+        >
+          <Eye className="size-4" />
+        </Button>
+      )}
 
       <Button
         variant="outline"

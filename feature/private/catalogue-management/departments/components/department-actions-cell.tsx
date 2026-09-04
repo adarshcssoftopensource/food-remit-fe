@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useUpdateDepartmentStatus } from "../hooks/use-update-department-status";
 import { useDeleteDepartment } from "../hooks/use-delete-department";
 import { DepartmentData } from "../types/department.types";
+import { useProfile } from "@/components/providers/profile-provider";
 
 interface DepartmentActionsCellProps {
   department: DepartmentData;
@@ -23,6 +24,8 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
   const { mutateAsync: deleteDepartment, isPending: isDeleting } = useDeleteDepartment(
     department.id,
   );
+  const { profile } = useProfile();
+  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
 
   const handleStatusChange = async (checked: boolean) => {
     setIsActive(checked);
@@ -47,15 +50,17 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
 
   return (
     <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-full text-slate-500"
-        onClick={() => onView(department)}
-        title="View department"
-      >
-        <Eye className="size-4" />
-      </Button>
+      {!isStoreScoped && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-8 rounded-full text-slate-500"
+          onClick={() => onView(department)}
+          title="View department"
+        >
+          <Eye className="size-4" />
+        </Button>
+      )}
 
       <Button
         variant="outline"

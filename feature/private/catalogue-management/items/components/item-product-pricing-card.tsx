@@ -13,8 +13,8 @@ interface ItemProductPricingCardProps {
   onSelectCountryId?: (countryId: string) => void;
 }
 
-function formatMoney(amount: number, symbol: string) {
-  return `${symbol}${amount.toFixed(2)}`;
+function formatMoney(amount: number, currencySymbol: string) {
+  return `${currencySymbol}${amount.toFixed(2)}`;
 }
 
 type ReceiptLine = {
@@ -34,7 +34,7 @@ export function ItemProductPricingCard({
   onSelectCountryId,
 }: ItemProductPricingCardProps) {
   const pricing = item.pricing;
-  const symbol = pricing?.currencySymbol || pricing?.currency || "$";
+  const currencySymbol = pricing?.currencySymbol || "-";
   const countryLabel = pricing?.countryName || item.pricingCountry?.name || "your location";
   const currency = pricing?.currency || "—";
 
@@ -54,43 +54,48 @@ export function ItemProductPricingCard({
   const lines: ReceiptLine[] = pricing
     ? [
         {
-          label: "Product Base Price",
-          value: formatMoney(pricing.basePrice, symbol),
+          label: "Item base price",
+          value: formatMoney(pricing.basePrice, currencySymbol),
           muted: true,
-        },
-        {
-          label: `Govt Tax (${pricing.taxPercent}%)`,
-          value: `+ ${formatMoney(pricing.taxAmount, symbol)}`,
-          addon: true,
-        },
-        {
-          label: `Markup Tax (${pricing.markupPercent}%)`,
-          value: `+ ${formatMoney(pricing.markupAmount, symbol)}`,
-          addon: true,
-        },
-        {
-          label: "Net Price (Including Tax)",
-          value: formatMoney(pricing.netPriceIncludingTax, symbol),
-          subtotal: true,
         },
         {
           label: pricing.discountEnabled ? `Discount (${pricing.discountPercent}%)` : "Discount",
           value: pricing.discountEnabled
-            ? `− ${formatMoney(pricing.discountAmount, symbol)}`
-            : "Not available",
+            ? `− ${formatMoney(pricing.discountAmount, currencySymbol)}`
+            : "N/A",
           negative: pricing.discountEnabled,
           muted: !pricing.discountEnabled,
         },
         {
           label: "Price After Discount",
-          value: formatMoney(pricing.priceAfterDiscount, symbol),
+          value: formatMoney(
+            pricing.basePrice - (pricing.discountEnabled ? pricing.discountAmount : 0),
+            currencySymbol,
+          ),
           subtotal: true,
+        },
+        ...(item.storeId
+          ? [
+              {
+                label: `Store Govt tax(${pricing.taxPercent}%)`,
+                value: `+ ${formatMoney(pricing.taxAmount, currencySymbol)}`,
+                addon: true,
+              },
+            ]
+          : []),
+        {
+          label: `Food Remit Markup(${pricing.markupPercent}%)`,
+          value: `+ ${formatMoney(pricing.markupAmount, currencySymbol)}`,
+          addon: true,
         },
       ]
     : [];
 
   const itemTotal = pricing
-    ? formatMoney(pricing.itemTotal ?? pricing.priceAfterDiscount ?? pricing.grandTotal, symbol)
+    ? formatMoney(
+        pricing.itemTotal ?? pricing.priceAfterDiscount ?? pricing.grandTotal,
+        currencySymbol,
+      )
     : "—";
 
   return (
@@ -172,7 +177,7 @@ export function ItemProductPricingCard({
                       Currency
                     </p>
                     <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                      {currency} · {countryLabel}
+                      {currencySymbol} · {countryLabel}
                     </p>
                   </div>
                 </div>
@@ -249,7 +254,7 @@ export function ItemProductPricingCard({
                     Processing Fee (per order)
                   </p>
                   <p className="font-mono text-lg font-bold text-amber-900 tabular-nums dark:text-amber-50">
-                    {formatMoney(pricing.processingFeeAmount, symbol)}
+                    {formatMoney(pricing.processingFeeAmount, currencySymbol)}
                   </p>
                 </div>
                 <p className="mt-1 flex items-start gap-1.5 text-xs text-amber-800/90 dark:text-amber-200/80">

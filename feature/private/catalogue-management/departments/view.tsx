@@ -163,14 +163,22 @@ export function DepartmentView({ id }: DepartmentViewProps) {
 
                 <InfoCard
                   icon={<MapPin className="h-5 w-5" />}
-                  label="City"
+                  label={department.cities && department.cities.length > 1 ? "Cities" : "City"}
                   value={
-                    department.scopeLabel ||
-                    (department.city?.name || department.cityName
-                      ? `City · ${department.city?.name || department.cityName}`
-                      : "Global (All Cities)")
+                    department.isGlobal
+                      ? "Global (All Cities)"
+                      : department.cities && department.cities.length > 0
+                        ? department.cities.map((c) => c.name).join(", ")
+                        : department.city?.name || department.cityName || "Unknown"
                   }
                 />
+                {(department.store?.storeName || department.storeName) && (
+                  <InfoCard
+                    icon={<Building2 className="h-5 w-5 text-indigo-500" />}
+                    label="Store"
+                    value={department.store?.storeName || department.storeName || "Unknown"}
+                  />
+                )}
                 <InfoCard
                   icon={<User className="h-5 w-5" />}
                   label="Created By"

@@ -15,8 +15,9 @@ export function getItemColumns(
   onEdit: (item: ItemData) => void,
   onView: (item: ItemData) => void,
   onImageClick?: (image: string) => void,
+  isStoreScoped?: boolean,
 ): ColumnDef<ItemData>[] {
-  return [
+  const columns: ColumnDef<ItemData>[] = [
     {
       id: "serial",
       header: "S.no",
@@ -100,7 +101,7 @@ export function getItemColumns(
         const extra = placements.length > 1 ? ` +${placements.length - 1}` : "";
         return (
           <span className="text-sm font-medium text-slate-700">
-            {first.currencySymbol || first.currency || ""} {priceText}
+            {first.currencySymbol || ""} {priceText}
             {extra ? <span className="ml-1 text-xs text-slate-400">{extra}</span> : null}
           </span>
         );
@@ -125,18 +126,30 @@ export function getItemColumns(
     },
     {
       id: "availability",
-      header: "Availability",
-      cell: ({ row }) => <ItemAvailabilityCell item={row.original} />,
+      header: () => <div className="text-center">Availability</div>,
+      cell: ({ row }) => (
+        <div className="flex justify-center">
+          <ItemAvailabilityCell item={row.original} />
+        </div>
+      ),
     },
     {
       id: "adminShare",
-      header: "Food Remit Markup",
-      cell: ({ row }) => <ItemAdminShareCell item={row.original} />,
+      header: () => <div className="text-center">Food Remit Markup</div>,
+      cell: ({ row }) => (
+        <div className="flex justify-center">
+          <ItemAdminShareCell item={row.original} />
+        </div>
+      ),
     },
     {
       id: "discountAvailability",
-      header: "Discount Availability",
-      cell: ({ row }) => <ItemDiscountAvailabilityCell item={row.original} />,
+      header: () => <div className="text-center">Discount Availability</div>,
+      cell: ({ row }) => (
+        <div className="flex justify-center">
+          <ItemDiscountAvailabilityCell item={row.original} />
+        </div>
+      ),
     },
     {
       id: "actions",
@@ -144,4 +157,6 @@ export function getItemColumns(
       cell: ({ row }) => <ItemActionsCell item={row.original} onEdit={onEdit} onView={onView} />,
     },
   ];
+
+  return isStoreScoped ? columns.filter((col) => col.id !== "createdBy") : columns;
 }
