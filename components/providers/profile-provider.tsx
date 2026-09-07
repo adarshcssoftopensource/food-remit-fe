@@ -29,6 +29,7 @@ export interface AdminProfile {
   stores?: {
     id: string;
     storeName: string;
+    storeImage?: string | null;
     city: string;
     country: string;
     cityName?: string | null;
