@@ -109,11 +109,11 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "fixed inset-0 top-16 bg-white transition-all duration-300 lg:hidden",
-          open ? "visible opacity-100" : "invisible opacity-0",
+          "absolute inset-x-0 top-full max-h-[calc(100vh-64px)] overflow-y-auto rounded-b-3xl border-t border-slate-200/50 bg-white shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300 lg:hidden dark:border-slate-800/50 dark:bg-slate-900",
+          open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0",
         )}
       >
-        <div className="flex h-full flex-col gap-2 px-5 py-6">
+        <div className="flex flex-col gap-1.5 px-5 py-6">
           {VENDOR_NAV_LINKS.map((link) => (
             <Link
               key={link.href}

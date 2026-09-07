@@ -47,19 +47,19 @@ type SectionNavProps = {
 export function SectionNav({ activeSection, onSelect }: SectionNavProps) {
   return (
     <aside className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-sm">
-      <div className="from-primary/8 border-b border-slate-100 bg-linear-to-r via-emerald-50/50 to-transparent px-4 py-4">
-        <div className="flex items-center gap-2.5">
-          <div className="bg-primary/15 text-primary flex size-9 items-center justify-center rounded-xl">
+      <div className="from-primary/8 border-b border-slate-100 bg-linear-to-r via-emerald-50/50 to-transparent p-2 md:px-4 md:py-4">
+        <div className="flex items-center justify-center gap-2.5 md:justify-start">
+          <div className="bg-primary/15 text-primary flex size-9 shrink-0 items-center justify-center rounded-xl">
             <LayoutTemplate className="size-4" />
           </div>
-          <div>
+          <div className="hidden md:block">
             <p className="text-sm font-bold text-slate-900">Landing Sections</p>
             <p className="text-xs text-slate-500">Click a section to edit</p>
           </div>
         </div>
       </div>
 
-      <nav className="flex max-h-[min(70vh,640px)] flex-col gap-0.5 p-2">
+      <nav className="flex max-h-[min(70vh,640px)] flex-col gap-0.5 overflow-y-auto p-2">
         {LANDING_CMS_SECTIONS.map((item) => {
           const active = activeSection === item.key;
           const Icon = iconMap[item.icon];
@@ -70,15 +70,15 @@ export function SectionNav({ activeSection, onSelect }: SectionNavProps) {
               variant="ghost"
               onClick={() => onSelect(item.key)}
               className={cn(
-                "relative h-auto w-full justify-start rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-all",
+                "relative h-auto w-full justify-center rounded-xl px-0 py-2 text-left text-sm font-medium transition-all md:justify-start md:px-3 md:py-2.5",
                 active
                   ? "shadow-primary/25 bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-sm hover:from-emerald-600 hover:to-teal-700 hover:text-white"
                   : "hover:bg-primary/8 hover:text-primary text-slate-600",
               )}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2 md:justify-start">
                 {Icon && <Icon className="h-4 w-4 shrink-0" />}
-                <span>{item.label}</span>
+                <span className="hidden md:inline">{item.label}</span>
               </div>
             </Button>
           );

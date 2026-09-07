@@ -44,6 +44,8 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
   const schema = SECTION_SCHEMAS[section];
   const defaults = normalizeSectionData(section, initialData);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  // Tracks whether the image field was touched at all (including removal → null)
+  const [imageChanged, setImageChanged] = useState(false);
 
   const form = useForm<any>({
     resolver: zodResolver(schema as any),
@@ -55,7 +57,7 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
     control,
     handleSubmit,
     setValue,
-    formState: { errors, dirtyFields },
+    formState: { errors, dirtyFields, isDirty },
   } = form;
 
   const meta = LANDING_CMS_SECTIONS.find((s) => s.key === section);
@@ -74,8 +76,23 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
   const onSubmit = handleSubmit(async (values) => {
     if (isReadOnlyStats) return;
     const payload = pickDirtyFields(values, dirtyFields as Record<string, unknown>);
-    if (Object.keys(payload).length === 0 && !imageFile) return;
-    await onSave(payload, imageFile);
+    const finalPayload = Object.keys(payload).length === 0 && isDirty ? values : payload;
+    if (Object.keys(finalPayload).length === 0 && !imageChanged) return;
+
+    const STRING_ARRAY_FIELDS: Partial<Record<string, string[]>> = {
+      whyJoin: ["points"],
+      businessTypes: ["types"],
+      success: ["investments"],
+    };
+    const strFields = STRING_ARRAY_FIELDS[section] ?? [];
+    const unwrapped = { ...finalPayload } as Record<string, unknown>;
+    for (const field of strFields) {
+      if (Array.isArray(unwrapped[field])) {
+        unwrapped[field] = (unwrapped[field] as { value: string }[]).map((item) => item.value);
+      }
+    }
+
+    await onSave(unwrapped, imageFile);
   });
 
   return (
@@ -107,7 +124,10 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
                     multiple={false}
                     maxFiles={1}
                     initialImages={imageUrl ? [imageUrl] : []}
-                    onChange={(files) => setImageFile(files[0] ?? null)}
+                    onChange={(files) => {
+                      setImageFile(files[0] ?? null);
+                      setImageChanged(true);
+                    }}
                     label="Upload to S3"
                     hint="PNG, JPG or WEBP — stored in S3 and saved to DB"
                   />
@@ -152,7 +172,7 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
           <Button
             type="submit"
             isLoading={isSaving}
-            disabled={Object.keys(dirtyFields).length === 0 && !imageFile}
+            disabled={!isDirty && !imageChanged}
             className="h-12 min-w-40 rounded-xl font-semibold"
           >
             <Save className="mr-2 size-4" />

@@ -32,7 +32,7 @@ export function LandingPageCmsPage() {
       ) : null}
 
       {content ? (
-        <div className="grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="grid grid-cols-[60px_minmax(0,1fr)] gap-3 md:grid-cols-[200px_minmax(0,1fr)] md:gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
           <SectionNav activeSection={activeSection} onSelect={setActiveSection} />
 
           <Card className="flex min-h-0 flex-col overflow-hidden rounded-2xl border-slate-200/80 bg-white/95 pt-0 shadow-sm">

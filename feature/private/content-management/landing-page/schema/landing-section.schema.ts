@@ -27,7 +27,9 @@ export const whyJoinSchema = z.object({
   subtitle: required("Subtitle"),
   description: required("Description"),
   highlight: required("Highlight"),
-  points: z.array(z.string().min(1, "Point is required")).min(1, "Add at least one point"),
+  points: z
+    .array(z.object({ value: z.string().min(1, "Point is required") }))
+    .min(1, "Add at least one point"),
   image: z.string().optional().or(z.literal("")),
   imageAlt: required("Image alt"),
 });
@@ -80,7 +82,9 @@ export const businessTypesSchema = z.object({
   title: required("Title"),
   subtitle: required("Subtitle"),
   description: required("Description"),
-  types: z.array(z.string().min(1, "Type is required")).min(1, "Add at least one type"),
+  types: z
+    .array(z.object({ value: z.string().min(1, "Type is required") }))
+    .min(1, "Add at least one type"),
 });
 
 export const opportunitySchema = z.object({
@@ -116,7 +120,7 @@ export const successSchema = z.object({
   subtitle: required("Subtitle"),
   description: required("Description"),
   investments: z
-    .array(z.string().min(1, "Investment is required"))
+    .array(z.object({ value: z.string().min(1, "Investment is required") }))
     .min(1, "Add at least one investment"),
   image: z.string().optional().or(z.literal("")),
   imageAlt: required("Image alt"),
@@ -304,6 +308,22 @@ export function normalizeSectionData<K extends LandingSectionKey>(
     const markets = Array.isArray(merged.markets) ? merged.markets : [];
     merged.markets = markets;
     delete merged.countryIds;
+  }
+
+  // Convert plain string[] → { value: string }[] for fields managed by useFieldArray
+  const STRING_ARRAY_FIELDS: Record<string, string[]> = {
+    whyJoin: ["points"],
+    businessTypes: ["types"],
+    success: ["investments"],
+  };
+  const stringFields = STRING_ARRAY_FIELDS[section] ?? [];
+  for (const field of stringFields) {
+    const arr = merged[field];
+    if (Array.isArray(arr)) {
+      merged[field] = arr.map((item: unknown) =>
+        typeof item === "string" ? { value: item } : item,
+      );
+    }
   }
 
   return merged as SectionFormValuesMap[K];

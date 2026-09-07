@@ -101,7 +101,8 @@ export function ObjectArrayFields({
 
 type StringArrayFieldsProps = {
   control: Control<any>;
-  setValue: UseFormSetValue<any>;
+  // kept for API compatibility — internally we use useFieldArray now
+  setValue?: UseFormSetValue<any>;
   name: string;
   title: string;
   placeholder?: string;
@@ -110,20 +111,21 @@ type StringArrayFieldsProps = {
 
 export function StringArrayFields({
   control,
-  setValue,
   name,
   title,
   placeholder = "Enter item",
   error,
 }: StringArrayFieldsProps) {
-  const values = (useWatch({ control, name }) as string[] | undefined) ?? [];
-  const inputRefs = useRef<(HTMLInputElement | HTMLTextAreaElement | null)[]>([]);
+  // Use useFieldArray so RHF properly tracks dirty state on append/remove.
+  // Strings are registered as { value: string } objects and unwrapped for display.
+  const { fields, append, remove } = useFieldArray({ control, name: name as never });
+  const rowRefs = useRef<(HTMLInputElement | HTMLTextAreaElement | null)[]>([]);
 
   const handleAdd = () => {
-    setValue(name, [...values, ""], { shouldValidate: true });
+    append({ value: "" } as never);
     setTimeout(() => {
-      const newIndex = values.length;
-      const newInput = inputRefs.current[newIndex];
+      const newIndex = fields.length;
+      const newInput = rowRefs.current[newIndex];
       if (newInput) {
         newInput.scrollIntoView({ behavior: "smooth", block: "center" });
         newInput.focus();
@@ -147,16 +149,16 @@ export function StringArrayFields({
         </Button>
       </div>
       {error ? <p className="text-xs font-medium text-red-500">{error}</p> : null}
-      {values.map((_, index) => (
-        <div key={`${name}-${index}`} className="flex gap-2">
+      {fields.map((field, index) => (
+        <div key={field.id} className="flex gap-2">
           <div className="flex-1">
             <FormTextField
               control={control}
-              name={`${name}.${index}` as never}
+              name={`${name}.${index}.value` as never}
               label={`${title} ${index + 1}`}
               placeholder={placeholder}
               inputRef={(el: HTMLInputElement | HTMLTextAreaElement | null) => {
-                inputRefs.current[index] = el;
+                rowRefs.current[index] = el;
               }}
             />
           </div>
@@ -165,19 +167,13 @@ export function StringArrayFields({
             variant="outline"
             size="icon"
             className="mt-7 size-12 shrink-0 rounded-xl"
-            onClick={() =>
-              setValue(
-                name,
-                values.filter((_, i) => i !== index),
-                { shouldValidate: true },
-              )
-            }
+            onClick={() => remove(index)}
           >
             <Trash2 className="size-4" />
           </Button>
         </div>
       ))}
-      {values.length === 0 ? (
+      {fields.length === 0 ? (
         <Input
           disabled
           placeholder={placeholder}
