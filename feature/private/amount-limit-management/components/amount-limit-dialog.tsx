@@ -1,5 +1,6 @@
 "use client";
 
+import { CountrySelect } from "@/components/common/country-select";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,25 +13,20 @@ import {
 } from "@/components/ui/dialog";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Globe, Save } from "lucide-react";
-import { useState } from "react";
+import { Globe, Loader2, Save } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useCreateAmountLimit } from "../hooks/use-create-amount-limit";
+import { useUpdateAmountLimit } from "../hooks/use-update-amount-limit";
 import { AmountLimitFormValues, amountLimitSchema } from "../schema/amount-limit.schema";
 
 interface AmountLimitDialogProps {
   mode?: "add" | "edit";
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  limitId?: string;
   initialValues?: Partial<AmountLimitFormValues>;
 }
 
@@ -38,7 +34,7 @@ export function AmountLimitDialog({
   mode = "add",
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  limitId,
   initialValues,
 }: AmountLimitDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
@@ -46,6 +42,11 @@ export function AmountLimitDialog({
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange! : setInternalOpen;
+
+  const createMutation = useCreateAmountLimit();
+  const updateMutation = useUpdateAmountLimit(limitId);
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   const {
     control,
@@ -55,25 +56,43 @@ export function AmountLimitDialog({
   } = useForm<AmountLimitFormValues>({
     resolver: zodResolver(amountLimitSchema),
     defaultValues: {
-      countryName: "",
-      amount: "",
+      countryName: initialValues?.countryName ?? "",
+      amount: initialValues?.amount ?? "",
     },
     mode: "onChange",
   });
 
+  useEffect(() => {
+    if (open) {
+      reset({
+        countryName: initialValues?.countryName ?? "",
+        amount: initialValues?.amount ?? "",
+      });
+    }
+  }, [open, initialValues, reset]);
+
   const onSubmit = async (values: AmountLimitFormValues) => {
     try {
-      console.log("Amount Limit Data:", values);
       if (mode === "add") {
+        await createMutation.mutateAsync({
+          countryName: values.countryName,
+          amount: values.amount,
+        });
         successToast({ title: "Country amount limit added successfully" });
       } else {
+        await updateMutation.mutateAsync({
+          id: limitId,
+          countryName: values.countryName,
+          amount: values.amount,
+        });
         successToast({ title: "Country amount limit updated successfully" });
       }
 
       onOpenChange(false);
-      reset();
+      reset({ countryName: "", amount: "" });
     } catch (error) {
-      console.error(error);
+      // Backend error is intercepted and displayed via client.ts
+      console.error("Amount Limit submit error:", error);
     }
   };
 
@@ -94,14 +113,14 @@ export function AmountLimitDialog({
 
             <div className="flex-1">
               <DialogTitle className="text-xl font-bold tracking-tight text-slate-900">
-                {mode === "add" ? "Add Country Amount Limit" : "Edit Country Amount Limit"}
+                {mode === "add" ? "Add Country Amount Limit" : "Edit Amount Limit"}
               </DialogTitle>
 
-              {mode === "add" && (
-                <DialogDescription className="mt-1 text-sm text-slate-600">
-                  Set amount limits for different countries
-                </DialogDescription>
-              )}
+              <DialogDescription className="mt-1 text-sm text-slate-600">
+                {mode === "add"
+                  ? "Set amount limits for different countries"
+                  : "Update amount limit for the selected country"}
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>
@@ -115,24 +134,24 @@ export function AmountLimitDialog({
                 <FieldLabel className="text-sm font-semibold text-gray-700">
                   Country Name <span className="text-red-500">*</span>
                 </FieldLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger
-                    className={cn(
-                      "w-full rounded-xl border-gray-200 bg-gray-50",
-                      "focus:bg-white focus-visible:border-[#1B3A8C]",
-                      errors.countryName && "border-red-400",
-                    )}
-                  >
-                    <SelectValue placeholder="Select Country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="usa">USA</SelectItem>
-                      <SelectItem value="canada">Canada</SelectItem>
-                      <SelectItem value="uk">United Kingdom</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                {mode === "edit" ? (
+                  <Input
+                    value={field.value}
+                    disabled
+                    readOnly
+                    className="h-12 rounded-xl bg-gray-100 font-medium text-gray-600"
+                  />
+                ) : (
+                  <CountrySelect
+                    value={field.value}
+                    valueKey="name"
+                    onValueChange={(val) => field.onChange(val)}
+                    disabled={isPending}
+                    invalid={!!errors.countryName}
+                    placeholder="Select Country"
+                    className="h-12 rounded-xl"
+                  />
+                )}
                 {errors.countryName && (
                   <p className="text-xs text-red-500">{errors.countryName.message}</p>
                 )}
@@ -152,6 +171,7 @@ export function AmountLimitDialog({
                   {...field}
                   type="text"
                   placeholder="Enter Amount"
+                  disabled={isPending}
                   className={cn("h-12 rounded-xl", errors.amount && "border-red-400")}
                 />
                 {errors.amount && <p className="text-xs text-red-500">{errors.amount.message}</p>}
@@ -159,8 +179,17 @@ export function AmountLimitDialog({
             )}
           />
           <div className="flex justify-end gap-2">
-            <Button type="submit" className="h-12 w-fit rounded-xl">
-              <Save size={20} /> {mode === "add" ? "Add" : "Update"}
+            <Button type="submit" disabled={isPending} className="h-12 w-fit rounded-xl">
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save size={20} /> {mode === "add" ? "Add" : "Update"}
+                </>
+              )}
             </Button>
           </div>
         </form>
