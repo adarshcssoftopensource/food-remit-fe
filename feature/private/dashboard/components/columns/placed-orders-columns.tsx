@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MapPin } from "lucide-react";
 import type { DashboardRecentlyPlacedOrder } from "../../types/dashboard.types";
 import { DashboardStatusBadge } from "../common/dashboard-status-badge";
+import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 
 export const placedOrdersColumns: ColumnDef<DashboardRecentlyPlacedOrder>[] = [
   {
@@ -25,13 +26,15 @@ export const placedOrdersColumns: ColumnDef<DashboardRecentlyPlacedOrder>[] = [
       const name: string = row.getValue("customerName") || "Customer";
       const initials = getInitials(name);
       return (
-        <div className="flex max-w-[140px] items-center gap-2">
+        <div className="flex max-w-35 items-center gap-2">
           <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-[10px] font-bold text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
             {initials}
           </div>
-          <span className="truncate text-xs font-semibold text-slate-800 dark:text-slate-200">
-            {name}
-          </span>
+          <TruncatedTextCell
+            text={name}
+            maxWords={2}
+            className="text-xs font-semibold text-slate-800 dark:text-slate-200"
+          />
         </div>
       );
     },
@@ -43,9 +46,9 @@ export const placedOrdersColumns: ColumnDef<DashboardRecentlyPlacedOrder>[] = [
     cell: ({ row }) => {
       const location = row.getValue("location") as string;
       return (
-        <div className="flex max-w-[120px] items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
+        <div className="flex max-w-30 items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
           <MapPin className="h-3 w-3 shrink-0 text-slate-400" />
-          <span className="truncate">{location || "—"}</span>
+          <TruncatedTextCell text={location || "—"} maxChars={16} />
         </div>
       );
     },

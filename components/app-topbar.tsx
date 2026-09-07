@@ -25,6 +25,7 @@ export function AppTopBar() {
     ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT,
     profile?.permissions,
     isSuperAdmin,
+    profile?.roleCode,
   );
   const pathname = usePathname();
   const searchParams = useSearchParams();

@@ -127,6 +127,7 @@ export function EditProcessingFeeDialog({
                   </span>
                   <Input
                     {...field}
+                    type="number"
                     id="processingFee"
                     placeholder="e.g. 2.50"
                     aria-invalid={!!errors.processingFee}

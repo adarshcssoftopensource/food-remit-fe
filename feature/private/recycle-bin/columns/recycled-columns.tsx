@@ -362,4 +362,25 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
   categories: categoriesColumns,
   "city-managers": cityManagersColumns,
   "country-managers": countryManagersColumns,
+  employees: [
+    createSNoColumn(),
+    createSelectColumn(),
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => (
+        <span className="font-medium">
+          {row.original.firstName} {row.original.lastName}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => <RecycledEntityActionsCell entityType="employees" entity={row.original} />,
+    },
+  ],
 };

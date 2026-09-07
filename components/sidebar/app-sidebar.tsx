@@ -122,7 +122,9 @@ export function AppSidebar() {
         // If the item has sub-items, filter them first based on permissions
         if (item.items && item.items.length > 0) {
           const filteredSubs = item.items.filter((sub) => {
-            if (!hasPathPermission(sub.url, profile?.permissions, isSuperAdmin)) {
+            if (
+              !hasPathPermission(sub.url, profile?.permissions, isSuperAdmin, profile?.roleCode)
+            ) {
               return false;
             }
             const isStoreManager =
@@ -139,7 +141,7 @@ export function AppSidebar() {
           return false;
         }
         // Otherwise check the item's main URL permission
-        return hasPathPermission(item.url, profile?.permissions, isSuperAdmin);
+        return hasPathPermission(item.url, profile?.permissions, isSuperAdmin, profile?.roleCode);
       });
   }, [activeNavItems, profile?.permissions, isSuperAdmin]);
 

@@ -2,11 +2,20 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { PageHeader } from "@/components/common/page-header";
-import { Button } from "@/components/ui/button";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDebounce } from "@/lib/debounce";
 import { RowSelectionState, SortingState } from "@tanstack/react-table";
-import { Building2, Check, FolderTree, Globe, MapPin, Package, Store, Users } from "lucide-react";
+import {
+  Building2,
+  Check,
+  FolderTree,
+  Globe,
+  MapPin,
+  Package,
+  Store,
+  Users,
+  UserCog,
+} from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
@@ -18,8 +27,9 @@ import {
   useBulkPermanentDeleteEntities,
   useBulkRestoreEntities,
 } from "./hooks/use-recycle-bin-actions";
+import { useProfile } from "@/components/providers/profile-provider";
 
-const ENTITY_TABS: {
+const ALL_ENTITY_TABS: {
   id: RecycleEntityType;
   label: string;
   icon: any;
@@ -31,10 +41,25 @@ const ENTITY_TABS: {
   { id: "categories", label: "Categories", icon: FolderTree },
   { id: "city-managers", label: "City Managers", icon: MapPin },
   { id: "country-managers", label: "Country Managers", icon: Globe },
+  { id: "employees", label: "Employees", icon: UserCog },
 ];
 
 export function RecycledUsersManagement() {
-  const [activeTab, setActiveTab] = useState<RecycleEntityType>("users");
+  const { profile } = useProfile();
+  const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
+
+  const ENTITY_TABS = useMemo(() => {
+    if (isStoreManager) {
+      return ALL_ENTITY_TABS.filter((tab) =>
+        ["departments", "categories", "items", "employees"].includes(tab.id),
+      );
+    }
+    return ALL_ENTITY_TABS;
+  }, [isStoreManager]);
+
+  const [activeTab, setActiveTab] = useState<RecycleEntityType>(
+    isStoreManager ? "departments" : "users",
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
   const [sorting, setSorting] = useState<SortingState>([]);

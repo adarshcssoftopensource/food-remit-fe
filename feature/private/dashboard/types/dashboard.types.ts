@@ -119,6 +119,11 @@ export interface DashboardData {
   recentOrdersRequested: DashboardOrderRequested[];
   recentlyPlacedOrders: DashboardRecentlyPlacedOrder[];
   trendingOrders: DashboardTrendingOrder[];
+  totalPendingOrders?: { today: number; thisWeek: number; total: number };
+  totalRequestedOrders?: { today: number; thisWeek: number; total: number };
+  totalOrdersCompleted?: { today: number; thisWeek: number; total: number };
+  totalEarnings?: { today: string; thisWeek: string; total: string };
+  sales?: any[];
 }
 
 export interface DashboardStatsApiResponse {

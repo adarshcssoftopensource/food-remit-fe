@@ -92,4 +92,5 @@ export interface OrderData {
   };
   customerSignature?: string;
   identityProf?: string;
+  assignedEmployeeId?: string | null;
 }

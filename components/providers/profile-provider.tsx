@@ -93,13 +93,19 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const hasAccess = hasPathPermission(pathname, profileData.permissions, isSuperAdmin);
+  const hasAccess = hasPathPermission(
+    pathname,
+    profileData.permissions,
+    isSuperAdmin,
+    profileData.roleCode,
+  );
 
   if (!hasAccess) {
     const hasDashboardAccess = hasPathPermission(
       ROUTES.ADMIN.DASHBOARD,
       profileData.permissions,
       isSuperAdmin,
+      profileData.roleCode,
     );
 
     return <AccessDeniedScreen hasDashboardAccess={hasDashboardAccess} />;

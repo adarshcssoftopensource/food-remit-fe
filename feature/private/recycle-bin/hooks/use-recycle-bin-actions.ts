@@ -4,6 +4,7 @@ import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoin
 import { COUNTRY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/country-manager.endpoints";
 import { STORE_ENDPOINTS } from "@/lib/api/endpoints/store.endpoints";
 import { USER_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/user-management.endpoints";
+import { EMPLOYEE_ENDPOINTS } from "@/lib/api/endpoints/employee.endpoints";
 import { useQueryClient } from "@tanstack/react-query";
 import { RecycleEntityType } from "./use-get-recycled-data";
 
@@ -18,6 +19,7 @@ export function useRestoreEntity(entityType: RecycleEntityType, id: string) {
     categories: CATALOGUE_MANAGEMENT_ENDPOINTS.RESTORE_CATEGORY(id),
     "city-managers": CITY_MANAGER_ENDPOINTS.RESTORE_CITY_MANAGER(id),
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.RESTORE_COUNTRY_MANAGER(id),
+    employees: EMPLOYEE_ENDPOINTS.RESTORE_EMPLOYEE(id),
   };
 
   return useApiMutation<{ message: string }, void>("post", urlMap[entityType], {
@@ -41,6 +43,7 @@ export function usePermanentDeleteEntity(entityType: RecycleEntityType, id: stri
     categories: CATALOGUE_MANAGEMENT_ENDPOINTS.PERMANENT_DELETE_CATEGORY(id),
     "city-managers": CITY_MANAGER_ENDPOINTS.PERMANENT_DELETE_CITY_MANAGER(id),
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.PERMANENT_DELETE_COUNTRY_MANAGER(id),
+    employees: EMPLOYEE_ENDPOINTS.PERMANENT_DELETE_EMPLOYEE(id),
   };
 
   return useApiMutation<{ message: string }, void>("delete", urlMap[entityType], {
@@ -64,6 +67,7 @@ export function useBulkRestoreEntities(entityType: RecycleEntityType) {
     categories: CATALOGUE_MANAGEMENT_ENDPOINTS.BULK_RESTORE_CATEGORIES,
     "city-managers": CITY_MANAGER_ENDPOINTS.BULK_RESTORE_CITY_MANAGERS,
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.BULK_RESTORE_COUNTRY_MANAGERS,
+    employees: EMPLOYEE_ENDPOINTS.BULK_RESTORE_EMPLOYEES,
   };
 
   return useApiMutation<{ message: string }, { ids: string[] }>("post", urlMap[entityType], {
@@ -87,6 +91,7 @@ export function useBulkPermanentDeleteEntities(entityType: RecycleEntityType) {
     categories: CATALOGUE_MANAGEMENT_ENDPOINTS.BULK_PERMANENT_DELETE_CATEGORIES,
     "city-managers": CITY_MANAGER_ENDPOINTS.BULK_PERMANENT_DELETE_CITY_MANAGERS,
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.BULK_PERMANENT_DELETE_COUNTRY_MANAGERS,
+    employees: EMPLOYEE_ENDPOINTS.BULK_PERMANENT_DELETE_EMPLOYEES,
   };
 
   return useApiMutation<{ message: string }, { ids: string[] }>("post", urlMap[entityType], {

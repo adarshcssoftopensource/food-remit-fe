@@ -5,17 +5,30 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 interface TruncatedTextCellProps {
   text: string | number | null | undefined;
   maxWords?: number;
+  maxChars?: number;
   className?: string;
 }
 
-export function TruncatedTextCell({ text, maxWords = 6, className = "" }: TruncatedTextCellProps) {
+export function TruncatedTextCell({
+  text,
+  maxWords,
+  maxChars,
+  className = "",
+}: TruncatedTextCellProps) {
   const textString = String(text ?? "").trim();
 
-  const words = textString.split(/\s+/).filter(Boolean);
+  let shouldTruncate = false;
+  let truncatedText = textString;
 
-  const shouldTruncate = words.length > maxWords;
-
-  const truncatedText = shouldTruncate ? `${words.slice(0, maxWords).join(" ")}...` : textString;
+  if (maxChars !== undefined) {
+    shouldTruncate = textString.length > maxChars;
+    truncatedText = shouldTruncate ? `${textString.slice(0, maxChars)}...` : textString;
+  } else {
+    const limit = maxWords ?? 6;
+    const words = textString.split(/\s+/).filter(Boolean);
+    shouldTruncate = words.length > limit;
+    truncatedText = shouldTruncate ? `${words.slice(0, limit).join(" ")}...` : textString;
+  }
 
   if (!shouldTruncate) {
     return <span className={className}>{textString || "-"}</span>;

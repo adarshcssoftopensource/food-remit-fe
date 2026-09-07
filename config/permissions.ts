@@ -43,6 +43,7 @@ export function hasPathPermission(
   pathname: string,
   permissions: Record<string, number | null | undefined> | null | undefined,
   isSuperAdmin: boolean = false,
+  roleCode?: string,
 ): boolean {
   // Explicitly deny Employee Management for super admin
   if (
@@ -56,6 +57,15 @@ export function hasPathPermission(
   if (isSuperAdmin) return true;
 
   if (isAlwaysAllowedRoute(pathname)) return true;
+
+  const isStoreManager = roleCode === "STORE_MANAGER" || roleCode === "store_manager";
+
+  if (
+    isStoreManager &&
+    (pathname === ROUTES.ADMIN.RECYCLE_BIN || pathname.startsWith(`${ROUTES.ADMIN.RECYCLE_BIN}/`))
+  ) {
+    return true;
+  }
 
   if (!permissions) return false;
 
