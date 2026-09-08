@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/pagination";
 
 interface DataTablePaginationProps<TData> {
-  table: Table<TData>;
+  table?: Table<TData>;
   currentPage?: number;
   totalPages?: number;
   rowsPerPage?: number;
@@ -39,13 +39,13 @@ export function DataTablePagination<TData>({
 }: DataTablePaginationProps<TData>) {
   const isBackendMode = currentPage !== undefined && totalPages !== undefined && onPageChange;
 
-  const pageIndex = table.getState().pagination.pageIndex;
-  const pageCount = table.getPageCount();
+  const pageIndex = table?.getState().pagination.pageIndex ?? 0;
+  const pageCount = table?.getPageCount() ?? 1;
 
   const activePage = isBackendMode ? currentPage : pageIndex + 1;
   const maxPages = isBackendMode ? totalPages : pageCount;
   const pageSize =
-    isBackendMode && rowsPerPage ? rowsPerPage : table.getState().pagination.pageSize;
+    isBackendMode && rowsPerPage ? rowsPerPage : (table?.getState().pagination.pageSize ?? 10);
 
   const getPages = () => {
     const current = activePage;
@@ -64,7 +64,7 @@ export function DataTablePagination<TData>({
   const handlePageChange = (page: number) => {
     if (isBackendMode && onPageChange) {
       onPageChange(page);
-    } else {
+    } else if (table) {
       table.setPageIndex(page - 1);
     }
   };
@@ -72,8 +72,8 @@ export function DataTablePagination<TData>({
   const handleRowsPerPageChange = (size: number) => {
     if (isBackendMode && onRowsPerPageChange) {
       onRowsPerPageChange(size);
-      onPageChange(1);
-    } else {
+      if (onPageChange) onPageChange(1);
+    } else if (table) {
       table.setPageSize(size);
     }
   };

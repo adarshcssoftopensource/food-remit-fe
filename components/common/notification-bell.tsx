@@ -19,7 +19,7 @@ export function NotificationBell({ className }: { className?: string }) {
     API_CACHE_KEYS.NOTIFICATION_COUNT,
     NOTIFICATION_ENDPOINTS.COUNT,
     {
-      refetchInterval: 60_000,
+      refetchInterval: 5000,
       refetchOnWindowFocus: true,
     },
   );

@@ -11,18 +11,13 @@ import {
   RecipientMultiSelect,
   type RecipientOption,
 } from "@/components/common/recipient-multi-select";
+import { RoleSelect } from "@/components/common/role-select";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Textarea } from "@/components/ui/textarea";
 import { useApiMutation } from "@/hooks/useApi";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
@@ -95,7 +90,7 @@ export function SendNotificationForm({ className, ...props }: React.ComponentPro
       const params = new URLSearchParams({
         role,
         page: "1",
-        limit: "30",
+        limit: "20",
       });
       if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
       const res = await apiClient.get<RecipientsApiResponse>(
@@ -221,22 +216,16 @@ export function SendNotificationForm({ className, ...props }: React.ComponentPro
                 name="role"
                 control={control}
                 render={({ field }) => (
-                  <div className="space-y-2">
+                  <div className="w-full space-y-2">
                     <FieldLabel className="text-sm font-semibold text-gray-700">
                       Audience Role <span className="text-red-500">*</span>
                     </FieldLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-12! w-full rounded-xl border-gray-200 bg-gray-50 focus:border-emerald-600">
-                        <SelectValue placeholder="Select who should receive this" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {NOTIFICATION_ROLE_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <RoleSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select who should receive this"
+                      className="h-12 w-full rounded-xl border-gray-200 bg-gray-50 focus:border-emerald-600"
+                    />
                     {errors.role && <p className="text-xs text-red-500">{errors.role.message}</p>}
                   </div>
                 )}
@@ -323,6 +312,7 @@ export function SendNotificationForm({ className, ...props }: React.ComponentPro
                         "rounded-xl border-gray-200",
                         "resize-none bg-gray-50",
                         "focus:bg-white focus-visible:border-emerald-600",
+                        "max-w-full overflow-hidden break-words break-all",
                         errors.message && "border-red-400",
                       )}
                     />

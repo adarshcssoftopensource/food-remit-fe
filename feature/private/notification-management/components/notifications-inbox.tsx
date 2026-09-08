@@ -1,11 +1,12 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bell, CheckCheck, Inbox } from "lucide-react";
+import { Bell, CheckCheck, Inbox, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { NoDataFound } from "@/components/common/no-data-found";
 import { PageHeader } from "@/components/common/page-header";
+import { DataTablePagination } from "@/components/common/data-table/data-table-pagination";
 import { successToast } from "@/components/toaster";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ function formatWhen(value?: string) {
 export function NotificationsInbox() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(6);
   const [status, setStatus] = useState<"all" | "unread" | "read">("all");
 
   const { data, isLoading, isFetching } = useGetWebNotifications({
@@ -71,6 +72,18 @@ export function NotificationsInbox() {
     },
     onSuccess: () => {
       successToast({ description: "All notifications marked as read." });
+      void queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.NOTIFICATIONS });
+      void queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.NOTIFICATION_COUNT });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiClient.delete(NOTIFICATION_ENDPOINTS.DELETE_ONE(id));
+      return res.data;
+    },
+    onSuccess: () => {
+      successToast({ description: "Notification deleted." });
       void queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.NOTIFICATIONS });
       void queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.NOTIFICATION_COUNT });
     },
@@ -123,32 +136,13 @@ export function NotificationsInbox() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="h-10 w-37.5 rounded-xl">
+            <SelectTrigger className="h-10 w-36 rounded-xl capitalize">
               <SelectValue placeholder="Filter" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="unread">Unread</SelectItem>
               <SelectItem value="read">Read</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select
-            value={String(limit)}
-            onValueChange={(value) => {
-              setLimit(Number(value));
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="h-10 w-30 rounded-xl">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {[10, 20, 50].map((n) => (
-                <SelectItem key={n} value={String(n)}>
-                  {n} / page
-                </SelectItem>
-              ))}
             </SelectContent>
           </Select>
         </div>
@@ -218,6 +212,18 @@ export function NotificationsInbox() {
                       Mark read
                     </Button>
                   )}
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    disabled={deleteMutation.isPending}
+                    onClick={() => deleteMutation.mutate(item.id)}
+                    aria-label="Delete notification"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
                 </div>
               </li>
             ))}
@@ -225,31 +231,15 @@ export function NotificationsInbox() {
         )}
       </div>
 
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-xl"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            Previous
-          </Button>
-          <p className="text-sm text-slate-600">
-            Page {pagination.page} of {pagination.totalPages}
-          </p>
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-xl"
-            disabled={page >= pagination.totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
-          </Button>
-        </div>
-      )}
+      <div className="mt-4">
+        <DataTablePagination
+          currentPage={page}
+          totalPages={pagination.totalPages}
+          rowsPerPage={limit}
+          onPageChange={setPage}
+          onRowsPerPageChange={setLimit}
+        />
+      </div>
     </div>
   );
 }

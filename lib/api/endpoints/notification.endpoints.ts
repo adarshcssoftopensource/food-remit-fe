@@ -7,6 +7,7 @@ export const NOTIFICATION_ENDPOINTS = {
   COUNT: `${ADMIN}/notifications/count`,
   READ_ALL: `${ADMIN}/notifications/read-all`,
   READ_ONE: (id: string) => `${ADMIN}/notifications/${id}/read`,
+  DELETE_ONE: (id: string) => `${ADMIN}/notifications/${id}`,
 } as const;
 
 export const NOTIFICATION_ROLE_OPTIONS = [
