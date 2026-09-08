@@ -20,5 +20,13 @@ export const APP_ASSETS = {
       PATH: "/login_background_image.png",
       ALT: "Food Decor",
     },
+    MOBILE_MENU_ILLUSTRATION: {
+      PATH: "/vendor/mobile-landing-bucket.png",
+      ALT: "Stronger communities through better food access",
+    },
+    VENDOR_PACKET: {
+      PATH: "/vendor/vendor_grocery_bag_green_bg.jpg",
+      ALT: "Food Remit fresh grocery bag",
+    },
   },
 } as const;

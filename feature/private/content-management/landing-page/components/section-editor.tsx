@@ -37,7 +37,7 @@ type SectionEditorProps = {
   section: LandingSectionKey;
   initialData: unknown;
   isSaving: boolean;
-  onSave: (data: unknown, image?: File | null) => Promise<void>;
+  onSave: (data: unknown, files?: { fieldname: string; file: File }[]) => Promise<void>;
 };
 
 export function SectionEditor({ section, initialData, isSaving, onSave }: SectionEditorProps) {
@@ -92,7 +92,22 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
       }
     }
 
-    await onSave(unwrapped, imageFile);
+    const filesToUpload: { fieldname: string; file: File }[] = [];
+    if (imageFile) {
+      filesToUpload.push({ fieldname: "image", file: imageFile });
+    }
+
+    if (section === "testimonials" && Array.isArray(unwrapped.items)) {
+      for (let i = 0; i < unwrapped.items.length; i++) {
+        const item = unwrapped.items[i] as any;
+        if (item.imageFile instanceof File) {
+          filesToUpload.push({ fieldname: `testimonial_image_${i}`, file: item.imageFile });
+        }
+        delete item.imageFile;
+      }
+    }
+
+    await onSave(unwrapped, filesToUpload);
   });
 
   return (
@@ -157,7 +172,7 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
               ) : null}
               {section === "trust" ? <TrustFields control={control} errors={errors} /> : null}
               {section === "testimonials" ? (
-                <TestimonialsFields control={control} errors={errors} />
+                <TestimonialsFields control={control} errors={errors} setValue={setValue} />
               ) : null}
               {section === "faq" ? <FaqFields control={control} errors={errors} /> : null}
               {section === "join" ? <JoinFields control={control} errors={errors} /> : null}

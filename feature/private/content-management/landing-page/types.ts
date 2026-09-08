@@ -100,7 +100,7 @@ export type LandingTrust = {
 export type LandingTestimonials = {
   title: string;
   subtitle: string;
-  items: { quote: string; name: string; role: string }[];
+  items: { quote: string; name: string; role: string; image?: string }[];
 };
 
 export type LandingFaq = {

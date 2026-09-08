@@ -50,7 +50,7 @@ export function LandingPageCmsPage() {
                 section={activeSection}
                 initialData={content[activeSection]}
                 isSaving={isSaving}
-                onSave={(data, image) => saveSection(activeSection, data, image)}
+                onSave={(data, files) => saveSection(activeSection, data, files)}
               />
             </CardContent>
           </Card>

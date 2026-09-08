@@ -10,9 +10,13 @@ export function useLandingCms() {
   const query = useGetLandingPage(true);
   const updateMutation = useUpdateLandingSection();
 
-  const saveSection = async (section: LandingSectionKey, data: unknown, image?: File | null) => {
+  const saveSection = async (
+    section: LandingSectionKey,
+    data: unknown,
+    files?: { fieldname: string; file: File }[],
+  ) => {
     if (section === "stats") return;
-    const response = await updateMutation.mutateAsync({ section, data, image });
+    const response = await updateMutation.mutateAsync({ section, data, files });
     successToast({
       title: response?.message || `${section} section updated successfully`,
     });

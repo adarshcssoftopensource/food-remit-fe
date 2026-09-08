@@ -8,7 +8,7 @@ import type { LandingSectionKey } from "../types";
 type UpdateArgs = {
   section: LandingSectionKey;
   data: unknown;
-  image?: File | null;
+  files?: { fieldname: string; file: File }[];
 };
 
 type UpdateLandingSectionResponse = {
@@ -19,7 +19,7 @@ export function useUpdateLandingSection() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ section, data, image }: UpdateArgs) => {
+    mutationFn: async ({ section, data, files }: UpdateArgs) => {
       const formData = new FormData();
       const payload =
         data && typeof data === "object" && !Array.isArray(data)
@@ -29,7 +29,10 @@ export function useUpdateLandingSection() {
       if (Object.keys(payload).length > 0) {
         formData.append("data", JSON.stringify(payload));
       }
-      if (image) formData.append("image", image);
+
+      if (files && files.length > 0) {
+        files.forEach((f) => formData.append(f.fieldname, f.file));
+      }
 
       const { data: response } = await apiClient.put<UpdateLandingSectionResponse>(
         LANDING_PAGE_ENDPOINTS.ADMIN_UPDATE_SECTION(section),

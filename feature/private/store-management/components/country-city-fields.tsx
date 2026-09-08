@@ -1,14 +1,6 @@
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useGetCities } from "../../settings/hooks/use-get-cities";
-import { useGetCountriesDropdown } from "../../settings/hooks/use-get-countries-dropdown";
+import { CountrySelect } from "@/components/common/country-select";
+import { CitySelect } from "@/components/common/city-select";
 
 export function CountryCityFields({
   countryValue,
@@ -29,42 +21,23 @@ export function CountryCityFields({
   onStateChange?: (v: string) => void;
   stateError?: string;
 }) {
-  const { countries: countriesData } = useGetCountriesDropdown();
-  const { data: citiesDataResponse } = useGetCities({
-    countryId: countryValue,
-    limit: 1000,
-  });
-
-  const cityOptions = citiesDataResponse?.data || [];
-
   return (
     <>
       <div className="space-y-1.5">
         <Label className="text-sm font-semibold text-slate-700">
           Country <span className="text-red-500">*</span>
         </Label>
-        <Select
+        <CountrySelect
           value={countryValue}
-          onValueChange={(v: any) => {
+          onValueChange={(v) => {
             onCountryChange(v);
             onCityChange("");
           }}
-        >
-          <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50">
-            <SelectValue placeholder="Select Country">
-              {countriesData.find((c) => c.id === countryValue)?.name || "Select Country"}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {countriesData.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          placeholder="Select Country"
+          includeAll={false}
+          invalid={!!countryError}
+          className={countryError ? "border-red-500 bg-red-50" : ""}
+        />
         {countryError && <p className="text-xs font-medium text-red-500">{countryError}</p>}
       </div>
 
@@ -72,27 +45,16 @@ export function CountryCityFields({
         <Label className="text-sm font-semibold text-slate-700">
           City <span className="text-red-500">*</span>
         </Label>
-        <Select
+        <CitySelect
+          countryId={countryValue}
           value={cityValue}
-          onValueChange={(value) => onCityChange(value || "")}
+          onValueChange={(v) => onCityChange(v)}
           disabled={!countryValue}
-        >
-          <SelectTrigger className="h-11! w-full min-w-full rounded-xl border-slate-200">
-            <SelectValue placeholder={countryValue ? "Select City" : "Select country first"}>
-              {cityOptions.find((c) => c.id === cityValue)?.name ||
-                (countryValue ? "Select City" : "Select country first")}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {cityOptions.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          placeholder="Select City"
+          includeAll={false}
+          invalid={!!cityError}
+          className={cityError ? "border-red-500 bg-red-50" : ""}
+        />
         {cityError && <p className="text-xs font-medium text-red-500">{cityError}</p>}
       </div>
     </>

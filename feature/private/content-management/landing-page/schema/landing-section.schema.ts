@@ -147,6 +147,8 @@ export const testimonialsSchema = z.object({
         quote: required("Quote"),
         name: required("Name"),
         role: required("Role"),
+        image: z.string().optional().or(z.literal("")),
+        imageFile: z.any().optional(),
       }),
     )
     .min(1, "Add at least one testimonial"),
