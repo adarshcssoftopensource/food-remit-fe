@@ -1,7 +1,10 @@
 import { ROUTES } from "./routes";
 
-/** Routes every authenticated admin may open (account UI), regardless of module permissions. */
-export const ALWAYS_ALLOWED_ROUTES = [ROUTES.ADMIN.PROFILE, ROUTES.ADMIN.SETTINGS] as const;
+export const ALWAYS_ALLOWED_ROUTES = [
+  ROUTES.ADMIN.PROFILE,
+  ROUTES.ADMIN.SETTINGS,
+  ROUTES.ADMIN.NOTIFICATIONS,
+] as const;
 
 export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   [ROUTES.ADMIN.DASHBOARD]: "dashboard",

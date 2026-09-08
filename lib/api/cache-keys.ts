@@ -82,4 +82,9 @@ export const API_CACHE_KEYS = {
   // Amount Limits
   AMOUNT_LIMITS: ["amount-limits"],
   AMOUNT_LIMIT_BY_ID: (id: string) => ["amount-limit", id],
+
+  // Notifications
+  NOTIFICATIONS: ["notifications"],
+  NOTIFICATION_COUNT: ["notification-count"],
+  NOTIFICATION_RECIPIENTS: ["notification-recipients"],
 };

@@ -1,5 +1,5 @@
 "use client";
-import { ArrowLeftRight, Bell, ChevronDown, Globe2, MapPin, Settings, User } from "lucide-react";
+import { ArrowLeftRight, ChevronDown, Globe2, MapPin, Settings, User } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { APP_ASSETS } from "@/config/assets";
@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
+import { NotificationBell } from "@/components/common/notification-bell";
 import { useProfile } from "@/components/providers/profile-provider";
 import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";
@@ -109,33 +110,7 @@ export function AppTopBar() {
       )}
 
       <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Notifications"
-          className={cn(
-            "relative h-10 w-10 rounded-xl",
-            "text-slate-600 dark:text-slate-400",
-            "hover:bg-slate-100/80 hover:text-slate-900 dark:hover:bg-slate-800/80 dark:hover:text-slate-100",
-            "transition-all duration-200",
-          )}
-        >
-          <Bell className="h-5 w-5" />
-          <span
-            className={cn(
-              "absolute -top-0.5 -right-0.5",
-              "flex h-5 min-w-5 items-center justify-center",
-              "rounded-full",
-              "bg-linear-to-r from-emerald-600 to-teal-600",
-              "px-1",
-              "text-[10px] font-bold text-white",
-              "shadow-xs",
-              "ring-2 ring-white dark:ring-slate-950",
-            )}
-          >
-            0
-          </span>
-        </Button>
+        <NotificationBell />
         <div className="mx-1 h-7 w-px bg-slate-200/80 dark:bg-slate-800" />
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger

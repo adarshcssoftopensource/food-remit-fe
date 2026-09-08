@@ -70,6 +70,7 @@ export const ROUTES = {
     },
     FEEDBACK_MANAGEMENT: "/feedback-management",
     SEND_NOTIFICATION: "/send-notification",
+    NOTIFICATIONS: "/notifications",
     COUPONS_MANAGEMENT: "/coupons-management",
     AMOUNT_LIMIT_MANAGEMENT: "/amount-limit-management",
     CREDITS_MANAGEMENT: {
