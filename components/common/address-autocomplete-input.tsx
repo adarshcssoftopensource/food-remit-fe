@@ -70,7 +70,6 @@ export function AddressAutocompleteInput({
   useEffect(() => {
     if (!isReady || !query) return;
 
-    // Prefill on edit/open must not auto-open suggestions.
     if (!userEditedRef.current) return;
 
     if (suppressFetchRef.current) {
@@ -106,10 +105,6 @@ export function AddressAutocompleteInput({
       cancelled = true;
     };
   }, [query, isReady, getSuggestions]);
-
-  useEffect(() => {
-    // Kept for backward compatibility if needed, but Popover handles outside clicks
-  }, []);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     userEditedRef.current = true;

@@ -50,7 +50,6 @@ export function ConfirmationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md overflow-hidden rounded-3xl border-0 p-0 shadow-2xl sm:max-w-106.25">
         <div className="relative">
-          {/* Subtle top background glow */}
           <div
             className={cn(
               "absolute inset-x-0 -top-10 h-40 w-full rounded-t-3xl blur-3xl",

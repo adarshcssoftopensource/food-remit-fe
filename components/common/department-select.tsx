@@ -119,7 +119,7 @@ export function DepartmentSelect({
       <PopoverContent
         align="start"
         side="bottom"
-        className="z-[200] w-[var(--anchor-width)] min-w-[min(28rem,calc(100vw-2rem))] gap-2 p-2"
+        className="z-200 w-(--anchor-width) min-w-[min(28rem,calc(100vw-2rem))] gap-2 p-2"
       >
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />

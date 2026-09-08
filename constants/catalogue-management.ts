@@ -1,6 +1,5 @@
 import { Box, CheckCircle, Package, Tag, XCircle } from "lucide-react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 export type CatalogueStatus = "Active" | "Inactive";
 
 export type DepartmentData = {

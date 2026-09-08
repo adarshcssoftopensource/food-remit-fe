@@ -58,7 +58,6 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
       const initial = initialImagesStr ? initialImagesStr.split(",").map((url) => ({ url })) : [];
       setImages(initial);
       onAllImagesChange?.(initial);
-      // onAllImagesChange is intentionally excluded: callers should stabilize it with useCallback
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initialImagesStr]);
 

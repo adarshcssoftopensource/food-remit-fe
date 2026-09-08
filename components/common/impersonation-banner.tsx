@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { AlertCircle, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { ROUTES } from "@/config/routes";
 
 export function ImpersonationBanner() {
   const { isReadOnly, profile } = useProfile();
@@ -22,11 +23,11 @@ export function ImpersonationBanner() {
       setAuthSession({ accessToken: originalToken });
       Cookies.remove(ORIGINAL_AUTH_TOKEN_COOKIE, buildCookieOptions());
       queryClient.clear();
-      router.push("/store-management");
+      router.push(ROUTES.ADMIN.STORE_MANAGEMENT.ROOT);
     } else {
       clearAuthSession();
       queryClient.clear();
-      router.push("/login");
+      router.push(ROUTES.AUTH.LOGIN);
     }
   };
 

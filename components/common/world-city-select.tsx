@@ -21,7 +21,6 @@ export type WorldCitySelectProps = {
   className?: string;
   id?: string;
   placeholder?: string;
-  /** Already-created city names to hide from the list */
   excludeNames?: string[];
 };
 

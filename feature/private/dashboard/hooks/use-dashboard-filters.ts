@@ -13,7 +13,7 @@ export function useDashboardFilters() {
     setFilters((prev) => ({
       ...prev,
       countryId: countryId && countryId !== "All" && countryId !== "all" ? countryId : undefined,
-      cityId: undefined, // Always reset city when country changes
+      cityId: undefined,
     }));
   }, []);
 

@@ -15,19 +15,15 @@ import { useDebounce } from "@/lib/debounce";
 import { SortingState } from "@tanstack/react-table";
 
 export function AmountLimitManagement() {
-  // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  // Search state — debounced before sending to backend
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
 
-  // Sorting state
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // Date filter state
   const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
     fromDate: undefined as Date | undefined,
     toDate: undefined as Date | undefined,
@@ -94,7 +90,7 @@ export function AmountLimitManagement() {
         onCancelFilters={cancel}
         activeFilterCount={activeFilterCount}
       >
-        <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+        <div className="min-w-70 flex-1 sm:min-w-[320px]">
           <DateRangeFilter
             fromDate={draft.fromDate}
             toDate={draft.toDate}
