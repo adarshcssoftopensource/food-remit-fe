@@ -18,7 +18,7 @@ export function OrderStatusBadge({
   showIcon = true,
 }: OrderStatusBadgeProps) {
   // Completed / Delivered / Paid
-  if (status === 3 || status === 6) {
+  if (status === 3 || status === 6 || status === 8) {
     return (
       <Badge
         className={cn(

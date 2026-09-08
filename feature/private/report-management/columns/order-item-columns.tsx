@@ -52,13 +52,19 @@ export function getOrderItemColumns(
               className="group hover:ring-primary/40 relative size-11 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:ring-2 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
               title="Click to preview image"
             >
-              <Image
-                src={item.productIcon}
-                alt={item.productName}
-                width={44}
-                height={44}
-                className="size-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
+              {item.productIcon ? (
+                <Image
+                  src={item.productIcon}
+                  alt={item.productName}
+                  width={44}
+                  height={44}
+                  className="size-full object-cover transition-transform duration-300 group-hover:scale-110"
+                />
+              ) : (
+                <div className="flex size-full items-center justify-center bg-slate-100 dark:bg-slate-800">
+                  <span className="text-xs font-semibold text-slate-400">No Img</span>
+                </div>
+              )}
               <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-hover:opacity-100">
                 <ZoomIn className="size-4 text-white drop-shadow-md" />
               </div>
@@ -131,19 +137,32 @@ export function getOrderItemColumns(
     },
     {
       accessorKey: "barCode",
-      header: "Barcode / UPC",
+      header: "QR Code",
       cell: ({ row }) => {
         const barCode = row.original.barCode;
-        if (!barCode) return <div className="text-muted-foreground text-center text-xs">—</div>;
+        if (!barCode || (!barCode.startsWith("data:") && !barCode.startsWith("http"))) {
+          return <div className="text-muted-foreground text-center text-xs">—</div>;
+        }
 
         return (
           <div className="text-start">
-            <div className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100 px-2.5 py-1 dark:border-slate-700 dark:bg-slate-800">
-              <Barcode className="size-3.5 text-slate-500" />
-              <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
-                {barCode.startsWith("data:") ? "Barcode Asset" : barCode}
-              </span>
-            </div>
+            <button
+              type="button"
+              onClick={() => onPreviewImage(barCode)}
+              className="group hover:ring-primary/40 relative size-11 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:ring-2 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+              title="Click to preview QR Code"
+            >
+              <Image
+                src={barCode}
+                alt="QR Code"
+                width={44}
+                height={44}
+                className="size-full object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                <ZoomIn className="size-4 text-white drop-shadow-md" />
+              </div>
+            </button>
           </div>
         );
       },

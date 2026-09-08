@@ -129,6 +129,11 @@ export function AppSidebar() {
             }
             const isStoreManager =
               profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
+
+            if (isStoreManager && sub.title === "Store Report") {
+              return false;
+            }
+
             return true;
           });
           return { ...item, items: filteredSubs };

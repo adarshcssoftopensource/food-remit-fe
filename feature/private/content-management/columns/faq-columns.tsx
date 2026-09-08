@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
 import type { FaqData } from "../types";
+import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 
 type FaqColumnsConfig = {
   onEdit: (faq: FaqData) => void;
@@ -35,7 +36,11 @@ export function getFaqColumns({ onEdit, onDelete }: FaqColumnsConfig): ColumnDef
       accessorKey: "answer",
       header: "Answer",
       cell: ({ row }) => (
-        <span className="line-clamp-2 max-w-lg text-sm text-slate-600">{row.original.answer}</span>
+        <TruncatedTextCell
+          text={row.original.answer}
+          maxWords={20}
+          className="line-clamp-2 max-w-lg text-sm text-slate-600"
+        />
       ),
     },
     {

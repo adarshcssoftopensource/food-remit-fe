@@ -169,7 +169,7 @@ export function AmountLimitDialog({
                 </FieldLabel>
                 <Input
                   {...field}
-                  type="text"
+                  type="number"
                   placeholder="Enter Amount"
                   disabled={isPending}
                   className={cn("h-12 rounded-xl", errors.amount && "border-red-400")}
