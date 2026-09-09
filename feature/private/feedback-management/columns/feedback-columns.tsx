@@ -76,23 +76,23 @@ export const feedbackColumns: ColumnDef<FeedbackRowData>[] = [
       <span className="text-slate-600 dark:text-slate-400">{row.original.recommend || "N/A"}</span>
     ),
   },
-  {
-    accessorKey: "status",
-    header: "Status",
-    enableSorting: true,
-    cell: ({ row }) => {
-      const status = row.original.status || "Pending";
-      const style =
-        FEEDBACK_STATUS_STYLES[status] || "bg-yellow-100 text-yellow-700 border-yellow-200";
-      return (
-        <span
-          className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${style}`}
-        >
-          {status}
-        </span>
-      );
-    },
-  },
+  // {
+  //   accessorKey: "status",
+  //   header: "Status",
+  //   enableSorting: true,
+  //   cell: ({ row }) => {
+  //     const status = row.original.status || "Pending";
+  //     const style =
+  //       FEEDBACK_STATUS_STYLES[status] || "bg-yellow-100 text-yellow-700 border-yellow-200";
+  //     return (
+  //       <span
+  //         className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${style}`}
+  //       >
+  //         {status}
+  //       </span>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "submittedOn",
     id: "date",

@@ -24,7 +24,7 @@ export function getTicketColumns(
     },
     {
       accessorKey: "refrenceNumber",
-      header: "Order Reference",
+      header: "Reference No.",
       enableSorting: true,
       cell: ({ row }) => (
         <span className="font-mono text-xs font-medium text-slate-700">

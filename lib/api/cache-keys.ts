@@ -76,8 +76,7 @@ export const API_CACHE_KEYS = {
   // Reports
   STORE_REPORTS: ["store-reports"],
   STORE_REPORT_DETAIL: (id: string) => ["store-report-detail", id],
-  STORE_ITEMS: (storeId: string) => ["store-items", storeId],
-  ITEM_TRANSACTIONS: (storeId: string, itemId: string) => ["item-transactions", storeId, itemId],
+  STORE_ORDERS: (storeId: string) => ["store-orders", storeId],
 
   // Amount Limits
   AMOUNT_LIMITS: ["amount-limits"],

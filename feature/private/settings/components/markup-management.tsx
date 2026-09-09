@@ -106,9 +106,7 @@ export function MarkupManagement() {
                   : "bg-amber-100 text-amber-800"
               }`}
             >
-              {watch("isFeeRefundable")
-                ? "Option A: Fee Refundable"
-                : "Option B: Fee Non-Refundable"}
+              {watch("isFeeRefundable") ? "Fee Refundable" : "Fee Non-Refundable"}
             </span>
           </div>
         </div>
@@ -117,9 +115,9 @@ export function MarkupManagement() {
       <div className="flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
         <p className="text-xs text-rose-700">
-          This <span className="font-semibold">Tax</span> % (Set Markup) is an add-on — product base
+          This <span className="font-semibold">Tax</span> % (Set Markup) is an add-on - product base
           price does not change. Applied on every item in the country currency. Set between
-          <span className="font-semibold"> 0% – 100%</span>.
+          <span className="font-semibold"> 0% - 100%</span>.
         </p>
       </div>
 
@@ -212,8 +210,8 @@ export function MarkupManagement() {
                       </FieldLabel>
                       <p className="text-xs text-slate-500">
                         {field.value
-                          ? "Option A (Default): Processing fee is 100% refunded to customer on order cancellation."
-                          : "Option B (Non-Refundable): Food Remit retains the processing fee, refunding item & tax total to customer card via Stripe."}
+                          ? "Processing fee is 100% refunded to customer on order cancellation."
+                          : "Food Remit retains the processing fee, refunding item & tax total to customer card via Stripe."}
                       </p>
                     </div>
                     <Switch

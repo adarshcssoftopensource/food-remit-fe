@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Expand, QrCode, Receipt, ShoppingBag } from "lucide-react";
+import { getCurrencySymbol } from "@/lib/utils/currency";
 import type { OrderDataItem } from "../types/order.types";
 
 interface OrderItemsTableProps {
@@ -55,7 +56,7 @@ export function OrderItemsTable({ items, onImageClick }: OrderItemsTableProps) {
                   const priceNum = Number(item.price || 0);
                   const qtyNum = Number(item.quantity || 1);
                   const totalFormatted = (priceNum * qtyNum).toFixed(2);
-                  const unitStr = item.unit || "USD";
+                  const symbol = getCurrencySymbol(item.unit, "₹");
                   const qrCodeText = item.productBarcode || item.upcCode || item.itemId || "N/A";
                   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrCodeText)}`;
                   const firstPicture = item.productPicture?.split(",")[0].trim();
@@ -145,7 +146,8 @@ export function OrderItemsTable({ items, onImageClick }: OrderItemsTableProps) {
 
                       {/* Unit Price */}
                       <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
-                        {unitStr} {priceNum.toFixed(2)}
+                        {symbol}
+                        {priceNum.toFixed(2)}
                       </td>
 
                       {/* Qty */}
@@ -157,7 +159,8 @@ export function OrderItemsTable({ items, onImageClick }: OrderItemsTableProps) {
 
                       {/* Total */}
                       <td className="px-6 py-4 text-right font-extrabold text-slate-900 dark:text-white">
-                        {unitStr} {totalFormatted}
+                        {symbol}
+                        {totalFormatted}
                       </td>
                     </tr>
                   );

@@ -4,13 +4,14 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  BadgeDollarSign,
   Calendar,
   CreditCard,
-  Package,
-  ShieldCheck,
+  HandCoins,
+  Receipt,
+  RotateCcw,
   ShoppingBag,
   Store,
-  UserCheck,
   UserX,
 } from "lucide-react";
 
@@ -22,13 +23,36 @@ import { Skeleton } from "@/components/ui/skeleton";
 import apiClient from "@/lib/api/client";
 import { REPORT_ENDPOINTS } from "@/lib/api/endpoints/reports.endpoints";
 import { useDebounce } from "@/lib/debounce";
+import { getCurrencySymbol, cleanCurrencyDisplay } from "@/lib/utils/currency";
 import { OrderStatusBadge } from "./order-status-badge";
 import { OrderPartyCard } from "./order-party-card";
 import { OrderItemsTable, ItemStats, OrderItem } from "./order-items-table";
+import {
+  OrderFinancialBreakdown,
+  CustomerPaymentData,
+  FoodRemitEarningsData,
+  VendorSettlementData,
+} from "./order-financial-breakdown";
+import { OrderReportDetailSkeleton } from "./order-report-detail-skeleton";
 
 interface OrderReportDetailPageProps {
   orderId: string;
   onBack: () => void;
+}
+
+interface FinancialDetails {
+  markup: string;
+  markupVal: number;
+  processingFee: string;
+  processingFeeVal: number;
+  commissionEarnings: string;
+  commissionEarningsVal: number;
+  refundedAmount: string;
+  refundedAmountVal: number;
+  itemTax: string;
+  itemTaxVal: number;
+  totalAmount: string;
+  totalAmountVal: number;
 }
 
 interface OrderDetailResponse {
@@ -44,10 +68,20 @@ interface OrderDetailResponse {
     orderType: number;
     orderStatus: number;
     statusLabel: string;
-    handedOverBy: string;
+    handedOverBy?: string;
     recurringOrderType: number;
     comment: string;
     customerSignature: string | null;
+    markup?: string;
+    markupVal?: number;
+    processingFee?: string;
+    processingFeeVal?: number;
+    commissionEarnings?: string;
+    commissionEarningsVal?: number;
+    refundedAmount?: string;
+    refundedAmountVal?: number;
+    itemTax?: string;
+    itemTaxVal?: number;
   };
   sender: {
     firstName: string;
@@ -77,6 +111,10 @@ interface OrderDetailResponse {
     storeName: string;
     storeAddress: string;
   };
+  financials?: FinancialDetails;
+  customerPayment?: CustomerPaymentData;
+  foodRemitEarnings?: FoodRemitEarningsData;
+  vendorSettlement?: VendorSettlementData;
   orderItems: OrderItem[];
   itemStats?: ItemStats;
 }
@@ -132,23 +170,7 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
   });
 
   if (isLoading && !responseData) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onBack} className="gap-2 rounded-xl">
-            <ArrowLeft className="size-4" /> Back to Orders
-          </Button>
-          <Skeleton className="h-8 w-64 rounded-xl" />
-        </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-28 rounded-2xl" />
-          ))}
-        </div>
-        <Skeleton className="h-64 rounded-2xl" />
-        <Skeleton className="h-96 rounded-2xl" />
-      </div>
-    );
+    return <OrderReportDetailSkeleton />;
   }
 
   if (isError || !responseData?.data) {
@@ -178,10 +200,46 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
     );
   }
 
-  const { order, sender, receiver, store, orderItems = [], itemStats } = responseData.data;
+  const {
+    order,
+    sender,
+    receiver,
+    store,
+    financials,
+    customerPayment,
+    foodRemitEarnings,
+    vendorSettlement,
+    orderItems = [],
+    itemStats,
+  } = responseData.data;
+
   const safeSender = sender || { fullName: "N/A", fullPhone: "N/A", fullAddress: "N/A" };
   const safeReceiver = receiver || { fullName: "N/A", fullPhone: "N/A", fullAddress: "N/A" };
   const safeStore = store || { id: "", storeName: "N/A", storeAddress: "N/A" };
+
+  const currencySymbol = getCurrencySymbol(order.currency);
+  const totalDisplay = cleanCurrencyDisplay(
+    order.formattedPrice || order.transactionAmount,
+    currencySymbol,
+  );
+  const markupDisplay = cleanCurrencyDisplay(financials?.markup || order.markup, currencySymbol);
+  const processingFeeDisplay = cleanCurrencyDisplay(
+    financials?.processingFee || order.processingFee,
+    currencySymbol,
+  );
+  const commissionDisplay = cleanCurrencyDisplay(
+    financials?.commissionEarnings || order.commissionEarnings,
+    currencySymbol,
+  );
+  const itemTaxDisplay = cleanCurrencyDisplay(financials?.itemTax || order.itemTax, currencySymbol);
+  const refundedDisplay = cleanCurrencyDisplay(
+    financials?.refundedAmount || order.refundedAmount,
+    currencySymbol,
+  );
+  const isRefunded =
+    (financials?.refundedAmountVal ?? order.refundedAmountVal ?? 0) > 0 ||
+    order.orderStatus === 0 ||
+    order.orderStatus === 7;
 
   const pagination = responseData.pagination || {
     total: orderItems.length,
@@ -217,7 +275,13 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge
+            variant="outline"
+            className="rounded-xl border-amber-500/20 bg-amber-500/5 px-3 py-1.5 text-xs font-bold text-amber-700 dark:text-amber-300"
+          >
+            <Store className="mr-1 size-3.5" /> {safeStore.storeName}
+          </Badge>
           <Badge
             variant="outline"
             className="bg-primary/5 text-primary border-primary/20 rounded-xl px-3 py-1.5 text-xs font-bold"
@@ -227,93 +291,131 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
         </div>
       </div>
 
-      {/* Executive KPI Cards Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Executive Financial KPI Cards Grid */}
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {/* Total Transaction */}
         <Card className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/5 shadow-xs dark:bg-emerald-950/20">
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="min-w-0 flex-1 pr-2">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
               <p className="text-[11px] font-bold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
                 Total Transaction
               </p>
-              <h3 className="mt-1 truncate text-2xl font-black text-slate-900 dark:text-white">
-                {order.formattedPrice}
-              </h3>
-              <p className="text-muted-foreground mt-0.5 flex items-center gap-1 truncate text-xs">
-                <CreditCard className="size-3 shrink-0" /> {order.paymentMode}
-              </p>
+              <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                <CreditCard className="size-4" />
+              </div>
             </div>
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-              <CreditCard className="size-6" />
-            </div>
+            <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
+              {totalDisplay}
+            </h3>
+            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">{order.paymentMode}</p>
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden rounded-2xl border border-blue-500/20 bg-blue-500/5 shadow-xs dark:bg-blue-950/20">
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="min-w-0 flex-1 pr-2">
-              <p className="text-[11px] font-bold tracking-wider text-blue-600 uppercase dark:text-blue-400">
-                Handed Over By
-              </p>
-              <h3
-                className="mt-1 truncate text-base font-extrabold text-slate-900 dark:text-white"
-                title={order.handedOverBy}
-              >
-                {order.handedOverBy}
-              </h3>
-              <p className="text-muted-foreground mt-0.5 flex items-center gap-1 truncate text-xs">
-                <UserCheck className="size-3 shrink-0" /> Verified Fulfillment
-              </p>
-            </div>
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-600 dark:text-blue-400">
-              <ShieldCheck className="size-6" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/5 shadow-xs dark:bg-amber-950/20">
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="min-w-0 flex-1 pr-2">
-              <p className="text-[11px] font-bold tracking-wider text-amber-600 uppercase dark:text-amber-400">
-                Target Store
-              </p>
-              <h3
-                className="mt-1 truncate text-base font-extrabold text-slate-900 dark:text-white"
-                title={safeStore.storeName}
-              >
-                {safeStore.storeName}
-              </h3>
-              <p
-                className="text-muted-foreground mt-0.5 truncate text-xs"
-                title={safeStore.storeAddress}
-              >
-                {safeStore.storeAddress}
-              </p>
-            </div>
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
-              <Store className="size-6" />
-            </div>
-          </CardContent>
-        </Card>
-
+        {/* Markup */}
         <Card className="overflow-hidden rounded-2xl border border-purple-500/20 bg-purple-500/5 shadow-xs dark:bg-purple-950/20">
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="min-w-0 flex-1 pr-2">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
               <p className="text-[11px] font-bold tracking-wider text-purple-600 uppercase dark:text-purple-400">
-                Order Items Summary
+                Markup
               </p>
-              <h3 className="mt-1 text-2xl font-black text-slate-900 dark:text-white">
-                {itemStats?.allCount ?? orderItems.length}{" "}
-                {(itemStats?.allCount ?? orderItems.length) === 1 ? "Item" : "Items"}
-              </h3>
-              <p className="text-muted-foreground mt-0.5 flex items-center gap-1 truncate text-xs">
-                <Package className="size-3 shrink-0" /> {order.foodType}
-              </p>
+              <div className="flex size-7 items-center justify-center rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400">
+                <BadgeDollarSign className="size-4" />
+              </div>
             </div>
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-purple-500/15 text-purple-600 dark:text-purple-400">
-              <Package className="size-6" />
-            </div>
+            <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
+              {markupDisplay}
+            </h3>
+            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">Food Remit Share</p>
           </CardContent>
         </Card>
+
+        {/* Processing Fee */}
+        <Card className="overflow-hidden rounded-2xl border border-blue-500/20 bg-blue-500/5 shadow-xs dark:bg-blue-950/20">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold tracking-wider text-blue-600 uppercase dark:text-blue-400">
+                Processing Fee
+              </p>
+              <div className="flex size-7 items-center justify-center rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400">
+                <Receipt className="size-4" />
+              </div>
+            </div>
+            <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
+              {processingFeeDisplay}
+            </h3>
+            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">Platform Fee</p>
+          </CardContent>
+        </Card>
+
+        {/* Commission Earnings */}
+        <Card className="overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/5 shadow-xs dark:bg-amber-950/20">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold tracking-wider text-amber-600 uppercase dark:text-amber-400">
+                Commission
+              </p>
+              <div className="flex size-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                <HandCoins className="size-4" />
+              </div>
+            </div>
+            <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
+              {commissionDisplay}
+            </h3>
+            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">Store Commission</p>
+          </CardContent>
+        </Card>
+
+        {/* Item Tax */}
+        <Card className="overflow-hidden rounded-2xl border border-indigo-500/20 bg-indigo-500/5 shadow-xs dark:bg-indigo-950/20">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
+                Item Tax
+              </p>
+              <div className="flex size-7 items-center justify-center rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
+                <Receipt className="size-4" />
+              </div>
+            </div>
+            <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
+              {itemTaxDisplay}
+            </h3>
+            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">Govt Store Tax</p>
+          </CardContent>
+        </Card>
+
+        {/* Refunded Amount */}
+        <Card className="overflow-hidden rounded-2xl border border-rose-500/20 bg-rose-500/5 shadow-xs dark:bg-rose-950/20">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold tracking-wider text-rose-600 uppercase dark:text-rose-400">
+                Refunded Amount
+              </p>
+              <div className="flex size-7 items-center justify-center rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400">
+                <RotateCcw className="size-4" />
+              </div>
+            </div>
+            <h3
+              className={`mt-2 truncate text-xl font-black ${isRefunded ? "text-rose-600 dark:text-rose-400" : "text-slate-900 dark:text-white"}`}
+            >
+              {isRefunded ? `-${refundedDisplay}` : `${currencySymbol}0.00`}
+            </h3>
+            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
+              {isRefunded ? "Order Cancelled / Refunded" : "No Refund"}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 3-Step Financial Breakdown (Matching Order Management) */}
+      <div className="space-y-3">
+        <h2 className="text-base font-black tracking-tight text-slate-900 dark:text-white">
+          Financial & Settlement Breakdown
+        </h2>
+        <OrderFinancialBreakdown
+          customerPayment={customerPayment}
+          foodRemitEarnings={foodRemitEarnings}
+          vendorSettlement={vendorSettlement}
+        />
       </div>
 
       {/* Party Details Grid: Sender & Receiver */}
@@ -329,7 +431,7 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
       {/* View Items in Order Table with Backend Search, Pagination, Filtering & Sorting */}
       <OrderItemsTable
         orderItems={orderItems}
-        currency={order.currency}
+        currency={currencySymbol}
         itemStats={itemStats}
         itemFilter={itemFilter}
         onItemFilterChange={(newFilter) => {

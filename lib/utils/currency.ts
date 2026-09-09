@@ -43,22 +43,78 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   PLN: "zł",
 };
 
-export function getCurrencySymbol(symbol?: string, currencyCode?: string): string {
-  if (symbol && symbol !== currencyCode && !/^[A-Z]{3}$/.test(symbol)) {
-    return symbol;
+export function getCurrencySymbol(symbolOrCode?: string | null, fallback = "₹"): string {
+  if (!symbolOrCode) return fallback;
+  const trimmed = String(symbolOrCode).trim();
+  const upper = trimmed.toUpperCase();
+
+  if (
+    upper === "INR" ||
+    upper === "RS" ||
+    upper === "RS." ||
+    upper === "RUPEE" ||
+    upper === "RUPEES" ||
+    trimmed === "₹"
+  ) {
+    return "₹";
   }
-  if (currencyCode) {
-    const upper = currencyCode.toUpperCase();
-    if (CURRENCY_SYMBOLS[upper]) {
-      return CURRENCY_SYMBOLS[upper];
+  if (upper === "USD" || upper === "DOLLAR" || upper === "US DOLLAR" || trimmed === "$") {
+    return "$";
+  }
+  if (upper === "PHP" || upper === "PESO" || upper === "PESOS" || trimmed === "₱") {
+    return "₱";
+  }
+  if (upper === "EUR" || trimmed === "€") {
+    return "€";
+  }
+  if (upper === "GBP" || trimmed === "£") {
+    return "£";
+  }
+  if (CURRENCY_SYMBOLS[upper]) {
+    return CURRENCY_SYMBOLS[upper];
+  }
+  // Check if string contains any code like INR, USD, PHP
+  for (const [code, sym] of Object.entries(CURRENCY_SYMBOLS)) {
+    if (new RegExp(`\\b${code}\\b`, "i").test(trimmed)) {
+      return sym;
     }
   }
-  if (symbol) {
-    const upper = symbol.toUpperCase();
-    if (CURRENCY_SYMBOLS[upper]) {
-      return CURRENCY_SYMBOLS[upper];
+  for (const sym of Object.values(CURRENCY_SYMBOLS)) {
+    if (trimmed.includes(sym)) {
+      return sym;
     }
-    return symbol;
   }
-  return "$";
+  return fallback;
+}
+
+export function cleanCurrencyDisplay(val?: string | number | null, fallbackSymbol = "₹"): string {
+  if (val === undefined || val === null || val === "") return `${fallbackSymbol}0.00`;
+  let str = String(val).trim();
+  if (str.endsWith("%")) return str;
+  const isNegative = str.startsWith("-");
+  if (isNegative) str = str.slice(1).trim();
+
+  let detectedSymbol = fallbackSymbol;
+  for (const [code, sym] of Object.entries(CURRENCY_SYMBOLS)) {
+    const reg = new RegExp(`\\b${code}\\b`, "i");
+    if (reg.test(str)) {
+      detectedSymbol = sym;
+      str = str.replace(reg, "").trim();
+      break;
+    }
+  }
+
+  for (const sym of Object.values(CURRENCY_SYMBOLS)) {
+    if (str.includes(sym)) {
+      detectedSymbol = sym;
+      str = str.replace(sym, "").trim();
+      break;
+    }
+  }
+
+  const num = parseFloat(str.replace(/[^0-9.]/g, ""));
+  if (isNaN(num)) {
+    return `${isNegative ? "-" : ""}${detectedSymbol}0.00`;
+  }
+  return `${isNegative ? "-" : ""}${detectedSymbol}${num.toFixed(2)}`;
 }

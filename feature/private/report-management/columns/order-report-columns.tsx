@@ -1,10 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye } from "lucide-react";
+import { Eye, Store, User } from "lucide-react";
 
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/date";
+import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 import { OrderStatusBadge } from "../components/order-status-badge";
 
 export interface OrderReportRow {
@@ -12,97 +15,196 @@ export interface OrderReportRow {
   id: string;
   refrenceNumber: string;
   senderName: string;
+  senderImage?: string | null;
   receiverName: string;
+  receiverImage?: string | null;
   storeName: string;
+  storeImage?: string | null;
+  storeAddress?: string | null;
   orderStatus: number;
   statusLabel: string;
-  handedOverBy: string;
   orderType: number;
   totalAmount: string;
+  totalAmountVal?: number;
+  itemTax?: string;
+  itemTaxVal?: number;
+  processingFee?: string;
+  processingFeeVal?: number;
+  commissionEarnings?: string;
+  commissionEarningsVal?: number;
+  markup?: string;
+  markupVal?: number;
+  refundedAmount?: string;
+  refundedAmountVal?: number;
   addedOn: string;
+  createdAt?: string;
+}
+
+export interface GetOrderReportColumnsOptions {
+  onViewDetails: (orderId: string) => void;
+  onImageClick?: (url: string) => void;
 }
 
 export function getOrderReportColumns(
-  onViewDetails: (orderId: string) => void,
+  optionsOrHandler: ((orderId: string) => void) | GetOrderReportColumnsOptions,
 ): ColumnDef<OrderReportRow>[] {
+  const onViewDetails =
+    typeof optionsOrHandler === "function" ? optionsOrHandler : optionsOrHandler.onViewDetails;
+  const onImageClick =
+    typeof optionsOrHandler === "function" ? undefined : optionsOrHandler.onImageClick;
+
   return [
     {
       id: "sno",
-      header: "S.no",
+      header: "S.No",
       cell: ({ row }) => (
         <span className="pl-2 font-mono text-xs text-slate-500">{row.original.sno}</span>
       ),
     },
     {
       accessorKey: "refrenceNumber",
-      header: "Reference Number",
+      header: "Reference No",
       cell: ({ row }) => (
         <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-          {row.original.refrenceNumber}
+          {row.original.refrenceNumber || row.original.id.substring(0, 8)}
         </span>
       ),
     },
+
     {
       accessorKey: "senderName",
-      header: "Sender Name",
-      cell: ({ row }) => (
-        <TruncatedTextCell
-          text={row.original.senderName}
-          maxWords={3}
-          className="text-xs font-semibold text-slate-800 dark:text-slate-200"
-        />
-      ),
+      header: "Sender",
+      cell: ({ row }) => {
+        const { senderName, senderImage } = row.original;
+        return (
+          <div className="flex items-center gap-2.5">
+            <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
+              {senderImage ? (
+                <Image src={senderImage} alt={senderName} fill className="object-cover" />
+              ) : (
+                <div className="flex size-full items-center justify-center text-slate-400">
+                  <User className="size-3.5" />
+                </div>
+              )}
+            </div>
+            <span className="truncate text-xs font-semibold text-slate-800 dark:text-slate-200">
+              {senderName || "N/A"}
+            </span>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "receiverName",
-      header: "Receiver Name",
-      cell: ({ row }) => (
-        <TruncatedTextCell
-          text={row.original.receiverName}
-          maxWords={3}
-          className="text-xs font-semibold text-slate-800 dark:text-slate-200"
-        />
-      ),
+      header: "Receiver",
+      cell: ({ row }) => {
+        const { receiverName, receiverImage } = row.original;
+        return (
+          <div className="flex items-center gap-2.5">
+            <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
+              {receiverImage ? (
+                <Image src={receiverImage} alt={receiverName} fill className="object-cover" />
+              ) : (
+                <div className="flex size-full items-center justify-center text-slate-400">
+                  <User className="size-3.5" />
+                </div>
+              )}
+            </div>
+            <TruncatedTextCell
+              text={row.original.receiverName || "N/A"}
+              maxWords={3}
+              className="text-xs font-semibold text-slate-800 dark:text-slate-200"
+            />
+          </div>
+        );
+      },
     },
     {
-      accessorKey: "storeName",
-      header: "Store Name",
+      accessorKey: "markup",
+      header: "Markup",
       cell: ({ row }) => (
-        <TruncatedTextCell
-          text={row.original.storeName}
-          maxWords={3}
-          className="text-xs font-medium text-slate-700 dark:text-slate-300"
-        />
-      ),
-    },
-    {
-      accessorKey: "statusLabel",
-      header: "Status",
-      cell: ({ row }) => (
-        <OrderStatusBadge status={row.original.orderStatus} label={row.original.statusLabel} />
-      ),
-    },
-    {
-      accessorKey: "handedOverBy",
-      header: "Handed Over By",
-      cell: ({ row }) => (
-        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
-          {row.original.handedOverBy}
+        <span className="font-mono text-xs font-semibold text-purple-600 dark:text-purple-400">
+          {cleanCurrencyDisplay(row.original.markup)}
         </span>
       ),
     },
+    // {
+    //   accessorKey: "processingFee",
+    //   header: "Processing Fee",
+    //   cell: ({ row }) => (
+    //     <span className="font-mono text-xs font-semibold text-blue-600 dark:text-blue-400">
+    //       {cleanCurrencyDisplay(row.original.processingFee)}
+    //     </span>
+    //   ),
+    // },
+    // {
+    //   accessorKey: "commissionEarnings",
+    //   header: "Commission",
+    //   cell: ({ row }) => (
+    //     <span className="font-mono text-xs font-semibold text-amber-600 dark:text-amber-400">
+    //       {cleanCurrencyDisplay(row.original.commissionEarnings)}
+    //     </span>
+    //   ),
+    // },
+    // {
+    //   accessorKey: "itemTax",
+    //   header: "Item Tax",
+    //   cell: ({ row }) => (
+    //     <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
+    //       {cleanCurrencyDisplay(row.original.itemTax)}
+    //     </span>
+    //   ),
+    // },
+    // {
+    //   accessorKey: "refundedAmount",
+    //   header: "Refunded",
+    //   cell: ({ row }) => {
+    //     const isRefunded = (row.original.refundedAmountVal ?? 0) > 0;
+    //     return (
+    //       <span
+    //         className={`font-mono text-xs ${
+    //           isRefunded
+    //             ? "font-bold text-rose-500 dark:text-rose-400"
+    //             : "text-slate-400 dark:text-slate-500"
+    //         }`}
+    //       >
+    //         {isRefunded ? `-${cleanCurrencyDisplay(row.original.refundedAmount)}` : "₹0.00"}
+    //       </span>
+    //     );
+    //   },
+    // },
     {
       accessorKey: "totalAmount",
       header: "Total Amount",
       cell: ({ row }) => (
         <span className="font-mono text-xs font-extrabold text-slate-900 dark:text-white">
-          {row.original.totalAmount}
+          {cleanCurrencyDisplay(row.original.totalAmount)}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "orderStatus",
+      header: "Status",
+      cell: ({ row }) => (
+        <OrderStatusBadge
+          status={row.original.orderStatus}
+          orderType={row.original.orderType}
+          label={row.original.statusLabel}
+        />
+      ),
+    },
+    {
+      accessorKey: "addedOn",
+      header: "Order Date",
+      cell: ({ row }) => (
+        <span className="text-xs text-slate-600 dark:text-slate-400">
+          {formatDate(row.original.addedOn)}
         </span>
       ),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: "Action",
       cell: ({ row }) => (
         <Button
           size="sm"

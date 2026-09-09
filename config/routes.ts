@@ -62,8 +62,6 @@ export const ROUTES = {
       ROOT: "/report-management",
       STORE_REPORT: "/report-management/store-report",
       STORE_REPORT_DETAIL: (id: string) => `/report-management/store-report/${id}`,
-      STORE_REPORT_ITEM_TRANSACTIONS: (storeId: string, itemId: string) =>
-        `/report-management/store-report/${storeId}/items/${itemId}`,
       CUSTOMER_REPORT: "/report-management/customer-report",
       ORDERS_REPORT: "/report-management/orders-report",
       COUPONS_REPORT: "/report-management/coupons-report",

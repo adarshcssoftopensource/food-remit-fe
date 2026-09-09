@@ -153,7 +153,6 @@ export function OrderReportsPage() {
         { label: "Receiver Name", key: "receiverName" },
         { label: "Store Name", key: "storeName" },
         { label: "Status", key: "statusLabel" },
-        { label: "Handed Over By", key: "handedOverBy" },
         { label: "Total Amount", key: "totalAmount" },
         { label: "Date", key: "addedOn" },
       ]);
@@ -165,7 +164,6 @@ export function OrderReportsPage() {
         { label: "Receiver Name", key: "receiverName" },
         { label: "Store Name", key: "storeName" },
         { label: "Status", key: "statusLabel" },
-        { label: "Handed Over By", key: "handedOverBy" },
         { label: "Total Amount", key: "totalAmount" },
         { label: "Date", key: "addedOn" },
       ]);

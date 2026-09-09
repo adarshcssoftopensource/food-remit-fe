@@ -5,12 +5,12 @@ import Image from "next/image";
 import {
   BadgeDollarSign,
   Building2,
+  ClipboardList,
   CreditCard,
   FileSpreadsheet,
   Globe,
   HandCoins,
   Hash,
-  Loader2,
   Mail,
   Map,
   MapPin,
@@ -20,16 +20,25 @@ import {
   RotateCcw,
   ShoppingBag,
   Store,
+  TableProperties,
   User,
-  Boxes,
 } from "lucide-react";
 
+import { format } from "date-fns";
+import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { StatusBadge } from "@/components/common/status-badge";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ROUTES } from "@/config/routes";
 import { useTableFilters } from "@/hooks/use-table-filters";
 import { exportToExcel } from "@/lib/export-excel";
@@ -38,12 +47,21 @@ import { REPORT_ENDPOINTS } from "@/lib/api/endpoints/reports.endpoints";
 import { ReportDateFilters } from "../components/report-date-filters";
 import { useReportDateFilters } from "../hooks/use-report-date-filters";
 import { useGetStoreReportDetail } from "../hooks/use-get-store-report-detail";
-import { useGetStoreItems } from "../hooks/use-get-store-items";
-import { getStoreItemColumns } from "../columns/store-item-columns";
+import { useGetStoreOrders } from "../hooks/use-get-store-orders";
+import { getOrderReportColumns, OrderReportRow } from "../columns/order-report-columns";
+import { OrderReportDetailPage } from "./order-report-detail-page";
+import { StoreReportDetailSkeleton } from "./store-report-detail-skeleton";
 
 type StoreReportDetailProps = {
   storeId: string;
 };
+
+const FOOD_TYPE_OPTIONS = [
+  { label: "All Food Types", value: "All" },
+  { label: "Food Sent", value: "1" },
+  { label: "Food Requested", value: "2" },
+  { label: "Food Received", value: "3" },
+];
 
 export function StoreReportDetail({ storeId }: StoreReportDetailProps) {
   const {
@@ -58,106 +76,145 @@ export function StoreReportDetail({ storeId }: StoreReportDetailProps) {
     setToDate,
   } = useReportDateFilters();
 
-  const tableFilters = useTableFilters(50);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+
+  // Table filters for Store Orders
+  const orderTableFilters = useTableFilters(50);
+  const [foodType, setFoodType] = useState<string>("All");
+
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  const fromDateStr = fromDate ? fromDate.toISOString() : undefined;
-  const toDateStr = toDate ? toDate.toISOString() : undefined;
+  const fromDateStr = fromDate ? format(fromDate, "yyyy-MM-dd") : undefined;
+  const toDateStr = toDate ? format(toDate, "yyyy-MM-dd") : undefined;
 
+  const handleSearchChange = (val: string) => {
+    orderTableFilters.setSearchQuery(val);
+    orderTableFilters.setPage(1);
+  };
+
+  const handleFoodTypeChange = (val: string | null) => {
+    setFoodType(val || "All");
+    orderTableFilters.setPage(1);
+  };
+
+  const handleApplyDateFilters = () => {
+    applyFilters();
+    orderTableFilters.setPage(1);
+  };
+
+  const handleClearDateFilters = () => {
+    clearFilters();
+    orderTableFilters.setPage(1);
+  };
+
+  // Store Header & Financial Overview
   const { data: detailResponse, isLoading: isDetailLoading } = useGetStoreReportDetail(storeId, {
     fromDate: fromDateStr,
     toDate: toDateStr,
   });
 
-  const { data: itemsResponse, isLoading: isItemsLoading } = useGetStoreItems(storeId, {
+  // Store Orders List
+  const foodTypeNum = foodType !== "All" ? Number(foodType) : undefined;
+  const {
+    data: ordersResponse,
+    isLoading: isOrdersLoading,
+    isFetching: isOrdersFetching,
+  } = useGetStoreOrders(storeId, {
     fromDate: fromDateStr,
     toDate: toDateStr,
-    page: tableFilters.page,
-    limit: tableFilters.limit,
-    search: tableFilters.debouncedSearch.trim() || undefined,
-    sortBy: tableFilters.sortBy,
-    sortOrder: tableFilters.sortOrder,
+    page: orderTableFilters.page,
+    limit: orderTableFilters.limit,
+    search: orderTableFilters.debouncedSearch.trim() || undefined,
+    type: foodTypeNum,
+    sortBy: orderTableFilters.sortBy,
+    sortOrder: orderTableFilters.sortOrder,
   });
 
   const store = detailResponse?.data;
-  const items = itemsResponse?.data || [];
-  const pagination = itemsResponse?.pagination;
+  const orders: OrderReportRow[] = ordersResponse?.data || [];
+  const orderPagination = ordersResponse?.pagination;
 
-  const itemColumns = useMemo(
+  const orderColumns = useMemo(
     () =>
-      getStoreItemColumns({
-        storeId,
-        page: tableFilters.page,
-        limit: tableFilters.limit,
-        onImageClick: (url) => setLightboxImage(url),
+      getOrderReportColumns({
+        onViewDetails: (orderId: string) => setSelectedOrderId(orderId),
+        onImageClick: (url: string) => setLightboxImage(url),
       }),
-    [storeId, tableFilters.page, tableFilters.limit],
+    [],
   );
 
-  const handleExportExcel = async () => {
+  const handleExportOrdersExcel = async () => {
     setIsExporting(true);
     try {
       const { data: exportRes } = await apiClient.get(
-        REPORT_ENDPOINTS.EXPORT_STORE_ITEMS(storeId),
+        REPORT_ENDPOINTS.EXPORT_STORE_ORDERS(storeId),
         {
           params: {
-            page: tableFilters.page,
-            limit: tableFilters.limit,
-            search: tableFilters.debouncedSearch.trim() || undefined,
+            page: orderTableFilters.page,
+            limit: orderTableFilters.limit,
+            search: orderTableFilters.debouncedSearch.trim() || undefined,
+            type: foodTypeNum,
             fromDate: fromDateStr,
             toDate: toDateStr,
-            sortBy: tableFilters.sortBy,
-            sortOrder: tableFilters.sortOrder,
+            sortBy: orderTableFilters.sortBy,
+            sortOrder: orderTableFilters.sortOrder,
           },
         },
       );
 
-      const exportList = exportRes?.data || items || [];
+      const exportList: OrderReportRow[] = exportRes?.data || orders || [];
       const storeNameClean = (store?.storeName || "Store").replace(/[^a-zA-Z0-9]/g, "_");
 
-      exportToExcel(`${storeNameClean}_Items_Page_${tableFilters.page}`, exportList, [
-        {
-          label: "S.No",
-          key: (_, index) => (tableFilters.page - 1) * tableFilters.limit + index + 1,
-        },
-        { label: "Item Name", key: "productName" },
-        { label: "UPC Code", key: (item) => item.upcCode || "N/A" },
-        { label: "Unit", key: "unit" },
-        { label: "Category", key: "categoryName" },
-        { label: "Department", key: "departmentName" },
-        {
-          label: "Unit Price",
-          key: (item) => `$${Number(item.price).toFixed(2)} ${item.currency}`,
-        },
-        { label: "Units Sold", key: "totalUnitsSold" },
-        { label: "Transactions Count", key: "totalTransactionsCount" },
-        { label: "Total Revenue", key: "totalSalesAmount" },
-      ]);
+      const exportColumns = [
+        { label: "S.No", key: "sno" as const },
+        { label: "Reference Number", key: "refrenceNumber" as const },
+        { label: "Store Name", key: "storeName" as const },
+        { label: "Sender Name", key: "senderName" as const },
+        { label: "Receiver Name", key: "receiverName" as const },
+        { label: "Markup", key: "markup" as const },
+        { label: "Processing Fee", key: "processingFee" as const },
+        { label: "Commission Earnings", key: "commissionEarnings" as const },
+        { label: "Item Tax", key: "itemTax" as const },
+        { label: "Refunded Amount", key: "refundedAmount" as const },
+        { label: "Total Amount", key: "totalAmount" as const },
+        { label: "Status", key: "statusLabel" as const },
+        { label: "Date", key: "addedOn" as const },
+      ];
+
+      exportToExcel(
+        `${storeNameClean}_Orders_Page_${orderTableFilters.page}`,
+        exportList,
+        exportColumns,
+      );
     } catch {
       const storeNameClean = (store?.storeName || "Store").replace(/[^a-zA-Z0-9]/g, "_");
-      exportToExcel(`${storeNameClean}_Items_Page_${tableFilters.page}`, items, [
-        {
-          label: "S.No",
-          key: (_, index) => (tableFilters.page - 1) * tableFilters.limit + index + 1,
-        },
-        { label: "Item Name", key: "productName" },
-        { label: "UPC Code", key: (item) => item.upcCode || "N/A" },
-        { label: "Unit", key: "unit" },
-        { label: "Category", key: "categoryName" },
-        { label: "Department", key: "departmentName" },
-        {
-          label: "Unit Price",
-          key: (item) => `$${Number(item.price).toFixed(2)} ${item.currency}`,
-        },
-        { label: "Units Sold", key: "totalUnitsSold" },
-        { label: "Transactions Count", key: "totalTransactionsCount" },
-        { label: "Total Revenue", key: "totalSalesAmount" },
+      exportToExcel(`${storeNameClean}_Orders_Page_${orderTableFilters.page}`, orders, [
+        { label: "S.No", key: "sno" },
+        { label: "Reference Number", key: "refrenceNumber" },
+        { label: "Store Name", key: "storeName" },
+        { label: "Sender Name", key: "senderName" },
+        { label: "Receiver Name", key: "receiverName" },
+        { label: "Markup", key: "markup" },
+        { label: "Processing Fee", key: "processingFee" },
+        { label: "Commission Earnings", key: "commissionEarnings" },
+        { label: "Item Tax", key: "itemTax" },
+        { label: "Refunded Amount", key: "refundedAmount" },
+        { label: "Total Amount", key: "totalAmount" },
+        { label: "Status", key: "statusLabel" },
+        { label: "Date", key: "addedOn" },
       ]);
     } finally {
       setIsExporting(false);
     }
   };
+
+  // If viewing a single order detail drill-down
+  if (selectedOrderId) {
+    return (
+      <OrderReportDetailPage orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />
+    );
+  }
 
   const managerRows = store
     ? [
@@ -170,21 +227,41 @@ export function StoreReportDetail({ storeId }: StoreReportDetailProps) {
         { label: "City", value: store.manager?.city || store.city, icon: Building2 },
         { label: "Zip Code", value: store.manager?.zipCode, icon: Hash },
 
-        { label: "Total Sales", value: store.earnings?.totalSales, icon: ShoppingBag },
-        { label: "Markup Earning", value: store.earnings?.totalMarkup, icon: BadgeDollarSign },
-        { label: "Processing Earning", value: store.earnings?.totalProcessing, icon: CreditCard },
-        { label: "Commission Earning", value: store.earnings?.totalCommission, icon: HandCoins },
-        { label: "Item Tax", value: store.earnings?.totalItemTax, icon: Receipt },
-        { label: "Refunded Amount", value: store.earnings?.refundedAmount, icon: RotateCcw },
+        {
+          label: "Total Sales",
+          value: cleanCurrencyDisplay(store.earnings?.totalSales),
+          icon: ShoppingBag,
+        },
+        {
+          label: "Markup Earning",
+          value: cleanCurrencyDisplay(store.earnings?.totalMarkup),
+          icon: BadgeDollarSign,
+        },
+        {
+          label: "Processing Earning",
+          value: cleanCurrencyDisplay(store.earnings?.totalProcessing),
+          icon: CreditCard,
+        },
+        {
+          label: "Commission Earning",
+          value: cleanCurrencyDisplay(store.earnings?.totalCommission),
+          icon: HandCoins,
+        },
+        {
+          label: "Item Tax",
+          value: cleanCurrencyDisplay(store.earnings?.totalItemTax),
+          icon: Receipt,
+        },
+        {
+          label: "Refunded Amount",
+          value: cleanCurrencyDisplay(store.earnings?.refundedAmount),
+          icon: RotateCcw,
+        },
       ]
     : [];
 
   if (isDetailLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center text-sm text-slate-500">
-        Loading store details...
-      </div>
-    );
+    return <StoreReportDetailSkeleton />;
   }
 
   if (!store) {
@@ -196,6 +273,7 @@ export function StoreReportDetail({ storeId }: StoreReportDetailProps) {
   }
 
   const storeLocation = [store.city, store.state, store.country].filter(Boolean).join(", ");
+  const totalOrdersCount = orderPagination?.total ?? store.totalOrder ?? orders.length;
 
   return (
     <div className="space-y-4">
@@ -207,6 +285,7 @@ export function StoreReportDetail({ storeId }: StoreReportDetailProps) {
         ]}
       />
 
+      {/* Store Banner */}
       <Card className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
         <div className="grid items-stretch gap-6 md:grid-cols-12">
           <div className="flex flex-col md:col-span-5">
@@ -317,9 +396,9 @@ export function StoreReportDetail({ storeId }: StoreReportDetailProps) {
                 <span>Total Revenue: {store.earnings?.totalSales || "$0.00"}</span>
               </div>
 
-              <div className="flex items-center gap-2 rounded-xl border border-orange-200/70 bg-orange-50 px-3 py-1.5 text-xs font-bold text-orange-700 dark:border-orange-900/50 dark:bg-orange-950/40 dark:text-orange-400">
-                <Boxes className="size-3.5" />
-                <span>Catalog: {pagination?.total || items.length} Items</span>
+              <div className="flex items-center gap-2 rounded-xl border border-blue-200/70 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400">
+                <ClipboardList className="size-3.5" />
+                <span>Total Orders: {totalOrdersCount}</span>
               </div>
             </div>
           </div>
@@ -366,43 +445,71 @@ export function StoreReportDetail({ storeId }: StoreReportDetailProps) {
         hasFilters={hasFilters}
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
-        onApply={applyFilters}
-        onClear={clearFilters}
+        onApply={handleApplyDateFilters}
+        onClear={handleClearDateFilters}
       />
 
       <Card className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 p-0 pb-3 dark:border-slate-800">
-          <CardTitle className="text-base font-bold text-slate-900 dark:text-white">
-            Store Items & Transactions Performance
-          </CardTitle>
+        <CardHeader className="flex flex-col gap-3 border-b border-slate-100 p-0 pb-3 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+              <TableProperties className="size-5" />
+            </div>
+            <div>
+              <CardTitle className="text-base font-bold text-slate-900 dark:text-white">
+                Store Orders
+              </CardTitle>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {totalOrdersCount} total {totalOrdersCount === 1 ? "order" : "orders"} found
+                {isOrdersFetching && (
+                  <span className="ml-1.5 font-semibold text-emerald-600">(Updating...)</span>
+                )}
+              </p>
+            </div>
+          </div>
 
-          <Button
-            disabled={isExporting}
-            isLoading={isExporting}
-            onClick={handleExportExcel}
-            className="h-9 gap-2 rounded-full bg-emerald-600 px-4 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700"
-          >
-            <FileSpreadsheet className="size-4" />
-            <span>Export Excel</span>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={foodType} onValueChange={handleFoodTypeChange}>
+              <SelectTrigger className="h-9 w-37.5 rounded-xl text-xs font-medium">
+                <SelectValue placeholder="Food Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {FOOD_TYPE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value} className="text-xs">
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Button
+              disabled={isExporting}
+              isLoading={isExporting}
+              onClick={handleExportOrdersExcel}
+              className="h-9 gap-2 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700"
+            >
+              <FileSpreadsheet className="size-4" />
+              <span>Export Excel</span>
+            </Button>
+          </div>
         </CardHeader>
 
         <CardContent className="p-0 pt-3">
           <DataTable
-            columns={itemColumns}
-            data={items}
-            searchValue={tableFilters.searchQuery}
-            onSearchChange={tableFilters.setSearchQuery}
-            currentPage={tableFilters.page}
-            totalPages={pagination?.totalPages || 1}
-            rowsPerPage={tableFilters.limit}
-            onPageChange={tableFilters.setPage}
-            onRowsPerPageChange={tableFilters.setLimit}
-            onSortingChange={tableFilters.setSorting}
+            columns={orderColumns}
+            data={orders}
+            searchValue={orderTableFilters.searchQuery}
+            onSearchChange={handleSearchChange}
+            currentPage={orderTableFilters.page}
+            totalPages={orderPagination?.totalPages || 1}
+            rowsPerPage={orderTableFilters.limit}
+            onPageChange={orderTableFilters.setPage}
+            onRowsPerPageChange={orderTableFilters.setLimit}
+            onSortingChange={orderTableFilters.setSorting}
             manualSorting={true}
             manualFiltering={true}
             manualPagination={true}
-            loading={isItemsLoading}
+            loading={isOrdersLoading}
           />
         </CardContent>
       </Card>

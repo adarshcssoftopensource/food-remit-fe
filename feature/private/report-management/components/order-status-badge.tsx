@@ -1,77 +1,63 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Clock, PackageCheck, UserX } from "lucide-react";
 
 interface OrderStatusBadgeProps {
   status: number;
-  label: string;
+  orderType?: number;
+  label?: string;
   className?: string;
-  showIcon?: boolean;
 }
 
 export function OrderStatusBadge({
   status,
-  label,
+  orderType,
+  label: customLabel,
   className,
-  showIcon = true,
 }: OrderStatusBadgeProps) {
-  // Completed / Delivered / Paid
-  if (status === 3 || status === 6 || status === 8) {
-    return (
-      <Badge
-        className={cn(
-          "gap-1.5 rounded-full border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 shadow-2xs dark:text-emerald-400",
-          className,
-        )}
-      >
-        {showIcon && <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />}
-        <span>{label}</span>
-      </Badge>
-    );
+  const isRequested = orderType === 2;
+  let label = customLabel || "Pending";
+  let colorClass =
+    "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300";
+  let dotClass = "bg-slate-500";
+
+  if (status === 0 || status === 7) {
+    label = "Declined";
+    colorClass =
+      "border-red-200 bg-red-50 text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400";
+    dotClass = "bg-red-500";
+  } else if (status === 1) {
+    label = isRequested ? "Requested" : "Pending";
+    colorClass =
+      "border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400";
+    dotClass = "bg-amber-500";
+  } else if (status === 2) {
+    label = "Preparing";
+    colorClass =
+      "border-sky-200 bg-sky-50 text-sky-600 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-400";
+    dotClass = "bg-sky-500";
+  } else if (status === 5) {
+    label = isRequested ? "Accepted" : "Sent";
+    colorClass =
+      "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400";
+    dotClass = "bg-blue-500";
+  } else if (status === 6 || status === 8 || status === 3) {
+    label = status === 8 ? "Paid" : "Completed";
+    colorClass =
+      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400";
+    dotClass = "bg-emerald-500";
   }
 
-  // Pending / Placed / In Progress
-  if (status === 1) {
-    return (
-      <Badge
-        className={cn(
-          "gap-1.5 rounded-full border-amber-500/25 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-700 shadow-2xs dark:text-amber-400",
-          className,
-        )}
-      >
-        {showIcon && <Clock className="size-3 text-amber-600 dark:text-amber-400" />}
-        <span>{label}</span>
-      </Badge>
-    );
-  }
-
-  // Ready / Handed Over / Processing
-  if (status === 2 || status === 5) {
-    return (
-      <Badge
-        className={cn(
-          "gap-1.5 rounded-full border-blue-500/25 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-700 shadow-2xs dark:text-blue-400",
-          className,
-        )}
-      >
-        {showIcon && <PackageCheck className="size-3 text-blue-600 dark:text-blue-400" />}
-        <span>{label}</span>
-      </Badge>
-    );
-  }
-
-  // Cancelled / Declined / Rejected
   return (
-    <Badge
+    <span
       className={cn(
-        "gap-1.5 rounded-full border-rose-500/25 bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-700 shadow-2xs dark:text-rose-400",
+        "inline-flex items-center gap-2 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors",
+        colorClass,
         className,
       )}
     >
-      {showIcon && <UserX className="size-3 text-rose-600 dark:text-rose-400" />}
-      <span>{label}</span>
-    </Badge>
+      <span className={cn("size-1.5 rounded-full", dotClass)} />
+      {label}
+    </span>
   );
 }

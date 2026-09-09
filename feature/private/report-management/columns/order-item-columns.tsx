@@ -6,6 +6,7 @@ import { Barcode, ZoomIn } from "lucide-react";
 
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { Badge } from "@/components/ui/badge";
+import { getCurrencySymbol } from "@/lib/utils/currency";
 
 export interface OrderItemRow {
   id: string;
@@ -24,6 +25,7 @@ export function getOrderItemColumns(
   currency: string,
   onPreviewImage: (url: string) => void,
 ): ColumnDef<OrderItemRow>[] {
+  const symbol = getCurrencySymbol(currency);
   return [
     {
       id: "sno",
@@ -76,7 +78,10 @@ export function getOrderItemColumns(
                 className="text-sm font-bold text-slate-900 dark:text-white"
               />
               <p className="text-muted-foreground text-xs">
-                Base: {item.baseQuantity} {item.quantityUnit}
+                Base: {item.baseQuantity}{" "}
+                {/^(INR|USD|PHP|EUR|GBP|CAD|AUD|₹|\$|€|£|Rs)$/i.test(item.quantityUnit)
+                  ? "Pcs"
+                  : item.quantityUnit}
               </p>
             </div>
           </div>
@@ -102,7 +107,8 @@ export function getOrderItemColumns(
       header: "Unit Price",
       cell: ({ row }) => (
         <div className="text-start font-medium text-slate-700 dark:text-slate-300">
-          {currency} {Number(row.original.price).toFixed(2)}
+          {symbol}
+          {Number(row.original.price).toFixed(2)}
         </div>
       ),
     },
@@ -113,7 +119,8 @@ export function getOrderItemColumns(
         const total = Number(row.original.price) * row.original.quantity;
         return (
           <div className="text-start font-extrabold text-slate-900 dark:text-white">
-            {currency} {total.toFixed(2)}
+            {symbol}
+            {total.toFixed(2)}
           </div>
         );
       },
