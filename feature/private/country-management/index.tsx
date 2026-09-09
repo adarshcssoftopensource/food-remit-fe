@@ -231,7 +231,7 @@ export default function CountryManagementPage() {
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
         title="Delete Country Manager"
-        description={`Are you sure you want to delete ${deletingManager?.firstName} ${deletingManager?.lastName}? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${deletingManager?.firstName} ${deletingManager?.lastName}? They will be moved to the Recycle Bin and can be restored later.`}
         confirmLabel="Delete"
         onConfirm={handleDelete}
         isLoading={isDeleting}

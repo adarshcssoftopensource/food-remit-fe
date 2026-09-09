@@ -95,7 +95,7 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="Delete Department"
-        description={`Are you sure you want to delete ${department.departmentName}? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${department.departmentName}? It will be moved to the Recycle Bin and can be restored later.`}
         confirmLabel="Delete Department"
         onConfirm={handleDelete}
         isLoading={isDeleting}
