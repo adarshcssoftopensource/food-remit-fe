@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
-import { Barcode, ZoomIn } from "lucide-react";
+import { QrCode, ZoomIn } from "lucide-react";
 
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +17,14 @@ export interface OrderItemRow {
   quantityUnit: string;
   quantity: number;
   price: number;
-  barCode: string;
+  barCode?: string;
+  barcode?: string;
+  qrCode?: string | null;
+  qrCodeImage?: string | null;
+  productQrCode?: string | null;
+  productBarcode?: string | null;
+  barcodeValue?: string | null;
+  upcCode?: string | null;
   deliveredStatus: number;
 }
 
@@ -143,33 +150,44 @@ export function getOrderItemColumns(
       ),
     },
     {
-      accessorKey: "barCode",
+      id: "qrCode",
       header: "QR Code",
       cell: ({ row }) => {
-        const barCode = row.original.barCode;
-        if (!barCode || (!barCode.startsWith("data:") && !barCode.startsWith("http"))) {
-          return <div className="text-muted-foreground text-center text-xs">—</div>;
+        const item = row.original;
+        // Directly consume dynamic QR code generated and sent by the backend
+        const qrCodeUrl = item.qrCode || item.qrCodeImage || item.productQrCode;
+
+        if (!qrCodeUrl || (!qrCodeUrl.startsWith("http") && !qrCodeUrl.startsWith("data:"))) {
+          return <div className="text-muted-foreground text-start text-xs">—</div>;
         }
 
         return (
-          <div className="text-start">
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={() => onPreviewImage(barCode)}
-              className="group hover:ring-primary/40 relative size-11 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:ring-2 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+              onClick={() => onPreviewImage(qrCodeUrl)}
+              className="group hover:ring-primary/40 relative size-11 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white p-1 transition-all hover:ring-2 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
               title="Click to preview QR Code"
             >
               <Image
-                src={barCode}
-                alt="QR Code"
-                width={44}
-                height={44}
-                className="size-full object-cover transition-transform duration-300 group-hover:scale-110"
+                src={qrCodeUrl}
+                alt="Item QR Code"
+                width={40}
+                height={40}
+                unoptimized
+                className="size-full object-contain transition-transform duration-300 group-hover:scale-110"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/45 opacity-0 transition-opacity group-hover:opacity-100">
                 <ZoomIn className="size-4 text-white drop-shadow-md" />
               </div>
             </button>
+            <div className="hidden flex-col sm:flex">
+              <div className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-slate-800 dark:text-slate-200">
+                <QrCode className="size-3 shrink-0 text-emerald-500" />
+                <span>QR Code</span>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400">Scan to Verify</span>
+            </div>
           </div>
         );
       },

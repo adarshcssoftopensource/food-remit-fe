@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Store, User } from "lucide-react";
+import { Eye, User, ZoomIn } from "lucide-react";
 
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { Button } from "@/components/ui/button";
@@ -78,9 +78,26 @@ export function getOrderReportColumns(
         const { senderName, senderImage } = row.original;
         return (
           <div className="flex items-center gap-2.5">
-            <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
+            <div className="group relative size-8 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 shadow-2xs dark:border-slate-700 dark:bg-slate-800">
               {senderImage ? (
-                <Image src={senderImage} alt={senderName} fill className="object-cover" />
+                <>
+                  <Image
+                    src={senderImage}
+                    alt={senderName || "Sender"}
+                    fill
+                    className="object-cover"
+                  />
+                  {onImageClick && (
+                    <button
+                      type="button"
+                      onClick={() => onImageClick(senderImage)}
+                      className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
+                      title="Zoom Sender Image"
+                    >
+                      <ZoomIn className="size-3.5 text-white drop-shadow" />
+                    </button>
+                  )}
+                </>
               ) : (
                 <div className="flex size-full items-center justify-center text-slate-400">
                   <User className="size-3.5" />
@@ -101,9 +118,26 @@ export function getOrderReportColumns(
         const { receiverName, receiverImage } = row.original;
         return (
           <div className="flex items-center gap-2.5">
-            <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
+            <div className="group relative size-8 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 shadow-2xs dark:border-slate-700 dark:bg-slate-800">
               {receiverImage ? (
-                <Image src={receiverImage} alt={receiverName} fill className="object-cover" />
+                <>
+                  <Image
+                    src={receiverImage}
+                    alt={receiverName || "Receiver"}
+                    fill
+                    className="object-cover"
+                  />
+                  {onImageClick && (
+                    <button
+                      type="button"
+                      onClick={() => onImageClick(receiverImage)}
+                      className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
+                      title="Zoom Receiver Image"
+                    >
+                      <ZoomIn className="size-3.5 text-white drop-shadow" />
+                    </button>
+                  )}
+                </>
               ) : (
                 <div className="flex size-full items-center justify-center text-slate-400">
                   <User className="size-3.5" />

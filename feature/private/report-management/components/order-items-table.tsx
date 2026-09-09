@@ -65,7 +65,7 @@ export function OrderItemsTable({
             View Items in Order
           </CardTitle>
           <p className="text-muted-foreground mt-0.5 text-xs">
-            Comprehensive list of ordered items, quantities, pricing, and barcode references
+            Comprehensive list of ordered items, quantities, pricing, and QR code references
           </p>
         </div>
 
