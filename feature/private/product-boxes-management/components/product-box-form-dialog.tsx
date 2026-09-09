@@ -212,6 +212,11 @@ export function ProductBoxFormDialog({
                                 placeholder="0.00"
                                 className="h-11 rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
                                 {...field}
+                                onFocus={(e) => {
+                                  if (e.target.value === "0" || Number(e.target.value) === 0) {
+                                    field.onChange("");
+                                  }
+                                }}
                               />
                             </FormControl>
                             <FormMessage />

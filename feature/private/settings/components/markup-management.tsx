@@ -164,6 +164,11 @@ export function MarkupManagement() {
                       disabled={isStoreManager}
                       readOnly={isStoreManager}
                       aria-invalid={!!errors.markupPercentage}
+                      onFocus={(e) => {
+                        if (e.target.value === "0" || e.target.value === "0.00") {
+                          field.onChange("");
+                        }
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
                           e.preventDefault();

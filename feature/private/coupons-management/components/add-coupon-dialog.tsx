@@ -123,6 +123,11 @@ export function AddCouponDialog({ onCreate }: AddCouponDialogProps) {
                     max={100}
                     placeholder="Enter discount percentage"
                     value={field.value ?? ""}
+                    onFocus={(e) => {
+                      if (e.target.value === "0" || Number(e.target.value) === 0) {
+                        field.onChange(undefined);
+                      }
+                    }}
                     onChange={(event) =>
                       field.onChange(event.target.value ? Number(event.target.value) : undefined)
                     }

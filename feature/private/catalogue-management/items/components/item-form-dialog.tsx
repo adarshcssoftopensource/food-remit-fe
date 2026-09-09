@@ -262,6 +262,15 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                     placeholder="0"
                                     className="h-11 rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
                                     {...field}
+                                    onFocus={(e) => {
+                                      if (e.target.value === "0" || Number(e.target.value) === 0) {
+                                        field.onChange("");
+                                      }
+                                    }}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      field.onChange(val === "" ? undefined : Number(val));
+                                    }}
                                   />
                                 </FormControl>
 
