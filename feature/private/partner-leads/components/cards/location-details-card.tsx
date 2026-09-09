@@ -23,7 +23,11 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
               State / Province
             </dt>
-            <dd className="text-sm font-semibold text-slate-900">{lead.stateProvince || "N/A"}</dd>
+            <dd className="text-sm font-semibold text-slate-900">
+              {lead.stateProvince ||
+                (lead as unknown as { stateProvinceRegion?: string }).stateProvinceRegion ||
+                "N/A"}
+            </dd>
           </div>
           <div>
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">City</dt>

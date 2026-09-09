@@ -52,6 +52,8 @@ interface PartnerLeadFormProps {
 
 export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [draftRestored, setDraftRestored] = useState(false);
+  const DRAFT_KEY = "food_remit_partner_lead_draft";
 
   const { mutateAsync, isPending } = useCreatePartnerLead();
 
@@ -61,14 +63,17 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     trigger,
     getValues,
     setValue,
+    reset,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty, isSubmitSuccessful },
   } = useForm<PartnerLeadFormValues>({
     resolver: zodResolver(partnerLeadSchema),
     defaultValues: {
       businessName: "",
       businessType: "",
+      otherBusinessType: "",
       locationsCount: "",
+      hasBusinessAccount: undefined,
       country: "",
       businessCity: "",
       stateProvinceRegion: "",
@@ -78,6 +83,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       businessEmail: "",
       phoneNumber: "",
       workPreferences: [],
+      otherWorkPreference: "",
       inventoryManagement: "",
       websiteOrSocial: "",
       additionalNotes: "",
@@ -87,8 +93,105 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   });
 
   const locationsCount = watch("locationsCount");
+  const businessType = watch("businessType");
+  const isOtherBusinessType = businessType === "Other";
   const isSingleLocation = locationsCount === "1 Location";
   const multipleLocationsOption = "Add multiple store locations";
+  const workPreferences = watch("workPreferences") || [];
+  const hasOtherWorkPreference = workPreferences.includes("Other");
+
+  // Restore draft on mount
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.values) {
+          reset(parsed.values);
+          if (parsed.step && parsed.step > 1 && parsed.step <= STEPS.length) {
+            setCurrentStep(parsed.step);
+          }
+          setDraftRestored(true);
+        }
+      }
+    } catch {
+      // ignore storage access errors
+    }
+  }, [reset]);
+
+  // Persist draft to sessionStorage on form value or step change
+  const formValues = watch();
+  useEffect(() => {
+    try {
+      const hasData = Object.values(formValues).some((v) =>
+        Array.isArray(v) ? v.length > 0 : Boolean(v),
+      );
+      if (hasData && !isSubmitSuccessful) {
+        sessionStorage.setItem(
+          DRAFT_KEY,
+          JSON.stringify({
+            step: currentStep,
+            values: formValues,
+          }),
+        );
+      }
+    } catch {
+      // ignore storage access errors
+    }
+  }, [formValues, currentStep, isSubmitSuccessful]);
+
+  // Warn before leaving page if there are unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty && !isSubmitSuccessful) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty, isSubmitSuccessful]);
+
+  function handleResetForm() {
+    try {
+      sessionStorage.removeItem(DRAFT_KEY);
+    } catch {}
+    reset({
+      businessName: "",
+      businessType: "",
+      otherBusinessType: "",
+      locationsCount: "",
+      hasBusinessAccount: undefined,
+      country: "",
+      businessCity: "",
+      stateProvinceRegion: "",
+      firstName: "",
+      lastName: "",
+      jobTitle: "",
+      businessEmail: "",
+      phoneNumber: "",
+      workPreferences: [],
+      otherWorkPreference: "",
+      inventoryManagement: "",
+      websiteOrSocial: "",
+      additionalNotes: "",
+      agreeToContact: false,
+    });
+    setCurrentStep(1);
+    setDraftRestored(false);
+  }
+
+  useEffect(() => {
+    if (!isOtherBusinessType && getValues("otherBusinessType")) {
+      setValue("otherBusinessType", "");
+    }
+  }, [isOtherBusinessType, getValues, setValue]);
+
+  useEffect(() => {
+    if (!hasOtherWorkPreference && getValues("otherWorkPreference")) {
+      setValue("otherWorkPreference", "");
+    }
+  }, [hasOtherWorkPreference, getValues, setValue]);
 
   // WEB-0004: keep Step 3 preference in sync with Step 1 location count
   useEffect(() => {
@@ -106,7 +209,17 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   async function handleNextStep() {
     let fieldsToValidate: (keyof PartnerLeadFormValues)[] = [];
     if (currentStep === 1) {
-      fieldsToValidate = ["businessName", "businessType", "locationsCount", "country"];
+      fieldsToValidate = [
+        "businessName",
+        "businessType",
+        "locationsCount",
+        "country",
+        "businessCity",
+        "stateProvinceRegion",
+      ];
+      if (getValues("businessType") === "Other") {
+        fieldsToValidate.push("otherBusinessType");
+      }
     } else if (currentStep === 2) {
       fieldsToValidate = ["firstName", "lastName", "businessEmail", "phoneNumber"];
     } else if (currentStep === 3) {
@@ -116,6 +229,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         "websiteOrSocial",
         "additionalNotes",
       ];
+      if (getValues("workPreferences")?.includes("Other")) {
+        fieldsToValidate.push("otherWorkPreference");
+      }
     }
 
     const isValid = await trigger(fieldsToValidate);
@@ -130,14 +246,31 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
   async function onSubmit(data: PartnerLeadFormValues) {
     try {
-      const res = await mutateAsync(data);
+      const mappedWorkPreferences = (data.workPreferences || []).map((pref) =>
+        pref === "Other" && data.otherWorkPreference?.trim()
+          ? `Other: ${data.otherWorkPreference.trim()}`
+          : pref,
+      );
+
+      const payload = {
+        ...data,
+        workPreferences: mappedWorkPreferences,
+        stateProvince: data.stateProvinceRegion?.trim() || undefined,
+        website: data.websiteOrSocial?.trim() || undefined,
+        additionalInfo: data.additionalNotes?.trim() || undefined,
+        otherBusinessType: data.otherBusinessType?.trim() || undefined,
+      };
+      const res = await mutateAsync(payload);
+      try {
+        sessionStorage.removeItem(DRAFT_KEY);
+      } catch {}
       successToast({
         title: "Interest Registered",
         description: "Your partnership request has been submitted successfully.",
       });
       onSuccess(res?.data?.referenceNumber ?? "");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -161,6 +294,22 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
           Join the Food Remit marketplace and reach customers worldwide.
         </p>
       </div>
+
+      {draftRestored && (
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-2 text-xs text-emerald-900 shadow-sm">
+          <div className="flex items-center gap-2">
+            <Check className="size-4 shrink-0 text-emerald-600" />
+            <span>Restored your saved progress from your previous session.</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleResetForm}
+            className="cursor-pointer font-bold text-emerald-700 underline hover:text-emerald-900"
+          >
+            Start Fresh
+          </button>
+        </div>
+      )}
 
       <div className="mt-6 border-b border-slate-100 pb-6">
         <div className="relative flex">
@@ -334,45 +483,83 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 )}
               />
 
-              <Controller
-                name="businessCity"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel
-                      htmlFor="businessCity"
-                      className="text-xs font-semibold text-slate-700"
-                    >
-                      Business City <span className="font-normal text-slate-400">(Optional)</span>
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="businessCity"
-                      placeholder="Enter city"
-                      className="h-11 rounded-xl border-slate-200 bg-white text-sm"
-                    />
-                  </div>
-                )}
-              />
+              {isOtherBusinessType && (
+                <Controller
+                  name="otherBusinessType"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                      <FieldLabel
+                        htmlFor="otherBusinessType"
+                        className="text-xs font-semibold text-slate-700"
+                      >
+                        Please Specify Business Type <span className="text-red-500">*</span>
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        id="otherBusinessType"
+                        placeholder="e.g. Food Truck, Specialty Bakery, Cloud Kitchen"
+                        aria-invalid={!!errors.otherBusinessType}
+                        className={cn(
+                          "h-11 rounded-xl border-slate-200 bg-white text-sm transition-colors focus-visible:border-emerald-600 focus-visible:ring-emerald-600/20",
+                          errors.otherBusinessType && "border-red-400 bg-red-50/30",
+                        )}
+                      />
+                      {errors.otherBusinessType && (
+                        <p className="text-xs font-medium text-red-500">
+                          {errors.otherBusinessType.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                />
+              )}
 
               <Controller
-                name="stateProvinceRegion"
+                name="hasBusinessAccount"
                 control={control}
                 render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel
-                      htmlFor="stateProvinceRegion"
-                      className="text-xs font-semibold text-slate-700"
-                    >
-                      State / Province / Region{" "}
-                      <span className="font-normal text-slate-400">(Optional)</span>
+                  <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <FieldLabel className="text-xs font-semibold text-slate-700">
+                      Does your Business have a Business Account?{" "}
+                      <span className="font-normal text-slate-400">(Bank Account - Optional)</span>
                     </FieldLabel>
-                    <Input
-                      {...field}
-                      id="stateProvinceRegion"
-                      placeholder="Enter state or region"
-                      className="h-11 rounded-xl border-slate-200 bg-white text-sm"
-                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <label
+                        className={cn(
+                          "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-colors",
+                          field.value === true
+                            ? "border-emerald-600 bg-emerald-50 text-emerald-950 shadow-sm"
+                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300",
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name="hasBusinessAccount"
+                          checked={field.value === true}
+                          onChange={() => field.onChange(true)}
+                          className="sr-only"
+                        />
+                        <span>Yes</span>
+                      </label>
+                      <label
+                        className={cn(
+                          "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-colors",
+                          field.value === false
+                            ? "border-emerald-600 bg-emerald-50 text-emerald-950 shadow-sm"
+                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300",
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name="hasBusinessAccount"
+                          checked={field.value === false}
+                          onChange={() => field.onChange(false)}
+                          className="sr-only"
+                        />
+                        <span>No</span>
+                      </label>
+                    </div>
                   </div>
                 )}
               />
@@ -394,6 +581,67 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     />
                     {errors.country && (
                       <p className="text-xs font-medium text-red-500">{errors.country.message}</p>
+                    )}
+                  </div>
+                )}
+              />
+
+              <Controller
+                name="stateProvinceRegion"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel
+                      htmlFor="stateProvinceRegion"
+                      className="text-xs font-semibold text-slate-700"
+                    >
+                      State / Province / Region{" "}
+                      <span className="font-normal text-slate-400">(Optional)</span>
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="stateProvinceRegion"
+                      placeholder="Enter state or region"
+                      aria-invalid={!!errors.stateProvinceRegion}
+                      className={cn(
+                        "h-11 rounded-xl border-slate-200 bg-white text-sm transition-colors focus-visible:border-emerald-600 focus-visible:ring-emerald-600/20",
+                        errors.stateProvinceRegion && "border-red-400 bg-red-50/30",
+                      )}
+                    />
+                    {errors.stateProvinceRegion && (
+                      <p className="text-xs font-medium text-red-500">
+                        {errors.stateProvinceRegion.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+
+              <Controller
+                name="businessCity"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel
+                      htmlFor="businessCity"
+                      className="text-xs font-semibold text-slate-700"
+                    >
+                      Business City <span className="font-normal text-slate-400">(Optional)</span>
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="businessCity"
+                      placeholder="Enter city"
+                      aria-invalid={!!errors.businessCity}
+                      className={cn(
+                        "h-11 rounded-xl border-slate-200 bg-white text-sm transition-colors focus-visible:border-emerald-600 focus-visible:ring-emerald-600/20",
+                        errors.businessCity && "border-red-400 bg-red-50/30",
+                      )}
+                    />
+                    {errors.businessCity && (
+                      <p className="text-xs font-medium text-red-500">
+                        {errors.businessCity.message}
+                      </p>
                     )}
                   </div>
                 )}
@@ -624,6 +872,39 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           1 Location in Step 1.
                         </p>
                       )}
+
+                      {hasOtherWorkPreference && (
+                        <Controller
+                          name="otherWorkPreference"
+                          control={control}
+                          render={({ field }) => (
+                            <div className="mt-2 flex flex-col gap-1.5">
+                              <FieldLabel
+                                htmlFor="otherWorkPreference"
+                                className="text-xs font-semibold text-slate-700"
+                              >
+                                Please Specify Other Preference{" "}
+                                <span className="text-red-500">*</span>
+                              </FieldLabel>
+                              <Input
+                                {...field}
+                                id="otherWorkPreference"
+                                placeholder="e.g. Cross-border wholesale, Catering services, Custom logistics"
+                                aria-invalid={!!errors.otherWorkPreference}
+                                className={cn(
+                                  "h-11 rounded-xl border-slate-200 bg-white text-sm transition-colors focus-visible:border-emerald-600 focus-visible:ring-emerald-600/20",
+                                  errors.otherWorkPreference && "border-red-400 bg-red-50/30",
+                                )}
+                              />
+                              {errors.otherWorkPreference && (
+                                <p className="text-xs font-medium text-red-500">
+                                  {errors.otherWorkPreference.message}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        />
+                      )}
                     </div>
                   );
                 }}
@@ -734,17 +1015,25 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
             </div>
 
-            <div className="space-y-2 rounded-2xl border border-slate-100 bg-slate-50/60 p-4 text-xs">
+            <div className="space-y-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-4 text-xs">
               <div className="flex justify-between border-b border-slate-200/60 pb-2">
                 <span className="font-medium text-slate-500">Business:</span>
                 <span className="font-semibold text-slate-900">
-                  {getValues("businessName") || "N/A"} ({getValues("businessType") || "N/A"})
+                  {getValues("businessName") || "N/A"} (
+                  {getValues("businessType") === "Other" && getValues("otherBusinessType")
+                    ? `Other: ${getValues("otherBusinessType")}`
+                    : getValues("businessType") || "N/A"}
+                  )
+                  {getValues("hasBusinessAccount") !== undefined
+                    ? ` • Bank Account: ${getValues("hasBusinessAccount") ? "Yes" : "No"}`
+                    : ""}
                 </span>
               </div>
               <div className="flex justify-between border-b border-slate-200/60 pb-2">
                 <span className="font-medium text-slate-500">Contact Person:</span>
                 <span className="font-semibold text-slate-900">
                   {getValues("firstName")} {getValues("lastName")}
+                  {getValues("jobTitle") ? ` • ${getValues("jobTitle")}` : ""}
                 </span>
               </div>
               <div className="flex justify-between border-b border-slate-200/60 pb-2">
@@ -753,12 +1042,50 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   {getValues("businessEmail")} | {getValues("phoneNumber")}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="font-medium text-slate-500">Locations / Country:</span>
+              <div className="flex justify-between border-b border-slate-200/60 pb-2">
+                <span className="font-medium text-slate-500">Locations / Region:</span>
                 <span className="font-semibold text-slate-900">
                   {getValues("locationsCount")} | {getValues("country")}
+                  {getValues("stateProvinceRegion") ? `, ${getValues("stateProvinceRegion")}` : ""}
+                  {getValues("businessCity") ? ` (${getValues("businessCity")})` : ""}
                 </span>
               </div>
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2">
+                <span className="font-medium text-slate-500">Work Preferences:</span>
+                <div className="flex flex-wrap gap-1.5 pt-0.5">
+                  {(getValues("workPreferences") || []).length > 0 ? (
+                    (getValues("workPreferences") || []).map((pref) => (
+                      <span
+                        key={pref}
+                        className="inline-flex items-center rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-800"
+                      >
+                        {pref === "Other" && getValues("otherWorkPreference")
+                          ? `Other: ${getValues("otherWorkPreference")}`
+                          : pref}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-slate-400 italic">None selected</span>
+                  )}
+                </div>
+              </div>
+              {(getValues("inventoryManagement") || getValues("websiteOrSocial")) && (
+                <div className="flex justify-between border-b border-slate-200/60 pb-2">
+                  <span className="font-medium text-slate-500">Operations / Web:</span>
+                  <span className="text-right font-semibold text-slate-900">
+                    {getValues("inventoryManagement") || "Standard"}
+                    {getValues("websiteOrSocial") ? ` • ${getValues("websiteOrSocial")}` : ""}
+                  </span>
+                </div>
+              )}
+              {getValues("additionalNotes") && (
+                <div className="flex flex-col gap-1">
+                  <span className="font-medium text-slate-500">Additional Notes:</span>
+                  <p className="line-clamp-2 rounded-lg border border-slate-200/60 bg-white p-2 text-slate-700 italic">
+                    &quot;{getValues("additionalNotes")}&quot;
+                  </p>
+                </div>
+              )}
             </div>
 
             <Controller

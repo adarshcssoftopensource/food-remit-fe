@@ -3,6 +3,13 @@ import { Building2, Link as LinkIcon } from "lucide-react";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
 export function BusinessOverviewCard({ lead }: { lead: PartnerLeadData }) {
+  const website = lead.website || (lead as unknown as { websiteOrSocial?: string }).websiteOrSocial;
+  const href = website
+    ? website.startsWith("http://") || website.startsWith("https://")
+      ? website
+      : `https://${website}`
+    : null;
+
   return (
     <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
       <CardHeader className="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
@@ -25,24 +32,36 @@ export function BusinessOverviewCard({ lead }: { lead: PartnerLeadData }) {
             </dt>
             <dd className="text-sm font-semibold text-slate-900">{lead.locationsCount}</dd>
           </div>
-          {lead.website && (
-            <div className="col-span-2">
+          {lead.additionalInfo?.match(/Business Account:\s*(Yes|No)/i) && (
+            <div className="col-span-2 sm:col-span-1">
               <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
-                Website / Social
+                Business Bank Account
               </dt>
-              <dd>
-                <a
-                  href={lead.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:underline"
-                >
-                  <LinkIcon className="h-3.5 w-3.5" />
-                  {lead.website}
-                </a>
+              <dd className="text-sm font-semibold text-slate-900">
+                {lead.additionalInfo.match(/Business Account:\s*(Yes|No)/i)?.[1] || "N/A"}
               </dd>
             </div>
           )}
+          <div className="col-span-2">
+            <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
+              Website / Social
+            </dt>
+            <dd>
+              {website && href ? (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:underline"
+                >
+                  <LinkIcon className="h-3.5 w-3.5" />
+                  {website}
+                </a>
+              ) : (
+                <span className="text-sm font-medium text-slate-400 italic">Not provided</span>
+              )}
+            </dd>
+          </div>
         </dl>
       </CardContent>
     </Card>
