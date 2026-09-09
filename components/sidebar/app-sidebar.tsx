@@ -187,7 +187,9 @@ export function AppSidebar() {
     const groups: {
       id: string;
       label: string;
+      icon?: any;
       collapsible: boolean;
+      hideHeader?: boolean;
       items: typeof filteredNavItems;
     }[] = [];
 
@@ -199,7 +201,9 @@ export function AppSidebar() {
         groups.push({
           id: g.id,
           label: g.label,
+          icon: (g as any).icon,
           collapsible: g.collapsible,
+          hideHeader: (g as any).hideHeader,
           items: itemsInGroup,
         });
       }
@@ -287,7 +291,7 @@ export function AppSidebar() {
                     )}
 
                     {/* Section Header (visible in expanded mode) */}
-                    {!isCollapsed && group.label && (
+                    {!isCollapsed && group.label && !group.hideHeader && (
                       <div
                         onClick={() => group.collapsible && toggleSection(group.label)}
                         className={cn(
@@ -298,7 +302,12 @@ export function AppSidebar() {
                             : "",
                         )}
                       >
-                        <span>{group.label}</span>
+                        <div className="flex items-center gap-2">
+                          {group.icon && (
+                            <group.icon className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" />
+                          )}
+                          <span>{group.label}</span>
+                        </div>
                         {group.collapsible && (
                           <ChevronDown
                             className={cn(

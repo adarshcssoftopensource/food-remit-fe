@@ -1,4 +1,5 @@
 import {
+  BarChart3,
   Bell,
   BookOpen,
   Box,
@@ -10,21 +11,26 @@ import {
   Gift,
   Globe,
   GraduationCap,
+  HandHeart,
+  Heart,
   Info,
-  Shield,
-  Scale,
   List,
   MapPin,
+  Megaphone,
   MessageSquare,
   Monitor,
+  Package,
   RefreshCcw,
+  Scale,
+  Settings,
+  Shield,
+  ShoppingCart,
   Store,
   Ticket,
   Trash2,
   User,
   UserCog,
   Users,
-  Package,
 } from "lucide-react";
 
 import { ROUTES } from "@/config/routes";
@@ -40,12 +46,19 @@ export interface NavItem {
 }
 
 export const NAVIGATION_GROUPS = [
-  { id: "MAIN", label: "MAIN", collapsible: false },
-  { id: "PRODUCTS & INVENTORY", label: "PRODUCTS & INVENTORY", collapsible: true },
-  { id: "ORDERS & CUSTOMERS", label: "ORDERS & CUSTOMERS", collapsible: true },
-  { id: "PEOPLE", label: "PEOPLE", collapsible: true },
-  { id: "REPORTS", label: "REPORTS", collapsible: true },
-  { id: "UTILITIES", label: "UTILITIES", collapsible: true },
+  { id: "MAIN", label: "MAIN", collapsible: false, hideHeader: true },
+  { id: "PEOPLE & ORGANIZATION", label: "PEOPLE & ORGANIZATION", icon: Users, collapsible: true },
+  { id: "STORES & CATALOG", label: "STORES & CATALOG", icon: Store, collapsible: true },
+  { id: "ORDERS & CUSTOMERS", label: "ORDERS & CUSTOMERS", icon: ShoppingCart, collapsible: true },
+  { id: "DONATIONS & CHARITIES", label: "DONATIONS & CHARITIES", icon: Heart, collapsible: true },
+  {
+    id: "COMMUNICATION & CONTENT",
+    label: "COMMUNICATION & CONTENT",
+    icon: Megaphone,
+    collapsible: true,
+  },
+  { id: "REPORTS & FEEDBACK", label: "REPORTS & FEEDBACK", icon: BarChart3, collapsible: true },
+  { id: "UTILITIES", label: "UTILITIES", icon: Settings, collapsible: true },
 ] as const;
 
 export const navigationItems: NavItem[] = [
@@ -57,12 +70,55 @@ export const navigationItems: NavItem[] = [
     group: "MAIN",
   },
 
-  // PRODUCTS & INVENTORY
+  // PEOPLE & ORGANIZATION
+  {
+    title: "Users Management",
+    url: ROUTES.ADMIN.USERS_MANAGEMENT,
+    icon: User,
+    group: "PEOPLE & ORGANIZATION",
+  },
+  {
+    title: "Employee Management",
+    url: ROUTES.ADMIN.EMPLOYEE_MANAGEMENT,
+    icon: Users,
+    group: "PEOPLE & ORGANIZATION",
+  },
+  {
+    title: "Sub/Co-admin Management",
+    url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT,
+    icon: UserCog,
+    group: "PEOPLE & ORGANIZATION",
+  },
+  {
+    title: "Partner Leads CRM",
+    url: ROUTES.ADMIN.PARTNER_LEADS,
+    icon: Building,
+    group: "PEOPLE & ORGANIZATION",
+    isNewFeature: true,
+  },
+
+  // STORES & CATALOG
+  {
+    title: "Store Management",
+    url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
+    icon: Store,
+    group: "STORES & CATALOG",
+    items: [
+      {
+        title: "Store",
+        url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
+      },
+      {
+        title: "Assign City-Manager To Stores",
+        url: ROUTES.ADMIN.STORE_MANAGEMENT.ASSIGN_CITY_MANAGER,
+      },
+    ],
+  },
   {
     title: "Catalogue Management",
     url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ROOT,
     icon: BookOpen,
-    group: "PRODUCTS & INVENTORY",
+    group: "STORES & CATALOG",
     items: [
       {
         title: "Departments",
@@ -82,21 +138,29 @@ export const navigationItems: NavItem[] = [
     title: "Product Boxes Management",
     url: ROUTES.ADMIN.PRODUCT_BOXES,
     icon: Package,
-    group: "PRODUCTS & INVENTORY",
+    group: "STORES & CATALOG",
   },
   {
-    title: "Store Management",
-    url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
-    icon: Store,
-    group: "PRODUCTS & INVENTORY",
+    title: "Country Management",
+    url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT,
+    icon: Globe,
+    group: "STORES & CATALOG",
     items: [
       {
-        title: "Store",
-        url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
+        title: "Country Managers",
+        url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST,
       },
+    ],
+  },
+  {
+    title: "City Management",
+    url: ROUTES.ADMIN.CITY_MANAGEMENT.ROOT,
+    icon: MapPin,
+    group: "STORES & CATALOG",
+    items: [
       {
-        title: "Assign City-Manager To Stores",
-        url: ROUTES.ADMIN.STORE_MANAGEMENT.ASSIGN_CITY_MANAGER,
+        title: "City Managers",
+        url: ROUTES.ADMIN.CITY_MANAGEMENT.LIST,
       },
     ],
   },
@@ -127,12 +191,6 @@ export const navigationItems: NavItem[] = [
     group: "ORDERS & CUSTOMERS",
   },
   {
-    title: "Amount Limit Management",
-    url: ROUTES.ADMIN.AMOUNT_LIMIT_MANAGEMENT,
-    icon: DollarSign,
-    group: "ORDERS & CUSTOMERS",
-  },
-  {
     title: "Credits Management",
     url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
     icon: CreditCard,
@@ -148,47 +206,63 @@ export const navigationItems: NavItem[] = [
       },
     ],
   },
+  {
+    title: "Amount Limit Management",
+    url: ROUTES.ADMIN.AMOUNT_LIMIT_MANAGEMENT,
+    icon: DollarSign,
+    group: "ORDERS & CUSTOMERS",
+  },
 
-  // PEOPLE
-  {
-    title: "Employee Management",
-    url: ROUTES.ADMIN.EMPLOYEE_MANAGEMENT,
-    icon: Users,
-    group: "PEOPLE",
-  },
-  {
-    title: "Users Management",
-    url: ROUTES.ADMIN.USERS_MANAGEMENT,
-    icon: User,
-    group: "PEOPLE",
-  },
-  {
-    title: "Sub/Co-admin Management",
-    url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT,
-    icon: UserCog,
-    group: "PEOPLE",
-  },
+  // DONATIONS & CHARITIES
   {
     title: "Foundations & Charities Management",
     url: ROUTES.ADMIN.FOUNDATION_MANAGEMENT,
-    icon: Building,
-    group: "PEOPLE",
+    icon: Heart,
+    group: "DONATIONS & CHARITIES",
     isComingSoon: true,
   },
   {
     title: "Philanthropist Management",
     url: ROUTES.ADMIN.PHILANTHROPIST_MANAGEMENT,
-    icon: Users,
-    group: "PEOPLE",
+    icon: HandHeart,
+    group: "DONATIONS & CHARITIES",
+    isComingSoon: true,
+  },
+  {
+    title: "Donation Logs",
+    url: ROUTES.ADMIN.DONATION_LOGS,
+    icon: List,
+    group: "DONATIONS & CHARITIES",
     isComingSoon: true,
   },
 
-  // REPORTS
+  // COMMUNICATION & CONTENT
+  {
+    title: "Stories",
+    url: ROUTES.ADMIN.STORIES.LIST,
+    icon: FileText,
+    group: "COMMUNICATION & CONTENT",
+    isComingSoon: true,
+  },
+  {
+    title: "Send Notification",
+    url: ROUTES.ADMIN.SEND_NOTIFICATION,
+    icon: Bell,
+    group: "COMMUNICATION & CONTENT",
+  },
+  {
+    title: "Flash Images Management",
+    url: ROUTES.ADMIN.TUTORIAL_MANAGEMENT,
+    icon: GraduationCap,
+    group: "COMMUNICATION & CONTENT",
+  },
+
+  // REPORTS & FEEDBACK
   {
     title: "Report Management",
     url: ROUTES.ADMIN.REPORT_MANAGEMENT.ROOT,
     icon: ClipboardList,
-    group: "REPORTS",
+    group: "REPORTS & FEEDBACK",
     items: [
       {
         title: "Store Report",
@@ -209,70 +283,13 @@ export const navigationItems: NavItem[] = [
     ],
   },
   {
-    title: "Donation Logs",
-    url: ROUTES.ADMIN.DONATION_LOGS,
-    icon: List,
-    group: "REPORTS",
-    isComingSoon: true,
-  },
-
-  // UTILITIES
-  {
-    title: "Partner Leads CRM",
-    url: ROUTES.ADMIN.PARTNER_LEADS,
-    icon: Building,
-    group: "UTILITIES",
-    isNewFeature: true,
-  },
-  {
-    title: "Country Management",
-    url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT,
-    icon: Globe,
-    group: "UTILITIES",
-    items: [
-      {
-        title: "Country Managers",
-        url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST,
-      },
-    ],
-  },
-  {
-    title: "City Management",
-    url: ROUTES.ADMIN.CITY_MANAGEMENT.ROOT,
-    icon: MapPin,
-    group: "UTILITIES",
-    items: [
-      {
-        title: "City Managers",
-        url: ROUTES.ADMIN.CITY_MANAGEMENT.LIST,
-      },
-    ],
-  },
-  {
     title: "Feedback Management",
     url: ROUTES.ADMIN.FEEDBACK_MANAGEMENT,
     icon: MessageSquare,
-    group: "UTILITIES",
+    group: "REPORTS & FEEDBACK",
   },
-  {
-    title: "Send Notification",
-    url: ROUTES.ADMIN.SEND_NOTIFICATION,
-    icon: Bell,
-    group: "UTILITIES",
-  },
-  {
-    title: "Flash Images Management",
-    url: ROUTES.ADMIN.TUTORIAL_MANAGEMENT,
-    icon: GraduationCap,
-    group: "UTILITIES",
-  },
-  {
-    title: "Stories",
-    url: ROUTES.ADMIN.STORIES.LIST,
-    icon: RefreshCcw,
-    group: "UTILITIES",
-    isComingSoon: true,
-  },
+
+  // UTILITIES
   {
     title: "Recycle Bin",
     url: ROUTES.ADMIN.RECYCLE_BIN,

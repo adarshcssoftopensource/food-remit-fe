@@ -257,6 +257,14 @@ export function SidebarNavItem({
           </span>
         </div>
       )}
+      {!isCollapsed && item.title !== "Dashboard" && item.title !== "Recycle Bin" && (
+        <ChevronRight
+          className={cn(
+            "h-4 w-4 shrink-0 text-slate-300 transition-transform duration-200 group-hover/link:text-slate-500 dark:text-slate-600",
+            active && "text-white/80",
+          )}
+        />
+      )}
     </Link>
   );
 
