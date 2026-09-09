@@ -237,6 +237,11 @@ export function StoreForm({
                       step={0.01}
                       placeholder="Government Store Tax"
                       className="h-11 rounded-xl border-slate-200"
+                      onFocus={(e) => {
+                        if (e.target.value === "0" || Number(e.target.value) === 0) {
+                          field.onChange("");
+                        }
+                      }}
                     />
                   </FormField>
                 )}
@@ -260,6 +265,11 @@ export function StoreForm({
                       placeholder="Enter Commission %"
                       className="h-11 rounded-xl border-slate-200 bg-slate-50"
                       value={field.value ?? ""}
+                      onFocus={(e) => {
+                        if (e.target.value === "0" || Number(e.target.value) === 0) {
+                          field.onChange(undefined);
+                        }
+                      }}
                       onChange={(e) =>
                         field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
                       }

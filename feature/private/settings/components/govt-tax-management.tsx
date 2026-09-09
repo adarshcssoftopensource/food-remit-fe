@@ -187,6 +187,11 @@ export function GovtTaxManagement() {
                       disabled={isReadOnly}
                       readOnly={isReadOnly}
                       aria-invalid={!!errors.tax}
+                      onFocus={(e) => {
+                        if (e.target.value === "0" || e.target.value === "0.00") {
+                          field.onChange("");
+                        }
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
                           e.preventDefault();

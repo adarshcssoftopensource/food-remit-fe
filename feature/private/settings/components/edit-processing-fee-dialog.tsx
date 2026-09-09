@@ -132,6 +132,11 @@ export function EditProcessingFeeDialog({
                     placeholder="e.g. 2.50"
                     aria-invalid={!!errors.processingFee}
                     className="h-11 pl-9"
+                    onFocus={(e) => {
+                      if (e.target.value === "0" || Number(e.target.value) === 0) {
+                        field.onChange("");
+                      }
+                    }}
                   />
                 </div>
                 {errors.processingFee && (
