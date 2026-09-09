@@ -28,7 +28,7 @@ export function useGetStores(args?: UseGetStoresArgs) {
   const queryKey = [...API_CACHE_KEYS.STORES, queryString];
   const url = `${STORE_ENDPOINTS.GET_STORES}?${queryString}`;
 
-  const { data, isLoading, isError, error, refetch } = useApiQuery<StoreListResponse>(
+  const { data, isLoading, isFetching, isError, error, refetch } = useApiQuery<StoreListResponse>(
     queryKey,
     url,
   );
@@ -72,7 +72,8 @@ export function useGetStores(args?: UseGetStoresArgs) {
     data: stores,
     stats: data?.stats,
     pagination: data?.pagination,
-    isLoading,
+    isLoading: isLoading || isFetching,
+    isFetching,
     isError,
     error,
     refetch,

@@ -47,18 +47,17 @@ export interface NavItem {
 
 export const NAVIGATION_GROUPS = [
   { id: "MAIN", label: "MAIN", collapsible: false, hideHeader: true },
-  { id: "PEOPLE & ORGANIZATION", label: "PEOPLE & ORGANIZATION", icon: Users, collapsible: true },
-  { id: "STORES & CATALOG", label: "STORES & CATALOG", icon: Store, collapsible: true },
-  { id: "ORDERS & CUSTOMERS", label: "ORDERS & CUSTOMERS", icon: ShoppingCart, collapsible: true },
-  { id: "DONATIONS & CHARITIES", label: "DONATIONS & CHARITIES", icon: Heart, collapsible: true },
+  { id: "PEOPLE & ORGANIZATION", label: "People & Organization", collapsible: true },
+  { id: "STORES & CATALOG", label: "Stores & Catalog", collapsible: true },
+  { id: "ORDERS & CUSTOMERS", label: "Orders & Customers", collapsible: true },
+  { id: "DONATIONS & CHARITIES", label: "Donations & Charities", collapsible: true },
   {
     id: "COMMUNICATION & CONTENT",
-    label: "COMMUNICATION & CONTENT",
-    icon: Megaphone,
+    label: "Communication & Content",
     collapsible: true,
   },
-  { id: "REPORTS & FEEDBACK", label: "REPORTS & FEEDBACK", icon: BarChart3, collapsible: true },
-  { id: "UTILITIES", label: "UTILITIES", icon: Settings, collapsible: true },
+  { id: "REPORTS & FEEDBACK", label: "Reports & Feedback", collapsible: true },
+  { id: "UTILITIES", label: "Utilities", collapsible: true },
 ] as const;
 
 export const navigationItems: NavItem[] = [
@@ -72,25 +71,25 @@ export const navigationItems: NavItem[] = [
 
   // PEOPLE & ORGANIZATION
   {
-    title: "Users Management",
+    title: "Users",
     url: ROUTES.ADMIN.USERS_MANAGEMENT,
     icon: User,
     group: "PEOPLE & ORGANIZATION",
   },
   {
-    title: "Employee Management",
+    title: "Employees",
     url: ROUTES.ADMIN.EMPLOYEE_MANAGEMENT,
     icon: Users,
     group: "PEOPLE & ORGANIZATION",
   },
   {
-    title: "Sub/Co-admin Management",
+    title: "Sub-Admins",
     url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT,
     icon: UserCog,
     group: "PEOPLE & ORGANIZATION",
   },
   {
-    title: "Partner Leads CRM",
+    title: "Partner Leads",
     url: ROUTES.ADMIN.PARTNER_LEADS,
     icon: Building,
     group: "PEOPLE & ORGANIZATION",
@@ -99,23 +98,23 @@ export const navigationItems: NavItem[] = [
 
   // STORES & CATALOG
   {
-    title: "Store Management",
+    title: "Stores",
     url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
     icon: Store,
     group: "STORES & CATALOG",
     items: [
       {
-        title: "Store",
+        title: "All Stores",
         url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
       },
       {
-        title: "Assign City-Manager To Stores",
+        title: "Assign City Managers",
         url: ROUTES.ADMIN.STORE_MANAGEMENT.ASSIGN_CITY_MANAGER,
       },
     ],
   },
   {
-    title: "Catalogue Management",
+    title: "Catalog",
     url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ROOT,
     icon: BookOpen,
     group: "STORES & CATALOG",
@@ -135,39 +134,27 @@ export const navigationItems: NavItem[] = [
     ],
   },
   {
-    title: "Product Boxes Management",
+    title: "Product Boxes",
     url: ROUTES.ADMIN.PRODUCT_BOXES,
     icon: Package,
     group: "STORES & CATALOG",
   },
   {
-    title: "Country Management",
-    url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT,
+    title: "Country Managers",
+    url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST,
     icon: Globe,
     group: "STORES & CATALOG",
-    items: [
-      {
-        title: "Country Managers",
-        url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST,
-      },
-    ],
   },
   {
-    title: "City Management",
-    url: ROUTES.ADMIN.CITY_MANAGEMENT.ROOT,
+    title: "City Managers",
+    url: ROUTES.ADMIN.CITY_MANAGEMENT.LIST,
     icon: MapPin,
     group: "STORES & CATALOG",
-    items: [
-      {
-        title: "City Managers",
-        url: ROUTES.ADMIN.CITY_MANAGEMENT.LIST,
-      },
-    ],
   },
 
   // ORDERS & CUSTOMERS
   {
-    title: "Order Management",
+    title: "Orders",
     url: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
     icon: Box,
     group: "ORDERS & CUSTOMERS",
@@ -179,19 +166,19 @@ export const navigationItems: NavItem[] = [
     group: "ORDERS & CUSTOMERS",
   },
   {
-    title: "Ticket Management",
+    title: "Support Tickets",
     url: ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT,
     icon: Ticket,
     group: "ORDERS & CUSTOMERS",
   },
   {
-    title: "Coupons Management",
+    title: "Coupons",
     url: ROUTES.ADMIN.COUPONS_MANAGEMENT,
     icon: Gift,
     group: "ORDERS & CUSTOMERS",
   },
   {
-    title: "Credits Management",
+    title: "Credits",
     url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
     icon: CreditCard,
     group: "ORDERS & CUSTOMERS",
@@ -207,7 +194,7 @@ export const navigationItems: NavItem[] = [
     ],
   },
   {
-    title: "Amount Limit Management",
+    title: "Amount Limits",
     url: ROUTES.ADMIN.AMOUNT_LIMIT_MANAGEMENT,
     icon: DollarSign,
     group: "ORDERS & CUSTOMERS",
@@ -215,14 +202,14 @@ export const navigationItems: NavItem[] = [
 
   // DONATIONS & CHARITIES
   {
-    title: "Foundations & Charities Management",
+    title: "Charities & Foundations",
     url: ROUTES.ADMIN.FOUNDATION_MANAGEMENT,
     icon: Heart,
     group: "DONATIONS & CHARITIES",
     isComingSoon: true,
   },
   {
-    title: "Philanthropist Management",
+    title: "Philanthropists",
     url: ROUTES.ADMIN.PHILANTHROPIST_MANAGEMENT,
     icon: HandHeart,
     group: "DONATIONS & CHARITIES",
@@ -251,7 +238,7 @@ export const navigationItems: NavItem[] = [
     group: "COMMUNICATION & CONTENT",
   },
   {
-    title: "Flash Images Management",
+    title: "Banners & Tutorials",
     url: ROUTES.ADMIN.TUTORIAL_MANAGEMENT,
     icon: GraduationCap,
     group: "COMMUNICATION & CONTENT",
@@ -259,31 +246,31 @@ export const navigationItems: NavItem[] = [
 
   // REPORTS & FEEDBACK
   {
-    title: "Report Management",
+    title: "Reports",
     url: ROUTES.ADMIN.REPORT_MANAGEMENT.ROOT,
     icon: ClipboardList,
     group: "REPORTS & FEEDBACK",
     items: [
       {
-        title: "Store Report",
+        title: "Store Reports",
         url: ROUTES.ADMIN.REPORT_MANAGEMENT.STORE_REPORT,
       },
       {
-        title: "Customer Report",
+        title: "Customer Reports",
         url: ROUTES.ADMIN.REPORT_MANAGEMENT.CUSTOMER_REPORT,
       },
       {
-        title: "Orders Report",
+        title: "Orders Reports",
         url: ROUTES.ADMIN.REPORT_MANAGEMENT.ORDERS_REPORT,
       },
       {
-        title: "Coupons Report",
+        title: "Coupons Reports",
         url: ROUTES.ADMIN.REPORT_MANAGEMENT.COUPONS_REPORT,
       },
     ],
   },
   {
-    title: "Feedback Management",
+    title: "Feedback",
     url: ROUTES.ADMIN.FEEDBACK_MANAGEMENT,
     icon: MessageSquare,
     group: "REPORTS & FEEDBACK",

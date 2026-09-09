@@ -93,6 +93,7 @@ export function EmployeeManagementFeature() {
           setStatus(tab);
           setPage(1);
         }}
+        isLoading={isLoading}
       />
 
       <DataTable

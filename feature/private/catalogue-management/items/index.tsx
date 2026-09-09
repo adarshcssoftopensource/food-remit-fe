@@ -85,7 +85,11 @@ export function ItemsManagement() {
   const [editingItem, setEditingItem] = useState<ItemData | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
-  const { data: itemsResponse, isLoading } = useGetItems({
+  const {
+    data: itemsResponse,
+    isLoading,
+    isFetching,
+  } = useGetItems({
     page,
     limit,
     search: debouncedSearch,
@@ -362,6 +366,7 @@ export function ItemsManagement() {
           setStatusTab(tab);
           setPage(1);
         }}
+        isLoading={isLoading || isFetching}
       />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">

@@ -60,7 +60,7 @@ export function SubAdminManagement() {
     sortOrder,
   };
 
-  const { data: res, isLoading } = useGetSubAdmins(queryArgs);
+  const { data: res, isLoading, isFetching } = useGetSubAdmins(queryArgs);
   const allData = (res?.data ?? []) as SubAdminData[];
 
   const hasFilters = Boolean(applied.fromDate || applied.toDate);
@@ -167,6 +167,7 @@ export function SubAdminManagement() {
           setStatusTab(tab);
           setCurrentPage(1);
         }}
+        isLoading={isLoading || isFetching}
       />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">

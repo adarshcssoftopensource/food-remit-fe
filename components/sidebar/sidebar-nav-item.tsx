@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 
 interface NavItem {
@@ -64,16 +64,16 @@ export function SidebarNavItem({
               <TooltipTrigger render={<div className="w-full" />}>
                 <PopoverTrigger
                   className={cn(
-                    "flex h-11 w-full items-center justify-center rounded-xl px-2 text-[14.5px] font-medium transition-all duration-200",
+                    "flex h-10 w-full items-center justify-center rounded-xl px-2 text-[14px] font-medium transition-all duration-200",
                     "border-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                     hasActiveChild
                       ? "bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-md ring-1 shadow-emerald-600/25 ring-emerald-500/30"
-                      : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-100",
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-100",
                   )}
                 >
                   <item.icon
                     className={cn(
-                      "h-5 w-5 shrink-0",
+                      "h-4.5 w-4.5 shrink-0",
                       hasActiveChild ? "text-white" : "text-slate-500 dark:text-slate-400",
                     )}
                   />
@@ -82,7 +82,7 @@ export function SidebarNavItem({
               <TooltipContent
                 side="right"
                 sideOffset={14}
-                className="border-none bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-xl"
+                className="border-none bg-slate-900 px-3 py-1.5 text-xs font-medium text-white shadow-xl"
               >
                 {item.title}
               </TooltipContent>
@@ -91,12 +91,12 @@ export function SidebarNavItem({
               side="right"
               align="start"
               sideOffset={8}
-              className="w-56 rounded-2xl border border-slate-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-2xl dark:border-slate-800/80 dark:bg-slate-900/95"
+              className="w-52 rounded-xl border border-slate-200/80 bg-white/95 p-1.5 shadow-xl backdrop-blur-2xl dark:border-slate-800/80 dark:bg-slate-900/95"
             >
-              <div className="mb-2 px-2 text-xs font-bold tracking-wide text-slate-400 uppercase">
+              <div className="mb-1.5 px-2.5 pt-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-500">
                 {item.title}
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-0.5">
                 {item.items.map((sub) => {
                   const isSubActive = isSubItemActive(item, sub, pathname);
                   return (
@@ -105,18 +105,18 @@ export function SidebarNavItem({
                       href={sub.url}
                       onClick={onMobileClose}
                       className={cn(
-                        "group/sublink flex h-9 items-center rounded-xl px-3 text-[13.5px] font-medium transition-all duration-200",
+                        "group/sublink flex h-8.5 items-center rounded-lg px-2.5 text-[13px] font-medium transition-all duration-150",
                         "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                         isSubActive
-                          ? "bg-emerald-50 font-semibold text-emerald-700 shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300"
+                          ? "bg-emerald-500/15 font-semibold text-emerald-800 shadow-2xs dark:bg-emerald-500/20 dark:text-emerald-200"
                           : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
                       )}
                     >
                       <span
                         className={cn(
-                          "mr-2.5 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-200",
+                          "mr-2 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-200",
                           isSubActive
-                            ? "scale-125 bg-emerald-600 shadow-xs dark:bg-emerald-400"
+                            ? "scale-110 bg-emerald-600 shadow-[0_0_6px_rgba(16,185,129,0.6)] dark:bg-emerald-400"
                             : "bg-slate-300 dark:bg-slate-600",
                         )}
                       />
@@ -141,31 +141,31 @@ export function SidebarNavItem({
         <SidebarMenuItem>
           <CollapsibleTrigger
             className={cn(
-              "group/trigger flex h-auto min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-[14.5px] font-medium transition-all duration-200",
+              "group/trigger flex h-10 w-full items-center gap-2.5 rounded-xl px-3 text-[13.5px] font-medium transition-all duration-150",
               "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
               hasActiveChild
-                ? "bg-emerald-500/10 font-semibold text-emerald-700 shadow-xs dark:bg-emerald-950/30 dark:text-emerald-300"
-                : "text-slate-700 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-slate-100",
+                ? "bg-emerald-500/10 font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                : "text-slate-700 hover:bg-slate-100/90 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-slate-100",
             )}
           >
             <item.icon
               className={cn(
-                "h-5 w-5 shrink-0 transition-colors duration-200",
+                "h-4.5 w-4.5 shrink-0 transition-colors duration-200",
                 hasActiveChild
                   ? "text-emerald-600 dark:text-emerald-400"
-                  : "text-slate-500 group-hover/trigger:text-slate-700 dark:text-slate-400 dark:group-hover/trigger:text-slate-200",
+                  : "text-slate-400 group-hover/trigger:text-slate-600 dark:text-slate-400 dark:group-hover/trigger:text-slate-200",
               )}
             />
             {!isCollapsed && (
               <>
-                <span className="flex-1 text-left text-[14.5px] leading-snug wrap-break-word whitespace-normal">
+                <span className="flex-1 truncate text-left text-[13.5px] leading-snug">
                   {item.title}
                 </span>
-                <ChevronRight
+                <ChevronDown
                   className={cn(
-                    "h-4 w-4 shrink-0 transition-transform duration-200",
-                    hasActiveChild ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400",
-                    isOpen && "rotate-90",
+                    "h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform duration-200 group-hover/trigger:text-slate-600 dark:text-slate-500 dark:group-hover/trigger:text-slate-300",
+                    hasActiveChild && "text-emerald-600/80 dark:text-emerald-400/80",
+                    !isOpen && "-rotate-90",
                   )}
                 />
               </>
@@ -173,37 +173,37 @@ export function SidebarNavItem({
           </CollapsibleTrigger>
 
           <CollapsibleContent className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
-            <SidebarMenuSub className="mt-1 ml-4 border-l-2 border-emerald-500/20 py-0.5 pr-0 pl-3 dark:border-emerald-500/30">
-              {item.items.map((sub) => {
-                const isSubActive = isSubItemActive(item, sub, pathname);
-                return (
-                  <SidebarMenuSubItem key={sub.title}>
-                    <Link
-                      href={sub.url}
-                      onClick={onMobileClose}
-                      className={cn(
-                        "group/sublink flex h-auto min-h-9 items-center rounded-xl px-2.5 py-1.5 text-[13.5px] transition-all duration-200",
-                        "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
-                        isSubActive
-                          ? "bg-emerald-50 font-bold text-emerald-700 shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300"
-                          : "font-medium text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200",
-                      )}
-                    >
-                      <span
+            <SidebarMenuSub className="my-0.5 ml-4.5 border-l border-slate-200/80 py-1 pr-0 pl-2.5 dark:border-slate-800/80">
+              <div className="flex flex-col gap-0.5">
+                {item.items.map((sub) => {
+                  const isSubActive = isSubItemActive(item, sub, pathname);
+                  return (
+                    <SidebarMenuSubItem key={sub.title}>
+                      <Link
+                        href={sub.url}
+                        onClick={onMobileClose}
                         className={cn(
-                          "mr-2.5 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-200",
+                          "group/sublink flex h-8.5 items-center rounded-lg px-2.5 text-[13px] transition-all duration-150",
+                          "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
                           isSubActive
-                            ? "scale-125 bg-emerald-600 shadow-[0_0_8px_rgba(16,185,129,0.7)] dark:bg-emerald-400"
-                            : "bg-slate-300 group-hover/sublink:bg-slate-400 dark:bg-slate-600",
+                            ? "bg-emerald-500/15 font-semibold text-emerald-800 shadow-2xs dark:bg-emerald-500/20 dark:text-emerald-200"
+                            : "font-normal text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200",
                         )}
-                      />
-                      <span className="text-[13.5px] leading-snug wrap-break-word whitespace-normal">
-                        {sub.title}
-                      </span>
-                    </Link>
-                  </SidebarMenuSubItem>
-                );
-              })}
+                      >
+                        <span
+                          className={cn(
+                            "mr-2 h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-200",
+                            isSubActive
+                              ? "scale-110 bg-emerald-600 shadow-[0_0_6px_rgba(16,185,129,0.6)] dark:bg-emerald-400"
+                              : "bg-slate-300 group-hover/sublink:bg-slate-400 dark:bg-slate-600",
+                          )}
+                        />
+                        <span className="truncate text-[13px] leading-snug">{sub.title}</span>
+                      </Link>
+                    </SidebarMenuSubItem>
+                  );
+                })}
+              </div>
             </SidebarMenuSub>
           </CollapsibleContent>
         </SidebarMenuItem>
@@ -216,54 +216,52 @@ export function SidebarNavItem({
       onClick={onMobileClose}
       href={item.url}
       className={cn(
-        "group/link relative flex h-auto min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-[14.5px] font-medium transition-all duration-200",
+        "group/link relative flex h-10 w-full items-center gap-2.5 rounded-xl px-3 text-[13.5px] font-medium transition-all duration-150",
         "outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
         active
           ? isCollapsed
             ? "bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-md ring-1 shadow-emerald-600/25 ring-emerald-500/30"
-            : "bg-linear-to-r from-emerald-600 to-teal-600 font-bold text-white shadow-md shadow-emerald-600/20"
-          : "text-slate-700 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-slate-100",
+            : "bg-linear-to-r from-emerald-600 to-teal-600 font-semibold text-white shadow-sm shadow-emerald-600/20"
+          : "text-slate-700 hover:bg-slate-100/90 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-slate-100",
         isCollapsed && "justify-center px-2",
       )}
     >
       <item.icon
         className={cn(
-          "h-5 w-5 shrink-0 transition-colors duration-200",
+          "h-4.5 w-4.5 shrink-0 transition-colors duration-200",
           active
             ? "text-white"
-            : "text-slate-500 group-hover/link:text-slate-700 dark:text-slate-400 dark:group-hover/link:text-slate-200",
+            : "text-slate-400 group-hover/link:text-slate-600 dark:text-slate-400 dark:group-hover/link:text-slate-200",
         )}
       />
       {!isCollapsed && (
-        <div className="flex min-w-0 flex-1 flex-col items-start justify-center gap-0.5">
-          {item.isComingSoon && active && (
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+          <span className="truncate text-[13.5px] leading-snug">{item.title}</span>
+          {item.isComingSoon && (
             <ComingSoonBadge
               size="compact"
-              label="Coming Soon"
-              showIcon
-              className="border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400"
+              label="Soon"
+              className={cn(
+                "shrink-0",
+                active
+                  ? "border-white/30 bg-white/20 text-white"
+                  : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-400",
+              )}
             />
           )}
-          {item.isNewFeature && active && (
+          {item.isNewFeature && (
             <ComingSoonBadge
               size="compact"
-              label="New Feature"
-              showIcon
-              className="border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-400"
+              label="New"
+              className={cn(
+                "shrink-0",
+                active
+                  ? "border-white/30 bg-white/20 text-white"
+                  : "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-400",
+              )}
             />
           )}
-          <span className="w-full text-[13.5px] leading-snug wrap-break-word whitespace-normal">
-            {item.title}
-          </span>
         </div>
-      )}
-      {!isCollapsed && item.title !== "Dashboard" && item.title !== "Recycle Bin" && (
-        <ChevronRight
-          className={cn(
-            "h-4 w-4 shrink-0 text-slate-300 transition-transform duration-200 group-hover/link:text-slate-500 dark:text-slate-600",
-            active && "text-white/80",
-          )}
-        />
       )}
     </Link>
   );
@@ -276,7 +274,7 @@ export function SidebarNavItem({
           <TooltipContent
             side="right"
             sideOffset={14}
-            className="z-50 border-none bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-xl"
+            className="z-50 border-none bg-slate-900 px-3 py-1.5 text-xs font-medium text-white shadow-xl"
           >
             {item.title}
           </TooltipContent>

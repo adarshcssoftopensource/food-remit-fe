@@ -91,7 +91,7 @@ export function DepartmentsManagement() {
     sortOrder,
   ]);
 
-  const { data: res, isLoading } = useGetDepartments(queryArgs);
+  const { data: res, isLoading, isFetching } = useGetDepartments(queryArgs);
 
   const departments = useMemo(() => {
     const rawDepartments = res?.data ?? [];
@@ -234,6 +234,7 @@ export function DepartmentsManagement() {
           setStatusTab(tab);
           setCurrentPage(1);
         }}
+        isLoading={isLoading || isFetching}
       />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">

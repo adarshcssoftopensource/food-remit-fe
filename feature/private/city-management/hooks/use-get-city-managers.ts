@@ -27,7 +27,12 @@ export function useGetCityManagers(args?: UseGetCityManagersArgs) {
   const queryKey = [...API_CACHE_KEYS.CITY_MANAGERS, queryString];
   const url = `${CITY_MANAGER_ENDPOINTS.GET_CITY_MANAGERS}?${queryString}`;
 
-  const { data: rawData, isLoading, refetch } = useApiQuery<CityManagerListResponse>(queryKey, url);
+  const {
+    data: rawData,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useApiQuery<CityManagerListResponse>(queryKey, url);
 
   const cityManagers = useMemo<CityManagerData[]>(() => {
     if (!rawData?.data) return [];
@@ -59,7 +64,8 @@ export function useGetCityManagers(args?: UseGetCityManagersArgs) {
   return {
     data: cityManagers,
     stats: (rawData as any)?.stats,
-    isLoading,
+    isLoading: isLoading || isFetching,
+    isFetching,
     refetch,
     pagination: rawData?.status ? (rawData as any).pagination : undefined,
   };

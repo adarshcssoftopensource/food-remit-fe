@@ -26,16 +26,15 @@ export function useGetEmployees(args?: UseGetEmployeesArgs) {
   const queryKey = [...API_CACHE_KEYS.EMPLOYEES, queryString];
   const url = `${EMPLOYEE_ENDPOINTS.GET_EMPLOYEES}?${queryString}`;
 
-  const { data, isLoading, isError, error, refetch } = useApiQuery<GetEmployeesResponse>(
-    queryKey,
-    url,
-  );
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    useApiQuery<GetEmployeesResponse>(queryKey, url);
 
   return {
     data: data?.data ?? [],
     stats: data?.stats,
     pagination: data?.pagination,
-    isLoading,
+    isLoading: isLoading || isFetching,
+    isFetching,
     isError,
     error,
     refetch,

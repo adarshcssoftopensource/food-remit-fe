@@ -105,7 +105,7 @@ export function CategoriesManagement() {
     sortOrder,
   ]);
 
-  const { data: res, isLoading } = useGetCategories(queryArgs);
+  const { data: res, isLoading, isFetching } = useGetCategories(queryArgs);
 
   const categories = useMemo(() => {
     const rawCategories = res?.data ?? [];
@@ -261,6 +261,7 @@ export function CategoriesManagement() {
           setStatusTab(tab);
           setCurrentPage(1);
         }}
+        isLoading={isLoading || isFetching}
       />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">

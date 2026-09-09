@@ -29,6 +29,7 @@ export function useGetCountryManagers(args?: UseGetCountryManagersArgs) {
   const {
     data: rawData,
     isLoading,
+    isFetching,
     refetch,
   } = useApiQuery<CountryManagerListResponse>(queryKey, url);
 
@@ -61,7 +62,8 @@ export function useGetCountryManagers(args?: UseGetCountryManagersArgs) {
   return {
     data: countryManagers,
     stats: (rawData as any)?.stats,
-    isLoading,
+    isLoading: isLoading || isFetching,
+    isFetching,
     refetch,
     pagination: rawData?.status ? (rawData as any).pagination : undefined,
   };

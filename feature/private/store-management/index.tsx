@@ -96,6 +96,7 @@ export function StoreManagement() {
           setStatusTab(tab);
           setPage(1);
         }}
+        isLoading={isLoading}
       />
 
       <Card className="overflow-hidden rounded-xl shadow-sm">

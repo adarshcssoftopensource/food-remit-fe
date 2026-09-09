@@ -52,7 +52,7 @@ export function UserManagement() {
     sortOrder: sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined,
   };
 
-  const { data: res, isLoading } = useGetUsers(queryArgs);
+  const { data: res, isLoading, isFetching } = useGetUsers(queryArgs);
   const allData = (res?.data ?? []) as any[];
 
   const stats = {
@@ -185,6 +185,7 @@ export function UserManagement() {
           setStatusTab(tab);
           setCurrentPage(1);
         }}
+        isLoading={isLoading || isFetching}
       />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">

@@ -94,6 +94,7 @@ export function AppSidebar() {
       : navigationItems;
   }, [pathname, isCmsContext]);
 
+  const [prevPathname, setPrevPathname] = React.useState(pathname);
   const [openGroup, setOpenGroup] = React.useState<string | null>(() => {
     const active = activeNavItems.find(
       (item) =>
@@ -117,15 +118,42 @@ export function AppSidebar() {
     return active?.title ?? null;
   });
 
+  // Adjust state during render when route changes without triggering cascading effects
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    const active = activeNavItems.find(
+      (item) =>
+        item.items?.length &&
+        item.items.some(
+          (sub) => pathname === sub.url || (pathname && pathname.startsWith(sub.url + "/")),
+        ),
+    );
+    if (active) {
+      setOpenGroup(active.title);
+    }
+  }
+
   const allowedNavItems = React.useMemo(() => {
     return activeNavItems
       .filter((item) => {
         const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
         const isStoreManager =
           profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
-        if (item.title === "My Orders") return isEmployee;
-        if (item.title === "Order Management") return !isEmployee;
-        if (item.title === "Product Boxes Management") return isStoreManager;
+        if (item.url === ROUTES.ADMIN.MY_ORDERS || item.title === "My Orders") return isEmployee;
+        if (
+          item.url === ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT ||
+          item.title === "Order Management" ||
+          item.title === "Orders"
+        ) {
+          return !isEmployee;
+        }
+        if (
+          item.url === ROUTES.ADMIN.PRODUCT_BOXES ||
+          item.title === "Product Boxes Management" ||
+          item.title === "Product Boxes"
+        ) {
+          return isStoreManager;
+        }
         return true;
       })
       .map((item) => {
@@ -140,7 +168,12 @@ export function AppSidebar() {
             const isStoreManager =
               profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
 
-            if (isStoreManager && sub.title === "Store Report") {
+            if (
+              isStoreManager &&
+              (sub.title === "Store Report" ||
+                sub.title === "Store Reports" ||
+                sub.url === ROUTES.ADMIN.REPORT_MANAGEMENT.STORE_REPORT)
+            ) {
               return false;
             }
 
@@ -218,7 +251,9 @@ export function AppSidebar() {
     if (unassignedItems.length > 0) {
       const utilGroup = groups.find((g) => g.id === "UTILITIES");
       if (utilGroup) {
-        const recycleIndex = utilGroup.items.findIndex((i) => i.title === "Recycle Bin");
+        const recycleIndex = utilGroup.items.findIndex(
+          (i) => i.url === ROUTES.ADMIN.RECYCLE_BIN || i.title === "Recycle Bin",
+        );
         if (recycleIndex !== -1) {
           const recycleItem = utilGroup.items[recycleIndex];
           const beforeRecycle = utilGroup.items.slice(0, recycleIndex);
@@ -230,7 +265,7 @@ export function AppSidebar() {
       } else {
         groups.push({
           id: "UTILITIES",
-          label: "UTILITIES",
+          label: "Utilities",
           collapsible: true,
           items: unassignedItems,
         });
@@ -242,7 +277,21 @@ export function AppSidebar() {
 
   const isActive = (url: string) => {
     if (url === "/dashboard" && pathname === "/") return true;
-    return pathname === url || pathname?.startsWith(url + "/");
+    if (pathname === url || pathname?.startsWith(url + "/")) return true;
+    // Detail route matching for country & city managers
+    if (
+      url === ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST &&
+      pathname?.startsWith(ROUTES.ADMIN.COUNTRY_MANAGEMENT.ROOT)
+    ) {
+      return true;
+    }
+    if (
+      url === ROUTES.ADMIN.CITY_MANAGEMENT.LIST &&
+      pathname?.startsWith(ROUTES.ADMIN.CITY_MANAGEMENT.ROOT)
+    ) {
+      return true;
+    }
+    return false;
   };
 
   const handleGroupToggle = (title: string, open: boolean) => {
@@ -295,23 +344,18 @@ export function AppSidebar() {
                       <div
                         onClick={() => group.collapsible && toggleSection(group.label)}
                         className={cn(
-                          "flex items-center justify-between px-3 pb-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase transition-colors select-none dark:text-slate-500",
-                          groupIdx === 0 ? "pt-1" : "pt-3.5",
+                          "group/sec flex items-center justify-between px-3 pb-1.5 text-[11px] font-semibold tracking-wider text-slate-400 uppercase transition-colors select-none dark:text-slate-500",
+                          groupIdx === 0 ? "pt-1" : "pt-4",
                           group.collapsible
                             ? "cursor-pointer hover:text-slate-600 dark:hover:text-slate-300"
                             : "",
                         )}
                       >
-                        <div className="flex items-center gap-2">
-                          {group.icon && (
-                            <group.icon className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" />
-                          )}
-                          <span>{group.label}</span>
-                        </div>
+                        <span>{group.label}</span>
                         {group.collapsible && (
                           <ChevronDown
                             className={cn(
-                              "h-3.5 w-3.5 text-slate-400 transition-transform duration-200",
+                              "h-3.5 w-3.5 text-slate-400/80 transition-transform duration-200 group-hover/sec:text-slate-600 dark:text-slate-500 dark:group-hover/sec:text-slate-300",
                               isSectionCollapsed && "-rotate-90",
                             )}
                           />
@@ -322,11 +366,11 @@ export function AppSidebar() {
                     {/* Group Items */}
                     <div
                       className={cn(
-                        "flex flex-col gap-1 transition-all duration-200",
+                        "flex flex-col gap-0.5 transition-all duration-200",
                         !isCollapsed && isSectionCollapsed && "hidden",
                       )}
                     >
-                      <SidebarMenu className="gap-1">
+                      <SidebarMenu className="gap-0.5">
                         {group.items.map((item) => (
                           <SidebarNavItem
                             key={item.title}

@@ -162,7 +162,12 @@ export default function CountryManagementPage() {
         </div>
       </ModuleFilters>
 
-      <StatusTabs activeTab={statusTab} stats={stats} onChange={handleStatusTabChange} />
+      <StatusTabs
+        activeTab={statusTab}
+        stats={stats}
+        onChange={handleStatusTabChange}
+        isLoading={isLoading}
+      />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
