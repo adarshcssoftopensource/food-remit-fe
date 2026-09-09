@@ -49,6 +49,8 @@ export function useStoreFilters() {
     cancelFilters,
   } = useDraftTableFilters(DEFAULT_PAGE_SIZE);
 
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+
   const {
     data: rawStores,
     stats: serverStats,
@@ -60,7 +62,7 @@ export function useStoreFilters() {
     search: debouncedSearch,
     sortBy,
     sortOrder,
-    status: applied.status,
+    status: statusTab !== "all" ? statusTab : undefined,
     fromDate: formattedFromDate,
     toDate: formattedToDate,
     country: appliedCountry !== "All Countries" ? appliedCountry : undefined,
@@ -82,12 +84,12 @@ export function useStoreFilters() {
     applied.fromDate ||
     applied.toDate ||
     appliedCountry !== "All Countries" ||
-    appliedCity !== "All Cities" ||
-    (applied.status !== "All" && applied.status !== "all")
+    appliedCity !== "All Cities"
   );
 
   const clearFilters = () => {
     resetBaseFilters();
+    setStatusTab("all");
     setCountry("All Countries");
     setCity("All Cities");
     setAppliedCountry("All Countries");
@@ -108,6 +110,8 @@ export function useStoreFilters() {
     setCountry: handleCountryChange,
     city,
     setCity,
+    statusTab,
+    setStatusTab,
     statusFilter,
     setStatusFilter,
     filteredData,

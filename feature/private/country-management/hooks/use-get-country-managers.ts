@@ -60,6 +60,7 @@ export function useGetCountryManagers(args?: UseGetCountryManagersArgs) {
 
   return {
     data: countryManagers,
+    stats: (rawData as any)?.stats,
     isLoading,
     refetch,
     pagination: rawData?.status ? (rawData as any).pagination : undefined,

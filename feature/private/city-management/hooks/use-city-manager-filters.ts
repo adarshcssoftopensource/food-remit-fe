@@ -49,8 +49,11 @@ export function useCityManagerFilters() {
     setCity(appliedCity);
   };
 
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+
   const {
     data: cityManagers,
+    stats: serverStats,
     isLoading,
     refetch,
     pagination,
@@ -60,7 +63,7 @@ export function useCityManagerFilters() {
     search: debouncedSearch,
     sortBy,
     sortOrder,
-    status: applied.status,
+    status: statusTab !== "all" ? statusTab : undefined,
     fromDate: formattedFromDate,
     toDate: formattedToDate,
     countryId: appliedCountry,
@@ -75,23 +78,26 @@ export function useCityManagerFilters() {
   }, [cityManagers]);
 
   const stats = useMemo(() => {
-    const total = cityManagers.length;
-    const active = cityManagers.filter((item) => item.status === "Active").length;
+    const total = serverStats?.total ?? cityManagers.length;
+    const active =
+      serverStats?.active ?? cityManagers.filter((item) => item.status === "Active").length;
+    const inactive =
+      serverStats?.inactive ?? cityManagers.filter((item) => item.status !== "Active").length;
     const cities = new Set(cityManagers.flatMap((item) => item.assignedCities)).size;
     const countries = new Set(cityManagers.map((item) => item.country)).size;
-    return { total, active, cities, countries };
-  }, [cityManagers]);
+    return { total, active, inactive, cities, countries };
+  }, [cityManagers, serverStats]);
 
   const hasFilters = Boolean(
     applied.fromDate ||
     applied.toDate ||
-    (applied.status !== "All" && applied.status !== "all") ||
     (appliedCountry !== "all" && appliedCountry !== "All") ||
     (appliedCity !== "all" && appliedCity !== "All"),
   );
 
   const clearFilters = () => {
     resetBaseFilters();
+    setStatusTab("all");
     setCountry("all");
     setCity("all");
     setAppliedCountry("all");
@@ -124,6 +130,8 @@ export function useCityManagerFilters() {
     setCountry,
     city,
     setCity,
+    statusTab,
+    setStatusTab,
     filteredData,
     fromDate,
     hasFilters,

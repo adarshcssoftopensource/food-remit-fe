@@ -33,6 +33,7 @@ export function useGetEmployees(args?: UseGetEmployeesArgs) {
 
   return {
     data: data?.data ?? [],
+    stats: data?.stats,
     pagination: data?.pagination,
     isLoading,
     isError,

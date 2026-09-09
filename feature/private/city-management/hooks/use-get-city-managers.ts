@@ -58,6 +58,7 @@ export function useGetCityManagers(args?: UseGetCityManagersArgs) {
 
   return {
     data: cityManagers,
+    stats: (rawData as any)?.stats,
     isLoading,
     refetch,
     pagination: rawData?.status ? (rawData as any).pagination : undefined,

@@ -5,21 +5,13 @@ import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
+import { StatusTabs } from "@/components/common/status-tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { SUB_ADMIN_STAT_CONFIG, SUB_ADMIN_STATUS_OPTIONS } from "@/constants/sub-admin-management";
+import { SUB_ADMIN_STAT_CONFIG } from "@/constants/sub-admin-management";
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import type { SortingState } from "@tanstack/react-table";
 import { UserCheck, Users } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { subAdminColumns } from "./columns/sub-admin-columns";
 import { SubAdminDialog } from "./components/sub-admin-dialog";
 import { useGetSubAdmins, UseGetSubAdminsArgs } from "./hooks/use-get-sub-admins";
@@ -31,8 +23,6 @@ export function SubAdminManagement() {
     setFromDate,
     toDate,
     setToDate,
-    status,
-    setStatus,
     currentPage,
     setCurrentPage,
     pageSize: rowsPerPage,
@@ -41,7 +31,6 @@ export function SubAdminManagement() {
     setSearchQuery: setSearch,
     setSorting,
     debouncedSearch,
-    formattedToDate,
     sortBy,
     sortOrder,
     applied,
@@ -49,6 +38,8 @@ export function SubAdminManagement() {
     cancelFilters,
     resetBaseFilters,
   } = useDraftTableFilters();
+
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
 
   const handleSearchChange = useCallback(
     (value: string) => {
@@ -64,7 +55,7 @@ export function SubAdminManagement() {
     search: debouncedSearch || undefined,
     fromDate: applied.fromDate ? new Date(applied.fromDate) : undefined,
     toDate: applied.toDate ? new Date(applied.toDate) : undefined,
-    status: applied.status !== "all" ? applied.status : undefined,
+    status: statusTab !== "all" ? statusTab : undefined,
     sortBy,
     sortOrder,
   };
@@ -72,10 +63,11 @@ export function SubAdminManagement() {
   const { data: res, isLoading } = useGetSubAdmins(queryArgs);
   const allData = (res?.data ?? []) as SubAdminData[];
 
-  const hasFilters = Boolean(applied.fromDate || applied.toDate || applied.status !== "all");
+  const hasFilters = Boolean(applied.fromDate || applied.toDate);
 
   const handleReset = useCallback(() => {
     resetBaseFilters();
+    setStatusTab("all");
     setCurrentPage(1);
   }, [resetBaseFilters, setCurrentPage]);
 
@@ -162,29 +154,20 @@ export function SubAdminManagement() {
             loading={isLoading}
           />
         </div>
-
-        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Admin Status
-          </Label>
-          <Select value={status} onValueChange={(v) => setStatus(v as string)}>
-            <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
-              <SelectValue placeholder="All">
-                {SUB_ADMIN_STATUS_OPTIONS.find((opt) => opt.value === status)?.label || "All"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {SUB_ADMIN_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
       </ModuleFilters>
+
+      <StatusTabs
+        activeTab={statusTab}
+        stats={{
+          total: res?.stats?.total ?? 0,
+          active: res?.stats?.active ?? 0,
+          inactive: res?.stats?.inactive ?? 0,
+        }}
+        onChange={(tab) => {
+          setStatusTab(tab);
+          setCurrentPage(1);
+        }}
+      />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">

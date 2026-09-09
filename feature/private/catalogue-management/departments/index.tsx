@@ -6,19 +6,11 @@ import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
+import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ROUTES } from "@/config/routes";
-import { CATALOGUE_STATUS_OPTIONS, DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
+import { DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { Building2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -35,8 +27,6 @@ export function DepartmentsManagement() {
     setFromDate,
     toDate,
     setToDate,
-    status,
-    setStatus,
     currentPage,
     setCurrentPage,
     pageSize,
@@ -45,7 +35,6 @@ export function DepartmentsManagement() {
     setSearchQuery,
     setSorting,
     debouncedSearch,
-    formattedToDate,
     sortBy,
     sortOrder,
     applied,
@@ -53,6 +42,8 @@ export function DepartmentsManagement() {
     cancelFilters,
     resetBaseFilters,
   } = useDraftTableFilters();
+
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
 
   const [country, setCountry] = useState("all");
   const [city, setCity] = useState("all");
@@ -82,7 +73,7 @@ export function DepartmentsManagement() {
       limit: pageSize,
       search: debouncedSearch || undefined,
       countryId: appliedCountry !== "all" && appliedCountry !== "All" ? appliedCountry : undefined,
-      status: applied.status !== "all" ? applied.status : undefined,
+      status: statusTab !== "all" ? statusTab : undefined,
       fromDate: applied.fromDate ? new Date(applied.fromDate).toISOString() : undefined,
       toDate: applied.toDate ? new Date(applied.toDate).toISOString() : undefined,
       sortBy,
@@ -93,7 +84,7 @@ export function DepartmentsManagement() {
     pageSize,
     debouncedSearch,
     appliedCountry,
-    applied.status,
+    statusTab,
     applied.fromDate,
     applied.toDate,
     sortBy,
@@ -126,7 +117,6 @@ export function DepartmentsManagement() {
   const hasFilters = !!(
     applied.fromDate ||
     applied.toDate ||
-    applied.status !== "all" ||
     appliedCountry !== "all" ||
     appliedCity !== "all" ||
     debouncedSearch
@@ -145,9 +135,8 @@ export function DepartmentsManagement() {
     if (applied.fromDate || applied.toDate) count++;
     if (appliedCountry !== "all" && appliedCountry !== "All") count++;
     if (appliedCity !== "all" && appliedCity !== "All") count++;
-    if (applied.status !== "all") count++;
     return count;
-  }, [applied.fromDate, applied.toDate, appliedCountry, appliedCity, applied.status]);
+  }, [applied.fromDate, applied.toDate, appliedCountry, appliedCity]);
 
   const handleEdit = useCallback((department: DepartmentData) => {
     setEditingDepartment(department);
@@ -236,27 +225,16 @@ export function DepartmentsManagement() {
             maxDate={new Date()}
           />
         </div>
-
-        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Status
-          </Label>
-          <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
-            <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {CATALOGUE_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
       </ModuleFilters>
+
+      <StatusTabs
+        activeTab={statusTab}
+        stats={stats}
+        onChange={(tab) => {
+          setStatusTab(tab);
+          setCurrentPage(1);
+        }}
+      />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">

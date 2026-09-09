@@ -10,19 +10,12 @@ import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
+import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ROUTES } from "@/config/routes";
-import { CATALOGUE_STATUS_OPTIONS, ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
+import { ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import apiClient from "@/lib/api/client";
 import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-management.endpoints";
@@ -49,8 +42,6 @@ export function ItemsManagement() {
     setFromDate,
     toDate,
     setToDate,
-    status,
-    setStatus,
     page,
     setPage,
     limit,
@@ -58,7 +49,6 @@ export function ItemsManagement() {
     searchQuery: search,
     setSearchQuery: setSearch,
     debouncedSearch,
-    formattedToDate,
     applied,
     applyFilters,
     cancelFilters,
@@ -94,6 +84,7 @@ export function ItemsManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ItemData | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
   const { data: itemsResponse, isLoading } = useGetItems({
     page,
     limit,
@@ -102,7 +93,7 @@ export function ItemsManagement() {
     cityId: appliedCity !== "all" ? appliedCity : undefined,
     departmentId: appliedDepartment !== "all" ? appliedDepartment : undefined,
     categoryId: appliedCategory !== "all" ? appliedCategory : undefined,
-    status: applied.status !== "all" ? applied.status : undefined,
+    status: statusTab !== "all" ? statusTab : undefined,
     fromDate: applied.fromDate ? new Date(applied.fromDate).toISOString() : undefined,
     toDate: applied.toDate ? new Date(applied.toDate).toISOString() : undefined,
   });
@@ -120,7 +111,6 @@ export function ItemsManagement() {
   const hasFilters = !!(
     applied.fromDate ||
     applied.toDate ||
-    applied.status !== "all" ||
     appliedCountry !== "all" ||
     appliedCity !== "all" ||
     appliedDepartment !== "all" ||
@@ -147,7 +137,6 @@ export function ItemsManagement() {
     if (appliedCity !== "all" && appliedCity !== "All") count++;
     if (appliedDepartment !== "all") count++;
     if (appliedCategory !== "all") count++;
-    if (applied.status !== "all") count++;
     return count;
   }, [
     applied.fromDate,
@@ -156,7 +145,6 @@ export function ItemsManagement() {
     appliedCity,
     appliedDepartment,
     appliedCategory,
-    applied.status,
   ]);
 
   const handleEdit = useCallback((item: ItemData) => {
@@ -199,7 +187,7 @@ export function ItemsManagement() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch {
       // Axios interceptor will handle the error toast
     }
   };
@@ -365,27 +353,16 @@ export function ItemsManagement() {
             onToDateChange={setToDate}
           />
         </div>
-
-        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Status
-          </Label>
-          <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
-            <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {CATALOGUE_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
       </ModuleFilters>
+
+      <StatusTabs
+        activeTab={statusTab}
+        stats={stats}
+        onChange={(tab) => {
+          setStatusTab(tab);
+          setPage(1);
+        }}
+      />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">

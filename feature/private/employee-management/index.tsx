@@ -3,17 +3,11 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
+import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useDebounce } from "@/lib/debounce";
 import { Plus, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
 import { employeeColumns } from "./columns/employee-columns";
 import { EmployeeDialog } from "./components/employee-dialog";
@@ -32,7 +26,12 @@ export function EmployeeManagementFeature() {
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const { data, pagination, isLoading } = useGetEmployees({
+  const {
+    data = [],
+    pagination,
+    stats,
+    isLoading,
+  } = useGetEmployees({
     page,
     limit,
     search: debouncedSearch,
@@ -79,25 +78,22 @@ export function EmployeeManagementFeature() {
             }}
           />
         </div>
-        <div className="w-40">
-          <Select
-            value={status}
-            onValueChange={(v) => {
-              setStatus(v || "");
-              setPage(1);
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
+
+      <StatusTabs
+        activeTab={status as "all" | "ACTIVE" | "INACTIVE"}
+        stats={
+          stats || {
+            total: pagination?.total ?? data.length,
+            active: data.filter((e) => e.accountStatus === "ACTIVE").length,
+            inactive: data.filter((e) => e.accountStatus !== "ACTIVE").length,
+          }
+        }
+        onChange={(tab) => {
+          setStatus(tab);
+          setPage(1);
+        }}
+      />
 
       <DataTable
         columns={columns}
