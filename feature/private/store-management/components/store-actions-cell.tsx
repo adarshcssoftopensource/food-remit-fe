@@ -124,7 +124,7 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="Delete Store"
-        description={`Are you sure you want to delete ${store.storeName}? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${store.storeName}? It will be moved to the Recycle Bin and can be restored later.`}
         confirmLabel="Delete Store"
         onConfirm={handleDelete}
         isLoading={isDeleting}

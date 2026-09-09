@@ -93,7 +93,7 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="Delete Category"
-        description={`Are you sure you want to delete ${category.categoryName}? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${category.categoryName}? It will be moved to the Recycle Bin and can be restored later.`}
         confirmLabel="Delete Category"
         onConfirm={handleDelete}
         isLoading={isDeleting}

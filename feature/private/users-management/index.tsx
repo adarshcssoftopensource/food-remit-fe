@@ -280,7 +280,7 @@ export function UserManagement() {
         open={isBulkDeleteDialogOpen}
         onOpenChange={setIsBulkDeleteDialogOpen}
         title="Delete Selected Users"
-        description={`Are you sure you want to delete ${selectedUserIds.length} selected users? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${selectedUserIds.length} selected users? They will be moved to the Recycle Bin and can be restored later.`}
         confirmLabel="Delete Users"
         onConfirm={handleBulkDelete}
         isLoading={bulkDeleteUsers.isPending}

@@ -68,7 +68,7 @@ export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) 
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="Delete Item"
-        description={`Are you sure you want to delete ${item.productName}? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${item.productName}? It will be moved to the Recycle Bin and can be restored later.`}
         confirmLabel="Delete Item"
         onConfirm={handleDelete}
         isLoading={isDeleting}
