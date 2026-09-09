@@ -7,18 +7,11 @@ import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
+import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
-import { STAT_CONFIG, USER_STATUS_OPTIONS } from "@/constants/users-management";
+import { STAT_CONFIG } from "@/constants/users-management";
 import { useDebounce } from "@/lib/debounce";
 import { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Trash2, UsersRound } from "lucide-react";
@@ -41,6 +34,7 @@ export function UserManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
   const debouncedSearch = useDebounce(applied.search, 500);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
@@ -53,7 +47,7 @@ export function UserManagement() {
     search: debouncedSearch || undefined,
     fromDate: applied.fromDate,
     toDate: applied.toDate,
-    status: applied.status || undefined,
+    status: statusTab !== "all" ? statusTab : undefined,
     sortBy: sorting[0]?.id || undefined,
     sortOrder: sorting[0]?.desc ? "desc" : sorting[0] ? "asc" : undefined,
   };
@@ -87,20 +81,20 @@ export function UserManagement() {
     );
   };
 
-  const hasFilters = !!(applied.fromDate || applied.toDate || applied.status);
-
-  const clearFilters = () => {
-    reset();
-    setCurrentPage(1);
-    setSorting([]);
-  };
+  const hasFilters = !!(applied.fromDate || applied.toDate);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (applied.fromDate || applied.toDate) count++;
-    if (applied.status) count++;
     return count;
-  }, [applied.fromDate, applied.toDate, applied.status]);
+  }, [applied.fromDate, applied.toDate]);
+
+  const clearFilters = () => {
+    reset();
+    setStatusTab("all");
+    setCurrentPage(1);
+    setSorting([]);
+  };
 
   const handleSearchChange = useCallback(
     (value: string) => {
@@ -182,41 +176,16 @@ export function UserManagement() {
             loading={isLoading}
           />
         </div>
-
-        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            User Status
-          </Label>
-
-          <Select
-            value={draft.status ?? ""}
-            onValueChange={(v) => {
-              setDraft((prev) => ({ ...prev, status: v || null }));
-            }}
-          >
-            <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
-              <span
-                className={
-                  draft.status ? "font-medium text-slate-700 dark:text-slate-200" : "text-slate-400"
-                }
-              >
-                {USER_STATUS_OPTIONS.find((option) => option.value === draft.status)?.label ??
-                  "All Users"}
-              </span>
-            </SelectTrigger>
-
-            <SelectContent>
-              <SelectGroup>
-                {USER_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
       </ModuleFilters>
+
+      <StatusTabs
+        activeTab={statusTab}
+        stats={stats}
+        onChange={(tab) => {
+          setStatusTab(tab);
+          setCurrentPage(1);
+        }}
+      />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">

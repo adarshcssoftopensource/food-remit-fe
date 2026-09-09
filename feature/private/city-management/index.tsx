@@ -7,22 +7,11 @@ import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
+import { StatusTabs } from "@/components/common/status-tabs";
 import { successToast } from "@/components/toaster";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ROUTES } from "@/config/routes";
-import {
-  CITY_MANAGER_STATS_CONFIG,
-  CITY_MANAGER_STATUS_OPTIONS,
-} from "@/constants/city-management";
+import { CITY_MANAGER_STATS_CONFIG } from "@/constants/city-management";
 import { type CityManagerData } from "@/feature/private/city-management/types/city-manager";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -46,10 +35,8 @@ export default function CityManagementPage() {
     fromDate,
     hasFilters,
     setFromDate,
-    setStatusFilter,
     setToDate,
     stats,
-    statusFilter,
     toDate,
     toggleManagerStatus,
     updateCityManager,
@@ -62,6 +49,8 @@ export default function CityManagementPage() {
     setPage,
     limit,
     setLimit,
+    statusTab,
+    setStatusTab,
   } = useCityManagerFilters();
 
   const router = useRouter();
@@ -71,6 +60,11 @@ export default function CityManagementPage() {
   const [deletingManager, setDeletingManager] = useState<CityManagerData | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const handleStatusTabChange = (tab: "all" | "ACTIVE" | "INACTIVE") => {
+    setStatusTab(tab);
+    setPage(1);
+  };
 
   const { mutateAsync: deleteCityManager, isPending: isDeleting } = useDeleteCityManager(
     deletingManager?.id || "",
@@ -117,9 +111,8 @@ export default function CityManagementPage() {
     if (fromDate || toDate) count++;
     if (country && country !== "all" && country !== "All") count++;
     if (city && city !== "all" && city !== "All") count++;
-    if (statusFilter && statusFilter !== "All" && statusFilter !== "all") count++;
     return count;
-  }, [fromDate, toDate, country, city, statusFilter]);
+  }, [fromDate, toDate, country, city]);
 
   return (
     <div className="space-y-6">
@@ -166,27 +159,9 @@ export default function CityManagementPage() {
             maxDate={new Date()}
           />
         </div>
-
-        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Status
-          </Label>
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
-            <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {CITY_MANAGER_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
       </ModuleFilters>
+
+      <StatusTabs activeTab={statusTab} stats={stats} onChange={handleStatusTabChange} />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">

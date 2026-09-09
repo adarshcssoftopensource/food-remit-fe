@@ -18,6 +18,11 @@ export interface GetEmployeesResponse {
   message: string;
   status: boolean;
   data: Employee[];
+  stats?: {
+    total: number;
+    active: number;
+    inactive: number;
+  };
   pagination: {
     total: number;
     page: number;

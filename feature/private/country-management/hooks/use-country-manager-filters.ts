@@ -49,8 +49,11 @@ export function useCountryManagerFilters() {
     setCity(appliedCity);
   };
 
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+
   const {
     data: countryManagers,
+    stats: serverStats,
     isLoading,
     refetch,
     pagination,
@@ -60,7 +63,7 @@ export function useCountryManagerFilters() {
     search: debouncedSearch,
     sortBy,
     sortOrder,
-    status: applied.status,
+    status: statusTab !== "all" ? statusTab : undefined,
     fromDate: formattedFromDate,
     toDate: formattedToDate,
     countryId: appliedCountry,
@@ -74,27 +77,30 @@ export function useCountryManagerFilters() {
   }, [countryManagers]);
 
   const stats = useMemo(() => {
-    const total = countryManagers.length;
-    const active = countryManagers.filter((item) => item.status === "Active").length;
+    const total = serverStats?.total ?? countryManagers.length;
+    const active =
+      serverStats?.active ?? countryManagers.filter((item) => item.status === "Active").length;
+    const inactive =
+      serverStats?.inactive ?? countryManagers.filter((item) => item.status !== "Active").length;
     const countries = new Set(countryManagers.map((item) => item.assignedCountry)).size;
     const cities = total
       ? Math.round(
           countryManagers.reduce((sum, item) => sum + item.assignedCityManagers.length, 0) / total,
         )
       : 0;
-    return { total, active, countries, cities };
-  }, [countryManagers]);
+    return { total, active, inactive, countries, cities };
+  }, [countryManagers, serverStats]);
 
   const hasFilters = Boolean(
     applied.fromDate ||
     applied.toDate ||
-    (applied.status !== "All" && applied.status !== "all") ||
     (appliedCountry !== "all" && appliedCountry !== "All") ||
     (appliedCity !== "all" && appliedCity !== "All"),
   );
 
   const clearFilters = () => {
     resetBaseFilters();
+    setStatusTab("all");
     setCountry("all");
     setCity("all");
     setAppliedCountry("all");
@@ -127,6 +133,8 @@ export function useCountryManagerFilters() {
     setCountry,
     city,
     setCity,
+    statusTab,
+    setStatusTab,
     filteredData,
     fromDate,
     hasFilters,

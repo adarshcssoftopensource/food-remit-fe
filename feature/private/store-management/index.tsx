@@ -4,6 +4,7 @@ import { DataTable } from "@/components/common/data-table/data-table";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
+import { StatusTabs } from "@/components/common/status-tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { STORE_STAT_CONFIG } from "@/constants/store-management";
 import { Store } from "lucide-react";
@@ -23,8 +24,6 @@ export function StoreManagement() {
     setCountry,
     city,
     setCity,
-    statusFilter,
-    setStatusFilter,
     filteredData,
     stats,
     hasFilters,
@@ -40,6 +39,8 @@ export function StoreManagement() {
     setPage,
     limit,
     setLimit,
+    statusTab,
+    setStatusTab,
   } = useStoreFilters();
 
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -65,7 +66,7 @@ export function StoreManagement() {
           <MetricStatCard
             key={key}
             label={label}
-            value={stats[key]}
+            value={stats[key] ?? 0}
             icon={Icon}
             iconClassName={color}
             iconWrapperClassName={bg}
@@ -78,16 +79,23 @@ export function StoreManagement() {
         toDate={toDate}
         country={country}
         city={city}
-        statusFilter={statusFilter}
         hasFilters={hasFilters}
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
         onCountryChange={setCountry}
         onCityChange={setCity}
-        onStatusFilterChange={setStatusFilter}
         onClearFilters={clearFilters}
         onApplyFilters={applyFilters}
         onCancelFilters={cancelFilters}
+      />
+
+      <StatusTabs
+        activeTab={statusTab}
+        stats={stats}
+        onChange={(tab) => {
+          setStatusTab(tab);
+          setPage(1);
+        }}
       />
 
       <Card className="overflow-hidden rounded-xl shadow-sm">
