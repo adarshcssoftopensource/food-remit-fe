@@ -86,4 +86,8 @@ export const API_CACHE_KEYS = {
   NOTIFICATIONS: ["notifications"],
   NOTIFICATION_COUNT: ["notification-count"],
   NOTIFICATION_RECIPIENTS: ["notification-recipients"],
+
+  // Credits
+  CREDITS: ["credits"],
+  CREDIT_BY_ID: (id: string) => ["credit", id],
 };

@@ -71,10 +71,7 @@ export const ROUTES = {
     NOTIFICATIONS: "/notifications",
     COUPONS_MANAGEMENT: "/coupons-management",
     AMOUNT_LIMIT_MANAGEMENT: "/amount-limit-management",
-    CREDITS_MANAGEMENT: {
-      PENDING_CREDITS: "/credits-management/pending-credits",
-      COMPLETED_CREDITS: "/credits-management/completed-credits",
-    },
+    CREDITS_MANAGEMENT: "/credits-management",
     TUTORIAL_MANAGEMENT: "/tutorial-management",
     PROFILE: "/profile",
     SETTINGS: "/settings",

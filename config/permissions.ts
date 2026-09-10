@@ -31,7 +31,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   [ROUTES.ADMIN.SEND_NOTIFICATION]: "sendNotifications",
   [ROUTES.ADMIN.COUPONS_MANAGEMENT]: "couponManagement",
   [ROUTES.ADMIN.AMOUNT_LIMIT_MANAGEMENT]: "amountLimits",
-  "/credits-management": "creditsManagement",
+  [ROUTES.ADMIN.CREDITS_MANAGEMENT]: "creditsManagement",
   [ROUTES.ADMIN.TUTORIAL_MANAGEMENT]: "imageManagement",
   [ROUTES.ADMIN.EMPLOYEE_MANAGEMENT]: "employeeManagement",
 };

@@ -63,6 +63,7 @@ export interface OrderData {
     paymentMethod: string;
     paymentStatus: string;
     refundAmount?: string;
+    refundStatus?: string;
     actualRetainedAmount?: string;
   };
   foodRemitEarnings?: {

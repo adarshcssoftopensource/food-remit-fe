@@ -179,19 +179,9 @@ export const navigationItems: NavItem[] = [
   },
   {
     title: "Credits",
-    url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
+    url: ROUTES.ADMIN.CREDITS_MANAGEMENT,
     icon: CreditCard,
     group: "ORDERS & CUSTOMERS",
-    items: [
-      {
-        title: "Pending Credits",
-        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.PENDING_CREDITS,
-      },
-      {
-        title: "Completed Credits",
-        url: ROUTES.ADMIN.CREDITS_MANAGEMENT.COMPLETED_CREDITS,
-      },
-    ],
   },
   {
     title: "Amount Limits",

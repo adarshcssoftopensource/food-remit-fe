@@ -73,6 +73,21 @@ export function getCurrencySymbol(symbolOrCode?: string | null, fallback = "₹"
   if (CURRENCY_SYMBOLS[upper]) {
     return CURRENCY_SYMBOLS[upper];
   }
+
+  // Dynamic ECMAScript Intl.NumberFormat resolution for any world currency code
+  if (/^[A-Z]{3}$/.test(upper)) {
+    try {
+      const parts = new Intl.NumberFormat("en", {
+        style: "currency",
+        currency: upper,
+      }).formatToParts(1);
+      const sym = parts.find((p) => p.type === "currency")?.value;
+      if (sym) return sym;
+    } catch {
+      return upper;
+    }
+  }
+
   // Check if string contains any code like INR, USD, PHP
   for (const [code, sym] of Object.entries(CURRENCY_SYMBOLS)) {
     if (new RegExp(`\\b${code}\\b`, "i").test(trimmed)) {
