@@ -5,11 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
-import type { CreditDetailData } from "../types/credits.types";
-
-interface CreditFinancialBreakdownProps {
-  financials: CreditDetailData["financials"];
-}
+import type { CreditFinancialBreakdownProps } from "../types/credits.types";
 
 export function CreditFinancialBreakdown({ financials }: CreditFinancialBreakdownProps) {
   const isFeeRefundable = financials.isFeeRefundable ?? true;

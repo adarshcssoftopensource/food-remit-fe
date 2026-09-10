@@ -3,18 +3,7 @@
 import { CheckCircle2, CreditCard, Loader2, Store, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-
-interface CreditConfirmPayProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  amount: string;
-  customerName: string;
-  referenceNumber?: string;
-  storeName?: string;
-  isPending: boolean;
-  onConfirm: () => void;
-  onCancel?: () => void;
-}
+import type { CreditConfirmPayProps } from "../types/credits.types";
 
 export function CreditConfirmPay({
   open = true,
@@ -57,9 +46,7 @@ export function CreditConfirmPay({
           </div>
         </div>
 
-        {/* Modal Content - Tight & Cohesive without awkward gaps */}
         <div className="space-y-3 p-5">
-          {/* Spotlight Hero Amount Banner */}
           <div className="flex items-center justify-between rounded-2xl border border-emerald-500/20 bg-emerald-50/60 px-4 py-3 dark:border-emerald-500/30 dark:bg-emerald-950/20">
             <div className="space-y-0.5">
               <p className="text-[10px] font-bold tracking-wider text-emerald-700/90 uppercase dark:text-emerald-400">
@@ -74,7 +61,6 @@ export function CreditConfirmPay({
             </div>
           </div>
 
-          {/* Structured Order Information Card */}
           <div className="rounded-2xl border border-slate-200/70 bg-slate-50/70 p-3.5 text-xs dark:border-slate-800 dark:bg-slate-800/40">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -93,7 +79,7 @@ export function CreditConfirmPay({
                     <Store className="size-3.5 text-slate-400" />
                     Store
                   </span>
-                  <span className="max-w-[180px] truncate font-medium text-slate-700 dark:text-slate-300">
+                  <span className="max-w-45 truncate font-medium text-slate-700 dark:text-slate-300">
                     {storeName}
                   </span>
                 </div>

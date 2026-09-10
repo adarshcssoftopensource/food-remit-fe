@@ -55,7 +55,7 @@ export interface CreditsData {
   cardLast4: string;
   stripeChargeId?: string | null;
 
-  // Compatibility fields with legacy columns
+  // Compatibility fields
   receiverName?: string;
   storeName?: string;
   country?: string;
@@ -85,6 +85,21 @@ export interface CreditsFinancials {
   cancellationPolicy?: string;
 }
 
+export interface CreditTransaction {
+  id?: string;
+  currency: string;
+  paymentMethod: string;
+  cardLast4: string;
+  cardBrand?: string;
+  cardFunding?: string;
+  expMonth?: string;
+  expYear?: string;
+  bankName?: string;
+  stripeChargeId?: string | null;
+  refundAmount: number;
+  refundStatus: string;
+}
+
 export interface CreditDetailData {
   orderId: string;
   referenceNumber: string;
@@ -95,21 +110,100 @@ export interface CreditDetailData {
   receiver: CreditsCustomer;
   store: CreditsStore;
   financials: CreditsFinancials;
-  transaction: {
-    id?: string;
-    currency: string;
-    paymentMethod: string;
-    cardLast4: string;
-    cardBrand?: string;
-    cardFunding?: string;
-    expMonth?: string;
-    expYear?: string;
-    bankName?: string;
-    stripeChargeId?: string | null;
-    refundAmount: number;
-    refundStatus: string;
-  };
+  transaction: CreditTransaction;
   status: "Pending" | "Completed";
   unmarkedItems: CreditsItem[];
   allItems: CreditsItem[];
+}
+
+export interface CreditsPagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface GetCreditsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  status?: string;
+  countryId?: string;
+  cityId?: string;
+  storeId?: string;
+  fromDate?: string;
+  toDate?: string;
+}
+
+export interface CreditsListResponse {
+  message: string;
+  status: boolean;
+  data: CreditsData[];
+  summary: CreditsSummary;
+  pagination: CreditsPagination;
+}
+
+export interface CreditDetailResponse {
+  message: string;
+  status: boolean;
+  data: CreditDetailData;
+}
+
+// ---------------------------------------------------------------------------
+// Component Prop Types
+// ---------------------------------------------------------------------------
+
+export interface CreditConfirmPayProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  amount: string;
+  customerName: string;
+  referenceNumber?: string;
+  storeName?: string;
+  isPending: boolean;
+  onConfirm: () => void;
+  onCancel?: () => void;
+}
+
+export interface CreditPartiesCardProps {
+  customer: CreditsCustomer;
+  store: CreditsStore;
+  onImageClick?: (url: string) => void;
+}
+
+export interface CreditFinancialBreakdownProps {
+  financials: CreditsFinancials;
+}
+
+export interface CreditPaymentCardProps {
+  transaction: CreditTransaction;
+  customerName: string;
+  currency?: string;
+}
+
+export interface CreditUnmarkedItemsProps {
+  items: CreditsItem[];
+  currency: string;
+  onImageClick: (url: string) => void;
+}
+
+export interface CreditColumnsOptions {
+  onViewDetails: (orderId: string) => void;
+  onPayRefund: (credit: CreditsData) => void;
+  isSuperAdmin: boolean;
+}
+
+export type CardNetwork = "visa" | "mastercard" | "amex" | "rupay" | "discover";
+
+export interface CardStyleConfig {
+  name: string;
+  gradient: string;
+  glow: string;
+  tier: string;
+  logo: React.ReactNode;
+  bankName: string;
+  textColor: string;
+  hologramColor: string;
 }

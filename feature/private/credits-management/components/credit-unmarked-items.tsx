@@ -13,13 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
-import type { CreditsItem } from "../types/credits.types";
-
-interface CreditUnmarkedItemsProps {
-  items: CreditsItem[];
-  currency: string;
-  onImageClick: (url: string) => void;
-}
+import type { CreditUnmarkedItemsProps } from "../types/credits.types";
 
 export function CreditUnmarkedItems({ items, currency, onImageClick }: CreditUnmarkedItemsProps) {
   return (

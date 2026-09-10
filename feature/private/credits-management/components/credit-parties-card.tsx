@@ -4,13 +4,7 @@ import Image from "next/image";
 import { Building2, MapPin, Phone, Mail, User, ZoomIn } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import type { CreditsCustomer, CreditsStore } from "../types/credits.types";
-
-interface CreditPartiesCardProps {
-  customer: CreditsCustomer;
-  store: CreditsStore;
-  onImageClick?: (url: string) => void;
-}
+import type { CreditPartiesCardProps } from "../types/credits.types";
 
 const isUuid = (str?: string | null) =>
   Boolean(

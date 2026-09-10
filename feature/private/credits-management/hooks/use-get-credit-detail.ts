@@ -2,13 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import apiClient from "@/lib/api/client";
 import { CREDITS_ENDPOINTS } from "@/lib/api/endpoints/credits.endpoints";
-import type { CreditDetailData } from "../types/credits.types";
+import type { CreditDetailResponse } from "../types/credits.types";
 
-export interface CreditDetailResponse {
-  message: string;
-  status: boolean;
-  data: CreditDetailData;
-}
+export type { CreditDetailResponse };
 
 export function useGetCreditDetail(orderId: string | null) {
   return useQuery({

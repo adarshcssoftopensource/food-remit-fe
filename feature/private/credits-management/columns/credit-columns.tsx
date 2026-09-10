@@ -8,13 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDate } from "@/lib/date";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
-import type { CreditsData } from "../types/credits.types";
-
-interface CreditColumnsOptions {
-  onViewDetails: (orderId: string) => void;
-  onPayRefund: (credit: CreditsData) => void;
-  isSuperAdmin: boolean;
-}
+import type { CreditColumnsOptions, CreditsData } from "../types/credits.types";
 
 export function getCreditColumns({
   onViewDetails,

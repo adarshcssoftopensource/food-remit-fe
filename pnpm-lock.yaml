@@ -41,6 +41,9 @@ importers:
       country-state-city:
         specifier: ^3.2.1
         version: 3.2.1
+      credit-card-type:
+        specifier: ^10.3.0
+        version: 10.3.0
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
@@ -1880,6 +1883,9 @@ packages:
 
   country-state-city@3.2.1:
     resolution: {integrity: sha512-kxbanqMc6izjhc/EHkGPCTabSPZ2G6eG4/97akAYHJUN4stzzFEvQPZoF8oXDQ+10gM/O/yUmISCR1ZVxyb6EA==}
+
+  credit-card-type@10.3.0:
+    resolution: {integrity: sha512-gT9Sb34QMQJDjvovdygGLRHT2wWrvIjEJ+WfCHgBElBbbP8WSl5LEkgwuIRKHeaBOr5sMTgIro3SDYl7XxwTTQ==}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -5822,6 +5828,8 @@ snapshots:
       typescript: 5.9.3
 
   country-state-city@3.2.1: {}
+
+  credit-card-type@10.3.0: {}
 
   cross-spawn@7.0.6:
     dependencies:
