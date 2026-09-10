@@ -989,13 +989,12 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       <span className="font-normal text-slate-400">(Optional)</span>
                     </FieldLabel>
                     <div className="relative">
-                      <MessageSquare className="pointer-events-none absolute top-2.5 left-3 z-10 size-3.5 text-slate-400" />
                       <Textarea
                         {...field}
                         id="additionalNotes"
                         placeholder="Tell us about your business goals..."
-                        rows={3}
-                        className="min-h-16 rounded-xl border-slate-200 bg-white pl-9 text-sm"
+                        rows={4}
+                        className="h-24 max-h-24 min-h-24 resize-none overflow-y-auto rounded-xl border-slate-200 bg-white px-4 py-3 text-sm leading-6 placeholder:text-slate-400 focus:border-slate-300 focus:ring-2 focus:ring-slate-100"
                       />
                     </div>
                   </div>
