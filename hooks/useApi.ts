@@ -7,6 +7,7 @@ interface FetcherArgs<TBody = unknown> {
   url: string;
   body?: TBody;
   timeout?: number;
+  skipErrorToast?: boolean;
 }
 
 export interface ApiResponse<T = unknown> {
@@ -22,13 +23,15 @@ export async function fetcher<TResponse, TBody = unknown>({
   method,
   url,
   body,
-  timeout = 10000,
+  timeout = 20000,
+  skipErrorToast = false,
 }: FetcherArgs<TBody>): Promise<TResponse> {
   const response = await axiosInstance.request<ApiResponse<TResponse>>({
     method,
     url,
     data: body,
     timeout,
+    headers: skipErrorToast ? { "x-skip-error-toast": "true" } : undefined,
   });
   return response.data as TResponse;
 }
@@ -37,12 +40,16 @@ export async function fetcher<TResponse, TBody = unknown>({
 export function useApiQuery<TResponse>(
   key: string[],
   url: string,
-  options?: Omit<UseQueryOptions<TResponse, Error>, "queryKey" | "queryFn">,
+  options?: Omit<UseQueryOptions<TResponse, Error>, "queryKey" | "queryFn"> & {
+    timeout?: number;
+    skipErrorToast?: boolean;
+  },
 ) {
+  const { timeout, skipErrorToast, ...queryOptions } = options || {};
   return useQuery<TResponse, Error>({
     queryKey: key,
-    queryFn: () => fetcher<TResponse>({ method: "get", url }),
-    ...options,
+    queryFn: () => fetcher<TResponse>({ method: "get", url, timeout, skipErrorToast }),
+    ...queryOptions,
   });
 }
 

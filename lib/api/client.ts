@@ -12,6 +12,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { AUTH_ENDPOINTS } from "./endpoints/auth.endpoints";
+import { NOTIFICATION_ENDPOINTS } from "./endpoints/notification.endpoints";
 
 interface ApiErrorResponse {
   statusCode: number;
@@ -41,7 +42,7 @@ export function getApiBaseUrl(): string {
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-  timeout: 10000,
+  timeout: 25000,
 });
 
 let isRefreshing = false;
@@ -88,7 +89,25 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<ApiErrorResponse>) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as
+      | (InternalAxiosRequestConfig & {
+          _retry?: boolean;
+          skipErrorToast?: boolean;
+        })
+      | undefined;
+
+    const isNotificationEndpoint =
+      originalRequest?.url?.includes(NOTIFICATION_ENDPOINTS.COUNT) ||
+      originalRequest?.url?.includes(NOTIFICATION_ENDPOINTS.LIST);
+    const isSkipToastHeader =
+      originalRequest?.headers &&
+      (originalRequest.headers as Record<string, string>)["x-skip-error-toast"] === "true";
+    const shouldSkipToast =
+      originalRequest?.skipErrorToast || isSkipToastHeader || isNotificationEndpoint;
+
+    if (shouldSkipToast) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       if (isRefreshing) {
@@ -148,11 +167,14 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const message =
-      error.response?.data?.message ||
-      error.response?.data?.error ||
-      error.message ||
-      "Something went wrong";
+    const isTimeout =
+      error.code === "ECONNABORTED" || error.message?.toLowerCase().includes("timeout");
+    const message = isTimeout
+      ? "Request timed out. Please check your network connection."
+      : error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Something went wrong";
 
     // Suppress the generic toast for errors that are handled locally by the caller
     // (e.g. MAX_SESSIONS_REACHED is handled by the login form's ConfirmationDialog)

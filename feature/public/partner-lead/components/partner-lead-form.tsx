@@ -9,7 +9,6 @@ import {
   Clock,
   Globe,
   Mail,
-  MessageSquare,
   ShieldCheck,
   Store,
   User,
@@ -63,6 +62,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     trigger,
     getValues,
     setValue,
+    clearErrors,
     reset,
     watch,
     formState: { errors, isDirty, isSubmitSuccessful },
@@ -236,15 +236,26 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
     const isValid = await trigger(fieldsToValidate);
     if (isValid) {
+      clearErrors("agreeToContact");
       setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
     }
   }
 
   function handlePrevStep() {
+    if (currentStep === STEPS.length) {
+      setValue("agreeToContact", false, { shouldValidate: false });
+      clearErrors("agreeToContact");
+    }
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   }
 
   async function onSubmit(data: PartnerLeadFormValues) {
+    if (currentStep !== STEPS.length) {
+      return;
+    }
+    if (!data.agreeToContact) {
+      return;
+    }
     try {
       const mappedWorkPreferences = (data.workPreferences || []).map((pref) =>
         pref === "Other" && data.otherWorkPreference?.trim()
@@ -330,8 +341,12 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 )}
                 <button
                   type="button"
-                  onClick={async () => {
+                  onClick={() => {
                     if (step.id < currentStep) {
+                      if (currentStep === STEPS.length) {
+                        setValue("agreeToContact", false, { shouldValidate: false });
+                        clearErrors("agreeToContact");
+                      }
                       setCurrentStep(step.id);
                     }
                   }}
@@ -364,7 +379,25 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-6">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (currentStep !== STEPS.length) {
+            return;
+          }
+          handleSubmit(onSubmit)(e);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && (e.target as HTMLElement)?.tagName !== "TEXTAREA") {
+            e.preventDefault();
+            if (currentStep < STEPS.length) {
+              handleNextStep();
+            }
+          }
+        }}
+        noValidate
+        className="mt-6"
+      >
         {/* STEP 1: Business Information */}
         {currentStep === 1 && (
           <div className="flex flex-col gap-4">
@@ -1138,8 +1171,12 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
           {currentStep < STEPS.length ? (
             <Button
+              key="btn-step-next"
               type="button"
-              onClick={handleNextStep}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNextStep();
+              }}
               className="h-11 rounded-xl bg-emerald-700 px-6 text-xs font-bold text-white shadow-sm hover:bg-emerald-800"
             >
               Next Step
@@ -1147,7 +1184,14 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             </Button>
           ) : (
             <Button
-              type="submit"
+              key="btn-step-submit"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                if (currentStep === STEPS.length) {
+                  handleSubmit(onSubmit)();
+                }
+              }}
               isLoading={isPending}
               className="h-12 rounded-xl bg-emerald-700 px-7 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-800"
             >
