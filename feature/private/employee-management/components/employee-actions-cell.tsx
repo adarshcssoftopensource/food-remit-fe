@@ -92,7 +92,7 @@ export function EmployeeActionsCell({ employee }: EmployeeActionsCellProps) {
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="Delete Employee"
-        description={`Are you sure you want to delete employee "${employee.firstName} ${employee.lastName}"?`}
+        description={`Are you sure you want to delete employee "${employee.firstName} ${employee.lastName}"?This item will be moved to the Recycle Bin and can be restored later.`}
         confirmLabel="Delete Employee"
         onConfirm={handleDelete}
         isLoading={isDeleting}
