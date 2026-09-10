@@ -85,12 +85,12 @@ export function ConfirmationDialog({
             </DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="bg-muted/40 flex w-full flex-col gap-2 border-t p-4 sm:flex-row sm:gap-3">
+          <DialogFooter className="bg-muted/40 flex w-full flex-col gap-3 border-t p-4 sm:flex-row sm:items-stretch sm:gap-4 sm:p-5">
             <Button
               variant="outline"
               onClick={handleCancel}
               disabled={isLoading}
-              className="hover:bg-accent h-11 flex-1 rounded-xl text-base font-medium"
+              className="h-11 min-h-12! w-full flex-1 rounded-2xl px-5 text-base font-semibold shadow-sm"
             >
               {cancelLabel}
             </Button>
@@ -99,7 +99,7 @@ export function ConfirmationDialog({
               variant={variant}
               onClick={onConfirm}
               isLoading={isLoading}
-              className="h-11 flex-1 rounded-xl text-base font-medium hover:brightness-110"
+              className="h-11 min-h-12! w-full flex-1 rounded-2xl px-5 text-base font-semibold shadow-sm hover:brightness-110"
             >
               {confirmLabel}
             </Button>

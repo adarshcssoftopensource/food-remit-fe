@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock, Mail, User } from "lucide-react";
+import { ArrowLeft, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 
@@ -89,6 +89,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       {...props}
     >
       <div>
+        <div>
+          <Link
+            href={ROUTES.ROOT}
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-emerald-600 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-400"
+          >
+            <ArrowLeft className="size-4" />
+            Back
+          </Link>
+        </div>
         <div className="mb-8 text-center">
           <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500/15 to-teal-500/20 shadow-inner ring-1 ring-emerald-500/30">
             <User className="size-6 text-emerald-600 dark:text-emerald-400" />

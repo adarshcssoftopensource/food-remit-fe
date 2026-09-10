@@ -288,10 +288,19 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   return (
     <div
       className={cn(
-        "relative z-10 w-full overflow-visible rounded-[2.5rem] bg-white p-6 shadow-2xl shadow-black/30 sm:p-10",
+        "relative z-10 mt-auto w-full overflow-visible rounded-[2rem] bg-white p-4 shadow-2xl shadow-black/30 sm:mt-auto sm:rounded-[2.5rem] sm:p-10 md:mt-auto lg:mt-auto",
         className,
       )}
     >
+      <div>
+        <Link
+          href={ROUTES.ROOT}
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-emerald-600 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-400"
+        >
+          <ArrowLeft className="size-4" />
+          Back
+        </Link>
+      </div>
       <div className="text-center">
         <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 text-xs font-semibold text-emerald-800">
           <Clock className="size-3.5 text-emerald-600" />
@@ -307,7 +316,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       </div>
 
       {draftRestored && (
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-2 text-xs text-emerald-900 shadow-sm">
+        <div className="mt-4 flex flex-col items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-xs text-emerald-900 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:py-2">
           <div className="flex items-center gap-2">
             <Check className="size-4 shrink-0 text-emerald-600" />
             <span>Restored your saved progress from your previous session.</span>
@@ -322,14 +331,14 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         </div>
       )}
 
-      <div className="mt-6 border-b border-slate-100 pb-6">
-        <div className="relative flex">
+      <div className="overflow-x-auto border-b border-slate-100 pb-5 sm:mt-6 sm:pb-6">
+        <div className="relative flex min-w-[320px] sm:min-w-0">
           {STEPS.map((step) => {
             const isCompleted = currentStep > step.id;
             const isActive = currentStep === step.id;
 
             return (
-              <div key={step.id} className="relative z-10 flex flex-1 flex-col items-center">
+              <div key={step.id} className="relative z-10 mt-1 flex flex-1 flex-col items-center">
                 {step.id < STEPS.length && (
                   <span
                     aria-hidden="true"
@@ -396,7 +405,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
           }
         }}
         noValidate
-        className="mt-6"
+        className="mt-5 sm:mt-6"
       >
         {/* STEP 1: Business Information */}
         {currentStep === 1 && (
@@ -409,7 +418,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid min-w-0 gap-4 sm:grid-cols-2">
               <Controller
                 name="businessName"
                 control={control}
@@ -694,7 +703,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid min-w-0 gap-4 sm:grid-cols-2">
               <Controller
                 name="firstName"
                 control={control}
@@ -943,7 +952,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 }}
               />
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid min-w-0 gap-4 sm:grid-cols-2">
                 <Controller
                   name="inventoryManagement"
                   control={control}
@@ -1048,9 +1057,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             </div>
 
             <div className="space-y-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-4 text-xs">
-              <div className="flex justify-between border-b border-slate-200/60 pb-2">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span className="font-medium text-slate-500">Business:</span>
-                <span className="font-semibold text-slate-900">
+                <span className="min-w-0 font-semibold break-words text-slate-900 sm:text-right">
                   {getValues("businessName") || "N/A"} (
                   {getValues("businessType") === "Other" && getValues("otherBusinessType")
                     ? `Other: ${getValues("otherBusinessType")}`
@@ -1061,22 +1070,22 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     : ""}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-2">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span className="font-medium text-slate-500">Contact Person:</span>
-                <span className="font-semibold text-slate-900">
+                <span className="min-w-0 font-semibold break-words text-slate-900 sm:text-right">
                   {getValues("firstName")} {getValues("lastName")}
                   {getValues("jobTitle") ? ` • ${getValues("jobTitle")}` : ""}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-2">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span className="font-medium text-slate-500">Email / Phone:</span>
-                <span className="font-semibold text-slate-900">
+                <span className="min-w-0 font-semibold break-all text-slate-900 sm:text-right">
                   {getValues("businessEmail")} | {getValues("phoneNumber")}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-2">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span className="font-medium text-slate-500">Locations / Region:</span>
-                <span className="font-semibold text-slate-900">
+                <span className="min-w-0 font-semibold wrap-break-word text-slate-900 sm:text-right">
                   {getValues("locationsCount")} | {getValues("country")}
                   {getValues("stateProvinceRegion") ? `, ${getValues("stateProvinceRegion")}` : ""}
                   {getValues("businessCity") ? ` (${getValues("businessCity")})` : ""}
@@ -1102,9 +1111,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 </div>
               </div>
               {(getValues("inventoryManagement") || getValues("websiteOrSocial")) && (
-                <div className="flex justify-between border-b border-slate-200/60 pb-2">
+                <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                   <span className="font-medium text-slate-500">Operations / Web:</span>
-                  <span className="text-right font-semibold text-slate-900">
+                  <span className="text-left font-semibold break-all text-slate-900 sm:text-right">
                     {getValues("inventoryManagement") || "Standard"}
                     {getValues("websiteOrSocial") ? ` • ${getValues("websiteOrSocial")}` : ""}
                   </span>
@@ -1154,13 +1163,13 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
           </div>
         )}
 
-        <div className="flex items-center justify-between border-t border-slate-100 pt-5">
+        <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between sm:pt-5">
           {currentStep > 1 ? (
             <Button
               type="button"
               variant="outline"
               onClick={handlePrevStep}
-              className="h-11 rounded-xl border-slate-200 px-5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              className="h-11 w-full rounded-xl border-slate-200 px-5 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:w-auto"
             >
               <ArrowLeft className="mr-1.5 size-4" />
               Back
@@ -1177,7 +1186,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 e.preventDefault();
                 handleNextStep();
               }}
-              className="h-11 rounded-xl bg-emerald-700 px-6 text-xs font-bold text-white shadow-sm hover:bg-emerald-800"
+              className="h-11 w-full rounded-xl bg-emerald-700 px-6 text-xs font-bold text-white shadow-sm hover:bg-emerald-800 sm:w-auto"
             >
               Next Step
               <ArrowRight className="ml-1.5 size-4" />
@@ -1193,7 +1202,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 }
               }}
               isLoading={isPending}
-              className="h-12 rounded-xl bg-emerald-700 px-7 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-800"
+              className="h-12 w-full rounded-xl bg-emerald-700 px-5 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-800 sm:w-auto sm:px-7"
             >
               I’m Interested — Join Food Remit
             </Button>
@@ -1201,7 +1210,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         </div>
       </form>
 
-      <div className="mt-3 text-center text-xs font-medium text-slate-500">
+      <div className="mt-3 px-2 text-center text-xs font-medium text-slate-500">
         Already started your registration?{" "}
         <Link
           href={ROUTES.AUTH.LOGIN}
