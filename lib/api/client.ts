@@ -19,6 +19,26 @@ interface ApiErrorResponse {
   error?: string;
 }
 
+export function getApiBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3218/";
+  if (typeof window !== "undefined") {
+    try {
+      const url = new URL(envUrl);
+      if (
+        (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
+        window.location.hostname !== "localhost" &&
+        window.location.hostname !== "127.0.0.1"
+      ) {
+        url.hostname = window.location.hostname;
+        return url.toString();
+      }
+    } catch {
+      // fallback
+    }
+  }
+  return envUrl;
+}
+
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   timeout: 10000,
@@ -40,6 +60,9 @@ const processQueue = (error: unknown, token: string | null = null) => {
 };
 
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  if (typeof window !== "undefined") {
+    config.baseURL = getApiBaseUrl();
+  }
   const token = typeof window !== "undefined" ? Cookies.get(AUTH_TOKEN_COOKIE) : null;
   if (!config.headers) config.headers = {} as AxiosRequestHeaders;
 
@@ -50,11 +73,13 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
     if (config.method && config.method.toLowerCase() !== "get") {
       try {
-        const decoded: any = jwtDecode(token);
+        const decoded = jwtDecode<{ isReadOnly?: boolean }>(token);
         if (decoded?.isReadOnly) {
           return Promise.reject(new Error("ACTION_NOT_ALLOWED_READ_ONLY"));
         }
-      } catch (e) {}
+      } catch {
+        // Ignore decode error
+      }
     }
   }
   return config;
@@ -86,7 +111,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}${AUTH_ENDPOINTS.REFRESH_TOKEN}`,
+          `${getApiBaseUrl()}${AUTH_ENDPOINTS.REFRESH_TOKEN}`,
           {},
           {
             headers: {

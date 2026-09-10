@@ -3,8 +3,8 @@
 import { DataTable } from "@/components/common/data-table/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/config/routes";
-import { DASHBOARD_ROUTES } from "@/constants/dashboard";
 import { Clock, Inbox, LifeBuoy, ShoppingBag } from "lucide-react";
+import { formatDate } from "@/lib/date";
 import type { DashboardOrderRequested, DashboardTicketItem } from "../types/dashboard.types";
 import { requestedOrdersColumns } from "./columns/requested-orders-columns";
 import { DashboardActionButton } from "./common/dashboard-action-button";
@@ -101,7 +101,7 @@ export function DataTablesSection({
                     <Clock className="h-3 w-3" />
                     <span>
                       {ticket.addedOn
-                        ? new Date(ticket.addedOn).toLocaleDateString("en-US", {
+                        ? formatDate(ticket.addedOn, {
                             month: "short",
                             day: "numeric",
                             year: "numeric",

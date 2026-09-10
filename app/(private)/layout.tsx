@@ -6,6 +6,8 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ImpersonationBanner } from "@/components/common/impersonation-banner";
 import { FcmProvider } from "@/components/providers/fcm-provider";
 
+import { ErrorBoundary } from "@/components/common/error-boundary";
+
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   return (
     <ProfileProvider>
@@ -18,7 +20,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
             <ImpersonationBanner />
             <AppTopBar />
             <div className="relative z-10 flex flex-1 flex-col gap-5 p-4 md:p-6 lg:p-7">
-              {children}
+              <ErrorBoundary>{children}</ErrorBoundary>
             </div>
           </SidebarInset>
         </SidebarProvider>

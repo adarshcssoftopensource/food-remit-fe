@@ -10,10 +10,24 @@ export function useIsMobile() {
     const onChange = () => {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
-    mql.addEventListener("change", onChange);
+    const legacyMql = mql as MediaQueryList & {
+      addListener?: (cb: () => void) => void;
+      removeListener?: (cb: () => void) => void;
+    };
+    if (mql.addEventListener) {
+      mql.addEventListener("change", onChange);
+    } else if (legacyMql.addListener) {
+      legacyMql.addListener(onChange);
+    }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-    return () => mql.removeEventListener("change", onChange);
+    return () => {
+      if (mql.removeEventListener) {
+        mql.removeEventListener("change", onChange);
+      } else if (legacyMql.removeListener) {
+        legacyMql.removeListener(onChange);
+      }
+    };
   }, []);
 
   return !!isMobile;
