@@ -204,7 +204,10 @@ export function AppTopBar() {
             </Link>
             {hasCMSPermission && (
               <Link
-                href={inCmsMode ? ROUTES.ADMIN.DASHBOARD : ROUTES.ADMIN.CONTENT_MANAGEMENT.ROOT}
+                href={
+                  inCmsMode ? ROUTES.ADMIN.DASHBOARD : ROUTES.ADMIN.CONTENT_MANAGEMENT.LANDING_PAGE
+                }
+                prefetch={true}
                 className="w-full"
                 onClick={() => setIsPopoverOpen(false)}
               >

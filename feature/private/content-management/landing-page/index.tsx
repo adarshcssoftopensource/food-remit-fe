@@ -16,6 +16,8 @@ export function LandingPageCmsPage() {
   const [activeSection, setActiveSection] = useState<LandingSectionKey>("hero");
   const { content, updatedAt, isLoading, isError, isSaving, saveSection } = useLandingCms();
 
+  const isContentLoading = isLoading || (!content && !isError);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -23,9 +25,9 @@ export function LandingPageCmsPage() {
         description="Edit vendor landing sections. Navbar and Become a Vendor Partner stay system-controlled."
       />
 
-      {isLoading && <LandingPageSkeleton />}
+      {isContentLoading && <LandingPageSkeleton />}
 
-      {isError ? (
+      {isError && !content ? (
         <div className="rounded-2xl border border-red-200 bg-red-50/80 p-10 text-center text-sm font-medium text-red-600">
           Failed to load landing page content.
         </div>

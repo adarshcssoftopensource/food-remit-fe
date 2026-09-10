@@ -194,7 +194,7 @@ export function PhoneInputComponent({
               autoFocus
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search country..."
+              placeholder="Search country"
               className="h-10 rounded-xl border-slate-200 bg-slate-50/80 pl-9 text-sm"
             />
           </div>

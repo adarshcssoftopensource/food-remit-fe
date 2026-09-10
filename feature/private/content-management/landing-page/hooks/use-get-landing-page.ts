@@ -7,5 +7,9 @@ export function useGetLandingPage(admin = true) {
   return useApiQuery<LandingPageResponse>(
     admin ? API_CACHE_KEYS.LANDING_PAGE : API_CACHE_KEYS.LANDING_PAGE_PUBLIC,
     admin ? LANDING_PAGE_ENDPOINTS.ADMIN_GET : LANDING_PAGE_ENDPOINTS.PUBLIC_GET,
+    {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    },
   );
 }

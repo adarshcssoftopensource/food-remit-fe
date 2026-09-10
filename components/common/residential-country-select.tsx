@@ -132,7 +132,7 @@ export function ResidentialCountrySelect({
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search country or code…"
+            placeholder="Search country"
             className="h-9 border-slate-200 pl-9 text-sm"
           />
         </div>
