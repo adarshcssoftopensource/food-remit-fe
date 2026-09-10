@@ -18,7 +18,7 @@ export function useLandingCms() {
     if (section === "stats") return;
     const response = await updateMutation.mutateAsync({ section, data, files });
     successToast({
-      title: response?.message || `${section} section updated successfully`,
+      title: response?.message || `updated successfully`,
     });
   };
 
