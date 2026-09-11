@@ -55,14 +55,14 @@ export function BankVerificationCard({ lead }: BankVerificationCardProps) {
             <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
               <Landmark className="size-4.5" />
             </div>
-            Bank Account Verification (Plaid)
+            Bank Account Verification
           </CardTitle>
 
           <div className="flex items-center gap-2">
             {isVerified ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
                 <CheckCircle2 className="size-3.5 text-emerald-600" />
-                Verified with Plaid
+                Verified
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
@@ -99,10 +99,6 @@ export function BankVerificationCard({ lead }: BankVerificationCardProps) {
                 <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300/80 bg-white/90 px-3 py-1.5 text-xs font-bold text-emerald-900 shadow-2xs dark:border-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-300">
                   <Lock className="size-3.5 text-emerald-600" />
                   ACH & Direct Deposit Ready
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-100/60 px-2.5 py-1.5 text-xs font-semibold text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-400">
-                  <ShieldCheck className="size-3.5 text-emerald-600" />
-                  Plaid Link Authorized
                 </span>
               </div>
             </div>
@@ -148,28 +144,6 @@ export function BankVerificationCard({ lead }: BankVerificationCardProps) {
 
             {/* Technical Metadata & Verification Timestamp */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 text-xs dark:border-slate-800 dark:bg-slate-900/30">
-              <div className="flex items-center gap-2">
-                <CreditCard className="size-3.5 text-slate-400" />
-                <span className="text-slate-500">Plaid Item ID:</span>
-                {itemId ? (
-                  <button
-                    type="button"
-                    onClick={() => handleCopyItemId(itemId)}
-                    className="inline-flex items-center gap-1 rounded bg-slate-200/70 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-800 transition hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200"
-                    title="Click to copy Plaid Item ID"
-                  >
-                    <span>{itemId}</span>
-                    {copiedId ? (
-                      <Check className="size-3 text-emerald-600" />
-                    ) : (
-                      <Copy className="size-3 text-slate-400" />
-                    )}
-                  </button>
-                ) : (
-                  <span className="font-mono text-slate-400">N/A</span>
-                )}
-              </div>
-
               {verifiedDate && (
                 <div className="text-slate-500">
                   Verified on:{" "}

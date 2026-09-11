@@ -126,6 +126,7 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                           >
                             {docName}
                           </p>
+
                           <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-400">
                             <span className="font-medium text-slate-600 dark:text-slate-300">
                               {formatBytes(doc.size)}
@@ -136,30 +137,17 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                             </span>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => setActivePreview({ url: doc.url, name: docName, isPdf })}
-                          className="h-8 rounded-lg text-xs font-bold"
-                        >
-                          <Eye className="mr-1 size-3.5" />
-                          Preview
-                        </Button>
-
+                        {/* External Link at the end */}
                         <a
                           href={doc.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           download={docName}
-                          className="inline-flex h-8 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                          className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                           title="Open original link in S3"
                         >
-                          <span>Open</span>
-                          <ExternalLink className="size-3 text-slate-400" />
+                          <ExternalLink className="size-3.5" />
                         </a>
                       </div>
                     </div>
@@ -170,69 +158,6 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
           )}
         </CardContent>
       </Card>
-
-      {/* Interactive Modal Preview */}
-      {activePreview && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
-          onClick={() => setActivePreview(null)}
-        >
-          <div
-            className="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white p-5 shadow-2xl dark:bg-slate-900"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-              <div className="min-w-0 pr-4">
-                <h3 className="truncate text-sm font-bold text-slate-900 sm:text-base dark:text-white">
-                  {activePreview.name}
-                </h3>
-                <span className="text-[11px] text-slate-400">Secure S3 Storage Attachment</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActivePreview(null)}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-auto rounded-xl bg-slate-50 p-2 dark:bg-slate-950/50">
-              {activePreview.isPdf ? (
-                <iframe
-                  src={activePreview.url}
-                  title={activePreview.name}
-                  className="h-[65vh] w-full rounded-lg border border-slate-200 bg-white dark:border-slate-800"
-                />
-              ) : (
-                <div className="flex max-h-[65vh] items-center justify-center overflow-auto">
-                  <Image
-                    src={activePreview.url}
-                    alt={activePreview.name}
-                    height={700}
-                    width={900}
-                    className="h-auto max-w-full rounded-lg object-contain shadow-sm"
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="mt-3 flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
-              <a
-                href={activePreview.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white transition hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-emerald-700"
-              >
-                <Download className="size-3.5" />
-                Download Original S3 File
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
