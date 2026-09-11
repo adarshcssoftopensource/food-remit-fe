@@ -108,7 +108,6 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   const kycStatus = watch("kycStatus");
   const bankStatus = watch("bankStatus");
   const veriffSessionId = watch("veriffSessionId");
-  const plaidItemId = watch("plaidItemId");
 
   const isKycApproved = (kycStatus || "").toUpperCase() === "APPROVED";
   const isBankVerified = (bankStatus || "").toUpperCase() === "VERIFIED";
@@ -121,13 +120,36 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   const workPreferences = watch("workPreferences") || [];
   const hasOtherWorkPreference = workPreferences.includes("Other");
 
+  function hasMeaningfulData(vals?: Partial<PartnerLeadFormValues> | null): boolean {
+    if (!vals) return false;
+    return Boolean(
+      vals.businessName?.trim() ||
+      vals.businessType?.trim() ||
+      vals.country?.trim() ||
+      vals.firstName?.trim() ||
+      vals.lastName?.trim() ||
+      vals.businessEmail?.trim() ||
+      vals.phoneNumber?.trim() ||
+      vals.websiteOrSocial?.trim() ||
+      vals.additionalNotes?.trim() ||
+      vals.jobTitle?.trim() ||
+      vals.businessCity?.trim() ||
+      vals.stateProvinceRegion?.trim() ||
+      (vals.workPreferences && vals.workPreferences.length > 0) ||
+      vals.veriffSessionId?.trim() ||
+      vals.plaidItemId?.trim() ||
+      (vals.kycStatus && vals.kycStatus !== "NOT_STARTED") ||
+      (vals.bankStatus && vals.bankStatus !== "NOT_STARTED"),
+    );
+  }
+
   // Restore draft on mount
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem(DRAFT_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed?.values) {
+        if (parsed?.values && hasMeaningfulData(parsed.values)) {
           reset(parsed.values);
           if (parsed.step && parsed.step > 1 && parsed.step <= STEPS.length) {
             let targetStep = parsed.step;
@@ -142,6 +164,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             setCurrentStep(targetStep);
           }
           setDraftRestored(true);
+        } else {
+          sessionStorage.removeItem(DRAFT_KEY);
         }
       }
     } catch {
@@ -149,14 +173,11 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     }
   }, [reset]);
 
-  // Persist draft to sessionStorage on form value or step change
+  // Persist draft to sessionStorage on form value or step change only if user entered data
   const formValues = watch();
   useEffect(() => {
     try {
-      const hasData = Object.values(formValues).some((v) =>
-        Array.isArray(v) ? v.length > 0 : Boolean(v),
-      );
-      if (hasData && !isSubmitSuccessful) {
+      if (hasMeaningfulData(formValues) && !isSubmitSuccessful) {
         sessionStorage.setItem(
           DRAFT_KEY,
           JSON.stringify({
@@ -373,8 +394,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         </p>
       </div>
 
-      {draftRestored && (
-        <div className="mt-4 flex flex-col items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-xs text-emerald-900 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:py-2">
+      {draftRestored && hasMeaningfulData(formValues) && (
+        <div className="mt-4 mb-2 flex flex-col items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-xs text-emerald-900 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:py-2">
           <div className="flex items-center gap-2">
             <Check className="size-4 shrink-0 text-emerald-600" />
             <span>Restored your saved progress from your previous session.</span>
