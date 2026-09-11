@@ -96,6 +96,20 @@ export const partnerLeadSchema = z
     bankInstitutionName: z.string().optional(),
     bankAccountName: z.string().optional(),
     bankAccountMask: z.string().optional(),
+
+    additionalDocuments: z
+      .array(
+        z.object({
+          rawFile: z.any().optional(),
+          file: z.string().optional(),
+          url: z.string().optional(),
+          name: z.string().min(1, "File name is required"),
+          size: z.number().max(5 * 1024 * 1024, "File size cannot exceed 5MB"),
+          mimeType: z.string(),
+        }),
+      )
+      .min(1, "Please upload at least 1 supporting document")
+      .max(5, "Maximum 5 supporting documents allowed"),
   })
   .superRefine((data, ctx) => {
     if (data.businessType === "Other") {

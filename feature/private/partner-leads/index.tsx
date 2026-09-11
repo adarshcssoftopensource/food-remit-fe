@@ -46,16 +46,16 @@ export function PartnerLeadsManagement() {
       if (
         applied.country !== "all" &&
         applied.country !== "All" &&
-        (lead as any).countryId &&
-        (lead as any).countryId !== applied.country
+        lead.countryId &&
+        lead.countryId !== applied.country
       ) {
         return false;
       }
       if (
         applied.city !== "all" &&
         applied.city !== "All" &&
-        (lead as any).cityId &&
-        (lead as any).cityId !== applied.city
+        lead.cityId &&
+        lead.cityId !== applied.city
       ) {
         return false;
       }

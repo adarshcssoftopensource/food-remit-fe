@@ -23,6 +23,7 @@ import { LocationDetailsCard } from "./components/cards/location-details-card";
 import { OperationalPreferencesCard } from "./components/cards/operational-preferences-card";
 import { KycVerificationCard } from "./components/cards/kyc-verification-card";
 import { BankVerificationCard } from "./components/cards/bank-verification-card";
+import { AdditionalDocumentsCard } from "./components/cards/additional-documents-card";
 import { PartnerLeadDetailSkeleton } from "./components/partner-lead-detail-skeleton";
 import { UpdateStatusDialog } from "./components/update-status-dialog";
 import { usePartnerLead } from "./hooks/use-get-partner-lead";
@@ -117,6 +118,7 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <KycVerificationCard lead={lead} />
         <BankVerificationCard lead={lead} />
+        <AdditionalDocumentsCard lead={lead} />
         <BusinessOverviewCard lead={lead} />
         <ContactInformationCard lead={lead} />
         <LocationDetailsCard lead={lead} />

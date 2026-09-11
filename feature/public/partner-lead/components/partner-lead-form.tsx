@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeft,
   ArrowRight,
+  AlertCircle,
   Building2,
   Check,
   CheckCircle2,
@@ -48,6 +49,24 @@ import { useCreatePartnerLead } from "../hooks/create-partner";
 import { PartnerLeadFormValues, partnerLeadSchema } from "../schema/partner-lead.schema";
 import { VeriffKycStep } from "./veriff-kyc-step";
 import { PlaidBankStep } from "./plaid-bank-step";
+import { AdditionalDocumentsSection } from "./additional-documents-section";
+
+function dataUrlToFile(dataUrl: string, fileName: string, mimeType?: string): File | null {
+  try {
+    const parts = dataUrl.split(",");
+    if (parts.length < 2) return null;
+    const mime = mimeType || parts[0].match(/:(.*?);/)?.[1] || "application/octet-stream";
+    const bstr = atob(parts[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], fileName, { type: mime });
+  } catch {
+    return null;
+  }
+}
 
 interface PartnerLeadFormProps {
   onSuccess: (referenceNumber: string) => void;
@@ -101,6 +120,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       bankInstitutionName: "",
       bankAccountName: "",
       bankAccountMask: "",
+      additionalDocuments: [],
     },
     mode: "onChange",
   });
@@ -109,7 +129,15 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   const bankStatus = watch("bankStatus");
   const veriffSessionId = watch("veriffSessionId");
 
-  const isKycApproved = (kycStatus || "").toUpperCase() === "APPROVED";
+  const normalizedKycStatus = (kycStatus || "").toUpperCase();
+  const isKycApproved = normalizedKycStatus === "APPROVED";
+  const isKycDeclined = [
+    "DECLINED",
+    "FAILED",
+    "RESUBMISSION_REQUESTED",
+    "EXPIRED",
+    "ABANDONED",
+  ].includes(normalizedKycStatus);
   const isBankVerified = (bankStatus || "").toUpperCase() === "VERIFIED";
 
   const locationsCount = watch("locationsCount");
@@ -139,7 +167,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       vals.veriffSessionId?.trim() ||
       vals.plaidItemId?.trim() ||
       (vals.kycStatus && vals.kycStatus !== "NOT_STARTED") ||
-      (vals.bankStatus && vals.bankStatus !== "NOT_STARTED"),
+      (vals.bankStatus && vals.bankStatus !== "NOT_STARTED") ||
+      (vals.additionalDocuments && vals.additionalDocuments.length > 0),
     );
   }
 
@@ -235,6 +264,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       bankInstitutionName: "",
       bankAccountName: "",
       bankAccountMask: "",
+      additionalDocuments: [],
     });
     setCurrentStep(1);
     setDraftRestored(false);
@@ -309,6 +339,15 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         });
         return;
       }
+      const docs = getValues("additionalDocuments") || [];
+      if (docs.length < 1) {
+        errorToast({
+          title: "Supporting Document Required",
+          description:
+            "Please upload at least 1 supporting business document (e.g. business license, voided check, tax document) to proceed.",
+        });
+        return;
+      }
     }
 
     const isValid = await trigger(fieldsToValidate);
@@ -340,17 +379,67 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
           : pref,
       );
 
-      const payload = {
-        ...data,
-        workPreferences: mappedWorkPreferences,
-        stateProvince: data.stateProvinceRegion?.trim() || undefined,
-        website: data.websiteOrSocial?.trim() || undefined,
-        additionalInfo: data.additionalNotes?.trim() || undefined,
-        otherBusinessType: data.otherBusinessType?.trim() || undefined,
-        veriffSessionId: data.veriffSessionId?.trim() || undefined,
-        kycStatus: data.kycStatus?.trim() || undefined,
-      };
-      const res = await mutateAsync(payload);
+      const formData = new FormData();
+      formData.append("businessName", data.businessName || "");
+      formData.append("businessType", data.businessType || "");
+      if (data.otherBusinessType?.trim()) {
+        formData.append("otherBusinessType", data.otherBusinessType.trim());
+      }
+      formData.append("locationsCount", data.locationsCount || "1 Location");
+      formData.append("country", data.country || "");
+      if (data.businessCity?.trim()) formData.append("businessCity", data.businessCity.trim());
+      if (data.stateProvinceRegion?.trim()) {
+        formData.append("stateProvince", data.stateProvinceRegion.trim());
+        formData.append("stateProvinceRegion", data.stateProvinceRegion.trim());
+      }
+      formData.append("firstName", data.firstName || "");
+      formData.append("lastName", data.lastName || "");
+      if (data.jobTitle?.trim()) formData.append("jobTitle", data.jobTitle.trim());
+      formData.append("businessEmail", data.businessEmail || "");
+      formData.append("phoneNumber", data.phoneNumber || "");
+      if (data.inventoryManagement?.trim()) {
+        formData.append("inventoryManagement", data.inventoryManagement.trim());
+      }
+      if (data.websiteOrSocial?.trim()) {
+        formData.append("website", data.websiteOrSocial.trim());
+        formData.append("websiteOrSocial", data.websiteOrSocial.trim());
+      }
+      if (data.additionalNotes?.trim()) {
+        formData.append("additionalInfo", data.additionalNotes.trim());
+        formData.append("additionalNotes", data.additionalNotes.trim());
+      }
+      formData.append("agreeToContact", String(data.agreeToContact ?? true));
+      if (data.veriffSessionId?.trim())
+        formData.append("veriffSessionId", data.veriffSessionId.trim());
+      if (data.kycStatus?.trim()) formData.append("kycStatus", data.kycStatus.trim());
+      if (data.plaidItemId?.trim()) formData.append("plaidItemId", data.plaidItemId.trim());
+      if (data.plaidAccountId?.trim())
+        formData.append("plaidAccountId", data.plaidAccountId.trim());
+      if (data.bankStatus?.trim()) formData.append("bankStatus", data.bankStatus.trim());
+      if (data.bankInstitutionName?.trim())
+        formData.append("bankInstitutionName", data.bankInstitutionName.trim());
+      if (data.bankAccountName?.trim())
+        formData.append("bankAccountName", data.bankAccountName.trim());
+      if (data.bankAccountMask?.trim())
+        formData.append("bankAccountMask", data.bankAccountMask.trim());
+
+      formData.append("workPreferences", JSON.stringify(mappedWorkPreferences));
+
+      // Append all attached documents as binary files in FormData (no Base64 strings sent)
+      (data.additionalDocuments || []).forEach((doc) => {
+        let binaryFile: File | null = null;
+        if (doc.rawFile instanceof File) {
+          binaryFile = doc.rawFile;
+        } else if (doc.file && typeof doc.file === "string" && doc.file.startsWith("data:")) {
+          binaryFile = dataUrlToFile(doc.file, doc.name, doc.mimeType);
+        }
+
+        if (binaryFile) {
+          formData.append("additionalDocuments", binaryFile, doc.name || binaryFile.name);
+        }
+      });
+
+      const res = await mutateAsync(formData);
       try {
         sessionStorage.removeItem(DRAFT_KEY);
       } catch {}
@@ -1147,31 +1236,50 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         )}
 
         {currentStep === 5 && (
-          <PlaidBankStep
-            applicant={{
-              firstName: getValues("firstName"),
-              lastName: getValues("lastName"),
-              email: getValues("businessEmail"),
-              phoneNumber: getValues("phoneNumber"),
-              country: getValues("country"),
-            }}
-            initialItemId={watch("plaidItemId")}
-            currentBankStatus={watch("bankStatus")}
-            institutionName={watch("bankInstitutionName")}
-            accountName={watch("bankAccountName")}
-            accountMask={watch("bankAccountMask")}
-            onBankUpdated={(info) => {
-              setValue("plaidItemId", info.plaidItemId, { shouldDirty: true });
-              setValue("plaidAccountId", info.plaidAccountId, { shouldDirty: true });
-              setValue("bankStatus", info.bankStatus, { shouldDirty: true });
-              setValue("bankInstitutionName", info.bankInstitutionName, { shouldDirty: true });
-              setValue("bankAccountName", info.bankAccountName, { shouldDirty: true });
-              setValue("bankAccountMask", info.bankAccountMask, { shouldDirty: true });
-            }}
-            onContinue={() => {
-              setCurrentStep(6);
-            }}
-          />
+          <div className="space-y-6">
+            <PlaidBankStep
+              applicant={{
+                firstName: getValues("firstName"),
+                lastName: getValues("lastName"),
+                email: getValues("businessEmail"),
+                phoneNumber: getValues("phoneNumber"),
+                country: getValues("country"),
+              }}
+              initialItemId={watch("plaidItemId")}
+              currentBankStatus={watch("bankStatus")}
+              institutionName={watch("bankInstitutionName")}
+              accountName={watch("bankAccountName")}
+              accountMask={watch("bankAccountMask")}
+              onBankUpdated={(info) => {
+                setValue("plaidItemId", info.plaidItemId, { shouldDirty: true });
+                setValue("plaidAccountId", info.plaidAccountId, { shouldDirty: true });
+                setValue("bankStatus", info.bankStatus, { shouldDirty: true });
+                setValue("bankInstitutionName", info.bankInstitutionName, { shouldDirty: true });
+                setValue("bankAccountName", info.bankAccountName, { shouldDirty: true });
+                setValue("bankAccountMask", info.bankAccountMask, { shouldDirty: true });
+              }}
+              onContinue={() => {
+                const docs = getValues("additionalDocuments") || [];
+                if (docs.length < 1) {
+                  errorToast({
+                    title: "Supporting Document Required",
+                    description:
+                      "Please upload at least 1 supporting business document before proceeding to review.",
+                  });
+                  return;
+                }
+                setCurrentStep(6);
+              }}
+            />
+
+            <AdditionalDocumentsSection
+              documents={watch("additionalDocuments") || []}
+              onChange={(docs) => {
+                setValue("additionalDocuments", docs, { shouldValidate: true, shouldDirty: true });
+              }}
+              error={errors.additionalDocuments?.message}
+            />
+          </div>
         )}
 
         {currentStep === 6 && (
@@ -1199,44 +1307,33 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 </span>
               </div>
               <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <span className="font-medium text-slate-500">Contact Person:</span>
-                <span className="min-w-0 font-semibold break-words text-slate-900 sm:text-right">
-                  {getValues("firstName")} {getValues("lastName")}
-                  {getValues("jobTitle") ? ` • ${getValues("jobTitle")}` : ""}
-                </span>
-              </div>
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <span className="font-medium text-slate-500">Email / Phone:</span>
-                <span className="min-w-0 font-semibold break-all text-slate-900 sm:text-right">
-                  {getValues("businessEmail")} | {getValues("phoneNumber")}
-                </span>
-              </div>
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <span className="font-medium text-slate-500">Locations / Region:</span>
-                <span className="min-w-0 font-semibold wrap-break-word text-slate-900 sm:text-right">
-                  {getValues("locationsCount")} | {getValues("country")}
-                  {getValues("stateProvinceRegion") ? `, ${getValues("stateProvinceRegion")}` : ""}
+                <span className="font-medium text-slate-500">Locations &amp; Country:</span>
+                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                  {getValues("locationsCount") || "N/A"} • {getValues("country") || "N/A"}
                   {getValues("businessCity") ? ` (${getValues("businessCity")})` : ""}
                 </span>
               </div>
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2">
-                <span className="font-medium text-slate-500">Work Preferences:</span>
-                <div className="flex flex-wrap gap-1.5 pt-0.5">
-                  {(getValues("workPreferences") || []).length > 0 ? (
-                    (getValues("workPreferences") || []).map((pref) => (
-                      <span
-                        key={pref}
-                        className="inline-flex items-center rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-800"
-                      >
-                        {pref === "Other" && getValues("otherWorkPreference")
-                          ? `Other: ${getValues("otherWorkPreference")}`
-                          : pref}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-slate-400 italic">None selected</span>
-                  )}
-                </div>
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <span className="font-medium text-slate-500">Primary Contact:</span>
+                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                  {getValues("firstName")} {getValues("lastName")} (
+                  {getValues("jobTitle") || "Owner / Representative"})
+                </span>
+              </div>
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <span className="font-medium text-slate-500">Contact Details:</span>
+                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                  {getValues("businessEmail")} • {getValues("phoneNumber")}
+                </span>
+              </div>
+              {/* Work Preferences Review Line */}
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <span className="font-medium text-slate-500">Partnership Interests:</span>
+                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                  {(getValues("workPreferences") || []).length > 0
+                    ? (getValues("workPreferences") || []).join(", ")
+                    : "None specified"}
+                </span>
               </div>
               {(getValues("inventoryManagement") || getValues("websiteOrSocial")) && (
                 <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -1257,7 +1354,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               )}
 
               {/* KYC Review Line */}
-              <div className="flex flex-col gap-1 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span className="font-medium text-slate-500">Identity Verification (KYC):</span>
                 <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
                   {(watch("kycStatus") || "").toUpperCase() === "APPROVED" ? (
@@ -1277,7 +1374,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
 
               {/* Bank Verification Review Line */}
-              <div className="flex flex-col gap-1 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span className="font-medium text-slate-500">Bank Account (Plaid):</span>
                 <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
                   {(watch("bankStatus") || "").toUpperCase() === "VERIFIED" ? (
@@ -1288,6 +1385,21 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     </span>
                   ) : (
                     <span className="text-slate-400 italic">Not Verified</span>
+                  )}
+                </span>
+              </div>
+
+              {/* Supporting Documents Review Line */}
+              <div className="flex flex-col gap-1 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <span className="font-medium text-slate-500">Supporting Documents:</span>
+                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                  {(watch("additionalDocuments") || []).length > 0 ? (
+                    <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700">
+                      <CheckCircle2 className="size-4 text-emerald-600" />
+                      {(watch("additionalDocuments") || []).length} Document(s) Attached
+                    </span>
+                  ) : (
+                    <span className="font-semibold text-rose-500">1 Document Required</span>
                   )}
                 </span>
               </div>
@@ -1347,7 +1459,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               key="btn-step-next"
               type="button"
               disabled={
-                (currentStep === 4 && !isKycApproved) || (currentStep === 5 && !isBankVerified)
+                (currentStep === 4 && !isKycApproved) ||
+                (currentStep === 5 &&
+                  (!isBankVerified || (watch("additionalDocuments") || []).length < 1))
               }
               onClick={(e) => {
                 e.preventDefault();
@@ -1355,20 +1469,39 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               }}
               className={cn(
                 "h-11 w-full rounded-xl px-6 text-xs font-bold shadow-sm transition-all sm:w-auto",
-                (currentStep === 4 && !isKycApproved) || (currentStep === 5 && !isBankVerified)
+                (currentStep === 4 && !isKycApproved) ||
+                  (currentStep === 5 &&
+                    (!isBankVerified || (watch("additionalDocuments") || []).length < 1))
                   ? "cursor-not-allowed bg-slate-200 text-slate-400 opacity-60 hover:bg-slate-200"
                   : "bg-emerald-700 text-white hover:bg-emerald-800",
               )}
             >
               {currentStep === 4 && !isKycApproved ? (
-                <>
-                  <RefreshCw className="mr-1.5 size-3.5 animate-spin text-amber-600" />
-                  {veriffSessionId ? "Awaiting Veriff Approval..." : "Verify Identity to Continue"}
-                </>
+                isKycDeclined ? (
+                  <>
+                    <AlertCircle className="mr-1.5 size-3.5 text-rose-500" />
+                    Verification Declined — Retry Required
+                  </>
+                ) : veriffSessionId ? (
+                  <>
+                    <RefreshCw className="mr-1.5 size-3.5 animate-spin text-amber-600" />
+                    Awaiting Veriff Approval...
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="mr-1.5 size-3.5 text-slate-400" />
+                    Verify Identity to Continue
+                  </>
+                )
               ) : currentStep === 5 && !isBankVerified ? (
                 <>
                   <Lock className="mr-1.5 size-3.5 text-slate-400" />
                   Verify Bank Account to Continue
+                </>
+              ) : currentStep === 5 && (watch("additionalDocuments") || []).length < 1 ? (
+                <>
+                  <Lock className="mr-1.5 size-3.5 text-slate-400" />
+                  Upload Document to Continue
                 </>
               ) : (
                 <>

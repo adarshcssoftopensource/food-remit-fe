@@ -144,10 +144,17 @@ export function VeriffKycStep({
     }
   }
 
-  const isVerified = (kycStatus || "").toUpperCase() === "APPROVED";
-  const isDeclined = (kycStatus || "").toUpperCase() === "DECLINED";
+  const normalizedStatus = (kycStatus || "").toUpperCase();
+  const isVerified = normalizedStatus === "APPROVED";
+  const isDeclined = [
+    "DECLINED",
+    "FAILED",
+    "RESUBMISSION_REQUESTED",
+    "EXPIRED",
+    "ABANDONED",
+  ].includes(normalizedStatus);
   const isAwaitingApproval =
-    !isVerified && !isDeclined && Boolean(sessionId) && kycStatus !== "NOT_STARTED";
+    !isVerified && !isDeclined && Boolean(sessionId) && normalizedStatus !== "NOT_STARTED";
 
   return (
     <div className="flex flex-col gap-5">
@@ -168,26 +175,33 @@ export function VeriffKycStep({
       </div>
 
       {isVerified && <KycVerifiedBanner />}
-      {isDeclined && <KycDeclinedBanner />}
+      {isDeclined && (
+        <KycDeclinedBanner
+          onRetry={handleStartVerification}
+          isRetrying={createKycSessionMutation.isPending}
+          verificationUrl={verificationUrl}
+        />
+      )}
 
-      {/* Awaiting Approval / In-Review Card */}
+      {/* Awaiting Approval / In-Review Card (Only if not verified and not declined) */}
       {isAwaitingApproval && (
         <KycAwaitingApprovalCard
           applicantName={`${applicant.firstName || "Applicant"} ${applicant.lastName || ""}`}
         />
       )}
 
-      {/* Primary Verification Action Card (Only if not verified, not declined, and not already waiting) */}
-      {!isVerified && !isDeclined && !isAwaitingApproval && (
+      {/* Primary Verification Action Card (Show if not verified and not already waiting) */}
+      {!isVerified && !isAwaitingApproval && (
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <span className="text-[11px] font-bold tracking-wider text-emerald-700 uppercase">
                   Official Veriff Integration
                 </span>
                 <h3 className="text-sm font-bold text-slate-900 sm:text-base">
-                  Verify {applicant.firstName} {applicant.lastName}
+                  {isDeclined ? "Retry Verification: " : "Verify "}
+                  {applicant.firstName} {applicant.lastName}
                 </h3>
               </div>
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
@@ -197,10 +211,9 @@ export function VeriffKycStep({
             </div>
 
             <p className="text-xs leading-relaxed text-slate-600">
-              When you click the button below, Veriff will open its official document upload
-              interface. You will be prompted to choose your government ID (Passport, Driver&apos;s
-              License, or Identity Card), capture the front &amp; back using your camera, and take a
-              quick selfie.
+              {isDeclined
+                ? "Please ensure you have a clear, valid government ID ready (Passport, Driver's License, or Identity Card) with no glare or blur. Veriff will re-open the official camera interface."
+                : "When you click the button below, Veriff will open its official document upload interface. You will be prompted to choose your government ID (Passport, Driver's License, or Identity Card), capture the front & back using your camera, and take a quick selfie."}
             </p>
 
             <KycFeatureBadges />
@@ -211,22 +224,25 @@ export function VeriffKycStep({
                 type="button"
                 onClick={handleStartVerification}
                 isLoading={createKycSessionMutation.isPending}
-                className="h-12 rounded-xl border-emerald-300 bg-emerald-50/50 px-5 text-xs font-bold text-white"
+                className="h-12 w-full rounded-xl bg-emerald-700 px-6 text-xs font-bold text-white shadow-md transition-all hover:bg-emerald-800 sm:w-auto"
               >
                 <ShieldCheck className="mr-2 size-4.5" />
-                Start Identity Verification with Veriff
+                {isDeclined
+                  ? "Re-upload & Start Verification Again"
+                  : "Start Identity Verification with Veriff"}
               </Button>
 
-              {verificationUrl && (
+              {/* {verificationUrl && (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => window.open(verificationUrl, "_blank")}
-                  className="h-12 rounded-xl border-emerald-300 bg-emerald-50/50 px-5 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
+                  className="h-12 w-full rounded-xl border-slate-200 px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:w-auto"
                 >
-                  <ExternalLink className="size-4 text-emerald-700" />
+                  <ExternalLink className="mr-1.5 size-4" />
+                  Direct Veriff Link
                 </Button>
-              )}
+              )} */}
             </div>
           </div>
         </div>

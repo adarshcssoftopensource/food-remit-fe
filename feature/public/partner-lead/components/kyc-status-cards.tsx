@@ -1,6 +1,14 @@
 "use client";
 
-import { CheckCircle2, AlertCircle, Camera, FileText, Clock, RefreshCw } from "lucide-react";
+import {
+  CheckCircle2,
+  AlertCircle,
+  Camera,
+  FileText,
+  Clock,
+  RefreshCw,
+  ExternalLink,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,17 +33,31 @@ export function KycVerifiedBanner() {
   );
 }
 
-export function KycDeclinedBanner() {
+interface KycDeclinedBannerProps {
+  onRetry?: () => void;
+  isRetrying?: boolean;
+  verificationUrl?: string | null;
+}
+
+export function KycDeclinedBanner({
+  onRetry,
+  isRetrying,
+  verificationUrl,
+}: KycDeclinedBannerProps) {
   return (
-    <div className="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 shadow-sm">
-      <div className="flex items-start gap-3">
-        <AlertCircle className="size-5 shrink-0 text-rose-600" />
-        <div className="space-y-1">
-          <h3 className="text-sm font-bold text-rose-900">Verification Declined</h3>
-          <p className="text-xs leading-relaxed text-rose-800">
-            Veriff could not verify the document. Please ensure your photo ID is clear, unblurred,
-            and valid, then try again.
-          </p>
+    <div className="rounded-2xl border border-rose-200/90 bg-rose-50/90 p-4 shadow-sm sm:p-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600">
+            <AlertCircle className="size-5" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-rose-900">Verification Declined</h3>
+            <p className="text-xs leading-relaxed text-rose-800">
+              Veriff could not verify the document. Please ensure your photo ID is clear, unblurred,
+              and valid, then try again.
+            </p>
+          </div>
         </div>
       </div>
     </div>
