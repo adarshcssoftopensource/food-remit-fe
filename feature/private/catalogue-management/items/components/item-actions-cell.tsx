@@ -79,24 +79,36 @@ export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) 
 }
 
 export function ItemAvailabilityCell({ item }: { item: ItemData }) {
-  const { mutate: updateStatus } = useUpdateItemStatus(item.id);
-  const isActive = item.status === "ACTIVE";
+  const [pendingActive, setPendingActive] = useState<boolean | null>(null);
+  const { mutate: updateStatus, isPending } = useUpdateItemStatus(item.id);
+
+  const isActive = pendingActive !== null ? pendingActive : item.status === "ACTIVE";
+
+  const handleToggle = (checked: boolean) => {
+    setPendingActive(checked);
+    updateStatus(
+      {
+        status: checked ? "ACTIVE" : "INACTIVE",
+        type: "STATUS",
+      },
+      {
+        onSuccess: () => {
+          setPendingActive(null);
+          successToast({ description: "Item status updated successfully" });
+        },
+        onError: () => {
+          setPendingActive(null);
+          errorToast({ description: "Failed to update item status" });
+        },
+      },
+    );
+  };
 
   return (
     <Switch
       checked={isActive}
-      onCheckedChange={(checked) =>
-        updateStatus(
-          {
-            status: checked ? "ACTIVE" : "INACTIVE",
-            type: "STATUS",
-          },
-          {
-            onSuccess: () => successToast({ description: "Item status updated successfully" }),
-            onError: () => errorToast({ description: "Failed to update item status" }),
-          },
-        )
-      }
+      onCheckedChange={handleToggle}
+      disabled={isPending}
       className="data-[state=checked]:bg-green-500"
       title={isActive ? "Active" : "Inactive"}
     />
@@ -104,21 +116,33 @@ export function ItemAvailabilityCell({ item }: { item: ItemData }) {
 }
 
 export function ItemAdminShareCell({ item }: { item: ItemData }) {
-  const { mutate: updateStatus } = useUpdateItemStatus(item.id);
-  const isActive = item.adminShare;
+  const [pendingActive, setPendingActive] = useState<boolean | null>(null);
+  const { mutate: updateStatus, isPending } = useUpdateItemStatus(item.id);
+
+  const isActive = pendingActive !== null ? pendingActive : !!item.adminShare;
+
+  const handleToggle = (checked: boolean) => {
+    setPendingActive(checked);
+    updateStatus(
+      { type: "ADMIN_SHARE", adminShare: checked },
+      {
+        onSuccess: () => {
+          setPendingActive(null);
+          successToast({ description: "Markup value updated successfully" });
+        },
+        onError: () => {
+          setPendingActive(null);
+          errorToast({ description: "Failed to update markup value" });
+        },
+      },
+    );
+  };
 
   return (
     <Switch
       checked={isActive}
-      onCheckedChange={(checked) =>
-        updateStatus(
-          { type: "ADMIN_SHARE", adminShare: checked },
-          {
-            onSuccess: () => successToast({ description: "Markup value updated successfully" }),
-            onError: () => errorToast({ description: "Failed to update markup value" }),
-          },
-        )
-      }
+      onCheckedChange={handleToggle}
+      disabled={isPending}
       className="data-[state=checked]:bg-green-500"
       title={isActive ? "Active" : "Inactive"}
     />
@@ -126,21 +150,33 @@ export function ItemAdminShareCell({ item }: { item: ItemData }) {
 }
 
 export function ItemDiscountAvailabilityCell({ item }: { item: ItemData }) {
-  const { mutate: updateStatus } = useUpdateItemStatus(item.id);
-  const isActive = item.discountAvailability;
+  const [pendingActive, setPendingActive] = useState<boolean | null>(null);
+  const { mutate: updateStatus, isPending } = useUpdateItemStatus(item.id);
+
+  const isActive = pendingActive !== null ? pendingActive : !!item.discountAvailability;
+
+  const handleToggle = (checked: boolean) => {
+    setPendingActive(checked);
+    updateStatus(
+      { type: "DISCOUNT_AVAILABILITY", discountAvailability: checked },
+      {
+        onSuccess: () => {
+          setPendingActive(null);
+          successToast({ description: "Discount availability updated successfully" });
+        },
+        onError: () => {
+          setPendingActive(null);
+          errorToast({ description: "Failed to update discount availability" });
+        },
+      },
+    );
+  };
 
   return (
     <Switch
       checked={isActive}
-      onCheckedChange={(checked) =>
-        updateStatus(
-          { type: "DISCOUNT_AVAILABILITY", discountAvailability: checked },
-          {
-            onSuccess: () =>
-              successToast({ description: "Discount availability updated successfully" }),
-          },
-        )
-      }
+      onCheckedChange={handleToggle}
+      disabled={isPending}
       className="data-[state=checked]:bg-green-500"
       title={isActive ? "Active" : "Inactive"}
     />

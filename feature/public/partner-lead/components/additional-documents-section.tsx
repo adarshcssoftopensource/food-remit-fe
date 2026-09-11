@@ -51,52 +51,57 @@ export function AdditionalDocumentsSection({
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const processFiles = (newFiles: File[]) => {
-    const currentDocs = [...documents];
-    let addedCount = 0;
+    setIsProcessing(true);
+    try {
+      const currentDocs = [...documents];
+      let addedCount = 0;
 
-    for (const file of newFiles) {
-      if (currentDocs.length >= MAX_DOCS) {
-        errorToast({
-          title: "Maximum Files Reached",
-          description: `You can upload a maximum of ${MAX_DOCS} supporting documents.`,
+      for (const file of newFiles) {
+        if (currentDocs.length >= MAX_DOCS) {
+          errorToast({
+            title: "Maximum Files Reached",
+            description: `You can upload a maximum of ${MAX_DOCS} supporting documents.`,
+          });
+          break;
+        }
+        if (!ACCEPTED_TYPES.includes(file.type)) {
+          errorToast({
+            title: "Unsupported File Format",
+            description: `"${file.name}" is not supported (PDF, PNG, JPG, WEBP only).`,
+          });
+          continue;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+          errorToast({
+            title: "File Exceeds Limit",
+            description: `File "${file.name}" is larger than 5MB.`,
+          });
+          continue;
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+        currentDocs.push({
+          rawFile: file,
+          url: previewUrl,
+          name: file.name,
+          size: file.size,
+          mimeType: file.type,
         });
-        break;
-      }
-      if (!ACCEPTED_TYPES.includes(file.type)) {
-        errorToast({
-          title: "Unsupported File Format",
-          description: `"${file.name}" is not supported (PDF, PNG, JPG, WEBP only).`,
-        });
-        continue;
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        errorToast({
-          title: "File Exceeds Limit",
-          description: `File "${file.name}" is larger than 5MB.`,
-        });
-        continue;
+        addedCount++;
       }
 
-      const previewUrl = URL.createObjectURL(file);
-      currentDocs.push({
-        rawFile: file,
-        url: previewUrl,
-        name: file.name,
-        size: file.size,
-        mimeType: file.type,
-      });
-      addedCount++;
+      if (addedCount > 0) {
+        onChange(currentDocs);
+        successToast({
+          title: "Document Attached",
+          description: `${addedCount} document(s) ready to submit.`,
+        });
+      }
+
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } finally {
+      setIsProcessing(false);
     }
-
-    if (addedCount > 0) {
-      onChange(currentDocs);
-      successToast({
-        title: "Document Attached",
-        description: `${addedCount} document(s) ready to submit.`,
-      });
-    }
-
-    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,6 +120,9 @@ export function AdditionalDocumentsSection({
       try {
         URL.revokeObjectURL(doc.url);
       } catch {}
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
     onChange(documents.filter((_, i) => i !== indexToRemove));
   };
@@ -174,6 +182,7 @@ export function AdditionalDocumentsSection({
             ref={fileInputRef}
             type="file"
             accept=".pdf,image/png,image/jpeg,image/jpg,image/webp"
+            multiple
             className="hidden"
             onChange={handleFilesSelected}
             disabled={isProcessing || isAtLimit}

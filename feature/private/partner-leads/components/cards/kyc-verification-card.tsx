@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ShieldCheck,
@@ -8,20 +8,25 @@ import {
   Clock,
   AlertCircle,
   ExternalLink,
-  Eye,
   FileText,
-  User,
-  X,
   Copy,
   Check,
+  User,
 } from "lucide-react";
 import { format } from "date-fns";
 import { PartnerLeadData } from "../../types/partner-lead.types";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
+function getDocTitle(m: { name?: string; type: string }, i: number) {
+  const k = (m.name || m.type || "").toLowerCase();
+  if (k.includes("face") || k.includes("portrait") || k.includes("selfie"))
+    return "Selfie / Face Photo";
+  if (k.includes("front")) return "ID Document (Front)";
+  if (k.includes("back")) return "ID Document (Back)";
+  return m.name || `Document #${i + 1}`;
+}
+
 export function KycVerificationCard({ lead }: { lead: PartnerLeadData }) {
-  const [activeImage, setActiveImage] = useState<{ title: string; url: string } | null>(null);
   const [copiedSession, setCopiedSession] = useState(false);
 
   const kyc = lead.kycVerifications?.[0] || lead.kycData;
@@ -30,7 +35,20 @@ export function KycVerificationCard({ lead }: { lead: PartnerLeadData }) {
 
   const person = kyc?.person;
   const document = kyc?.document;
-  const mediaUrls: Array<{ type: string; name?: string; s3Url: string }> = kyc?.mediaUrls || [];
+
+  const mediaUrls = useMemo(() => {
+    const raw = kyc?.mediaUrls;
+    if (!Array.isArray(raw)) return [];
+    return raw.filter((item) => {
+      const id = (item.name || item.type || "").toLowerCase();
+      if (id.endsWith("-pre")) {
+        const base = id.replace(/-pre$/, "");
+        return !raw.some((o) => (o.name || o.type || "").toLowerCase() === base);
+      }
+      return true;
+    });
+  }, [kyc?.mediaUrls]);
+
   const verifiedDate = lead.kycVerifiedAt || kyc?.createdAt;
   const decisionCode = kyc?.decisionCode;
 
@@ -232,59 +250,43 @@ export function KycVerificationCard({ lead }: { lead: PartnerLeadData }) {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                     {mediaUrls.map((media, idx) => {
-                      const label =
-                        media.name ||
-                        (media.type === "id_front"
-                          ? "Front of ID"
-                          : media.type === "id_back"
-                            ? "Back of ID"
-                            : media.type === "portrait"
-                              ? "Selfie Liveness"
-                              : `Document #${idx + 1}`);
+                      const label = getDocTitle(media, idx);
 
                       return (
                         <div
                           key={media.s3Url || idx}
-                          className="group relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition-all hover:border-emerald-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+                          className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xs transition-all hover:border-emerald-400 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
                         >
-                          <div className="relative aspect-4/3 w-full overflow-hidden bg-slate-900">
+                          <a
+                            href={media.s3Url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="relative flex w-full shrink-0 items-center justify-center overflow-hidden bg-slate-950"
+                            style={{ height: 180, minHeight: 180 }}
+                          >
                             <Image
                               src={media.s3Url}
                               alt={label}
-                              height={160}
-                              width={240}
-                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              fill
+                              unoptimized
+                              className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
                               loading="lazy"
                             />
-                            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => setActiveImage({ title: label, url: media.s3Url })}
-                                className="h-8 rounded-lg bg-white/95 text-xs font-bold text-slate-800 hover:bg-white"
-                              >
-                                <Eye className="mr-1 size-3.5" />
-                                Preview
-                              </Button>
-                              <a
-                                href={media.s3Url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex h-8 items-center justify-center rounded-lg bg-white/95 px-2.5 text-xs font-bold text-slate-800 hover:bg-white"
-                              >
-                                <ExternalLink className="size-3.5" />
-                              </a>
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                              <span className="inline-flex h-7 items-center justify-center gap-1 rounded-md bg-white/95 px-2.5 text-xs font-semibold text-slate-800 shadow-sm">
+                                <ExternalLink className="size-3" />
+                                View Full
+                              </span>
                             </div>
-                          </div>
+                          </a>
                           <div className="p-2.5">
-                            <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                            <div
+                              className="truncate text-xs font-bold text-slate-800 dark:text-slate-200"
+                              title={label}
+                            >
                               {label}
-                            </div>
-                            <div className="truncate font-mono text-[10px] text-slate-400">
-                              {media.s3Url}
                             </div>
                           </div>
                         </div>
@@ -297,43 +299,6 @@ export function KycVerificationCard({ lead }: { lead: PartnerLeadData }) {
           )}
         </CardContent>
       </Card>
-
-      {/* Full-Screen Preview Modal */}
-      {activeImage && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
-          onClick={() => setActiveImage(null)}
-        >
-          <div
-            className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl bg-white p-4 shadow-2xl dark:bg-slate-900"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                {activeImage.title}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setActiveImage(null)}
-                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
-            <div className="max-h-[75vh] overflow-auto">
-              <Image
-                src={activeImage.url}
-                alt={activeImage.title}
-                height={600}
-                width={800}
-                className="h-auto max-w-full rounded-lg object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
