@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Store,
   User,
+  Home,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -464,9 +465,12 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         <Link
           href={ROUTES.ROOT}
           className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-emerald-600 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-400"
+          title="Back to Home"
         >
           <ArrowLeft className="size-4" />
-          Back
+          <span>
+            <Home size={20} />
+          </span>
         </Link>
       </div>
       <div className="text-center">

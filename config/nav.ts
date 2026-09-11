@@ -71,25 +71,25 @@ export const navigationItems: NavItem[] = [
 
   // PEOPLE & ORGANIZATION
   {
-    title: "Users",
+    title: "Users Management",
     url: ROUTES.ADMIN.USERS_MANAGEMENT,
     icon: User,
     group: "PEOPLE & ORGANIZATION",
   },
   {
-    title: "Employees",
+    title: "Employee Management",
     url: ROUTES.ADMIN.EMPLOYEE_MANAGEMENT,
     icon: Users,
     group: "PEOPLE & ORGANIZATION",
   },
   {
-    title: "Sub-Admins",
+    title: "Sub/Co-admin Management",
     url: ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.ROOT,
     icon: UserCog,
     group: "PEOPLE & ORGANIZATION",
   },
   {
-    title: "Partner Leads",
+    title: "Partner Leads CRM",
     url: ROUTES.ADMIN.PARTNER_LEADS,
     icon: Building,
     group: "PEOPLE & ORGANIZATION",
@@ -98,7 +98,7 @@ export const navigationItems: NavItem[] = [
 
   // STORES & CATALOG
   {
-    title: "Stores",
+    title: "Store Management",
     url: ROUTES.ADMIN.STORE_MANAGEMENT.ROOT,
     icon: Store,
     group: "STORES & CATALOG",
@@ -114,7 +114,7 @@ export const navigationItems: NavItem[] = [
     ],
   },
   {
-    title: "Catalog",
+    title: "Catalogue Management",
     url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ROOT,
     icon: BookOpen,
     group: "STORES & CATALOG",
@@ -134,19 +134,19 @@ export const navigationItems: NavItem[] = [
     ],
   },
   {
-    title: "Product Boxes",
+    title: "Product Boxes Management",
     url: ROUTES.ADMIN.PRODUCT_BOXES,
     icon: Package,
     group: "STORES & CATALOG",
   },
   {
-    title: "Country Managers",
+    title: "Country Management",
     url: ROUTES.ADMIN.COUNTRY_MANAGEMENT.LIST,
     icon: Globe,
     group: "STORES & CATALOG",
   },
   {
-    title: "City Managers",
+    title: "City Management",
     url: ROUTES.ADMIN.CITY_MANAGEMENT.LIST,
     icon: MapPin,
     group: "STORES & CATALOG",
@@ -154,7 +154,7 @@ export const navigationItems: NavItem[] = [
 
   // ORDERS & CUSTOMERS
   {
-    title: "Orders",
+    title: "Order Management",
     url: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
     icon: Box,
     group: "ORDERS & CUSTOMERS",
@@ -166,25 +166,25 @@ export const navigationItems: NavItem[] = [
     group: "ORDERS & CUSTOMERS",
   },
   {
-    title: "Support Tickets",
+    title: "Ticket Management",
     url: ROUTES.ADMIN.TICKET_MANAGEMENT.ROOT,
     icon: Ticket,
     group: "ORDERS & CUSTOMERS",
   },
   {
-    title: "Coupons",
+    title: "Coupons Management",
     url: ROUTES.ADMIN.COUPONS_MANAGEMENT,
     icon: Gift,
     group: "ORDERS & CUSTOMERS",
   },
   {
-    title: "Credits",
+    title: "Credits Management",
     url: ROUTES.ADMIN.CREDITS_MANAGEMENT,
     icon: CreditCard,
     group: "ORDERS & CUSTOMERS",
   },
   {
-    title: "Amount Limits",
+    title: "Amount Limit Management",
     url: ROUTES.ADMIN.AMOUNT_LIMIT_MANAGEMENT,
     icon: DollarSign,
     group: "ORDERS & CUSTOMERS",
@@ -192,14 +192,14 @@ export const navigationItems: NavItem[] = [
 
   // DONATIONS & CHARITIES
   {
-    title: "Charities & Foundations",
+    title: "Foundations & Charities Management",
     url: ROUTES.ADMIN.FOUNDATION_MANAGEMENT,
     icon: Heart,
     group: "DONATIONS & CHARITIES",
     isComingSoon: true,
   },
   {
-    title: "Philanthropists",
+    title: "Philanthropist Management",
     url: ROUTES.ADMIN.PHILANTHROPIST_MANAGEMENT,
     icon: HandHeart,
     group: "DONATIONS & CHARITIES",
@@ -228,7 +228,7 @@ export const navigationItems: NavItem[] = [
     group: "COMMUNICATION & CONTENT",
   },
   {
-    title: "Banners & Tutorials",
+    title: "Flash Images Management",
     url: ROUTES.ADMIN.TUTORIAL_MANAGEMENT,
     icon: GraduationCap,
     group: "COMMUNICATION & CONTENT",
@@ -236,7 +236,7 @@ export const navigationItems: NavItem[] = [
 
   // REPORTS & FEEDBACK
   {
-    title: "Reports",
+    title: "Report Management",
     url: ROUTES.ADMIN.REPORT_MANAGEMENT.ROOT,
     icon: ClipboardList,
     group: "REPORTS & FEEDBACK",
@@ -260,7 +260,7 @@ export const navigationItems: NavItem[] = [
     ],
   },
   {
-    title: "Feedback",
+    title: "Feedback Management",
     url: ROUTES.ADMIN.FEEDBACK_MANAGEMENT,
     icon: MessageSquare,
     group: "REPORTS & FEEDBACK",
