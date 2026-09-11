@@ -90,4 +90,12 @@ export const API_CACHE_KEYS = {
   // Credits
   CREDITS: ["credits"],
   CREDIT_BY_ID: (id: string) => ["credit", id],
+
+  // KYC (Veriff)
+  KYC_CONFIG: ["kyc-config"],
+  KYC_STATUS: (sessionId: string) => ["kyc-status", sessionId],
+
+  // Bank Verification (Plaid)
+  PLAID_CONFIG: ["plaid-config"],
+  PLAID_VERIFICATION: (id: string) => ["plaid-verification", id],
 };

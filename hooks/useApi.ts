@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/api/client";
+import type { AxiosRequestConfig } from "axios";
 import type { UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -31,8 +32,8 @@ export async function fetcher<TResponse, TBody = unknown>({
     url,
     data: body,
     timeout,
-    headers: skipErrorToast ? { "x-skip-error-toast": "true" } : undefined,
-  });
+    skipErrorToast,
+  } as unknown as AxiosRequestConfig);
   return response.data as TResponse;
 }
 

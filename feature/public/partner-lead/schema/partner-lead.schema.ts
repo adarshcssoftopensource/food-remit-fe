@@ -87,6 +87,15 @@ export const partnerLeadSchema = z
     agreeToContact: z.boolean().refine((val) => val === true, {
       message: "You must agree to be contacted by Food Remit to proceed",
     }),
+
+    veriffSessionId: z.string().optional(),
+    kycStatus: z.string().optional(),
+    plaidItemId: z.string().optional(),
+    plaidAccountId: z.string().optional(),
+    bankStatus: z.string().optional(),
+    bankInstitutionName: z.string().optional(),
+    bankAccountName: z.string().optional(),
+    bankAccountMask: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.businessType === "Other") {

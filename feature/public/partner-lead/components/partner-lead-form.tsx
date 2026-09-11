@@ -6,9 +6,12 @@ import {
   ArrowRight,
   Building2,
   Check,
+  CheckCircle2,
   Clock,
   Globe,
+  Lock,
   Mail,
+  RefreshCw,
   ShieldCheck,
   Store,
   User,
@@ -18,7 +21,7 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { CountrySelect } from "@/components/common/country-select";
-import { successToast } from "@/components/toaster";
+import { errorToast, successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldLabel } from "@/components/ui/field";
@@ -43,6 +46,8 @@ import {
 import { cn } from "@/lib/utils";
 import { useCreatePartnerLead } from "../hooks/create-partner";
 import { PartnerLeadFormValues, partnerLeadSchema } from "../schema/partner-lead.schema";
+import { VeriffKycStep } from "./veriff-kyc-step";
+import { PlaidBankStep } from "./plaid-bank-step";
 
 interface PartnerLeadFormProps {
   onSuccess: (referenceNumber: string) => void;
@@ -88,9 +93,25 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       websiteOrSocial: "",
       additionalNotes: "",
       agreeToContact: false,
+      veriffSessionId: "",
+      kycStatus: "NOT_STARTED",
+      plaidItemId: "",
+      plaidAccountId: "",
+      bankStatus: "NOT_STARTED",
+      bankInstitutionName: "",
+      bankAccountName: "",
+      bankAccountMask: "",
     },
     mode: "onChange",
   });
+
+  const kycStatus = watch("kycStatus");
+  const bankStatus = watch("bankStatus");
+  const veriffSessionId = watch("veriffSessionId");
+  const plaidItemId = watch("plaidItemId");
+
+  const isKycApproved = (kycStatus || "").toUpperCase() === "APPROVED";
+  const isBankVerified = (bankStatus || "").toUpperCase() === "VERIFIED";
 
   const locationsCount = watch("locationsCount");
   const businessType = watch("businessType");
@@ -109,7 +130,16 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         if (parsed?.values) {
           reset(parsed.values);
           if (parsed.step && parsed.step > 1 && parsed.step <= STEPS.length) {
-            setCurrentStep(parsed.step);
+            let targetStep = parsed.step;
+            const parsedKyc = (parsed.values?.kycStatus || "").toUpperCase();
+            const parsedBank = (parsed.values?.bankStatus || "").toUpperCase();
+            if (targetStep >= 5 && parsedKyc !== "APPROVED") {
+              targetStep = 4;
+            }
+            if (targetStep >= 6 && parsedBank !== "VERIFIED") {
+              targetStep = 5;
+            }
+            setCurrentStep(targetStep);
           }
           setDraftRestored(true);
         }
@@ -176,6 +206,14 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       websiteOrSocial: "",
       additionalNotes: "",
       agreeToContact: false,
+      veriffSessionId: "",
+      kycStatus: "NOT_STARTED",
+      plaidItemId: "",
+      plaidAccountId: "",
+      bankStatus: "NOT_STARTED",
+      bankInstitutionName: "",
+      bankAccountName: "",
+      bankAccountMask: "",
     });
     setCurrentStep(1);
     setDraftRestored(false);
@@ -232,6 +270,24 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       if (getValues("workPreferences")?.includes("Other")) {
         fieldsToValidate.push("otherWorkPreference");
       }
+    } else if (currentStep === 4) {
+      if (!isKycApproved) {
+        errorToast({
+          title: "Identity Verification Required",
+          description:
+            "Please complete your Veriff KYC and wait for approval before moving to the next step.",
+        });
+        return;
+      }
+    } else if (currentStep === 5) {
+      if (!isBankVerified) {
+        errorToast({
+          title: "Bank Verification Required",
+          description:
+            "Please connect and verify your commercial bank account with Plaid before proceeding to final review.",
+        });
+        return;
+      }
     }
 
     const isValid = await trigger(fieldsToValidate);
@@ -270,6 +326,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         website: data.websiteOrSocial?.trim() || undefined,
         additionalInfo: data.additionalNotes?.trim() || undefined,
         otherBusinessType: data.otherBusinessType?.trim() || undefined,
+        veriffSessionId: data.veriffSessionId?.trim() || undefined,
+        kycStatus: data.kycStatus?.trim() || undefined,
       };
       const res = await mutateAsync(payload);
       try {
@@ -1047,11 +1105,60 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         )}
 
         {currentStep === 4 && (
+          <VeriffKycStep
+            applicant={{
+              firstName: getValues("firstName"),
+              lastName: getValues("lastName"),
+              email: getValues("businessEmail"),
+              phoneNumber: getValues("phoneNumber"),
+              country: getValues("country"),
+            }}
+            sessionId={watch("veriffSessionId")}
+            currentKycStatus={watch("kycStatus")}
+            onSessionUpdated={(newSessionId, status) => {
+              setValue("veriffSessionId", newSessionId, { shouldDirty: true });
+              setValue("kycStatus", status, { shouldDirty: true });
+            }}
+            onContinue={() => {
+              setCurrentStep(5);
+            }}
+          />
+        )}
+
+        {currentStep === 5 && (
+          <PlaidBankStep
+            applicant={{
+              firstName: getValues("firstName"),
+              lastName: getValues("lastName"),
+              email: getValues("businessEmail"),
+              phoneNumber: getValues("phoneNumber"),
+              country: getValues("country"),
+            }}
+            initialItemId={watch("plaidItemId")}
+            currentBankStatus={watch("bankStatus")}
+            institutionName={watch("bankInstitutionName")}
+            accountName={watch("bankAccountName")}
+            accountMask={watch("bankAccountMask")}
+            onBankUpdated={(info) => {
+              setValue("plaidItemId", info.plaidItemId, { shouldDirty: true });
+              setValue("plaidAccountId", info.plaidAccountId, { shouldDirty: true });
+              setValue("bankStatus", info.bankStatus, { shouldDirty: true });
+              setValue("bankInstitutionName", info.bankInstitutionName, { shouldDirty: true });
+              setValue("bankAccountName", info.bankAccountName, { shouldDirty: true });
+              setValue("bankAccountMask", info.bankAccountMask, { shouldDirty: true });
+            }}
+            onContinue={() => {
+              setCurrentStep(6);
+            }}
+          />
+        )}
+
+        {currentStep === 6 && (
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
               <ShieldCheck className="size-5 text-emerald-600" />
               <div>
-                <h2 className="text-base font-bold text-slate-900">Step 4: Review & Complete</h2>
+                <h2 className="text-base font-bold text-slate-900">Step 6: Review & Complete</h2>
                 <p className="text-xs text-slate-400">Confirm your details and submit interest</p>
               </div>
             </div>
@@ -1120,13 +1227,49 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 </div>
               )}
               {getValues("additionalNotes") && (
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2">
                   <span className="font-medium text-slate-500">Additional Notes:</span>
                   <p className="line-clamp-2 rounded-lg border border-slate-200/60 bg-white p-2 text-slate-700 italic">
                     &quot;{getValues("additionalNotes")}&quot;
                   </p>
                 </div>
               )}
+
+              {/* KYC Review Line */}
+              <div className="flex flex-col gap-1 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <span className="font-medium text-slate-500">Identity Verification (KYC):</span>
+                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                  {(watch("kycStatus") || "").toUpperCase() === "APPROVED" ? (
+                    <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700">
+                      <CheckCircle2 className="size-4 text-emerald-600" />
+                      Verified &amp; Approved via Veriff
+                    </span>
+                  ) : watch("veriffSessionId") ? (
+                    <span className="inline-flex items-center gap-1.5 font-semibold text-amber-700">
+                      <Clock className="size-4 text-amber-600" />
+                      Submitted / Under Review ({watch("kycStatus") || "SUBMITTED"})
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 italic">Not Started</span>
+                  )}
+                </span>
+              </div>
+
+              {/* Bank Verification Review Line */}
+              <div className="flex flex-col gap-1 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <span className="font-medium text-slate-500">Bank Account (Plaid):</span>
+                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                  {(watch("bankStatus") || "").toUpperCase() === "VERIFIED" ? (
+                    <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700">
+                      <CheckCircle2 className="size-4 text-emerald-600" />
+                      {watch("bankInstitutionName") || "Verified Commercial Bank"} (••••{" "}
+                      {watch("bankAccountMask") || "0000"})
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 italic">Not Verified</span>
+                  )}
+                </span>
+              </div>
             </div>
 
             <Controller
@@ -1182,14 +1325,36 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             <Button
               key="btn-step-next"
               type="button"
+              disabled={
+                (currentStep === 4 && !isKycApproved) || (currentStep === 5 && !isBankVerified)
+              }
               onClick={(e) => {
                 e.preventDefault();
                 handleNextStep();
               }}
-              className="h-11 w-full rounded-xl bg-emerald-700 px-6 text-xs font-bold text-white shadow-sm hover:bg-emerald-800 sm:w-auto"
+              className={cn(
+                "h-11 w-full rounded-xl px-6 text-xs font-bold shadow-sm transition-all sm:w-auto",
+                (currentStep === 4 && !isKycApproved) || (currentStep === 5 && !isBankVerified)
+                  ? "cursor-not-allowed bg-slate-200 text-slate-400 opacity-60 hover:bg-slate-200"
+                  : "bg-emerald-700 text-white hover:bg-emerald-800",
+              )}
             >
-              Next Step
-              <ArrowRight className="ml-1.5 size-4" />
+              {currentStep === 4 && !isKycApproved ? (
+                <>
+                  <RefreshCw className="mr-1.5 size-3.5 animate-spin text-amber-600" />
+                  {veriffSessionId ? "Awaiting Veriff Approval..." : "Verify Identity to Continue"}
+                </>
+              ) : currentStep === 5 && !isBankVerified ? (
+                <>
+                  <Lock className="mr-1.5 size-3.5 text-slate-400" />
+                  Verify Bank Account to Continue
+                </>
+              ) : (
+                <>
+                  Next Step
+                  <ArrowRight className="ml-1.5 size-4" />
+                </>
+              )}
             </Button>
           ) : (
             <Button

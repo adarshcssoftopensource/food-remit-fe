@@ -1,4 +1,4 @@
-import { Building2, ShieldCheck, Store, User } from "lucide-react";
+import { Building2, CheckCircle2, Landmark, ShieldCheck, Store, User } from "lucide-react";
 
 export const BUSINESS_TYPES = [
   "Independent Grocery Store",
@@ -45,5 +45,7 @@ export const STEPS = [
   { id: 1, title: "Business Info", icon: Building2 },
   { id: 2, title: "Your Info", icon: User },
   { id: 3, title: "Operations", icon: Store },
-  { id: 4, title: "Complete", icon: ShieldCheck },
+  { id: 4, title: "Identity Verification", icon: ShieldCheck },
+  { id: 5, title: "Bank Verification", icon: Landmark },
+  { id: 6, title: "Complete", icon: CheckCircle2 },
 ];
