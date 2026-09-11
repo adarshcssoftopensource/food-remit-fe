@@ -6,6 +6,8 @@ export const PARTNER_LEAD_ENDPOINTS = {
     sortOrder?: string,
     page?: number,
     limit?: number,
+    fromDate?: string,
+    toDate?: string,
   ) => {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
@@ -13,6 +15,8 @@ export const PARTNER_LEAD_ENDPOINTS = {
     if (sortOrder) params.append("sortOrder", sortOrder);
     if (page) params.append("page", String(page));
     if (limit) params.append("limit", String(limit));
+    if (fromDate) params.append("fromDate", fromDate);
+    if (toDate) params.append("toDate", toDate);
     const qs = params.toString();
     return qs ? `partner-leads?${qs}` : "partner-leads";
   },

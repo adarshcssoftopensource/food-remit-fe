@@ -22,12 +22,29 @@ export function usePartnerLeads(
   sortOrder?: string,
   page?: number,
   limit?: number,
+  fromDate?: string,
+  toDate?: string,
 ) {
   const { data: response, isLoading } = useApiQuery<RawGetPartnerLeadsResponse>(
-    [...API_CACHE_KEYS.PARTNER_LEADS_LIST, search, sortBy, sortOrder, page, limit].filter(
-      Boolean,
-    ) as string[],
-    PARTNER_LEAD_ENDPOINTS.GET_LEADS(search, sortBy, sortOrder ?? "desc", page ?? 1, limit ?? 10),
+    [
+      ...API_CACHE_KEYS.PARTNER_LEADS_LIST,
+      search,
+      sortBy,
+      sortOrder,
+      page,
+      limit,
+      fromDate,
+      toDate,
+    ].filter(Boolean) as string[],
+    PARTNER_LEAD_ENDPOINTS.GET_LEADS(
+      search,
+      sortBy,
+      sortOrder ?? "desc",
+      page ?? 1,
+      limit ?? 10,
+      fromDate,
+      toDate,
+    ),
   );
   const leads = response?.data;
   const pagination = response?.pagination;
