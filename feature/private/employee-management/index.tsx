@@ -5,18 +5,18 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ROUTES } from "@/config/routes";
 import { useDebounce } from "@/lib/debounce";
 import { Plus, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
 import { employeeColumns } from "./columns/employee-columns";
 import { EmployeeDialog } from "./components/employee-dialog";
 import { useGetEmployees } from "./hooks/use-get-employees";
-import { ROUTES } from "@/config/routes";
 
 export function EmployeeManagementFeature() {
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [status, setStatus] = useState("all");

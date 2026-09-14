@@ -1,22 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
-import { PageHeader } from "@/components/common/page-header";
-import { Globe, Loader2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
-import { amountLimitColumns } from "./columns/amount-limit-columns";
-import { AmountLimitDialog } from "./components/amount-limit-dialog";
+import { PageHeader } from "@/components/common/page-header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFilterState } from "@/hooks/use-filter-state";
-import { useGetAmountLimits } from "./hooks/use-get-amount-limits";
 import { useDebounce } from "@/lib/debounce";
 import { SortingState } from "@tanstack/react-table";
+import { Globe, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { amountLimitColumns } from "./columns/amount-limit-columns";
+import { AmountLimitDialog } from "./components/amount-limit-dialog";
+import { useGetAmountLimits } from "./hooks/use-get-amount-limits";
 
 export function AmountLimitManagement() {
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
 
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);

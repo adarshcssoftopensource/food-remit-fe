@@ -4,9 +4,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bell, CheckCheck, Inbox, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { DataTablePagination } from "@/components/common/data-table/data-table-pagination";
 import { NoDataFound } from "@/components/common/no-data-found";
 import { PageHeader } from "@/components/common/page-header";
-import { DataTablePagination } from "@/components/common/data-table/data-table-pagination";
 import { successToast } from "@/components/toaster";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ function formatWhen(value?: string) {
 export function NotificationsInbox() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(6);
+  const [limit, setLimit] = useState(50);
   const [status, setStatus] = useState<"all" | "unread" | "read">("all");
 
   const { data, isLoading, isFetching } = useGetWebNotifications({
