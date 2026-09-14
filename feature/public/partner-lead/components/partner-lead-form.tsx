@@ -137,10 +137,10 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
   const kycStatus = watch("kycStatus");
   const bankStatus = watch("bankStatus");
-  const veriffSessionId = watch("veriffSessionId");
 
   const normalizedKycStatus = (kycStatus || "").toUpperCase();
   const isKycApproved = normalizedKycStatus === "APPROVED";
+  const isKycSubmitted = normalizedKycStatus === "SUBMITTED";
   const isKycDeclined = [
     "DECLINED",
     "FAILED",
@@ -1752,7 +1752,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     <AlertCircle className="mr-1.5 size-3.5 text-rose-500" />
                     Verification Declined — Retry Required
                   </>
-                ) : veriffSessionId ? (
+                ) : isKycSubmitted ? (
                   <>
                     <RefreshCw className="mr-1.5 size-3.5 animate-spin text-amber-600" />
                     Awaiting Veriff Approval...

@@ -154,7 +154,7 @@ export function VeriffKycStep({
     "ABANDONED",
   ].includes(normalizedStatus);
   const isAwaitingApproval =
-    !isVerified && !isDeclined && Boolean(sessionId) && normalizedStatus !== "NOT_STARTED";
+    !isVerified && !isDeclined && Boolean(sessionId) && ["SUBMITTED"].includes(normalizedStatus);
 
   return (
     <div className="flex flex-col gap-5">
