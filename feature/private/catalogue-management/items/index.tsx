@@ -9,7 +9,7 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { useProfile } from "@/components/providers/profile-provider";
-import { successToast } from "@/components/toaster";
+import { infoToast, successToast } from "@/components/toaster";
 import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -204,8 +204,19 @@ export function ItemsManagement() {
     formData.append("file", file);
 
     uploadCsvMutation.mutate(formData, {
-      onSuccess: () => {
-        successToast({ description: "CSV uploaded successfully" });
+      onSuccess: (res: any) => {
+        const errorCount = res?.data?.errorCount || 0;
+        const successCount = res?.data?.successCount || 0;
+        if (errorCount > 0 && successCount > 0) {
+          const errors = res?.data?.errors || [];
+          infoToast({
+            title: "CSV Upload Notice",
+            description: `Imported ${successCount} item(s). ${errorCount} row(s) had errors:\n${errors.slice(0, 3).join("; ")}`,
+            duration: 6000,
+          });
+        } else {
+          successToast({ description: "CSV uploaded successfully" });
+        }
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }

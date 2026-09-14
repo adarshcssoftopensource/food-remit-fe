@@ -57,11 +57,9 @@ export function ItemMediaCard({
           <CardTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
             {item.productName}
           </CardTitle>
-          {item.description && (
-            <p className="mt-1 text-start text-xs leading-relaxed text-slate-500">
-              {item.description}
-            </p>
-          )}
+          <p className="mt-1 text-start text-xs leading-relaxed text-slate-500">
+            {item.description || "-"}
+          </p>
 
           <div className="mt-3 flex justify-center gap-2">
             <span

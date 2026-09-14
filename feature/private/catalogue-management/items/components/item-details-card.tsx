@@ -36,34 +36,34 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           <InfoCard
             icon={<MapPin className="h-4 w-4 text-orange-500" />}
             label="Country"
-            value={item.country?.name || "Unknown"}
+            value={item.country?.name || "-"}
           />
           <InfoCard
             icon={<MapPin className="h-4 w-4 text-sky-500" />}
             label="City"
-            value={(item.department as any)?.city?.name || "All Cities"}
+            value={(item.department as any)?.city?.name || "-"}
           />
           {(item.department as any)?.store?.storeName && (
             <InfoCard
               icon={<Building2 className="h-4 w-4 text-indigo-500" />}
               label="Store"
-              value={(item.department as any).store.storeName}
+              value={(item.department as any).store.storeName || "-"}
             />
           )}
           <InfoCard
             icon={<Building2 className="h-4 w-4 text-blue-500" />}
             label="Department"
-            value={item.department?.departmentName || "None"}
+            value={item.department?.departmentName || "-"}
           />
           <InfoCard
             icon={<Layers className="h-4 w-4 text-purple-500" />}
             label="Category"
-            value={item.category?.categoryName || "None"}
+            value={item.category?.categoryName || "-"}
           />
           <InfoCard
             icon={<Scale className="h-4 w-4 text-emerald-500" />}
             label="Base Quantity"
-            value={item.baseQuantity && item.unit ? `${item.baseQuantity} ${item.unit}` : "N/A"}
+            value={item.baseQuantity && item.unit ? `${item.baseQuantity} ${item.unit}` : "-"}
           />
           <InfoCard
             icon={<Calendar className="h-4 w-4 text-slate-400" />}
