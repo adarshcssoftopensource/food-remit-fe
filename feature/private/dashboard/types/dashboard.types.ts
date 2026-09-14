@@ -124,6 +124,7 @@ export interface DashboardData {
   totalOrdersCompleted?: { today: number; thisWeek: number; total: number };
   totalEarnings?: { today: string; thisWeek: string; total: string };
   sales?: any[];
+  revenueBreakdown?: { label: string; percentage: number }[];
 }
 
 export interface DashboardStatsApiResponse {

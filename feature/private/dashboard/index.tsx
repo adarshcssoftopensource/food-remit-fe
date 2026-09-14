@@ -116,7 +116,10 @@ export function Dashboard() {
           </div>
 
           <div className="col-span-full min-w-0 lg:col-span-1">
-            <MonthlyRevenue isLoading={isLoading} />
+            <MonthlyRevenue
+              revenueBreakdown={dashboardData.revenueBreakdown}
+              isLoading={isLoading}
+            />
           </div>
         </div>
 
