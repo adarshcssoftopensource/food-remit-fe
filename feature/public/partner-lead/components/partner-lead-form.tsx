@@ -20,9 +20,10 @@ import {
   Home,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Country } from "country-state-city";
+import { useDebounce } from "@/lib/debounce";
 import { CountrySelect } from "@/components/common/country-select";
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { MultiLanguageSelect } from "@/components/common/multi-language-select";
@@ -46,13 +47,13 @@ import { ROUTES } from "@/config/routes";
 import {
   BUSINESS_TYPES,
   INVENTORY_MANAGEMENT_OPTIONS,
-  NUMBER_OF_LOCATIONS_OPTIONS,
   STEPS,
   WORK_PREFERENCES_OPTIONS,
 } from "@/constants/become-a-partner";
 import { cn } from "@/lib/utils";
 import { useCreatePartnerLead } from "../hooks/create-partner";
 import { PartnerLeadFormValues, partnerLeadSchema } from "../schema/partner-lead.schema";
+import { checkEmailExists } from "../hooks/use-check-email";
 import { VeriffKycStep } from "./veriff-kyc-step";
 import { PlaidBankStep } from "./plaid-bank-step";
 import { AdditionalDocumentsSection } from "./additional-documents-section";
@@ -92,6 +93,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     trigger,
     getValues,
     setValue,
+    setError,
     clearErrors,
     reset,
     watch,
@@ -137,6 +139,56 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
   const kycStatus = watch("kycStatus");
   const bankStatus = watch("bankStatus");
+  const businessEmail = watch("businessEmail");
+  const debouncedBusinessEmail = useDebounce(businessEmail, 1000);
+  const lastCheckedEmail = useRef<string | null>(null);
+  const isCheckingEmail = useRef<boolean>(false);
+
+  useEffect(() => {
+    async function checkUniqueEmail() {
+      if (!debouncedBusinessEmail) return;
+
+      // Only check if we haven't already checked this exact email successfully
+      if (lastCheckedEmail.current === debouncedBusinessEmail) return;
+
+      // Don't check if there's a format error (i.e., invalid email)
+      if (errors.businessEmail && errors.businessEmail.type !== "manual") return;
+
+      if (isCheckingEmail.current) return;
+
+      try {
+        isCheckingEmail.current = true;
+        const res = await checkEmailExists(debouncedBusinessEmail, true);
+
+        lastCheckedEmail.current = debouncedBusinessEmail;
+
+        if (res?.isValidDomain === false) {
+          setError("businessEmail", {
+            type: "manual",
+            message: "The email domain is invalid or cannot receive emails.",
+          });
+        } else if (res?.exists) {
+          setError("businessEmail", {
+            type: "manual",
+            message: "This email is already registered. Please use a different one.",
+          });
+        }
+      } catch (err) {
+        // Ignore API checking errors gracefully
+      } finally {
+        isCheckingEmail.current = false;
+      }
+    }
+
+    void checkUniqueEmail();
+  }, [debouncedBusinessEmail, setError]);
+
+  useEffect(() => {
+    if (errors.businessEmail?.type === "manual" && businessEmail !== debouncedBusinessEmail) {
+      clearErrors("businessEmail");
+      lastCheckedEmail.current = null;
+    }
+  }, [businessEmail, debouncedBusinessEmail, clearErrors]); // Omit errors.businessEmail to prevent loops
 
   const normalizedKycStatus = (kycStatus || "").toUpperCase();
   const isKycApproved = normalizedKycStatus === "APPROVED";
