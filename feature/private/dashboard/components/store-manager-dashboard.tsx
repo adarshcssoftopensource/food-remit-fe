@@ -72,7 +72,9 @@ export function StoreManagerDashboard() {
   const { dashboardData: rawData, isLoading, isError, error, refetch } = useGetDashboardStats();
   const dashboardData = rawData as any; // Cast to bypass type errors for new structure
 
-  const welcomeMessage = profile?.name ? `Welcome, ${profile.name}` : undefined;
+  const welcomeMessage = profile?.stores?.[0]?.storeName
+    ? `Welcome, ${profile.stores[0].storeName}`
+    : undefined;
 
   const topCards = [
     {
