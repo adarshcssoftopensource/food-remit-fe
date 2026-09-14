@@ -431,6 +431,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       }
       formData.append("locationsCount", data.locationsCount || "1");
       if (data.locations && data.locations.length > 0) {
+        formData.append("locations", JSON.stringify(data.locations));
         data.locations.forEach((loc) => {
           formData.append("locations[]", loc);
         });
@@ -446,6 +447,18 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       if (data.jobTitle?.trim()) formData.append("jobTitle", data.jobTitle.trim());
       formData.append("businessEmail", data.businessEmail || "");
       formData.append("phoneNumber", data.phoneNumber || "");
+      if (data.languages && data.languages.length > 0) {
+        formData.append("languages", JSON.stringify(data.languages));
+      }
+      if (data.daysOpen && data.daysOpen.length > 0) {
+        formData.append("daysOpen", JSON.stringify(data.daysOpen));
+      }
+      if (data.hoursOfOperation?.trim()) {
+        formData.append("hoursOfOperation", data.hoursOfOperation.trim());
+      }
+      if (data.currency?.trim()) {
+        formData.append("currency", data.currency.trim());
+      }
       if (data.inventoryManagement?.trim()) {
         formData.append("inventoryManagement", data.inventoryManagement.trim());
       }
@@ -1615,11 +1628,13 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 </div>
               )}
               {getValues("additionalNotes") && (
-                <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2">
+                <div className="flex flex-col gap-1.5 border-b border-slate-200/60 pb-2">
                   <span className="font-medium text-slate-500">Additional Notes:</span>
-                  <p className="line-clamp-2 rounded-lg border border-slate-200/60 bg-white p-2 text-slate-700 italic">
-                    &quot;{getValues("additionalNotes")}&quot;
-                  </p>
+                  <div className="max-h-28 overflow-y-auto rounded-xl border border-slate-200/80 bg-slate-50/60 p-2.5 text-xs leading-relaxed text-slate-700 italic sm:max-h-32 sm:text-sm dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-300">
+                    <p className="break-words whitespace-pre-wrap">
+                      &quot;{getValues("additionalNotes")}&quot;
+                    </p>
+                  </div>
                 </div>
               )}
 
