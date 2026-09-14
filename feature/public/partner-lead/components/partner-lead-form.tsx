@@ -431,10 +431,10 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       }
       formData.append("locationsCount", data.locationsCount || "1");
       if (data.locations && data.locations.length > 0) {
-        formData.append("locations", JSON.stringify(data.locations));
-        data.locations.forEach((loc) => {
-          formData.append("locations[]", loc);
-        });
+        const cleanLocations = data.locations.map((loc) => loc.trim()).filter(Boolean);
+        if (cleanLocations.length > 0) {
+          formData.append("locations", JSON.stringify(cleanLocations));
+        }
       }
       formData.append("country", data.country || "");
       if (data.businessCity?.trim()) formData.append("businessCity", data.businessCity.trim());

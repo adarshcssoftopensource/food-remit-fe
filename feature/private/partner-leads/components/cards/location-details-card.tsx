@@ -1,8 +1,32 @@
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
 export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
+  const cleanedLocations = useMemo(() => {
+    if (!lead.locations || !Array.isArray(lead.locations)) return [];
+    const list: string[] = [];
+    lead.locations.forEach((loc) => {
+      if (typeof loc === "string") {
+        const trimmed = loc.trim();
+        if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (Array.isArray(parsed)) {
+              parsed.forEach((p) => {
+                if (p && String(p).trim()) list.push(String(p).trim());
+              });
+              return;
+            }
+          } catch {}
+        }
+        if (trimmed) list.push(trimmed);
+      }
+    });
+    return Array.from(new Set(list));
+  }, [lead.locations]);
+
   return (
     <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
       <CardHeader className="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
@@ -47,15 +71,26 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
           </div>
         </dl>
 
-        {lead.locations && lead.locations.length > 0 && (
+        {cleanedLocations.length > 0 && (
           <div className="mt-6 border-t border-slate-100 pt-6">
-            <h4 className="mb-3 text-xs font-bold tracking-wider text-slate-500 uppercase">
-              Addresses
-            </h4>
+            <div className="mb-3 flex items-center justify-between">
+              <h4 className="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                Addresses
+              </h4>
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
+                {cleanedLocations.length} {cleanedLocations.length === 1 ? "Location" : "Locations"}
+              </span>
+            </div>
             <ul className="space-y-2">
-              {lead.locations.map((loc, idx) => (
-                <li key={idx} className="rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  {loc}
+              {cleanedLocations.map((loc, idx) => (
+                <li
+                  key={idx}
+                  className="flex items-start gap-3 rounded-xl border border-slate-200/70 bg-slate-50/60 px-4 py-3 text-sm text-slate-800"
+                >
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-xs font-bold text-emerald-700">
+                    {idx + 1}
+                  </span>
+                  <span className="mt-0.5 flex-1 font-medium">{loc}</span>
                 </li>
               ))}
             </ul>
