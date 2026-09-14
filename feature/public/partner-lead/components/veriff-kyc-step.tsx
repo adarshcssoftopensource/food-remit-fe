@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ShieldCheck, ExternalLink, Lock } from "lucide-react";
+import { ShieldCheck, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { successToast } from "@/components/toaster";
 import { useGetKycConfig } from "../hooks/use-get-kyc-config";
@@ -158,7 +158,6 @@ export function VeriffKycStep({
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Header */}
       <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
         <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
           <ShieldCheck className="size-5" />
@@ -218,7 +217,6 @@ export function VeriffKycStep({
 
             <KycFeatureBadges />
 
-            {/* Launch Veriff Button */}
             <div className="mt-2 flex flex-col gap-2.5 sm:flex-row sm:items-center">
               <Button
                 type="button"
@@ -231,18 +229,6 @@ export function VeriffKycStep({
                   ? "Re-upload & Start Verification Again"
                   : "Start Identity Verification with Veriff"}
               </Button>
-
-              {/* {verificationUrl && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => window.open(verificationUrl, "_blank")}
-                  className="h-12 w-full rounded-xl border-slate-200 px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:w-auto"
-                >
-                  <ExternalLink className="mr-1.5 size-4" />
-                  Direct Veriff Link
-                </Button>
-              )} */}
             </div>
           </div>
         </div>

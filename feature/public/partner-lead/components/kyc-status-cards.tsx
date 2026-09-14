@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  CheckCircle2,
-  AlertCircle,
-  Camera,
-  FileText,
-  Clock,
-  RefreshCw,
-  ExternalLink,
-} from "lucide-react";
+import { CheckCircle2, AlertCircle, Camera, FileText, Clock, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -39,11 +31,7 @@ interface KycDeclinedBannerProps {
   verificationUrl?: string | null;
 }
 
-export function KycDeclinedBanner({
-  onRetry,
-  isRetrying,
-  verificationUrl,
-}: KycDeclinedBannerProps) {
+export function KycDeclinedBanner({}: KycDeclinedBannerProps) {
   return (
     <div className="rounded-2xl border border-rose-200/90 bg-rose-50/90 p-4 shadow-sm sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
