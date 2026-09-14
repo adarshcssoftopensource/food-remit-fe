@@ -75,9 +75,10 @@ export function ProcessingFee() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 rounded-full border bg-white px-4 py-2 shadow-sm">
+          <div className="flex items-center gap-2 rounded-full border bg-white px-3 py-2 shadow-sm sm:px-4">
             <Globe2 className="text-primary h-4 w-4" />
-            <span className="text-sm font-medium text-slate-700">{totalCount} Countries</span>
+            <span className="text-sm font-medium text-slate-700">{totalCount}</span>
+            <span className="hidden text-sm font-medium text-slate-700 sm:inline">Countries</span>
           </div>
         </div>
         <CardContent className="p-4">

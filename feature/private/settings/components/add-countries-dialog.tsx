@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { FieldLabel } from "@/components/ui/field";
+import { findWorldCountryByName, toCreateCountryPayload } from "@/lib/world-locations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit3, FlagIcon, Loader2, Plus, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -21,7 +22,6 @@ import { useGetCountriesDropdown } from "../hooks/use-get-countries-dropdown";
 import { useUpdateCountry } from "../hooks/use-update-country";
 import { CountryFormValues, countrySchema } from "../schema/country.schema";
 import type { CountryData } from "../types/settings.types";
-import { findWorldCountryByName, toCreateCountryPayload } from "@/lib/world-locations";
 
 interface AddCountriesDialogProps {
   mode?: "add" | "edit";
@@ -119,7 +119,7 @@ export function AddCountriesDialog({
           render={
             <Button size="lg">
               <Plus size={20} />
-              Add Country
+              <span className="ml-2 hidden md:inline-block">Add Country</span>
             </Button>
           }
         />

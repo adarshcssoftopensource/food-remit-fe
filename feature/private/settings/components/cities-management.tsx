@@ -3,6 +3,7 @@
 import { CountrySelect } from "@/components/common/country-select";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { Card, CardContent } from "@/components/ui/card";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDebounce } from "@/lib/debounce";
 import type { SortingState } from "@tanstack/react-table";
 import { Building2, Database } from "lucide-react";
@@ -11,7 +12,6 @@ import { citiesColumns } from "../columns/cities-columns";
 import { useGetCities } from "../hooks/use-get-cities";
 import type { CityData, UseGetCitiesArgs } from "../types/settings.types";
 import AddCityDialog from "./add-city-dialog";
-import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 
 export function CitiesManagement() {
   const [selectedCountry, setSelectedCountry] = useState<string>("All");
@@ -74,11 +74,11 @@ export function CitiesManagement() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold whitespace-nowrap text-slate-500">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+              <span className="hidden text-xs font-semibold whitespace-nowrap text-slate-500 sm:block">
                 Filter by Country:
               </span>
-              <div className="w-56">
+              <div className="w-full sm:w-56">
                 <CountrySelect
                   value={selectedCountry}
                   onValueChange={handleCountryChange}
@@ -90,10 +90,10 @@ export function CitiesManagement() {
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2">
+            <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 sm:px-4">
               <Database className="h-4 w-4 text-emerald-600" />
               <span className="text-sm font-semibold text-emerald-700">{totalCount}</span>
-              <span className="text-sm text-emerald-600">Cities</span>
+              <span className="hidden text-sm text-emerald-600 sm:inline">Cities</span>
             </div>
 
             <AddCityDialog
