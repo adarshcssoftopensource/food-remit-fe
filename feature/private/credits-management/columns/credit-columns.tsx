@@ -1,19 +1,20 @@
 "use client";
 
-import Image from "next/image";
-import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2, CreditCard, Eye, PackageX, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDate } from "@/lib/date";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
+import { ColumnDef } from "@tanstack/react-table";
+import { CheckCircle2, CreditCard, Eye, PackageX, ShieldAlert, ZoomIn } from "lucide-react";
+import Image from "next/image";
 import type { CreditColumnsOptions, CreditsData } from "../types/credits.types";
 
 export function getCreditColumns({
   onViewDetails,
   onPayRefund,
   isSuperAdmin,
+  onImageClick,
 }: CreditColumnsOptions): ColumnDef<CreditsData>[] {
   return [
     {
@@ -56,19 +57,28 @@ export function getCreditColumns({
         return (
           <div className="flex items-center gap-2.5">
             {customer?.avatar ? (
-              <Image
-                src={customer.avatar}
-                alt={displayName}
-                width={32}
-                height={32}
-                className="size-8 shrink-0 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
-              />
+              <button
+                type="button"
+                onClick={() => customer.avatar && onImageClick?.(customer.avatar)}
+                className="group relative shrink-0"
+              >
+                <Image
+                  src={customer.avatar}
+                  alt={displayName}
+                  width={32}
+                  height={32}
+                  className="size-8 rounded-full object-cover ring-1 ring-slate-200 transition-all hover:ring-emerald-300 dark:ring-slate-700 dark:hover:ring-emerald-600"
+                />
+                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                  <ZoomIn className="size-4 text-white" />
+                </div>
+              </button>
             ) : (
               <div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
                 {displayName.slice(0, 2).toUpperCase()}
               </div>
             )}
-            <div className="max-w-[150px] truncate">
+            <div className="max-w-37.5 truncate">
               <p className="truncate text-xs font-bold text-slate-800 dark:text-slate-200">
                 {displayName}
               </p>

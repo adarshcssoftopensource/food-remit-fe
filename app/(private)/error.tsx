@@ -16,7 +16,7 @@ export default function PrivateSectionError({
   }, [error]);
 
   return (
-    <div className="border-border bg-card flex min-h-[400px] w-full flex-col items-center justify-center rounded-2xl border p-6 text-center shadow-sm">
+    <div className="border-border bg-card flex min-h-100 w-full flex-col items-center justify-center rounded-2xl border p-6 text-center shadow-sm">
       <div className="bg-destructive/10 text-destructive mb-4 flex h-14 w-14 items-center justify-center rounded-full">
         <AlertTriangle className="h-7 w-7" />
       </div>

@@ -193,6 +193,7 @@ export interface CreditColumnsOptions {
   onViewDetails: (orderId: string) => void;
   onPayRefund: (credit: CreditsData) => void;
   isSuperAdmin: boolean;
+  onImageClick?: (url: string) => void;
 }
 
 export type CardNetwork = "visa" | "mastercard" | "amex" | "rupay" | "discover";

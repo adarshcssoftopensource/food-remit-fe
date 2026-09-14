@@ -1,8 +1,5 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { CheckCircle2, Clock, CreditCard, DollarSign } from "lucide-react";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
@@ -11,14 +8,18 @@ import { useProfile } from "@/components/providers/profile-provider";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFilterState } from "@/hooks/use-filter-state";
-import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 import { useDebounce } from "@/lib/debounce";
+import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 import { SortingState } from "@tanstack/react-table";
+import { CheckCircle2, Clock, CreditCard, DollarSign } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 import { getCreditColumns } from "./columns/credit-columns";
 import { CreditConfirmPay } from "./components/credit-confirm-pay";
 import { useGetCredits } from "./hooks/use-get-credits";
 import { usePayCreditRefund } from "./hooks/use-pay-credit-refund";
 import type { CreditsData } from "./types/credits.types";
+import { ImageLightbox } from "@/components/common/image-lightbox";
 
 function formatLocalDate(date?: Date): string | undefined {
   if (!date) return undefined;
@@ -41,6 +42,7 @@ export function CreditsManagement() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [payingCredit, setPayingCredit] = useState<CreditsData | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const payRefundMutation = usePayCreditRefund();
 
   const handleConfirmPayFromTable = async () => {
@@ -102,6 +104,7 @@ export function CreditsManagement() {
         onViewDetails: (id) => router.push(`/credits-management/${id}`),
         onPayRefund: (credit) => setPayingCredit(credit),
         isSuperAdmin,
+        onImageClick: (url) => setSelectedImage(url),
       }),
     [isSuperAdmin, router],
   );
@@ -287,6 +290,8 @@ export function CreditsManagement() {
           onCancel={() => setPayingCredit(null)}
         />
       )}
+
+      <ImageLightbox src={selectedImage} onClose={() => setSelectedImage(null)} />
     </div>
   );
 }
