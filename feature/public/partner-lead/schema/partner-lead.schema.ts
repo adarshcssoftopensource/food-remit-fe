@@ -13,7 +13,8 @@ export const partnerLeadSchema = z
       .max(100, "Business name cannot exceed 100 characters"),
     businessType: z.string().min(1, "Please select a business type"),
     otherBusinessType: z.string().optional(),
-    locationsCount: z.string().min(1, "Please select number of locations"),
+    locationsCount: z.string().optional(),
+    locations: z.array(z.string().min(1, "Address is required")).optional(),
     hasBusinessAccount: z.boolean().optional(),
     country: z.string().min(1, "Please select a country"),
     businessCity: z
@@ -57,6 +58,11 @@ export const partnerLeadSchema = z
       .max(100, "Job title cannot exceed 100 characters")
       .optional()
       .or(z.literal("")),
+
+    languages: z.array(z.string()).min(1, "At least one language is required"),
+    daysOpen: z.array(z.string()).min(1, "At least one day must be selected"),
+    hoursOfOperation: z.string().trim().min(1, "Hours of operation are required"),
+
     businessEmail: z
       .string()
       .trim()
@@ -83,6 +89,7 @@ export const partnerLeadSchema = z
       })
       .optional(),
     additionalNotes: z.string().optional(),
+    currency: z.string().optional(),
 
     agreeToContact: z.boolean().refine((val) => val === true, {
       message: "You must agree to be contacted by Food Remit to proceed",

@@ -44,6 +44,46 @@ export function OperationalPreferencesCard({ lead }: { lead: PartnerLeadData }) 
               {lead.inventoryManagement || "Not specified"}
             </p>
           </div>
+          <Separator className="bg-slate-100" />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                Languages Spoken
+              </h4>
+              <p className="text-sm font-semibold text-slate-900">
+                {lead.languages?.length > 0 ? lead.languages.join(", ") : "Not specified"}
+              </p>
+            </div>
+            <div>
+              <h4 className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                Hours of Operation
+              </h4>
+              <p className="text-sm font-semibold text-slate-900">
+                {lead.hoursOfOperation || "Not specified"}
+              </p>
+            </div>
+          </div>
+          <Separator className="bg-slate-100" />
+          <div>
+            <h4 className="mb-3 text-xs font-bold tracking-wider text-slate-500 uppercase">
+              Days Open
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {lead.daysOpen?.length > 0 ? (
+                lead.daysOpen.map((day) => (
+                  <Badge
+                    key={day}
+                    variant="secondary"
+                    className="border-blue-200/60 bg-blue-50 px-3 py-1 font-bold text-blue-700 hover:bg-blue-100"
+                  >
+                    {day}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-sm font-medium text-slate-400">None selected</span>
+              )}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -1,16 +1,16 @@
 "use client";
 
-import { useProfile } from "@/components/providers/profile-provider";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatRole } from "@/lib/formatRole";
-import { Camera, Mail, ShieldCheck, Loader2, Store, Maximize2 } from "lucide-react";
-import { useRef, useState } from "react";
-import { useUpdateProfile } from "../hooks/use-update-profile";
-import { successToast, errorToast } from "@/components/toaster";
-import { useQueryClient } from "@tanstack/react-query";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { ImageLightbox } from "@/components/common/image-lightbox";
+import { useProfile } from "@/components/providers/profile-provider";
+import { errorToast, successToast } from "@/components/toaster";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { formatRole } from "@/lib/formatRole";
+import { useQueryClient } from "@tanstack/react-query";
+import { Camera, Loader2, Mail, Maximize2, ShieldCheck, Store } from "lucide-react";
+import { useRef, useState } from "react";
 import { useUpdateStore } from "../../store-management/hooks/use-update-store";
+import { useUpdateProfile } from "../hooks/use-update-profile";
 
 export function ProfileHeader() {
   const { profile } = useProfile();
@@ -80,7 +80,7 @@ export function ProfileHeader() {
     <div className="brand-glass-card relative mb-6 overflow-hidden rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
       {profile?.roleCode === "STORE_MANAGER" && profile?.stores?.[0] ? (
         <div
-          className="group/banner relative flex h-32 w-full items-center justify-center bg-cover bg-center bg-no-repeat transition-all"
+          className="group/banner relative flex h-24 w-full items-center justify-center bg-cover bg-center bg-no-repeat transition-all sm:h-32"
           style={{
             backgroundImage: profile.stores[0].storeImage
               ? `url(${profile.stores[0].storeImage})`
@@ -118,27 +118,27 @@ export function ProfileHeader() {
           </div>
         </div>
       ) : (
-        <div className="h-32 w-full bg-linear-to-r from-emerald-600/30 via-teal-600/20 to-emerald-500/10" />
+        <div className="h-24 w-full bg-linear-to-r from-emerald-600/30 via-teal-600/20 to-emerald-500/10 sm:h-32" />
       )}
 
-      <div className="flex flex-col items-start gap-5 px-6 pb-6 sm:flex-row sm:items-end">
-        <div className="group relative -mt-12 h-24 w-24 shrink-0 overflow-hidden rounded-2xl shadow-md ring-4 ring-white dark:ring-slate-900">
+      <div className="flex flex-col items-start gap-4 px-4 pb-4 sm:flex-row sm:items-end sm:gap-5 sm:px-6 sm:pb-6">
+        <div className="group relative -mt-10 h-20 w-20 shrink-0 overflow-hidden rounded-2xl shadow-md ring-4 ring-white sm:-mt-12 sm:h-24 sm:w-24 dark:ring-slate-900">
           <Avatar className="h-full w-full rounded-2xl shadow-sm">
             <AvatarImage
               src={profile?.image || ""}
               alt={displayName}
               className="rounded-2xl object-cover"
             />
-            <AvatarFallback className="rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-2xl font-black text-white">
+            <AvatarFallback className="rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-xl font-black text-white sm:text-2xl">
               {initials}
             </AvatarFallback>
           </Avatar>
 
           <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
             {updateProfileMutation.isPending ? (
-              <Loader2 className="h-6 w-6 animate-spin text-white" />
+              <Loader2 className="h-5 w-5 animate-spin text-white sm:h-6 sm:w-6" />
             ) : (
-              <Camera className="h-6 w-6 text-white" />
+              <Camera className="h-5 w-5 text-white sm:h-6 sm:w-6" />
             )}
             <input
               type="file"
@@ -153,26 +153,26 @@ export function ProfileHeader() {
 
         <div className="flex-1 space-y-1 sm:mb-2">
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold text-slate-800">{displayName}</h2>
+            <h2 className="text-xl font-bold text-slate-800 sm:text-2xl">{displayName}</h2>
             <div className="flex items-center justify-center rounded-full bg-emerald-100 p-1 text-emerald-600">
-              <ShieldCheck className="h-4 w-4" />
+              <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <p className="text-muted-foreground text-sm font-medium">{displayRole}</p>
+            <p className="text-muted-foreground text-xs font-medium sm:text-sm">{displayRole}</p>
             {displayStores && (
-              <div className="flex w-fit items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-0.5 text-sm font-medium text-emerald-700">
-                <Store className="h-3.5 w-3.5" />
-                <span>{displayStores}</span>
+              <div className="flex w-fit items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 sm:px-2.5 sm:text-sm">
+                <Store className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <span className="truncate">{displayStores}</span>
               </div>
             )}
           </div>
         </div>
 
         <div className="flex flex-col gap-2 sm:mb-2 sm:items-end">
-          <div className="text-muted-foreground flex items-center gap-2 text-sm">
-            <Mail className="h-4 w-4 shrink-0" />
-            <span>{displayEmail}</span>
+          <div className="text-muted-foreground flex items-center gap-2 text-xs sm:text-sm">
+            <Mail className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+            <span className="truncate">{displayEmail}</span>
           </div>
         </div>
       </div>

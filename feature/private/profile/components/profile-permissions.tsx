@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import {
   BarChart3,
   Bell,
@@ -29,6 +28,7 @@ import {
   Users,
   Video,
 } from "lucide-react";
+import { useState } from "react";
 
 // Mapping of permission keys to user-friendly labels and icons
 const PERMISSION_CONFIG: Record<
@@ -114,19 +114,19 @@ export function ProfilePermissions() {
 
   return (
     <Card className="rounded-[2rem] border-0 shadow-2xl ring-1 shadow-black/5 ring-slate-200">
-      <CardHeader className="border-b bg-slate-50/50 px-8 py-6">
-        <CardTitle className="text-xl font-bold tracking-tight text-slate-800">
+      <CardHeader className="border-b bg-slate-50/50 px-4 py-4 sm:px-8 sm:py-6">
+        <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl">
           Module Access Permissions
         </CardTitle>
-        <CardDescription className="text-sm font-medium text-slate-500">
+        <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm">
           Read-only view of access controls assigned to your sub-admin account.
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="p-8">
-        <div className="flex flex-col gap-6">
+      <CardContent className="p-4 sm:p-8">
+        <div className="flex flex-col gap-4 sm:gap-6">
           {allowedPermissions.length > 0 && (
-            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
               {allowedPermissions.map((entry) => renderPermission(entry, true))}
             </div>
           )}
@@ -134,18 +134,18 @@ export function ProfilePermissions() {
           {restrictedPermissions.length > 0 && (
             <Collapsible open={isRestrictedOpen} onOpenChange={setIsRestrictedOpen}>
               <CollapsibleTrigger>
-                <button className="flex w-full items-center justify-between rounded-xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:bg-slate-900">
+                <button className="flex w-full items-center justify-between rounded-xl bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 sm:text-sm dark:bg-slate-900/50 dark:text-slate-300 dark:hover:bg-slate-900">
                   <span>View Restricted Permissions ({restrictedPermissions.length})</span>
                   <ChevronDown
                     className={cn(
-                      "h-5 w-5 text-slate-500 transition-transform duration-200",
+                      "h-4 w-4 text-slate-500 transition-transform duration-200 sm:h-5 sm:w-5",
                       isRestrictedOpen && "rotate-180",
                     )}
                   />
                 </button>
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-4">
-                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
                   {restrictedPermissions.map((entry) => renderPermission(entry, false))}
                 </div>
               </CollapsibleContent>

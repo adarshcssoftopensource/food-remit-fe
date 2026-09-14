@@ -68,18 +68,18 @@ export function ProfileForm() {
 
   return (
     <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
-      <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-8 py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
-        <CardTitle className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
+      <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-4 py-4 sm:px-8 sm:py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
+        <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
           Personal Information
         </CardTitle>
-        <CardDescription className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm dark:text-slate-400">
           Update your personal details and contact information.
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="p-8">
+      <CardContent className="p-4 sm:p-8">
         <form onSubmit={handleSubmit(onSubmit)} noValidate suppressHydrationWarning>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
             <Controller
               name="firstName"
               control={control}
@@ -192,7 +192,7 @@ export function ProfileForm() {
               name="address"
               control={control}
               render={({ field }) => (
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5 md:col-span-2">
                   <FieldLabel htmlFor="address" className="text-sm font-semibold">
                     Address
                   </FieldLabel>

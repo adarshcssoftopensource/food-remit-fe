@@ -64,6 +64,10 @@ export interface PartnerLeadData {
   businessName: string;
   businessType: string;
   locationsCount: string;
+  locations: string[];
+  languages: string[];
+  daysOpen: string[];
+  hoursOfOperation: string;
   businessCity: string | null;
   stateProvince: string | null;
   country: string;
@@ -80,6 +84,7 @@ export interface PartnerLeadData {
   status: PartnerLeadStatus;
   statusRemark: string | null;
   createdAt: string;
+  currency?: string | null;
   countryId?: string | null;
   cityId?: string | null;
   veriffSessionId?: string | null;

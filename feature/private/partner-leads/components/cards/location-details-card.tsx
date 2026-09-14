@@ -33,7 +33,34 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">City</dt>
             <dd className="text-sm font-semibold text-slate-900">{lead.businessCity || "N/A"}</dd>
           </div>
+          <div>
+            <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
+              Currency
+            </dt>
+            <dd className="text-sm font-semibold text-slate-900">{lead.currency || "N/A"}</dd>
+          </div>
+          <div>
+            <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
+              Locations Count
+            </dt>
+            <dd className="text-sm font-semibold text-slate-900">{lead.locationsCount}</dd>
+          </div>
         </dl>
+
+        {lead.locations && lead.locations.length > 0 && (
+          <div className="mt-6 border-t border-slate-100 pt-6">
+            <h4 className="mb-3 text-xs font-bold tracking-wider text-slate-500 uppercase">
+              Addresses
+            </h4>
+            <ul className="space-y-2">
+              {lead.locations.map((loc, idx) => (
+                <li key={idx} className="rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                  {loc}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

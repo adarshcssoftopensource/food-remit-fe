@@ -70,10 +70,9 @@ export function ChangePassword() {
   };
 
   return (
-    <div className="w-full space-y-6">
-      {/* Security tips banner */}
-      <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-4">
-        <ShieldCheck className="mt-0.5 h-6 w-6 shrink-0 text-emerald-600" />
+    <div className="w-full space-y-4 sm:space-y-6">
+      <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 sm:px-5 sm:py-4">
+        <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 sm:h-6 sm:w-6" />
         <div>
           <p className="text-sm font-bold text-emerald-700">Keep your account safe</p>
           <p className="mt-0.5 text-xs font-medium text-emerald-700/80">
@@ -83,17 +82,17 @@ export function ChangePassword() {
       </div>
 
       <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
-        <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-8 py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
-          <CardTitle className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
+        <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-4 py-4 sm:px-8 sm:py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
+          <CardTitle className="flex items-center gap-2 text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
             Change Password
           </CardTitle>
-          <CardDescription className="text-sm font-medium text-slate-500 dark:text-slate-400">
+          <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm dark:text-slate-400">
             Update your security credentials and ensure account safety.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="max-w-2xl p-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <CardContent className="max-w-2xl p-4 sm:p-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
             <Controller
               name="oldPassword"
               control={control}

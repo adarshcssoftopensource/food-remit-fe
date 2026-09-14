@@ -39,13 +39,16 @@ export function ProfilePage() {
       <ProfileHeader />
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="mb-6 grid h-auto w-full max-w-md grid-cols-2 gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/60">
-          <TabsTrigger value="general" className="h-10 rounded-xl text-xs font-semibold sm:text-sm">
+        <TabsList className="mb-4 grid h-auto w-full max-w-md grid-cols-2 gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl sm:mb-6 dark:border-slate-800/80 dark:bg-slate-900/60">
+          <TabsTrigger
+            value="general"
+            className="h-10 rounded-xl px-3 text-xs font-semibold sm:px-4 sm:text-sm"
+          >
             General Details
           </TabsTrigger>
           <TabsTrigger
             value="security"
-            className="h-10 rounded-xl text-xs font-semibold sm:text-sm"
+            className="h-10 rounded-xl px-3 text-xs font-semibold sm:px-4 sm:text-sm"
           >
             Security
           </TabsTrigger>
