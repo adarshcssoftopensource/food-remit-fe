@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { FileSpreadsheet, Loader2, TableProperties } from "lucide-react";
+import { format } from "date-fns";
+import { FileSpreadsheet, TableProperties } from "lucide-react";
 import { useFilterState } from "@/hooks/use-filter-state";
 
 import { DataTable } from "@/components/common/data-table/data-table";
@@ -38,6 +39,7 @@ import { ReportDateFilters } from "./components/report-date-filters";
 import { useReportDateFilters } from "./hooks/use-report-date-filters";
 import { useStoreReport } from "./hooks/use-store-report";
 import { OrderReportsPage } from "./components/order-reports-page";
+import { CustomerReportsPage } from "./components/customer-reports-page";
 
 type ReportManagementPageProps = {
   section: ReportSectionKey;
@@ -74,7 +76,6 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
   const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
     foodType: "All",
     country: "all",
-    city: "all",
   });
 
   const clearAll = () => {
@@ -131,14 +132,11 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
         fromDate={fromDate}
         toDate={toDate}
         countryId={draft.country}
-        cityId={draft.city}
         onCountryChange={(v) => setDraft((p) => ({ ...p, country: v }))}
-        onCityChange={(v) => setDraft((p) => ({ ...p, city: v }))}
         hasFilters={
           hasFilters ||
           (section === "orders-report" && applied.foodType !== "All") ||
-          applied.country !== "all" ||
-          applied.city !== "all"
+          applied.country !== "all"
         }
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
@@ -199,13 +197,11 @@ function StoreReportsPage() {
   const [isExporting, setIsExporting] = useState(false);
   const {
     applyFilters,
-    city,
     clearFilters,
     country,
     filteredData,
     fromDate,
     hasFilters,
-    setCity,
     setCountry,
     setFromDate,
     setToDate,
@@ -224,8 +220,8 @@ function StoreReportsPage() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const fromDateStr = fromDate ? fromDate.toISOString() : undefined;
-      const toDateStr = toDate ? toDate.toISOString() : undefined;
+      const fromDateStr = fromDate ? format(fromDate, "yyyy-MM-dd") : undefined;
+      const toDateStr = toDate ? format(toDate, "yyyy-MM-dd") : undefined;
 
       const { data } = await apiClient.get(REPORT_ENDPOINTS.EXPORT_STORE_REPORTS, {
         params: {
@@ -233,7 +229,6 @@ function StoreReportsPage() {
           limit: pageSize,
           search: search.trim() || undefined,
           country: country === "All" ? undefined : country,
-          city: city === "All" ? undefined : city,
           fromDate: fromDateStr,
           toDate: toDateStr,
         },
@@ -276,10 +271,8 @@ function StoreReportsPage() {
         fromDate={fromDate}
         toDate={toDate}
         countryId={country === "All" ? "all" : country}
-        cityId={city === "All" ? "all" : city}
         hasFilters={hasFilters}
         onCountryChange={(v) => setCountry(v === "all" ? "All" : v)}
-        onCityChange={(v) => setCity(v === "all" ? "All" : v)}
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
         onApply={applyFilters}
@@ -340,6 +333,10 @@ export function ReportManagementPage({ section }: ReportManagementPageProps) {
 
   if (section === "orders-report") {
     return <OrderReportsPage />;
+  }
+
+  if (section === "customer-report") {
+    return <CustomerReportsPage />;
   }
 
   return <EmptyReportsTable section={section} />;

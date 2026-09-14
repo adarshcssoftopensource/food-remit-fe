@@ -63,6 +63,7 @@ export const ROUTES = {
       STORE_REPORT: "/report-management/store-report",
       STORE_REPORT_DETAIL: (id: string) => `/report-management/store-report/${id}`,
       CUSTOMER_REPORT: "/report-management/customer-report",
+      CUSTOMER_REPORT_DETAIL: (id: string) => `/report-management/customer-report/${id}`,
       ORDERS_REPORT: "/report-management/orders-report",
       COUPONS_REPORT: "/report-management/coupons-report",
     },

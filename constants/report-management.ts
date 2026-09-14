@@ -54,6 +54,7 @@ export type CustomerReportRow = {
   firstName: string;
   email: string;
   phoneNumber: string;
+  totalOrders?: number;
   ordersSent: number;
   ordersRequested: number;
   country: string;
