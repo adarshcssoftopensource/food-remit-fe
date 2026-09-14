@@ -22,4 +22,5 @@ export const PARTNER_LEAD_ENDPOINTS = {
   },
   GET_LEAD: (id: string) => `partner-leads/${id}`,
   UPDATE_STATUS: (id: string) => `partner-leads/${id}/status`,
+  CHECK_EMAIL: (email: string) => `partner-leads/check-email?email=${encodeURIComponent(email)}`,
 } as const;
