@@ -50,10 +50,21 @@ export function DepartmentFormDialog({
     roleCode === "SUB_ADMIN" ||
     roleCode === "COUNTRY_MANAGER";
 
+  const [citySearchQuery, setCitySearchQuery] = useState("");
+  const [selectedCitySearchQuery, setSelectedCitySearchQuery] = useState("");
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setCitySearchQuery("");
+      setSelectedCitySearchQuery("");
+    }
+    onOpenChange(nextOpen);
+  };
+
   const { form, isSubmitting, handleSubmit, isStoreScoped } = useDepartmentForm(
     open,
     department,
-    onOpenChange,
+    handleOpenChange,
     onSubmit,
     profile,
   );
@@ -61,7 +72,6 @@ export function DepartmentFormDialog({
   const countryId = form.watch("countryId");
   const rawCityIds = form.watch("cityIds");
   const cityIds = useMemo(() => rawCityIds || [], [rawCityIds]);
-  const [citySearchQuery, setCitySearchQuery] = useState("");
 
   const { data: citiesResponse, isLoading: isLoadingCities } = useGetCities({
     countryId: countryId && countryId !== "All" && countryId !== "all" ? countryId : undefined,
@@ -85,10 +95,10 @@ export function DepartmentFormDialog({
   }, [citiesList, cityIds]);
 
   const filteredSelectedCities = useMemo(() => {
-    const query = citySearchQuery.trim().toLowerCase();
+    const query = selectedCitySearchQuery.trim().toLowerCase();
     if (!query) return selectedCities;
     return selectedCities.filter((c) => c.name.toLowerCase().includes(query));
-  }, [citySearchQuery, selectedCities]);
+  }, [selectedCitySearchQuery, selectedCities]);
 
   const addCity = (cityId: string) => {
     const currentIds = form.getValues("cityIds") || [];
@@ -106,7 +116,7 @@ export function DepartmentFormDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-xl! overflow-hidden rounded-[28px] border border-slate-200/80 bg-white p-0 sm:w-full">
         <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 z-20 h-0.5" />
 
@@ -147,6 +157,8 @@ export function DepartmentFormDialog({
                             field.onChange(value);
                             form.setValue("cityIds", []);
                             form.setValue("storeId", "");
+                            setCitySearchQuery("");
+                            setSelectedCitySearchQuery("");
                           }}
                           valueKey="id"
                           placeholder="Select country"
@@ -204,7 +216,7 @@ export function DepartmentFormDialog({
                                     <MapPin className="h-4 w-4 text-slate-400" />
                                     <span className="text-slate-500">
                                       {selectedCities.length > 0
-                                        ? `${selectedCities.length} city${selectedCities.length > 1 ? "ies" : ""} selected`
+                                        ? `${selectedCities.length} ${selectedCities.length === 1 ? "city" : "cities"} selected`
                                         : "Select cities"}
                                     </span>
                                   </span>
@@ -279,8 +291,8 @@ export function DepartmentFormDialog({
                                 <Search className="pointer-events-none absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
                                 <Input
                                   placeholder="Search selected cities..."
-                                  value={citySearchQuery}
-                                  onChange={(e) => setCitySearchQuery(e.target.value)}
+                                  value={selectedCitySearchQuery}
+                                  onChange={(e) => setSelectedCitySearchQuery(e.target.value)}
                                   className="h-9 border-slate-200 pl-9 text-sm dark:border-slate-800"
                                 />
                               </div>
