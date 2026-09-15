@@ -1,16 +1,17 @@
 "use client";
 
-import { Check, ChevronDown, Loader2, Search, Store } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Check, ChevronDown, Loader2, Search, Store, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useGetStoresDropdown } from "@/feature/private/store-management/hooks/use-get-stores-dropdown";
 import type { StoreData } from "@/feature/private/store-management/types/store-management";
+import { useDebounce } from "@/lib/debounce";
 import { cn } from "@/lib/utils";
 
-type StoreSelectProps = {
+export type StoreSelectProps = {
   className?: string;
   countryId?: string;
   cityId?: string;
@@ -32,61 +33,68 @@ export function StoreSelect({
   id,
   invalid,
   onValueChange,
-  placeholder = "Select store",
+  placeholder = "Select store...",
   value = "",
   includeAll = false,
   allLabel = "All Stores",
 }: StoreSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
-  const { data: storesList, isLoading } = useGetStoresDropdown({
+  // Cached store item when selected (preserves display label if not in current 50 results)
+  const [cachedSelectedStore, setCachedSelectedStore] = useState<StoreData | null>(null);
+
+  // Query stores with server-side limit 50 and full database search
+  const {
+    data: storesList = [],
+    isLoading,
+    isFetching,
+  } = useGetStoresDropdown({
+    search: debouncedSearch.trim() || undefined,
+    limit: 50,
     countryId,
     cityId,
+    enabled: isOpen || Boolean(value),
   });
 
-  const sortedStores = useMemo(() => {
-    const list = [...storesList];
-    return list.sort((a, b) => a.storeName.localeCompare(b.storeName));
-  }, [storesList]);
-
-  const selectedStore = useMemo(() => {
-    if (!value || (includeAll && (value === "All" || value === "all" || value === ""))) {
+  const currentStore = useMemo(() => {
+    if (!value || value === "All" || value === "all") {
       return null;
     }
-    return sortedStores.find(
+    const found = storesList.find(
       (s) => s.id === value || s.storeName.toLowerCase() === value.toLowerCase(),
     );
-  }, [sortedStores, value, includeAll]);
-
-  const filteredStores = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return sortedStores;
-    return sortedStores.filter(
-      (s) =>
-        s.storeName.toLowerCase().includes(query) ||
-        (s.storeCityName && s.storeCityName.toLowerCase().includes(query)) ||
-        (s.storeAddress && s.storeAddress.toLowerCase().includes(query)),
-    );
-  }, [searchQuery, sortedStores]);
-
-  const isDisabled = disabled || (!countryId && countryId !== undefined) || !countryId;
+    if (found) return found;
+    if (
+      cachedSelectedStore &&
+      (cachedSelectedStore.id === value ||
+        cachedSelectedStore.storeName.toLowerCase() === value.toLowerCase())
+    ) {
+      return cachedSelectedStore;
+    }
+    return null;
+  }, [value, storesList, cachedSelectedStore]);
 
   const displayLabel = useMemo(() => {
-    if (!countryId) {
-      return "Select country first...";
-    }
     if (includeAll && (value === "All" || value === "all" || !value)) {
       return allLabel;
     }
-    if (selectedStore) {
-      return selectedStore.storeName;
+    if (currentStore) {
+      return currentStore.storeName;
     }
     if (value && value !== "All" && value !== "all") {
       return value;
     }
     return placeholder;
-  }, [countryId, includeAll, value, allLabel, selectedStore, placeholder]);
+  }, [includeAll, value, allLabel, currentStore, placeholder]);
+
+  const displayLocation = useMemo(() => {
+    if (currentStore) {
+      return currentStore.storeCityName || currentStore.storeCountryName || null;
+    }
+    return null;
+  }, [currentStore]);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -96,108 +104,171 @@ export function StoreSelect({
             id={id}
             type="button"
             variant="outline"
-            disabled={isDisabled}
+            disabled={disabled}
             aria-invalid={invalid}
             className={cn(
-              "h-11! w-full justify-between rounded-xl border-slate-200 bg-white px-3 text-sm font-normal text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800",
-              !selectedStore && (!includeAll || value !== "All") && "text-slate-500",
+              "flex h-11 w-full items-center justify-between rounded-xl border border-slate-200/80 bg-white/70 px-3 text-xs font-normal text-slate-900 shadow-xs backdrop-blur-md transition-all hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100",
+              (!value || (includeAll && (value === "All" || value === "all"))) &&
+                "text-slate-500 dark:text-slate-400",
               invalid && "border-red-400 bg-red-50/30",
               className,
             )}
           >
             <span className="flex min-w-0 items-center gap-2">
-              <Store className="size-4 shrink-0 text-slate-400" />
-              <span className="truncate">{displayLabel}</span>
+              <Store className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span className="truncate font-medium">{displayLabel}</span>
+              {displayLocation && (
+                <span className="hidden max-w-32 truncate rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 sm:inline-block dark:bg-slate-800 dark:text-slate-400">
+                  {displayLocation}
+                </span>
+              )}
             </span>
-            {isLoading ? (
-              <Loader2 className="size-4 shrink-0 animate-spin text-slate-400" />
-            ) : (
-              <ChevronDown className="size-4 shrink-0 text-slate-500" />
-            )}
+            <div className="flex items-center gap-1">
+              {isFetching ? (
+                <Loader2 className="size-3.5 shrink-0 animate-spin text-emerald-600" />
+              ) : (
+                <ChevronDown className="size-3.5 shrink-0 text-slate-400 transition-transform duration-200" />
+              )}
+            </div>
           </Button>
         }
       />
       <PopoverContent
         align="start"
-        className="z-200 w-[min(28rem,calc(100vw-2rem))] gap-2 p-2"
         side="bottom"
+        className="z-200 flex w-(--anchor-width) max-w-[var(--anchor-width)] min-w-(--anchor-width) flex-col gap-2 overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-2.5 shadow-2xl dark:border-slate-800 dark:bg-slate-900"
+        style={{ width: "var(--anchor-width)", minWidth: "var(--anchor-width)" }}
       >
-        <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
+        {/* Search Header */}
+        <div className="relative shrink-0">
+          <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-3.5 -translate-y-1/2 text-slate-400" />
           <Input
             autoFocus
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search store name or city..."
-            className="h-9 border-slate-200 pl-9 text-sm dark:border-slate-800"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search stores by name, city, or phone..."
+            className="h-10 w-full rounded-xl border-slate-200/90 pr-8 pl-9 text-xs dark:border-slate-800"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded-full p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            >
+              <X className="size-3.5" />
+            </button>
+          )}
         </div>
 
+        {/* Status indicator bar */}
+        <div className="flex shrink-0 items-center justify-between px-2 text-[10px] font-medium text-slate-400">
+          <span>
+            {debouncedSearch
+              ? `Found ${storesList.length} matching stores in database`
+              : `Showing top ${storesList.length} stores (search 100K+ stores)`}
+          </span>
+          {isFetching && (
+            <span className="flex items-center gap-1 text-emerald-600">
+              <Loader2 className="size-2.5 animate-spin" />
+              Searching...
+            </span>
+          )}
+        </div>
+
+        {/* Scrollable stores list (scrolls after ~8-10 stores) */}
         <div
-          className="max-h-60 scrollbar-thin overflow-y-auto overscroll-contain rounded-md pt-1"
+          className="scrollbar-thin space-y-1 overflow-y-auto overscroll-contain p-0.5"
+          style={{ maxHeight: "360px", overflowY: "auto" }}
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
-          style={{ overscrollBehavior: "contain" }}
         >
           {includeAll && (
-            <Button
-              variant="ghost"
+            <button
+              type="button"
               onClick={() => {
                 onValueChange("", undefined);
+                setCachedSelectedStore(null);
                 setIsOpen(false);
                 setSearchQuery("");
               }}
               className={cn(
-                "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
-                (!value || value === "All" || value === "all") &&
-                  "bg-primary/10 text-primary font-medium",
+                "flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-medium transition-colors",
+                !value || value === "All" || value === "all"
+                  ? "bg-emerald-50 font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200"
+                  : "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800/80",
               )}
             >
-              <Store className="size-4 shrink-0 text-slate-400" />
+              <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                <Store className="size-3.5" />
+              </div>
               <span className="flex-1 truncate">{allLabel}</span>
-              {(!value || value === "All" || value === "all") && <Check className="size-4" />}
-            </Button>
+              {(!value || value === "All" || value === "all") && (
+                <Check className="size-3.5 shrink-0 text-emerald-600" />
+              )}
+            </button>
           )}
 
           {isLoading ? (
-            <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-500">
-              <Loader2 className="size-4 animate-spin" />
-              Loading stores...
+            <div className="flex flex-col items-center justify-center gap-2 py-8 text-xs text-slate-400">
+              <Loader2 className="size-5 animate-spin text-emerald-600" />
+              <span>Searching database across all stores...</span>
             </div>
-          ) : filteredStores.length ? (
-            filteredStores.map((store) => {
-              const isSelected =
-                value === store.id || (selectedStore && selectedStore.id === store.id);
+          ) : storesList.length > 0 ? (
+            storesList.map((store) => {
+              const isSelected = value === store.id;
 
               return (
-                <Button
+                <button
                   key={store.id}
-                  variant="ghost"
+                  type="button"
                   onClick={() => {
                     onValueChange(store.id, store);
+                    setCachedSelectedStore(store);
                     setIsOpen(false);
                     setSearchQuery("");
                   }}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
-                    isSelected && "bg-primary/10 text-primary font-medium",
+                    "flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-colors",
+                    isSelected
+                      ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100"
+                      : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/60",
                   )}
                 >
-                  <Store className="size-4 shrink-0 text-slate-400" />
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate font-medium">{store.storeName}</span>
-                    {store.storeCityName && (
-                      <span className="truncate text-[11px] font-normal text-slate-400">
-                        {store.storeCityName}
-                      </span>
+                  <div
+                    className={cn(
+                      "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                      isSelected
+                        ? "bg-emerald-600 text-white"
+                        : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
                     )}
+                  >
+                    <Store className="size-4" />
                   </div>
-                  {isSelected && <Check className="size-4 shrink-0" />}
-                </Button>
+
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate font-semibold text-slate-900 dark:text-white">
+                      {store.storeName}
+                    </span>
+                    <span className="truncate text-[10px] text-slate-400">
+                      {[store.storeCityName, store.storeCountryName, store.storeAddress]
+                        .filter(Boolean)
+                        .join(" • ") || "Active Store"}
+                    </span>
+                  </div>
+
+                  {isSelected && (
+                    <Check className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  )}
+                </button>
               );
             })
           ) : (
-            <p className="px-2 py-6 text-center text-sm text-slate-500">No stores found.</p>
+            <div className="py-8 text-center text-xs text-slate-400">
+              <p className="font-semibold text-slate-600 dark:text-slate-300">No stores found</p>
+              <p className="mt-0.5 text-[11px]">
+                Try adjusting your search query for &quot;{debouncedSearch}&quot;
+              </p>
+            </div>
           )}
         </div>
       </PopoverContent>

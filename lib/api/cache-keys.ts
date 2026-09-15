@@ -101,4 +101,8 @@ export const API_CACHE_KEYS = {
   // Bank Verification (Plaid)
   PLAID_CONFIG: ["plaid-config"],
   PLAID_VERIFICATION: (id: string) => ["plaid-verification", id],
+
+  // Coupons
+  COUPONS: ["coupons"],
+  COUPON_BY_ID: (id: string) => ["coupon", id],
 };

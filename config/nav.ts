@@ -173,7 +173,7 @@ export const navigationItems: NavItem[] = [
   },
   {
     title: "Coupons Management",
-    url: ROUTES.ADMIN.COUPONS_MANAGEMENT,
+    url: ROUTES.ADMIN.COUPONS_MANAGEMENT.ROOT,
     icon: Gift,
     group: "ORDERS & CUSTOMERS",
   },
