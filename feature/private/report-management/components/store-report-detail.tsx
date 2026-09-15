@@ -242,11 +242,11 @@ export function StoreReportDetail({ storeId }: StoreReportDetailProps) {
           value: cleanCurrencyDisplay(store.earnings?.totalProcessing),
           icon: CreditCard,
         },
-        {
-          label: "Commission Earning",
-          value: cleanCurrencyDisplay(store.earnings?.totalCommission),
-          icon: HandCoins,
-        },
+        // {
+        //   label: "Commission Earning",
+        //   value: cleanCurrencyDisplay(store.earnings?.totalCommission),
+        //   icon: HandCoins,
+        // },
         {
           label: "Item Tax",
           value: cleanCurrencyDisplay(store.earnings?.totalItemTax),

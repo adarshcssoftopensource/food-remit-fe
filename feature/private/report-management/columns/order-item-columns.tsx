@@ -119,19 +119,19 @@ export function getOrderItemColumns(
         </div>
       ),
     },
-    {
-      id: "totalPrice",
-      header: "Total Price",
-      cell: ({ row }) => {
-        const total = Number(row.original.price) * row.original.quantity;
-        return (
-          <div className="text-start font-extrabold text-slate-900 dark:text-white">
-            {symbol}
-            {total.toFixed(2)}
-          </div>
-        );
-      },
-    },
+    // {
+    //   id: "totalPrice",
+    //   header: "Total Price",
+    //   cell: ({ row }) => {
+    //     const total = Number(row.original.price) * row.original.quantity;
+    //     return (
+    //       <div className="text-start font-extrabold text-slate-900 dark:text-white">
+    //         {symbol}
+    //         {total.toFixed(2)}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       accessorKey: "deliveredStatus",
       header: "Delivery Status",

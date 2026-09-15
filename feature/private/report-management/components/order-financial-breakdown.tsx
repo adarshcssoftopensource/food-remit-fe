@@ -162,6 +162,7 @@ export interface VendorSettlementData {
   commissionPercent?: string;
   commissionAmount?: string;
   vendorProceeds?: string;
+  storeTaxPercent?: string;
   govtTax?: string;
   totalVendorSettlement?: string;
   settlementStatus?: string;
@@ -192,105 +193,115 @@ export function OrderFinancialBreakdown({
     cp.discountAmount !== "$0.00" &&
     !cp.discountAmount.includes("0.00");
 
+  const cardsCount = [cp, fr, vs].filter(Boolean).length;
+  const gridColsClass =
+    cardsCount === 1 ? "md:grid-cols-1" : cardsCount === 2 ? "md:grid-cols-2" : "md:grid-cols-3";
+
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div className={`grid grid-cols-1 gap-6 ${gridColsClass}`}>
       {/* STEP 1: Customer Payment */}
-      <FinancialCard
-        step={1}
-        title="Customer Payment"
-        icon={<CreditCard className="size-4 text-blue-500" />}
-        headerBg="bg-blue-50/40 dark:bg-blue-950/30"
-        headerBorder="border-blue-100 dark:border-blue-900/30"
-        borderColor="border-blue-100 dark:border-blue-900/30"
-        totalLabel="Total Customer Paid"
-        totalColor="text-blue-600 dark:text-blue-400"
-        totalValue={cp?.totalCustomerPaid || "₹0.00"}
-        rows={[
-          {
-            label: `Item Price (Incl. Markup ${cp?.itemMarkupPercent || "0%"})`,
-            value: cp?.merchandiseSubtotal || "₹0.00",
-          },
-          ...(showDiscount
-            ? [
-                {
-                  label: "Discount Applied",
-                  value: `-${cp!.discountAmount}`,
-                  highlight: "green" as const,
-                },
-              ]
-            : []),
-          {
-            label: `Store Govt Tax (${cp?.storeTaxPercent || "0%"})`,
-            value: cp?.storeTax || "₹0.00",
-          },
-          { label: "Processing Fee", value: cp?.processingFee || "₹0.00" },
-        ]}
-        refundAmount={cp?.refundAmount}
-        actualLabel="Actual Retained Amount"
-        actualValue={cp?.actualRetainedAmount}
-        paymentMethod={cp?.paymentMethod}
-        paymentStatus={cp?.paymentStatus}
-      />
+      {cp && (
+        <FinancialCard
+          step={1}
+          title="Customer Payment"
+          icon={<CreditCard className="size-4 text-blue-500" />}
+          headerBg="bg-blue-50/40 dark:bg-blue-950/30"
+          headerBorder="border-blue-100 dark:border-blue-900/30"
+          borderColor="border-blue-100 dark:border-blue-900/30"
+          totalLabel="Total Customer Paid"
+          totalColor="text-blue-600 dark:text-blue-400"
+          totalValue={cp?.totalCustomerPaid || "₹0.00"}
+          rows={[
+            {
+              label: `Item Price (Incl. Markup ${cp?.itemMarkupPercent || "0%"})`,
+              value: cp?.merchandiseSubtotal || "₹0.00",
+            },
+            ...(showDiscount
+              ? [
+                  {
+                    label: "Discount Applied",
+                    value: `-${cp!.discountAmount}`,
+                    highlight: "green" as const,
+                  },
+                ]
+              : []),
+            {
+              label: `Store Govt Tax (${cp?.storeTaxPercent || "0%"})`,
+              value: cp?.storeTax || "₹0.00",
+            },
+            { label: "Processing Fee", value: cp?.processingFee || "₹0.00" },
+          ]}
+          refundAmount={cp?.refundAmount}
+          actualLabel="Actual Retained Amount"
+          actualValue={cp?.actualRetainedAmount}
+          paymentMethod={cp?.paymentMethod}
+          paymentStatus={cp?.paymentStatus}
+        />
+      )}
 
       {/* STEP 2: Food Remit Earnings */}
-      <FinancialCard
-        step={2}
-        title="Food Remit Earnings"
-        icon={<BarChart3 className="size-4 text-purple-500" />}
-        headerBg="bg-purple-50/40 dark:bg-purple-950/30"
-        headerBorder="border-purple-100 dark:border-purple-900/30"
-        borderColor="border-purple-100 dark:border-purple-900/30"
-        totalLabel="Total Food Remit Revenue"
-        totalColor="text-purple-600 dark:text-purple-400"
-        totalValue={fr?.totalFoodRemitRevenue || "₹0.00"}
-        rows={[
-          {
-            label: `Food Remit Markup (${fr?.markupPercent || "0%"})`,
-            value: fr?.markupAmount || "₹0.00",
-          },
-          {
-            label: `Food Remit Commission (${fr?.commissionPercent || "0%"})`,
-            value: fr?.commissionAmount || "₹0.00",
-          },
-          { label: "Processing Fee", value: fr?.processingFee || "₹0.00" },
-        ]}
-        refundDeduction={fr?.refundDeduction}
-        actualLabel="Actual Revenue"
-        actualValue={fr?.actualRevenue}
-      />
+      {fr && (
+        <FinancialCard
+          step={2}
+          title="Food Remit Earnings"
+          icon={<BarChart3 className="size-4 text-purple-500" />}
+          headerBg="bg-purple-50/40 dark:bg-purple-950/30"
+          headerBorder="border-purple-100 dark:border-purple-900/30"
+          borderColor="border-purple-100 dark:border-purple-900/30"
+          totalLabel="Total Food Remit Revenue"
+          totalColor="text-purple-600 dark:text-purple-400"
+          totalValue={fr?.totalFoodRemitRevenue || "₹0.00"}
+          rows={[
+            {
+              label: `Food Remit Markup (${fr?.markupPercent || "0%"})`,
+              value: fr?.markupAmount || "₹0.00",
+            },
+            {
+              label: `Food Remit Commission (${fr?.commissionPercent || "0%"})`,
+              value: fr?.commissionAmount || "₹0.00",
+            },
+            { label: "Processing Fee", value: fr?.processingFee || "₹0.00" },
+          ]}
+          refundDeduction={fr?.refundDeduction}
+          actualLabel="Actual Revenue"
+          actualValue={fr?.actualRevenue}
+        />
+      )}
 
       {/* STEP 3: Vendor Settlement */}
-      <FinancialCard
-        step={3}
-        title="Vendor Settlement"
-        icon={<Landmark className="size-4 text-emerald-500" />}
-        headerBg="bg-emerald-50/40 dark:bg-emerald-950/30"
-        headerBorder="border-emerald-100 dark:border-emerald-900/30"
-        borderColor="border-emerald-100 dark:border-emerald-900/30"
-        totalLabel="Total Vendor Settlement"
-        totalColor="text-emerald-600 dark:text-emerald-400"
-        totalValue={vs?.totalVendorSettlement || vs?.vendorProceeds || "₹0.00"}
-        rows={[
-          {
-            label: "Items Count",
-            value:
-              vs?.inStockItemsCount !== undefined && vs?.totalItemsCount !== undefined
-                ? `${vs.inStockItemsCount} of ${vs.totalItemsCount}`
-                : "All",
-          },
-          { label: "Base Price", value: vs?.vendorBaseAmount || "₹0.00" },
-          ...(vs?.govtTax
-            ? [{ label: `Store Govt Tax (${cp?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
-            : []),
-          {
-            label: `Food Remit Commission (${vs?.commissionPercent || "0%"})`,
-            value: vs?.commissionAmount || "₹0.00",
-          },
-        ]}
-        refundDeduction={vs?.refundDeduction}
-        actualLabel="Actual Settlement"
-        actualValue={vs?.actualVendorEarnings}
-      />
+      {vs && (
+        <FinancialCard
+          step={3}
+          title="Vendor Settlement"
+          icon={<Landmark className="size-4 text-emerald-500" />}
+          headerBg="bg-emerald-50/40 dark:bg-emerald-950/30"
+          headerBorder="border-emerald-100 dark:border-emerald-900/30"
+          borderColor="border-emerald-100 dark:border-emerald-900/30"
+          totalLabel="Total Vendor Settlement"
+          totalColor="text-emerald-600 dark:text-emerald-400"
+          totalValue={vs?.totalVendorSettlement || vs?.vendorProceeds || "₹0.00"}
+          rows={[
+            // {
+            //   label: "Items Count",
+            //   value:
+            //     vs?.inStockItemsCount !== undefined && vs?.totalItemsCount !== undefined
+            //       ? `${vs.inStockItemsCount} of ${vs.totalItemsCount}`
+            //       : "All",
+            // },
+            { label: "Base Price", value: vs?.vendorBaseAmount || "₹0.00" },
+            ...(vs?.govtTax
+              ? [{ label: `Store Govt Tax (${vs?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
+              : []),
+            {
+              label: `Food Remit Commission (${vs?.commissionPercent || "0%"})`,
+              value: vs?.commissionAmount || "₹0.00",
+            },
+          ]}
+          refundDeduction={vs?.refundDeduction}
+          actualLabel="Actual Settlement"
+          actualValue={vs?.actualVendorEarnings}
+        />
+      )}
     </div>
   );
 }
