@@ -27,7 +27,7 @@ export interface PlaceDetails {
 export interface UseGooglePlacesReturn {
   isReady: boolean;
   error: string | null;
-  getSuggestions: (input: string) => Promise<PlacePrediction[]>;
+  getSuggestions: (input: string, countryCode?: string) => Promise<PlacePrediction[]>;
   getPlaceDetails: (placeId: string) => Promise<PlaceDetails | null>;
 }
 
@@ -45,23 +45,30 @@ async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T> {
 export function useGooglePlaces(): UseGooglePlacesReturn {
   const [error, setError] = useState<string | null>(null);
 
-  const getSuggestions = useCallback(async (input: string): Promise<PlacePrediction[]> => {
-    const query = input.trim();
-    if (!query) return [];
+  const getSuggestions = useCallback(
+    async (input: string, countryCode?: string): Promise<PlacePrediction[]> => {
+      const query = input.trim();
+      if (!query) return [];
 
-    try {
-      const data = await fetchJson<{ predictions: PlacePrediction[] }>(
-        `/api/places/autocomplete?input=${encodeURIComponent(query)}`,
-      );
-      setError(null);
-      return data.predictions ?? [];
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to fetch suggestions";
-      console.error("[useGooglePlaces] suggestions:", message);
-      setError(message);
-      return [];
-    }
-  }, []);
+      try {
+        const url = new URL("/api/places/autocomplete", window.location.origin);
+        url.searchParams.set("input", query);
+        if (countryCode) {
+          url.searchParams.set("country", countryCode);
+        }
+
+        const data = await fetchJson<{ predictions: PlacePrediction[] }>(url.pathname + url.search);
+        setError(null);
+        return data.predictions ?? [];
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to fetch suggestions";
+        console.error("[useGooglePlaces] suggestions:", message);
+        setError(message);
+        return [];
+      }
+    },
+    [],
+  );
 
   const getPlaceDetails = useCallback(async (placeId: string): Promise<PlaceDetails | null> => {
     if (!placeId) return null;
