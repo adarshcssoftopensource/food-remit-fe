@@ -19,7 +19,17 @@ export const partnerLeadSchema = z
         z.object({
           address: z.string().min(1, "Address is required"),
           daysOpen: z.array(z.string()).min(1, "At least one day must be selected"),
-          hoursOfOperation: z.string().trim().min(1, "Hours of operation are required"),
+          hoursOfOperation: z
+            .string()
+            .trim()
+            .min(1, "Hours of operation are required")
+            .refine(
+              (val) => {
+                const parts = val.split(" - ");
+                return parts.length === 2 && parts[0].trim() !== "" && parts[1].trim() !== "";
+              },
+              { message: "Both open and close times are required" },
+            ),
         }),
       )
       .optional(),

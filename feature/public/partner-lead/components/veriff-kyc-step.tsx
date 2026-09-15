@@ -50,6 +50,13 @@ export function VeriffKycStep({
         const res = await fetchKycStatus(idToUse, !showToast);
         const remoteStatus = (res.data?.status || "").toUpperCase();
         if (remoteStatus) {
+          const isPendingRemote = ["CREATED", "STARTED", "IN_PROGRESS"].includes(remoteStatus);
+          const isLocalSubmitted = kycStatus === "SUBMITTED" || localKycStatus === "SUBMITTED";
+
+          if (isLocalSubmitted && isPendingRemote) {
+            return;
+          }
+
           setLocalKycStatus(remoteStatus);
           onSessionUpdated(idToUse, remoteStatus);
           if (remoteStatus === "APPROVED" && showToast) {
@@ -131,6 +138,9 @@ export function VeriffKycStep({
             if (msg === MESSAGES.STARTED) {
               setLocalKycStatus("IN_PROGRESS");
               onSessionUpdated(newSessionId, "IN_PROGRESS");
+            } else if (msg === MESSAGES.CANCELED) {
+              setLocalKycStatus("ABANDONED");
+              onSessionUpdated(newSessionId, "ABANDONED");
             } else if (msg === MESSAGES.SUBMITTED || msg === MESSAGES.FINISHED) {
               setLocalKycStatus("SUBMITTED");
               onSessionUpdated(newSessionId, "SUBMITTED");

@@ -358,27 +358,28 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     }
   }, [isSingleLocation, getValues, setValue]);
 
-  // Auto-detect Currency
+  // Auto-detect Currency logic
   const selectedCountryName = watch("country");
   useEffect(() => {
     if (selectedCountryName) {
       const countries = Country.getAllCountries();
-      const countryObj = countries.find((c) => c.name === selectedCountryName);
+      const countryObj = countries.find(
+        (c) => c.name.trim().toLowerCase() === selectedCountryName.trim().toLowerCase(),
+      );
       if (countryObj && countryObj.currency) {
-        let symbol = "";
+        let symbol = countryObj.currency;
         try {
           const parts = new Intl.NumberFormat("en", {
             style: "currency",
             currency: countryObj.currency,
           }).formatToParts(0);
           symbol = parts.find((p) => p.type === "currency")?.value || countryObj.currency;
-        } catch (e) {
-          symbol = countryObj.currency;
-        }
+        } catch (e) {}
+
         setValue("currency", symbol, { shouldValidate: true });
       }
     } else {
-      setValue("currency", "");
+      setValue("currency", "", { shouldValidate: true });
     }
   }, [selectedCountryName, setValue]);
 
@@ -957,6 +958,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       </FieldLabel>
                       <Input
                         {...field}
+                        value={field.value || ""}
                         id="currency"
                         readOnly
                         placeholder="Currency will appear here"

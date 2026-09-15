@@ -260,7 +260,7 @@ export function TimeRangeSelect({ value, onChange, invalid }: TimeRangeSelectPro
     if (closeTime) {
       onChange(`${newOpen} - ${closeTime}`);
     } else {
-      onChange(`${newOpen} - 05:00 PM`);
+      onChange(`${newOpen} - `);
     }
   };
 
@@ -268,7 +268,7 @@ export function TimeRangeSelect({ value, onChange, invalid }: TimeRangeSelectPro
     if (openTime) {
       onChange(`${openTime} - ${newClose}`);
     } else {
-      onChange(`09:00 AM - ${newClose}`);
+      onChange(` - ${newClose}`);
     }
   };
 

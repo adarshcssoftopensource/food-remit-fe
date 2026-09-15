@@ -217,7 +217,8 @@ export function AddressAutocompleteInput({
         align="start"
         side="bottom"
         sideOffset={6}
-        className="z-50 w-[var(--radix-popover-trigger-width)] border-none bg-transparent p-0 shadow-none"
+        initialFocus={false}
+        className="z-50 w-(--radix-popover-trigger-width) border-none bg-transparent p-0 shadow-none"
       >
         <div
           className={cn(

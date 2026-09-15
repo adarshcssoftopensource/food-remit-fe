@@ -108,7 +108,34 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                           Days Open
                         </span>
                         <span className="font-semibold text-slate-700">
-                          {loc.daysOpen?.length > 0 ? loc.daysOpen.join(", ") : "N/A"}
+                          {loc.daysOpen?.length > 0 ? (
+                            <div className="mt-1 flex flex-wrap gap-1.5">
+                              {loc.daysOpen
+                                .slice()
+                                .sort((a, b) => {
+                                  const days = [
+                                    "Monday",
+                                    "Tuesday",
+                                    "Wednesday",
+                                    "Thursday",
+                                    "Friday",
+                                    "Saturday",
+                                    "Sunday",
+                                  ];
+                                  return days.indexOf(a) - days.indexOf(b);
+                                })
+                                .map((day) => (
+                                  <span
+                                    key={day}
+                                    className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20 ring-inset"
+                                  >
+                                    {day.slice(0, 3)}
+                                  </span>
+                                ))}
+                            </div>
+                          ) : (
+                            "N/A"
+                          )}
                         </span>
                       </div>
                       <div>
