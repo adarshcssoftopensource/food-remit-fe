@@ -75,30 +75,6 @@ export function OrderPartyCard({ type, details, onPreviewSignature }: OrderParty
             />
           </div>
         </div>
-
-        {customerSignature && (
-          <div className="flex items-center justify-between border-t border-slate-100 pt-2 dark:border-slate-800">
-            <span className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-              <FileSignature className={`size-3.5 ${iconColor}`} /> Customer Signature
-            </span>
-            <button
-              type="button"
-              onClick={() => onPreviewSignature?.(customerSignature)}
-              className="group hover:ring-primary/40 relative size-12 overflow-hidden rounded-lg border border-slate-200 transition-all hover:ring-2 focus:outline-none dark:border-slate-800"
-              title="Click to preview signature"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={customerSignature}
-                alt="Customer Signature"
-                className="size-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-hover:opacity-100">
-                <ZoomIn className="size-4 text-white drop-shadow-md" />
-              </div>
-            </button>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

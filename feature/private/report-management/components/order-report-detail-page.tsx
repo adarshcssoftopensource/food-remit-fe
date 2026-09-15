@@ -291,9 +291,7 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
         </div>
       </div>
 
-      {/* Executive Financial KPI Cards Grid */}
-      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {/* Total Transaction */}
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <Card className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/5 shadow-xs dark:bg-emerald-950/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -311,7 +309,6 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
           </CardContent>
         </Card>
 
-        {/* Markup */}
         <Card className="overflow-hidden rounded-2xl border border-purple-500/20 bg-purple-500/5 shadow-xs dark:bg-purple-950/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -329,7 +326,6 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
           </CardContent>
         </Card>
 
-        {/* Processing Fee */}
         <Card className="overflow-hidden rounded-2xl border border-blue-500/20 bg-blue-500/5 shadow-xs dark:bg-blue-950/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -347,30 +343,11 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
           </CardContent>
         </Card>
 
-        {/* Commission Earnings */}
-        <Card className="overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/5 shadow-xs dark:bg-amber-950/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold tracking-wider text-amber-600 uppercase dark:text-amber-400">
-                Commission
-              </p>
-              <div className="flex size-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
-                <HandCoins className="size-4" />
-              </div>
-            </div>
-            <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
-              {commissionDisplay}
-            </h3>
-            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">Store Commission</p>
-          </CardContent>
-        </Card>
-
-        {/* Item Tax */}
         <Card className="overflow-hidden rounded-2xl border border-indigo-500/20 bg-indigo-500/5 shadow-xs dark:bg-indigo-950/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <p className="text-[11px] font-bold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
-                Item Tax
+                Store Govt Tax
               </p>
               <div className="flex size-7 items-center justify-center rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
                 <Receipt className="size-4" />
@@ -383,7 +360,6 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
           </CardContent>
         </Card>
 
-        {/* Refunded Amount */}
         <Card className="overflow-hidden rounded-2xl border border-rose-500/20 bg-rose-500/5 shadow-xs dark:bg-rose-950/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -406,7 +382,6 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
         </Card>
       </div>
 
-      {/* 3-Step Financial Breakdown (Matching Order Management) */}
       <div className="space-y-3">
         <h2 className="text-base font-black tracking-tight text-slate-900 dark:text-white">
           Financial & Settlement Breakdown

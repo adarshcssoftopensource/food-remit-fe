@@ -175,7 +175,7 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
       />
 
       <Card className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-        <div className="bg-gradient-to-r from-blue-600/10 via-indigo-600/5 to-purple-600/10 p-6">
+        <div className="p-6">
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
             <div className="relative flex shrink-0 items-center justify-center">
               {customer.profileImage ? (
@@ -189,7 +189,7 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
                   />
                 </div>
               ) : (
-                <div className="flex size-24 items-center justify-center rounded-2xl border-2 border-white bg-gradient-to-br from-blue-600 to-indigo-700 text-2xl font-bold tracking-wider text-white shadow-md md:size-28 dark:border-slate-800">
+                <div className="flex size-24 items-center justify-center rounded-2xl border-2 border-white bg-linear-to-br from-blue-600 to-indigo-700 text-2xl font-bold tracking-wider text-white shadow-md md:size-28 dark:border-slate-800">
                   {customerInitials}
                 </div>
               )}
