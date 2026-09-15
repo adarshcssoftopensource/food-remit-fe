@@ -11,6 +11,8 @@ import { useMemo } from "react";
 export interface UseGetStoresDropdownArgs {
   countryId?: string;
   cityId?: string;
+  search?: string;
+  limit?: number | string;
   enabled?: boolean;
 }
 
@@ -18,11 +20,13 @@ export function useGetStoresDropdown(args?: UseGetStoresDropdownArgs) {
   const hasCountry = Boolean(
     args?.countryId && args.countryId !== "All" && args.countryId !== "all",
   );
-  const isEnabled = args?.enabled !== undefined ? args.enabled : hasCountry;
+  const isEnabled = args?.enabled !== undefined ? args.enabled : true;
 
   const queryString = buildUrl("", {
-    limit: "1000",
+    limit: args?.limit ? String(args.limit) : "50",
+    page: "1",
     status: "ACTIVE",
+    search: args?.search?.trim() ? args.search.trim() : undefined,
     country: hasCountry ? args?.countryId : undefined,
     city: args?.cityId && args.cityId !== "All" && args.cityId !== "all" ? args.cityId : undefined,
   }).replace("?", "");
@@ -30,7 +34,7 @@ export function useGetStoresDropdown(args?: UseGetStoresDropdownArgs) {
   const queryKey = [...API_CACHE_KEYS.STORES, "dropdown", queryString];
   const url = `${STORE_ENDPOINTS.GET_STORES}${queryString ? `?${queryString}` : ""}`;
 
-  const { data, isLoading, isError, error, refetch } = useApiQuery<StoreListResponse>(
+  const { data, isLoading, isFetching, isError, error, refetch } = useApiQuery<StoreListResponse>(
     queryKey,
     url,
     { enabled: isEnabled },
@@ -72,7 +76,9 @@ export function useGetStoresDropdown(args?: UseGetStoresDropdownArgs) {
 
   return {
     data: stores,
+    total: data?.pagination?.total ?? stores.length,
     isLoading,
+    isFetching,
     isError,
     error,
     refetch,
