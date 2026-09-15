@@ -2,7 +2,16 @@
 
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
-import { Gift, Plus, RotateCcw, Search, Sparkles, Ticket, TrendingUp } from "lucide-react";
+import {
+  FileSpreadsheet,
+  Gift,
+  Plus,
+  RotateCcw,
+  Search,
+  Sparkles,
+  Ticket,
+  TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 
 import { DataTable } from "@/components/common/data-table/data-table";
@@ -29,6 +38,10 @@ import { useGetCoupons } from "./hooks/use-get-coupons";
 import { Button } from "@/components/ui/button";
 import { SortingState } from "@tanstack/react-table";
 import { ROUTES } from "@/config/routes";
+import { exportToExcel } from "@/lib/export-excel";
+import apiClient from "@/lib/api/client";
+import { COUPON_ENDPOINTS } from "@/lib/api/endpoints/coupon.endpoints";
+import type { CouponsApiResponse, CouponItem } from "./types/coupon.types";
 
 const statusOptions = [
   { label: "All Status", value: "all" },
@@ -46,6 +59,7 @@ export function CouponsManagement() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
+  const [isExporting, setIsExporting] = useState(false);
 
   const { draft, setDraft, applied, apply, cancel, reset } = useFilterState({
     fromDate: undefined as Date | undefined,
@@ -74,7 +88,7 @@ export function CouponsManagement() {
     };
   }, [page, limit, debouncedSearch, sortBy, sortOrder, applied]);
 
-  const { data, isLoading, isFetching, refetch } = useGetCoupons(queryParams);
+  const { data, isLoading, isFetching } = useGetCoupons(queryParams);
 
   const coupons = data?.data || [];
   const pagination = data?.pagination || {
@@ -82,6 +96,93 @@ export function CouponsManagement() {
     limit: 50,
     total: 0,
     totalPages: 1,
+  };
+
+  const handleExportExcel = async () => {
+    setIsExporting(true);
+    try {
+      const searchParams = new URLSearchParams();
+      searchParams.set("page", "1");
+      searchParams.set("limit", String(pagination.total > 0 ? pagination.total : 1000));
+      if (debouncedSearch.trim()) searchParams.set("search", debouncedSearch.trim());
+      if (sortBy) searchParams.set("sortBy", sortBy);
+      if (sortOrder) searchParams.set("sortOrder", sortOrder);
+      if (applied.statusFilter !== "all") {
+        searchParams.set("status", applied.statusFilter.toLowerCase());
+      }
+      if (applied.storeId !== "all") searchParams.set("storeId", applied.storeId);
+      if (applied.fromDate) searchParams.set("fromDate", format(applied.fromDate, "yyyy-MM-dd"));
+      if (applied.toDate) searchParams.set("toDate", format(applied.toDate, "yyyy-MM-dd"));
+
+      const res = await apiClient.get<CouponsApiResponse>(
+        `${COUPON_ENDPOINTS.LIST}?${searchParams.toString()}`,
+      );
+      const exportList: CouponItem[] = res.data?.data || coupons;
+
+      exportToExcel(`Coupons_Report_${format(new Date(), "yyyy_MM_dd")}`, exportList, [
+        { label: "Sr.No", key: (_, index) => index + 1 },
+        { label: "Coupon Code", key: "couponCode" },
+        { label: "Coupon Name", key: "couponName" },
+        { label: "Discount", key: (item) => `${item.discount}% OFF` },
+        {
+          label: "Scope / Store",
+          key: (item) => (item.isGlobal ? "All Stores (Global)" : item.storeName),
+        },
+        {
+          label: "Valid From",
+          key: (item) =>
+            item.startDate ? format(new Date(item.startDate), "yyyy-MM-dd HH:mm") : "—",
+        },
+        {
+          label: "Valid To",
+          key: (item) => (item.endDate ? format(new Date(item.endDate), "yyyy-MM-dd HH:mm") : "—"),
+        },
+        { label: "Min Order ($)", key: (item) => `$${item.minOrderValue}` },
+        { label: "Max Users", key: (item) => item.maxUsers ?? "Unlimited" },
+        { label: "Redeemed Count", key: "redeemedCoupons" },
+        { label: "Created By Role", key: "createdBy" },
+        { label: "Created By Name", key: "createdName" },
+        { label: "Status", key: "status" },
+        {
+          label: "Created Date",
+          key: (item) =>
+            item.createdAt ? format(new Date(item.createdAt), "yyyy-MM-dd HH:mm") : "—",
+        },
+      ]);
+    } catch {
+      exportToExcel(`Coupons_Report_${format(new Date(), "yyyy_MM_dd")}`, coupons, [
+        { label: "Sr.No", key: (_, index) => index + 1 },
+        { label: "Coupon Code", key: "couponCode" },
+        { label: "Coupon Name", key: "couponName" },
+        { label: "Discount", key: (item) => `${item.discount}% OFF` },
+        {
+          label: "Scope / Store",
+          key: (item) => (item.isGlobal ? "All Stores (Global)" : item.storeName),
+        },
+        {
+          label: "Valid From",
+          key: (item) =>
+            item.startDate ? format(new Date(item.startDate), "yyyy-MM-dd HH:mm") : "—",
+        },
+        {
+          label: "Valid To",
+          key: (item) => (item.endDate ? format(new Date(item.endDate), "yyyy-MM-dd HH:mm") : "—"),
+        },
+        { label: "Min Order ($)", key: (item) => `$${item.minOrderValue}` },
+        { label: "Max Users", key: (item) => item.maxUsers ?? "Unlimited" },
+        { label: "Redeemed Count", key: "redeemedCoupons" },
+        { label: "Created By Role", key: "createdBy" },
+        { label: "Created By Name", key: "createdName" },
+        { label: "Status", key: "status" },
+        {
+          label: "Created Date",
+          key: (item) =>
+            item.createdAt ? format(new Date(item.createdAt), "yyyy-MM-dd HH:mm") : "—",
+        },
+      ]);
+    } finally {
+      setIsExporting(false);
+    }
   };
   const stats = data?.stats || {
     totalCoupons: 0,
@@ -175,72 +276,83 @@ export function CouponsManagement() {
           <MetricStatCard key={card.label} {...card} />
         ))}
       </div>
-
-      <ModuleFilters
-        title="Filter Coupons"
-        description="Filter coupon campaigns by scheduling window, status, and store applicability"
-        countryId={draft.country}
-        onCountryChange={(v) => setDraft((p) => ({ ...p, country: v }))}
-        cityId={draft.city}
-        onCityChange={(v) => setDraft((p) => ({ ...p, city: v }))}
-        hideCountryFilter={true}
-        hideCityFilter={true}
-        hasFilters={hasFilters}
-        onClearFilters={handleClearFilters}
-        onApplyFilters={() => {
-          apply();
-          setPage(1);
-        }}
-        onCancelFilters={cancel}
-        activeFilterCount={activeFilterCount}
-      >
-        <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
-          <DateRangeFilter
-            fromDate={draft.fromDate}
-            toDate={draft.toDate}
-            onFromDateChange={(d) => setDraft((p) => ({ ...p, fromDate: d ?? undefined }))}
-            onToDateChange={(d) => setDraft((p) => ({ ...p, toDate: d ?? undefined }))}
-            maxDate={undefined}
-          />
-        </div>
-
-        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Status
-          </Label>
-          <Select
-            value={draft.statusFilter}
-            onValueChange={(v) => setDraft((p) => ({ ...p, statusFilter: v ?? "all" }))}
-          >
-            <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
-              <SelectValue placeholder="Select status" />
-            </SelectTrigger>
-            <SelectContent>
-              {statusOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {isSuperAdmin && (
-          <div className="min-w-44 flex-1 space-y-1 sm:min-w-56">
-            <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              Target Store
-            </Label>
-            <StoreSelect
-              value={draft.storeId}
-              onValueChange={(v) => setDraft((p) => ({ ...p, storeId: v || "all" }))}
-              includeAll={true}
-              allLabel="All Stores (Global & Specific)"
-              placeholder="All Stores"
-              className="h-10 text-xs"
+      <div className="flex items-center justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleExportExcel}
+          disabled={isExporting || (coupons.length === 0 && pagination.total === 0)}
+          className="h-10 cursor-pointer rounded-xl border-slate-200/90 bg-white px-4 text-xs font-semibold text-slate-700 shadow-xs hover:border-emerald-300 hover:bg-emerald-50/70 hover:text-emerald-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+        >
+          <FileSpreadsheet className="mr-2 size-4 text-emerald-600" />
+          <span>{isExporting ? "Exporting..." : "Export Excel"}</span>
+        </Button>
+        <ModuleFilters
+          title="Filter Coupons"
+          description="Filter coupon campaigns by scheduling window, status, and store applicability"
+          countryId={draft.country}
+          onCountryChange={(v) => setDraft((p) => ({ ...p, country: v }))}
+          cityId={draft.city}
+          onCityChange={(v) => setDraft((p) => ({ ...p, city: v }))}
+          hideCountryFilter={true}
+          hideCityFilter={true}
+          hasFilters={hasFilters}
+          onClearFilters={handleClearFilters}
+          onApplyFilters={() => {
+            apply();
+            setPage(1);
+          }}
+          onCancelFilters={cancel}
+          activeFilterCount={activeFilterCount}
+        >
+          <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+            <DateRangeFilter
+              fromDate={draft.fromDate}
+              toDate={draft.toDate}
+              onFromDateChange={(d) => setDraft((p) => ({ ...p, fromDate: d ?? undefined }))}
+              onToDateChange={(d) => setDraft((p) => ({ ...p, toDate: d ?? undefined }))}
+              maxDate={undefined}
             />
           </div>
-        )}
-      </ModuleFilters>
+
+          <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
+            <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              Status
+            </Label>
+            <Select
+              value={draft.statusFilter}
+              onValueChange={(v) => setDraft((p) => ({ ...p, statusFilter: v ?? "all" }))}
+            >
+              <SelectTrigger className="h-10 w-full rounded-xl border-slate-200/80 bg-white px-3 text-sm font-medium dark:border-slate-800 dark:bg-slate-900">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                {statusOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {isSuperAdmin && (
+            <div className="min-w-44 flex-1 space-y-1 sm:min-w-56">
+              <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                Target Store
+              </Label>
+              <StoreSelect
+                value={draft.storeId}
+                onValueChange={(v) => setDraft((p) => ({ ...p, storeId: v || "all" }))}
+                includeAll={true}
+                allLabel="All Stores (Global & Specific)"
+                placeholder="All Stores"
+                className="h-10 text-xs"
+              />
+            </div>
+          )}
+        </ModuleFilters>
+      </div>
 
       {/* Coupons DataTable Card */}
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">

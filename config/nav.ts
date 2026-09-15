@@ -253,10 +253,6 @@ export const navigationItems: NavItem[] = [
         title: "Orders Reports",
         url: ROUTES.ADMIN.REPORT_MANAGEMENT.ORDERS_REPORT,
       },
-      {
-        title: "Coupons Reports",
-        url: ROUTES.ADMIN.REPORT_MANAGEMENT.COUPONS_REPORT,
-      },
     ],
   },
   {
