@@ -108,6 +108,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       locations: [""],
       hasBusinessAccount: undefined,
       country: "",
+      currency: "",
       businessCity: "",
       stateProvinceRegion: "",
       firstName: "",
