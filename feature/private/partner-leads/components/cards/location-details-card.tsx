@@ -6,25 +6,32 @@ import { PartnerLeadData } from "../../types/partner-lead.types";
 export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
   const cleanedLocations = useMemo(() => {
     if (!lead.locations || !Array.isArray(lead.locations)) return [];
-    const list: string[] = [];
-    lead.locations.forEach((loc) => {
-      if (typeof loc === "string") {
-        const trimmed = loc.trim();
-        if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
-          try {
-            const parsed = JSON.parse(trimmed);
-            if (Array.isArray(parsed)) {
-              parsed.forEach((p) => {
-                if (p && String(p).trim()) list.push(String(p).trim());
-              });
-              return;
-            }
-          } catch {}
+
+    const list: Array<{ address: string; daysOpen: string[]; hoursOfOperation: string }> = [];
+
+    lead.locations.forEach((loc: any) => {
+      if (typeof loc === "object" && loc !== null && "address" in loc) {
+        list.push(loc);
+      } else if (typeof loc === "string") {
+        try {
+          const parsed = JSON.parse(loc);
+          if (typeof parsed === "object" && parsed !== null && "address" in parsed) {
+            list.push(parsed);
+          } else if (Array.isArray(parsed)) {
+            parsed.forEach((p) => {
+              if (typeof p === "object" && p !== null && "address" in p) list.push(p);
+            });
+          }
+        } catch {
+          // Fallback if it's just a string address
+          if (loc.trim()) {
+            list.push({ address: loc.trim(), daysOpen: [], hoursOfOperation: "" });
+          }
         }
-        if (trimmed) list.push(trimmed);
       }
     });
-    return Array.from(new Set(list));
+
+    return list;
   }, [lead.locations]);
 
   return (
@@ -81,16 +88,39 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                 {cleanedLocations.length} {cleanedLocations.length === 1 ? "Location" : "Locations"}
               </span>
             </div>
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               {cleanedLocations.map((loc, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-3 rounded-xl border border-slate-200/70 bg-slate-50/60 px-4 py-3 text-sm text-slate-800"
+                  className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-slate-50/60 p-4 text-sm text-slate-800"
                 >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-xs font-bold text-emerald-700">
-                    {idx + 1}
-                  </span>
-                  <span className="mt-0.5 flex-1 font-medium">{loc}</span>
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-xs font-bold text-emerald-700">
+                      {idx + 1}
+                    </span>
+                    <span className="mt-0.5 flex-1 font-medium">{loc.address}</span>
+                  </div>
+
+                  {(loc.daysOpen?.length > 0 || loc.hoursOfOperation) && (
+                    <div className="ml-9 grid grid-cols-2 gap-4 rounded-lg border border-slate-100 bg-white p-3 shadow-sm">
+                      <div>
+                        <span className="mb-1 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                          Days Open
+                        </span>
+                        <span className="font-semibold text-slate-700">
+                          {loc.daysOpen?.length > 0 ? loc.daysOpen.join(", ") : "N/A"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="mb-1 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                          Hours
+                        </span>
+                        <span className="font-semibold text-slate-700">
+                          {loc.hoursOfOperation || "N/A"}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

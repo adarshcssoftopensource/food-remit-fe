@@ -24,6 +24,7 @@ function getApiKey(): string | undefined {
 
 export async function GET(request: NextRequest) {
   const input = request.nextUrl.searchParams.get("input")?.trim() ?? "";
+  const country = request.nextUrl.searchParams.get("country")?.trim() ?? "";
 
   if (!input) {
     return NextResponse.json({ predictions: [] });
@@ -38,6 +39,9 @@ export async function GET(request: NextRequest) {
   url.searchParams.set("input", input);
   url.searchParams.set("key", apiKey);
   url.searchParams.set("language", "en");
+  if (country) {
+    url.searchParams.set("components", `country:${country}`);
+  }
 
   try {
     const response = await fetch(url.toString(), { cache: "no-store" });

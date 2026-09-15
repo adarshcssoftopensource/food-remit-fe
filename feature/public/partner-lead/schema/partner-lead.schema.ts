@@ -14,7 +14,15 @@ export const partnerLeadSchema = z
     businessType: z.string().min(1, "Please select a business type"),
     otherBusinessType: z.string().optional(),
     locationsCount: z.string().optional(),
-    locations: z.array(z.string().min(1, "Address is required")).optional(),
+    locations: z
+      .array(
+        z.object({
+          address: z.string().min(1, "Address is required"),
+          daysOpen: z.array(z.string()).min(1, "At least one day must be selected"),
+          hoursOfOperation: z.string().trim().min(1, "Hours of operation are required"),
+        }),
+      )
+      .optional(),
     hasBusinessAccount: z.boolean().optional(),
     country: z.string().min(1, "Please select a country"),
     businessCity: z
@@ -60,8 +68,6 @@ export const partnerLeadSchema = z
       .or(z.literal("")),
 
     languages: z.array(z.string()).min(1, "At least one language is required"),
-    daysOpen: z.array(z.string()).min(1, "At least one day must be selected"),
-    hoursOfOperation: z.string().trim().min(1, "Hours of operation are required"),
 
     businessEmail: z
       .string()

@@ -64,10 +64,8 @@ export interface PartnerLeadData {
   businessName: string;
   businessType: string;
   locationsCount: string;
-  locations: string[];
+  locations: { address: string; daysOpen: string[]; hoursOfOperation: string }[];
   languages: string[];
-  daysOpen: string[];
-  hoursOfOperation: string;
   businessCity: string | null;
   stateProvince: string | null;
   country: string;

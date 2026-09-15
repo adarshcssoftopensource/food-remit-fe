@@ -63,16 +63,6 @@ function PermissionCard({ permission, isAssigned }: { permission: any; isAssigne
           >
             {permission.label}
           </p>
-          <p
-            className={cn(
-              "mt-0.5 truncate text-[10px] font-medium tracking-wider uppercase",
-              isAssigned
-                ? "text-emerald-600/70 dark:text-emerald-400/70"
-                : "text-slate-400 dark:text-slate-500",
-            )}
-          >
-            {permission.key}
-          </p>
         </div>
       </div>
       <span

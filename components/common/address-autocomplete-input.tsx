@@ -28,6 +28,7 @@ export type AddressAutocompleteInputProps = {
   disabled?: boolean;
   invalid?: boolean;
   className?: string;
+  countryCode?: string;
 };
 
 export function AddressAutocompleteInput({
@@ -40,6 +41,7 @@ export function AddressAutocompleteInput({
   disabled = false,
   invalid = false,
   className,
+  countryCode,
 }: AddressAutocompleteInputProps) {
   const reactId = useId();
   const inputId = id ?? reactId;
@@ -85,7 +87,7 @@ export function AddressAutocompleteInput({
 
       setIsFetching(true);
       try {
-        const results = await getSuggestions(query);
+        const results = await getSuggestions(query, countryCode);
         if (cancelled) return;
         setSuggestions(results);
         setIsOpen(results.length > 0);
@@ -104,7 +106,7 @@ export function AddressAutocompleteInput({
     return () => {
       cancelled = true;
     };
-  }, [query, isReady, getSuggestions]);
+  }, [query, isReady, getSuggestions, countryCode]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     userEditedRef.current = true;
