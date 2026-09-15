@@ -30,7 +30,7 @@ interface AdditionalDocumentsSectionProps {
   error?: string;
 }
 
-const MAX_DOCS = 5;
+const MAX_DOCS = 10;
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_TYPES = ["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"];
 
@@ -202,7 +202,7 @@ export function AdditionalDocumentsSection({
                   Click to browse or drag & drop documents here
                 </p>
                 <p className="text-[11px] text-slate-500">
-                  PDF, PNG, JPG, or WEBP (Up to 5MB each, max 5 documents)
+                  PDF, PNG, JPG, or WEBP (Up to 5MB each, max 10 documents)
                 </p>
               </div>
             </div>

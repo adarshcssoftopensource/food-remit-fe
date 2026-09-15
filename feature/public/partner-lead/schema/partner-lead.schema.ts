@@ -132,7 +132,7 @@ export const partnerLeadSchema = z
         }),
       )
       .min(1, "Please upload at least 1 supporting document")
-      .max(5, "Maximum 5 supporting documents allowed"),
+      .max(10, "Maximum 10 supporting documents allowed"),
   })
   .superRefine((data, ctx) => {
     if (data.businessType === "Other") {
