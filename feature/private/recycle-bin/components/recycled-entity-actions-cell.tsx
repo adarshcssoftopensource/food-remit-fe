@@ -27,6 +27,7 @@ export function RecycledEntityActionsCell({
 
   const displayName =
     (entityNameField && entity[entityNameField]) ||
+    entity.businessName ||
     entity.storeName ||
     entity.productName ||
     entity.departmentName ||

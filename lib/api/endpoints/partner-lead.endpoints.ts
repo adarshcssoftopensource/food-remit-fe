@@ -23,4 +23,11 @@ export const PARTNER_LEAD_ENDPOINTS = {
   GET_LEAD: (id: string) => `partner-leads/${id}`,
   UPDATE_STATUS: (id: string) => `partner-leads/${id}/status`,
   CHECK_EMAIL: (email: string) => `partner-leads/check-email?email=${encodeURIComponent(email)}`,
+  DELETE_LEAD: (id: string) => `partner-leads/${id}`,
+  BULK_DELETE_LEADS: "partner-leads/bulk-delete",
+  GET_RECYCLED_LEADS: "partner-leads/recycle-bin",
+  RESTORE_LEAD: (id: string) => `partner-leads/recycle-bin/${id}/restore`,
+  BULK_RESTORE_LEADS: "partner-leads/recycle-bin/bulk-restore",
+  PERMANENT_DELETE_LEAD: (id: string) => `partner-leads/recycle-bin/${id}`,
+  BULK_PERMANENT_DELETE_LEADS: "partner-leads/recycle-bin/bulk-permanent-delete",
 } as const;

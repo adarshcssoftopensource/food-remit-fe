@@ -13,6 +13,7 @@ export const API_CACHE_KEYS = {
   // Partner Leads
   PARTNER_LEADS_LIST: ["partner-leads"],
   PARTNER_LEADS_DETAIL: (id: string) => [`partner-leads-${id}`],
+  RECYCLED_PARTNER_LEADS: ["RECYCLED_PARTNER_LEADS"],
 
   // Settings – Countries & Cities
   SETTINGS_COUNTRIES: ["settings-countries"],

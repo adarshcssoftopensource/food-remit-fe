@@ -8,6 +8,7 @@ import { TruncatedTextCell } from "@/components/common/data-table/truncated-text
 import { getStatusColor } from "@/constants/partner.leads";
 import { ColumnDef } from "@tanstack/react-table";
 import { PartnerLeadData } from "../types/partner-lead.types";
+import { PartnerLeadActionsCell } from "../components/partner-lead-actions-cell";
 
 export const getPartnerLeadColumns = (
   onView: (id: string) => void,
@@ -131,23 +132,6 @@ export const getPartnerLeadColumns = (
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => {
-      const lead = row.original;
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger
-              onClick={() => onView(lead.id)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-emerald-100 bg-emerald-50 text-emerald-600 shadow-sm transition-colors hover:bg-emerald-100 hover:text-emerald-700"
-            >
-              <Eye className="h-4 w-4" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>View Details</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    },
+    cell: ({ row }) => <PartnerLeadActionsCell lead={row.original} onView={onView} />,
   },
 ];

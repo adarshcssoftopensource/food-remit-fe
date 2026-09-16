@@ -1,6 +1,8 @@
 import { StatusBadge } from "@/components/common/status-badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { getStatusColor } from "@/constants/partner.leads";
 import { RecycleEntityType } from "../hooks/use-get-recycled-data";
 import { RecycledEntityActionsCell } from "../components/recycled-entity-actions-cell";
 import { usersColumns } from "./recycled-users-columns";
@@ -381,6 +383,98 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
     {
       id: "actions",
       cell: ({ row }) => <RecycledEntityActionsCell entityType="employees" entity={row.original} />,
+    },
+  ],
+  "partner-leads": [
+    createSNoColumn(),
+    createSelectColumn(),
+    {
+      accessorKey: "referenceNumber",
+      header: "Ref No.",
+      enableSorting: true,
+      cell: ({ row }) => (
+        <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
+          {row.original.referenceNumber}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "businessName",
+      header: "Business Name",
+      enableSorting: true,
+      cell: ({ row }) => (
+        <div>
+          <p className="font-semibold text-slate-900 capitalize dark:text-white">
+            {row.original.businessName}
+          </p>
+          <p className="max-w-xs truncate text-xs text-slate-400">
+            {row.original.businessType || "N/A"}{" "}
+            {row.original.businessCity ? `• ${row.original.businessCity}` : ""}
+          </p>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "contact",
+      header: "Contact",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (
+          <div className="flex flex-col text-sm">
+            <span className="font-medium text-slate-900 dark:text-slate-100">
+              {data.firstName} {data.lastName}
+            </span>
+            <span className="text-muted-foreground text-xs">{data.businessEmail}</span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "phoneNumber",
+      header: "Phone",
+      cell: ({ row }) => (
+        <span className="text-xs text-slate-600 dark:text-slate-400">
+          {row.original.phoneNumber || "N/A"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Date Applied",
+      enableSorting: true,
+      cell: ({ row }) => {
+        const date = row.original.createdAt ? new Date(row.original.createdAt) : null;
+        return (
+          <div className="text-xs text-slate-600 dark:text-slate-400">
+            {date && !isNaN(date.getTime()) ? format(date, "MMM dd, yyyy") : "N/A"}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status as string;
+        return (
+          <span
+            className={`focus:ring-ring inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors ${getStatusColor(status)}`}
+          >
+            {status?.replace(/_/g, " ") || "N/A"}
+          </span>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <RecycledEntityActionsCell
+          entityType="partner-leads"
+          entity={row.original}
+          entityNameField="businessName"
+        />
+      ),
     },
   ],
 };

@@ -10,6 +10,7 @@ import {
   Check,
   FolderTree,
   Globe,
+  Handshake,
   MapPin,
   Package,
   Store,
@@ -42,6 +43,7 @@ const ALL_ENTITY_TABS: {
   { id: "city-managers", label: "City Managers", icon: MapPin },
   { id: "country-managers", label: "Country Managers", icon: Globe },
   { id: "employees", label: "Employees", icon: UserCog },
+  { id: "partner-leads", label: "Partner Leads", icon: Handshake },
 ];
 
 export function RecycledUsersManagement() {

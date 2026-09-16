@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import { normalizeUser } from "../../users-management/lib/normalize-user";
 
 import { EMPLOYEE_ENDPOINTS } from "@/lib/api/endpoints/employee.endpoints";
+import { PARTNER_LEAD_ENDPOINTS } from "@/lib/api/endpoints/partner-lead.endpoints";
 
 export type RecycleEntityType =
   | "users"
@@ -18,7 +19,8 @@ export type RecycleEntityType =
   | "categories"
   | "city-managers"
   | "country-managers"
-  | "employees";
+  | "employees"
+  | "partner-leads";
 
 export interface RecycledQueryArgs {
   page?: number;
@@ -57,6 +59,7 @@ const ENDPOINT_MAP: Record<RecycleEntityType, string> = {
   "city-managers": CITY_MANAGER_ENDPOINTS.GET_RECYCLED_CITY_MANAGERS,
   "country-managers": COUNTRY_MANAGER_ENDPOINTS.GET_RECYCLED_COUNTRY_MANAGERS,
   employees: EMPLOYEE_ENDPOINTS.GET_RECYCLED_EMPLOYEES,
+  "partner-leads": PARTNER_LEAD_ENDPOINTS.GET_RECYCLED_LEADS,
 };
 
 export function useGetRecycledData(entityType: RecycleEntityType, args: RecycledQueryArgs = {}) {
