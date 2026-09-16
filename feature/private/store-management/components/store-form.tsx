@@ -61,7 +61,7 @@ export function StoreForm({
     defaultValues: {
       storeImage: initialValues?.storeImage ?? undefined,
       storeName: initialValues?.storeName ?? "",
-      storePhoneCode: initialValues?.storePhoneCode ?? "+91",
+      storePhoneCode: initialValues?.storePhoneCode || "+91",
       storePhoneNumber: initialValues?.storePhoneNumber ?? "",
       storeAddress: initialValues?.storeAddress ?? "",
       address2: initialValues?.address2 ?? "",
@@ -73,7 +73,7 @@ export function StoreForm({
       managerFirstName: initialValues?.managerFirstName ?? "",
       managerLastName: initialValues?.managerLastName ?? "",
       managerEmail: initialValues?.managerEmail ?? "",
-      managerPhoneCode: initialValues?.managerPhoneCode ?? "+91",
+      managerPhoneCode: initialValues?.managerPhoneCode || "+91",
       managerPhoneNumber: initialValues?.managerPhoneNumber ?? "",
       managerAddress: initialValues?.managerAddress ?? "",
       managerCountry: initialValues?.managerCountry ?? "",

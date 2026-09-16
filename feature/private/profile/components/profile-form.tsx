@@ -15,8 +15,9 @@ import { PhoneInputComponent } from "@/components/ui/phone-input";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { ManagerLocationFields } from "@/feature/private/store-management/components/manager-location-fields";
 import { useUpdateProfile } from "../hooks/use-update-profile";
-import { profileDetailsSchema, type ProfileDetailsValues } from "../schema/profile.schema";
+import { getProfileDetailsSchema, type ProfileDetailsValues } from "../schema/profile.schema";
 
 export function ProfileForm() {
   const { profile } = useProfile();
@@ -33,13 +34,17 @@ export function ProfileForm() {
     formState: { errors, isDirty },
     reset,
   } = useForm<ProfileDetailsValues>({
-    resolver: zodResolver(profileDetailsSchema),
+    resolver: zodResolver(getProfileDetailsSchema(profile?.roleCode === "STORE_MANAGER")),
     values: {
       firstName,
       lastName,
       email: profile?.email || "",
       contactNumber: profile?.phoneNumber || "",
       address: profile?.address || "",
+      country: (profile as any)?.country || "",
+      state: (profile as any)?.state || "",
+      city: (profile as any)?.city || "",
+      zipCode: (profile as any)?.zipCode || "",
       image: undefined,
     },
     mode: "onChange",
@@ -58,6 +63,10 @@ export function ProfileForm() {
       if (data.address !== undefined) {
         formData.append("address", data.address);
       }
+      if (data.country !== undefined) formData.append("country", data.country);
+      if (data.state !== undefined) formData.append("state", data.state);
+      if (data.city !== undefined) formData.append("city", data.city);
+      if (data.zipCode !== undefined) formData.append("zipCode", data.zipCode);
 
       await updateProfileMutation.mutateAsync(formData);
       successToast({ title: "Profile updated successfully!" });
@@ -210,6 +219,61 @@ export function ProfileForm() {
                 </div>
               )}
             />
+            {profile?.roleCode === "STORE_MANAGER" && (
+              <>
+                <Controller
+                  name="country"
+                  control={control}
+                  render={({ field: cField }) => (
+                    <Controller
+                      name="state"
+                      control={control}
+                      render={({ field: sField }) => (
+                        <Controller
+                          name="city"
+                          control={control}
+                          render={({ field: cityField }) => (
+                            <ManagerLocationFields
+                              countryValue={cField.value || ""}
+                              onCountryChange={cField.onChange}
+                              stateValue={sField.value || ""}
+                              onStateChange={sField.onChange}
+                              cityValue={cityField.value || ""}
+                              onCityChange={cityField.onChange}
+                              countryError={errors.country?.message}
+                              stateError={errors.state?.message}
+                              cityError={errors.city?.message}
+                            />
+                          )}
+                        />
+                      )}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="zipCode"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1.5 md:col-span-2">
+                      <FieldLabel htmlFor="zipCode" className="text-sm font-semibold">
+                        Zipcode
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        id="zipCode"
+                        placeholder="Enter Zipcode"
+                        className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      />
+                      {errors.zipCode && (
+                        <p className="text-xs font-medium text-red-500">{errors.zipCode.message}</p>
+                      )}
+                    </div>
+                  )}
+                />
+              </>
+            )}
           </div>
 
           <div className="mt-8 flex justify-end">

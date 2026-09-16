@@ -20,6 +20,7 @@ type CitySelectProps = {
   value?: string;
   includeAll?: boolean;
   allLabel?: string;
+  valueKey?: "id" | "name";
 };
 
 export function CitySelect({
@@ -33,6 +34,7 @@ export function CitySelect({
   value = "",
   includeAll = true,
   allLabel = "All Cities",
+  valueKey = "id",
 }: CitySelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -136,14 +138,16 @@ export function CitySelect({
             </div>
           ) : filteredCities.length ? (
             filteredCities.map((city) => {
-              const isSelected = value === city.id || (selectedCity && selectedCity.id === city.id);
+              const cityValue = valueKey === "name" ? city.name : city.id;
+              const isSelected =
+                value === cityValue || (selectedCity && selectedCity.id === city.id);
 
               return (
                 <Button
                   key={city.id}
                   variant="ghost"
                   onClick={() => {
-                    onValueChange(city.id, city);
+                    onValueChange(cityValue, city);
                     setIsOpen(false);
                     setSearchQuery("");
                   }}

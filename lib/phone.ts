@@ -72,6 +72,9 @@ export function getNationalPhoneError(
     if (expected && digits.length !== expected) {
       return `Enter a valid ${expected}-digit phone number`;
     }
+    if (expected && digits.length === expected) {
+      return null;
+    }
     if (!isValidPhoneNumber(digits, cc)) {
       return expected
         ? `Enter a valid ${expected}-digit phone number`
@@ -102,6 +105,10 @@ export function getFullPhoneError(value: string): string | null {
     return `Enter a valid ${expected}-digit phone number for ${phone.country || "this country"}`;
   }
 
+  if (expected && national.length === expected) {
+    return null;
+  }
+
   if (!phone.isValid()) {
     return expected ? `Enter a valid ${expected}-digit phone number` : "Enter a valid phone number";
   }
@@ -122,6 +129,10 @@ export function getSplitPhoneError(phoneCode: string, phoneNumber: string): stri
   const expected = getExpectedNationalDigits(phone.country);
   if (expected && national.length !== expected) {
     return `Enter a valid ${expected}-digit phone number`;
+  }
+
+  if (expected && national.length === expected) {
+    return null;
   }
 
   if (!phone.isValid()) {

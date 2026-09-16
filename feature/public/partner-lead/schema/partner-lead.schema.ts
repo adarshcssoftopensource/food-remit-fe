@@ -38,12 +38,11 @@ export const partnerLeadSchema = z
     businessCity: z
       .string()
       .trim()
+      .min(1, "Business City is required")
       .max(60, "City cannot exceed 60 characters")
       .refine((val) => !val || LOCATION_TEXT_REGEX.test(val), {
         message: "City can only contain letters, spaces, hyphens, and periods",
-      })
-      .optional()
-      .or(z.literal("")),
+      }),
     stateProvinceRegion: z
       .string()
       .trim()
