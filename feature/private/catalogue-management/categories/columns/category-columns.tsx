@@ -1,5 +1,4 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
-import { ScopeBadge } from "@/components/common/scope-badge";
 import { StatusBadge } from "@/components/common/status-badge";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";

@@ -244,7 +244,7 @@ export function CategoriesManagement() {
             className="h-10 rounded-xl px-3"
           />
         </div>
-        <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+        <div className="min-w-70 flex-1 sm:min-w-[320px]">
           <DateRangeFilter
             fromDate={fromDate}
             toDate={toDate}

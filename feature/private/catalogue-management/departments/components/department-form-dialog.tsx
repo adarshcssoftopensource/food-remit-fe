@@ -140,7 +140,6 @@ export function DepartmentFormDialog({
           <form onSubmit={handleSubmit} className="flex max-h-[calc(92vh-130px)] flex-col pb-4">
             <div className="overflow-y-auto px-6 py-6 sm:px-7">
               <div className="space-y-5">
-                {/* Store Manager: country/city auto-assigned on backend — no fields shown */}
                 {!isStoreScoped && (
                   <FormField
                     control={form.control}

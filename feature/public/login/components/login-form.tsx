@@ -75,7 +75,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           "All other sessions logged out. You are now logged in.",
         );
       }
-    } catch (error) {
+    } catch {
       // ignore
     }
   }

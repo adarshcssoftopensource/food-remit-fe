@@ -1,11 +1,10 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
-import { ScopeBadge } from "@/components/common/scope-badge";
 import { StatusBadge } from "@/components/common/status-badge";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { DepartmentActionsCell } from "../components/department-actions-cell";
 import { DepartmentData } from "../types/department.types";
-import { Globe, Eye, MapPin } from "lucide-react";
+import { Globe, MapPin } from "lucide-react";
 
 export function getDepartmentColumns(
   onEdit: (dept: DepartmentData) => void,

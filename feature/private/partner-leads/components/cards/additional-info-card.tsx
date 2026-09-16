@@ -47,7 +47,9 @@ export function AdditionalInfoCard({ lead }: { lead: PartnerLeadData }) {
       <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-5 text-blue-900 shadow-sm">
         <CheckCircle2 className="h-6 w-6 shrink-0 text-blue-600" />
         <p className="text-sm font-bold">
-          {lead.firstName} agreed to be contacted by Food Remit regarding partnership opportunities.
+          By proceeding, `{lead.firstName}` agrees to be contacted by Food Remit regarding
+          partnership opportunities and confirms that they have read and accepted the Terms and
+          Conditions.
         </p>
       </div>
     </div>
