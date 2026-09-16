@@ -26,7 +26,10 @@ const itemSchema = z
   .object({
     productName: z.string().min(2, "Item name must be at least 2 characters"),
     description: z.string().min(1, "Description is required"),
-    upcCode: z.string().optional(),
+    upcCode: z
+      .string()
+      .regex(/^\d{8,12}$/, "UPC code must be between 8 and 12 digits")
+      .optional(),
     productInfo: z.string().min(1, "Product information is required"),
     nutritionInfo: z.string().optional(),
     discountPercentage: z
