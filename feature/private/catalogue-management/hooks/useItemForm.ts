@@ -34,12 +34,12 @@ const itemSchema = z
     nutritionInfo: z.string().optional(),
     discountPercentage: z
       .string()
-      .optional()
+      .min(1, "Discount is required")
       .refine(
-        (val) =>
-          !val ||
-          val.trim() === "" ||
-          (!isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100),
+        (val) => {
+          const num = parseFloat(val);
+          return !isNaN(num) && num >= 0 && num <= 100;
+        },
         {
           message: "Please enter a valid percentage between 0 and 100",
         },
@@ -185,7 +185,7 @@ export function useItemForm(
       discountPercentage:
         item?.discountPercentage !== null && item?.discountPercentage !== undefined
           ? item.discountPercentage.toString()
-          : "0",
+          : "",
       baseQuantity: item?.baseQuantity?.toString() ?? "",
       unit: item?.unit ?? "",
       placements: mapItemPlacements(item),

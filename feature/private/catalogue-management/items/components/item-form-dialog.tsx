@@ -229,7 +229,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                           render={({ field }) => (
                             <FormItem className="space-y-2">
                               <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                Discount (%)
+                                Discount (%) <span className="text-destructive">*</span>
                               </FormLabel>
 
                               <FormControl>
@@ -238,6 +238,14 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                   placeholder="0"
                                   className="h-11 rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
                                   {...field}
+                                  onFocus={(e) => {
+                                    if (e.target.value === "0" || Number(e.target.value) === 0) {
+                                      field.onChange("");
+                                    }
+                                  }}
+                                  onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                  }}
                                 />
                               </FormControl>
 
