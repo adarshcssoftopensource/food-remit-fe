@@ -16,6 +16,7 @@ export function useGetWebNotifications(params: GetNotificationsParams, enabled =
     queryKey: [...API_CACHE_KEYS.NOTIFICATIONS, params],
     enabled,
     refetchOnWindowFocus: true,
+    refetchInterval: 5000,
     queryFn: async () => {
       const search = new URLSearchParams();
       search.set("page", String(params.page || 1));
