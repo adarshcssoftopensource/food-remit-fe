@@ -7,10 +7,6 @@ import type { ItemData } from "../types/item.types";
 
 interface ItemProductPricingCardProps {
   item: ItemData;
-  viewerCountryCode?: string | null;
-  viewerCountryName?: string | null;
-  selectedCountryId?: string;
-  onSelectCountryId?: (countryId: string) => void;
 }
 
 function formatMoney(amount: number, currencySymbol: string) {
@@ -26,30 +22,11 @@ type ReceiptLine = {
   subtotal?: boolean;
 };
 
-export function ItemProductPricingCard({
-  item,
-  viewerCountryCode,
-  viewerCountryName,
-  selectedCountryId,
-  onSelectCountryId,
-}: ItemProductPricingCardProps) {
+export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
   const pricing = item.pricing;
   const currencySymbol = pricing?.currencySymbol || "-";
   const countryLabel = pricing?.countryName || item.pricingCountry?.name || "your location";
   const currency = pricing?.currency || "—";
-
-  const placementCountries = (item.placements || []).reduce<
-    { id: string; name: string; countryCode?: string | null }[]
-  >((acc, row) => {
-    if (!row.country?.id) return acc;
-    if (acc.some((c) => c.id === row.country!.id)) return acc;
-    acc.push({
-      id: row.country.id,
-      name: row.country.name,
-      countryCode: row.country.countryCode,
-    });
-    return acc;
-  }, []);
 
   const lines: ReceiptLine[] = pricing
     ? [
@@ -105,36 +82,7 @@ export function ItemProductPricingCard({
           <div className="bg-primary h-4 w-1.5 rounded-full" />
           Product Information
         </CardTitle>
-        <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-          Price for your IP location
-          {viewerCountryName || viewerCountryCode
-            ? ` (${[viewerCountryName, viewerCountryCode].filter(Boolean).join(" · ")})`
-            : ""}
-          . No price for that country → receipt stays hidden.
-        </p>
-        {placementCountries.length > 0 && onSelectCountryId ? (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {placementCountries.map((c) => {
-              const active = selectedCountryId === c.id || item.pricingCountry?.id === c.id;
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => onSelectCountryId(c.id)}
-                  className={cn(
-                    "rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
-                    active
-                      ? "border-slate-900 bg-slate-900 text-white"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300",
-                  )}
-                >
-                  {c.name}
-                  {c.countryCode ? ` · ${c.countryCode}` : ""}
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
+        <p className="mt-1 text-xs text-slate-500 sm:text-sm">Item pricing and tax details.</p>
       </CardHeader>
 
       <CardContent className="space-y-4 p-4 sm:p-6 lg:p-8">
@@ -145,14 +93,10 @@ export function ItemProductPricingCard({
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                No price for your location
+                Pricing not available
               </p>
               <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-                This item has no placement price for{" "}
-                {item.pricingCountry?.name ||
-                  viewerCountryName ||
-                  (viewerCountryCode ? `country ${viewerCountryCode}` : "your detected location")}
-                . Add a country price below, or pick another country above.
+                This item has no placement price configured yet.
               </p>
             </div>
           </div>

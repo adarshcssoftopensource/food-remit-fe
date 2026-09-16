@@ -7,6 +7,14 @@ import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { ROUTES } from "@/config/routes";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { STATS_CONFIG } from "@/constants/partner.leads";
@@ -30,9 +38,17 @@ export function PartnerLeadsManagement() {
   const { draft, setDraft, applied, apply, cancel, reset } = useFilterState<{
     fromDate?: Date;
     toDate?: Date;
+    businessType?: string;
+    status?: string;
+    kycStatus?: string;
+    bankStatus?: string;
   }>({
     fromDate: undefined,
     toDate: undefined,
+    businessType: undefined,
+    status: undefined,
+    kycStatus: undefined,
+    bankStatus: undefined,
   });
 
   const fromDateStr = applied.fromDate ? format(applied.fromDate, "yyyy-MM-dd") : undefined;
@@ -49,11 +65,15 @@ export function PartnerLeadsManagement() {
     limit,
     fromDateStr,
     toDateStr,
+    applied.businessType,
+    applied.status,
+    applied.kycStatus,
+    applied.bankStatus,
   );
 
   const filteredLeads = leads;
 
-  const hasFilters = Boolean(applied.fromDate || applied.toDate || searchValue);
+  const hasFilters = Boolean(applied.fromDate || applied.toDate || searchValue || applied.status);
 
   const handleClearFilters = () => {
     reset();
@@ -61,7 +81,8 @@ export function PartnerLeadsManagement() {
     setPage(1);
   };
 
-  const activeFilterCount = (applied.fromDate || applied.toDate ? 1 : 0) + (searchValue ? 1 : 0);
+  const activeFilterCount =
+    (applied.fromDate || applied.toDate ? 1 : 0) + (searchValue ? 1 : 0) + (applied.status ? 1 : 0);
 
   const handleViewDetails = useCallback(
     (id: string) => {
@@ -114,16 +135,58 @@ export function PartnerLeadsManagement() {
         onCancelFilters={cancel}
         activeFilterCount={activeFilterCount}
       >
-        <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
-          <DateRangeFilter
-            fromDate={draft.fromDate}
-            toDate={draft.toDate}
-            onFromDateChange={(date) => setDraft((p) => ({ ...p, fromDate: date }))}
-            onToDateChange={(date) => setDraft((p) => ({ ...p, toDate: date }))}
-            fromLabel="From Date"
-            toLabel="To Date"
-            maxDate={undefined}
-          />
+        <div className="flex w-full max-w-[320px] flex-col gap-5">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+              Lead Status
+            </label>
+            <Select
+              value={draft.status || "all"}
+              onValueChange={(val) =>
+                setDraft((p) => ({ ...p, status: val === "all" ? undefined : (val ?? undefined) }))
+              }
+            >
+              <SelectTrigger className="h-10 w-full bg-white dark:bg-slate-950">
+                <SelectValue placeholder="All Statuses">
+                  {{
+                    all: "All Statuses",
+                    NEW: "New",
+                    CONTACTED: "Contacted",
+                    REGISTRATION_INVITED: "Invited",
+                    REGISTRATION_STARTED: "Started",
+                    QUALIFIED: "Qualified",
+                    NOT_QUALIFIED: "Not Qualified",
+                    APPROVED: "Approved",
+                  }[draft.status || "all"] || "All Statuses"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="NEW">New</SelectItem>
+                <SelectItem value="CONTACTED">Contacted</SelectItem>
+                <SelectItem value="REGISTRATION_INVITED">Invited</SelectItem>
+                <SelectItem value="REGISTRATION_STARTED">Started</SelectItem>
+                <SelectItem value="QUALIFIED">Qualified</SelectItem>
+                <SelectItem value="NOT_QUALIFIED">Not Qualified</SelectItem>
+                <SelectItem value="APPROVED">Approved</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+              Date Applied
+            </label>
+            <DateRangeFilter
+              fromDate={draft.fromDate}
+              toDate={draft.toDate}
+              onFromDateChange={(date) => setDraft((p) => ({ ...p, fromDate: date }))}
+              onToDateChange={(date) => setDraft((p) => ({ ...p, toDate: date }))}
+              fromLabel="From"
+              toLabel="To"
+              maxDate={undefined}
+            />
+          </div>
         </div>
       </ModuleFilters>
 

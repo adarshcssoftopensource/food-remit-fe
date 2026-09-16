@@ -56,7 +56,7 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
           </TooltipContent>
         </Tooltip>
 
-        <Tooltip>
+        {/* <Tooltip>
           <TooltipTrigger
             onClick={() => setApproveOpen(true)}
             disabled={isApproving || lead.status === "APPROVED"}
@@ -68,7 +68,7 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
           <TooltipContent>
             <p>Approve Lead</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
 
         <Tooltip>
           <TooltipTrigger

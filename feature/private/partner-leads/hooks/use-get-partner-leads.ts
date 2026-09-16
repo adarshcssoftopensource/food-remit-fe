@@ -24,6 +24,10 @@ export function usePartnerLeads(
   limit?: number,
   fromDate?: string,
   toDate?: string,
+  businessType?: string,
+  status?: string,
+  kycStatus?: string,
+  bankStatus?: string,
 ) {
   const { data: response, isLoading } = useApiQuery<RawGetPartnerLeadsResponse>(
     [
@@ -35,6 +39,10 @@ export function usePartnerLeads(
       limit,
       fromDate,
       toDate,
+      businessType,
+      status,
+      kycStatus,
+      bankStatus,
     ].filter(Boolean) as string[],
     PARTNER_LEAD_ENDPOINTS.GET_LEADS(
       search,
@@ -44,6 +52,10 @@ export function usePartnerLeads(
       limit ?? 10,
       fromDate,
       toDate,
+      businessType,
+      status,
+      kycStatus,
+      bankStatus,
     ),
   );
   const leads = response?.data;

@@ -8,6 +8,10 @@ export const PARTNER_LEAD_ENDPOINTS = {
     limit?: number,
     fromDate?: string,
     toDate?: string,
+    businessType?: string,
+    status?: string,
+    kycStatus?: string,
+    bankStatus?: string,
   ) => {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
@@ -17,6 +21,10 @@ export const PARTNER_LEAD_ENDPOINTS = {
     if (limit) params.append("limit", String(limit));
     if (fromDate) params.append("fromDate", fromDate);
     if (toDate) params.append("toDate", toDate);
+    if (businessType) params.append("businessType", businessType);
+    if (status) params.append("status", status);
+    if (kycStatus) params.append("kycStatus", kycStatus);
+    if (bankStatus) params.append("bankStatus", bankStatus);
     const qs = params.toString();
     return qs ? `partner-leads?${qs}` : "partner-leads";
   },
