@@ -3,6 +3,13 @@ import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { SETTINGS_ENDPOINTS } from "@/lib/api/endpoints/settings.endpoints";
 import { useQueryClient } from "@tanstack/react-query";
 
+export interface AvailableOption {
+  key: "orderEmails" | "broadcastEmails" | "leadEmails" | "ticketEmails";
+  label: string;
+  description: string;
+  enabled: boolean;
+}
+
 export interface EmailNotificationPreferenceData {
   userId: string;
   userType: string;
@@ -12,12 +19,7 @@ export interface EmailNotificationPreferenceData {
   broadcastEmails: boolean;
   leadEmails: boolean;
   ticketEmails: boolean;
-  availableOptions: {
-    orderEmails: boolean;
-    broadcastEmails: boolean;
-    leadEmails: boolean;
-    ticketEmails: boolean;
-  };
+  availableOptions: AvailableOption[];
 }
 
 export interface EmailNotificationResponse {

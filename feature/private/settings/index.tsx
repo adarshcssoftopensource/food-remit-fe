@@ -10,12 +10,14 @@ import { MarkupManagement } from "./components/markup-management";
 import { ProcessingFee } from "./components/processing-fee";
 
 import { useProfile } from "@/components/providers/profile-provider";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useMemo } from "react";
 import { Globe, Mail, MapPin, Percent, Receipt, ShieldCheck } from "lucide-react";
 
 export function SettingsPage() {
   const { hasPermission, profile } = useProfile();
   const isStoreManager = profile?.roleCode === "STORE_MANAGER";
+  const isMobile = useIsMobile();
 
   const tabs = useMemo(() => {
     const allTabs = [
@@ -84,10 +86,11 @@ export function SettingsPage() {
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="h-10 rounded-xl px-3 text-xs font-semibold md:px-4 md:text-sm"
+              title={tab.label}
+              className="flex h-10 items-center justify-center rounded-xl px-2.5 text-xs font-semibold sm:px-3 md:px-4 md:text-sm"
             >
               {tab.icon}
-              <span className="ml-2 hidden md:inline-block">{tab.label}</span>
+              {!isMobile && <span className="ml-2 whitespace-nowrap">{tab.label}</span>}
             </TabsTrigger>
           ))}
         </TabsList>

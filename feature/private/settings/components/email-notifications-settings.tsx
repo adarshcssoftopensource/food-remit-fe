@@ -14,15 +14,51 @@ import {
   UpdateEmailNotificationPayload,
 } from "../hooks/use-email-notifications";
 
+const CATEGORY_META: Record<
+  string,
+  {
+    icon: React.ReactNode;
+    activeCardClass: string;
+    iconBgClass: string;
+  }
+> = {
+  orderEmails: {
+    icon: <PackageCheck className="size-4.5" />,
+    activeCardClass:
+      "border-emerald-200/70 bg-emerald-50/20 shadow-xs dark:border-emerald-800/40 dark:bg-emerald-950/10",
+    iconBgClass: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
+  },
+  broadcastEmails: {
+    icon: <Megaphone className="size-4.5" />,
+    activeCardClass:
+      "border-blue-200/70 bg-blue-50/20 shadow-xs dark:border-blue-800/40 dark:bg-blue-950/10",
+    iconBgClass: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400",
+  },
+  leadEmails: {
+    icon: <Users className="size-4.5" />,
+    activeCardClass:
+      "border-amber-200/70 bg-amber-50/20 shadow-xs dark:border-amber-800/40 dark:bg-amber-950/10",
+    iconBgClass: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400",
+  },
+  ticketEmails: {
+    icon: <Headphones className="size-4.5" />,
+    activeCardClass:
+      "border-purple-200/70 bg-purple-50/20 shadow-xs dark:border-purple-800/40 dark:bg-purple-950/10",
+    iconBgClass: "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400",
+  },
+};
+
 export function EmailNotificationsSettings() {
   const { profile } = useProfile();
   const { data: prefResponse, isLoading, isError } = useGetEmailNotifications();
-  const { mutateAsync: updatePreferences, isPending } = useUpdateEmailNotifications();
+  const { mutateAsync: updatePreferences } = useUpdateEmailNotifications();
 
   const prefData = prefResponse?.data;
 
   // Track optimistic user overrides without requiring setState in an effect
   const [overrides, setOverrides] = useState<Partial<UpdateEmailNotificationPayload>>({});
+  // Track which specific toggle is currently updating
+  const [updatingKey, setUpdatingKey] = useState<string | null>(null);
 
   const formState = {
     emailNotifications: overrides.emailNotifications ?? prefData?.emailNotifications ?? true,
@@ -33,6 +69,7 @@ export function EmailNotificationsSettings() {
   };
 
   const handleToggle = async (key: keyof UpdateEmailNotificationPayload, value: boolean) => {
+    setUpdatingKey(key);
     // Apply optimistic override
     setOverrides((prev) => ({ ...prev, [key]: value }));
 
@@ -66,6 +103,8 @@ export function EmailNotificationsSettings() {
         delete next[key];
         return next;
       });
+    } finally {
+      setUpdatingKey(null);
     }
   };
 
@@ -93,14 +132,10 @@ export function EmailNotificationsSettings() {
     );
   }
 
-  const available = prefData.availableOptions || {
-    orderEmails: true,
-    broadcastEmails: true,
-    leadEmails: true,
-    ticketEmails: true,
-  };
-
   const masterEnabled = formState.emailNotifications;
+  const availableOptions = Array.isArray(prefData.availableOptions)
+    ? prefData.availableOptions
+    : [];
 
   return (
     <div className="max-w-4xl space-y-6">
@@ -128,13 +163,6 @@ export function EmailNotificationsSettings() {
               </p>
             </div>
           </div>
-
-          {isPending && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
-              <Loader2 className="size-3.5 animate-spin" />
-              <span>Saving...</span>
-            </div>
-          )}
         </div>
       </div>
 
@@ -155,13 +183,19 @@ export function EmailNotificationsSettings() {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              {updatingKey === "emailNotifications" && (
+                <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+                  <Loader2 className="size-3.5 animate-spin" />
+                  <span className="text-[11px] font-medium">Updating...</span>
+                </div>
+              )}
               <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
                 {masterEnabled ? "Active" : "Muted"}
               </span>
               <Switch
                 checked={masterEnabled}
                 onCheckedChange={(val) => handleToggle("emailNotifications", val)}
-                disabled={isPending}
+                disabled={updatingKey !== null}
               />
             </div>
           </div>
@@ -169,7 +203,7 @@ export function EmailNotificationsSettings() {
       </Card>
 
       {/* Granular Preferences */}
-      <div className="space-y-3">
+      {/* <div className="space-y-3">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
             Category Notifications
@@ -180,147 +214,59 @@ export function EmailNotificationsSettings() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          {/* Order Notifications */}
-          {available.orderEmails && (
-            <Card
-              className={`rounded-2xl border transition-all duration-200 ${
-                !masterEnabled
-                  ? "border-slate-200/50 bg-slate-50/50 opacity-60 dark:border-slate-800/40 dark:bg-slate-900/30"
-                  : formState.orderEmails
-                    ? "border-emerald-200/70 bg-emerald-50/20 shadow-xs dark:border-emerald-800/40 dark:bg-emerald-950/10"
-                    : "border-slate-200/80 bg-white/60 dark:border-slate-800/80 dark:bg-slate-900/60"
-              }`}
-            >
-              <CardContent className="flex items-start justify-between gap-3.5 p-4.5">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                    <PackageCheck className="size-4.5" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
-                      Order Alerts
-                    </h5>
-                    <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                      Receive real-time email notifications for newly placed store orders and
-                      processing receipts.
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  checked={masterEnabled && formState.orderEmails}
-                  disabled={!masterEnabled || isPending}
-                  onCheckedChange={(val) => handleToggle("orderEmails", val)}
-                />
-              </CardContent>
-            </Card>
-          )}
+          {availableOptions.map((option) => {
+            const key = option.key as keyof UpdateEmailNotificationPayload;
+            const isChecked = Boolean(formState[key]);
+            const meta = CATEGORY_META[key] || {
+              icon: <PackageCheck className="size-4.5" />,
+              activeCardClass:
+                "border-emerald-200/70 bg-emerald-50/20 shadow-xs dark:border-emerald-800/40 dark:bg-emerald-950/10",
+              iconBgClass:
+                "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
+            };
 
-          {/* Platform Broadcast Announcements */}
-          {available.broadcastEmails && (
-            <Card
-              className={`rounded-2xl border transition-all duration-200 ${
-                !masterEnabled
-                  ? "border-slate-200/50 bg-slate-50/50 opacity-60 dark:border-slate-800/40 dark:bg-slate-900/30"
-                  : formState.broadcastEmails
-                    ? "border-blue-200/70 bg-blue-50/20 shadow-xs dark:border-blue-800/40 dark:bg-blue-950/10"
-                    : "border-slate-200/80 bg-white/60 dark:border-slate-800/80 dark:bg-slate-900/60"
-              }`}
-            >
-              <CardContent className="flex items-start justify-between gap-3.5 p-4.5">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400">
-                    <Megaphone className="size-4.5" />
+            return (
+              <Card
+                key={key}
+                className={`rounded-2xl border transition-all duration-200 ${!masterEnabled
+                    ? "border-slate-200/50 bg-slate-50/50 opacity-60 dark:border-slate-800/40 dark:bg-slate-900/30"
+                    : isChecked
+                      ? meta.activeCardClass
+                      : "border-slate-200/80 bg-white/60 dark:border-slate-800/80 dark:bg-slate-900/60"
+                  }`}
+              >
+                <CardContent className="flex items-start justify-between gap-3.5 p-4.5">
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl ${meta.iconBgClass}`}
+                    >
+                      {meta.icon}
+                    </div>
+                    <div className="space-y-0.5">
+                      <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
+                        {option.label}
+                      </h5>
+                      <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                        {option.description}
+                      </p>
+                    </div>
                   </div>
-                  <div className="space-y-0.5">
-                    <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
-                      Platform Announcements
-                    </h5>
-                    <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                      Stay informed about system maintenance, major feature updates, and platform
-                      broadcasts.
-                    </p>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {updatingKey === key && (
+                      <Loader2 className="size-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
+                    )}
+                    <Switch
+                      checked={masterEnabled && isChecked}
+                      disabled={!masterEnabled || updatingKey !== null}
+                      onCheckedChange={(val) => handleToggle(key, val)}
+                    />
                   </div>
-                </div>
-                <Switch
-                  checked={masterEnabled && formState.broadcastEmails}
-                  disabled={!masterEnabled || isPending}
-                  onCheckedChange={(val) => handleToggle("broadcastEmails", val)}
-                />
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Partner Leads */}
-          {available.leadEmails && (
-            <Card
-              className={`rounded-2xl border transition-all duration-200 ${
-                !masterEnabled
-                  ? "border-slate-200/50 bg-slate-50/50 opacity-60 dark:border-slate-800/40 dark:bg-slate-900/30"
-                  : formState.leadEmails
-                    ? "border-amber-200/70 bg-amber-50/20 shadow-xs dark:border-amber-800/40 dark:bg-amber-950/10"
-                    : "border-slate-200/80 bg-white/60 dark:border-slate-800/80 dark:bg-slate-900/60"
-              }`}
-            >
-              <CardContent className="flex items-start justify-between gap-3.5 p-4.5">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400">
-                    <Users className="size-4.5" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
-                      Partner Leads
-                    </h5>
-                    <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                      Receive immediate alerts whenever a prospective store partner or franchise
-                      registers interest.
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  checked={masterEnabled && formState.leadEmails}
-                  disabled={!masterEnabled || isPending}
-                  onCheckedChange={(val) => handleToggle("leadEmails", val)}
-                />
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Support Tickets */}
-          {available.ticketEmails && (
-            <Card
-              className={`rounded-2xl border transition-all duration-200 ${
-                !masterEnabled
-                  ? "border-slate-200/50 bg-slate-50/50 opacity-60 dark:border-slate-800/40 dark:bg-slate-900/30"
-                  : formState.ticketEmails
-                    ? "border-purple-200/70 bg-purple-50/20 shadow-xs dark:border-purple-800/40 dark:bg-purple-950/10"
-                    : "border-slate-200/80 bg-white/60 dark:border-slate-800/80 dark:bg-slate-900/60"
-              }`}
-            >
-              <CardContent className="flex items-start justify-between gap-3.5 p-4.5">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400">
-                    <Headphones className="size-4.5" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
-                      Support Tickets
-                    </h5>
-                    <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                      Receive notifications when new support issues are raised or tickets assigned
-                      to you are updated.
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  checked={masterEnabled && formState.ticketEmails}
-                  disabled={!masterEnabled || isPending}
-                  onCheckedChange={(val) => handleToggle("ticketEmails", val)}
-                />
-              </CardContent>
-            </Card>
-          )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
-      </div>
+      </div> */}
 
       {/* Helper Footer Note */}
       <div className="flex items-center gap-2 rounded-xl bg-slate-100/70 p-3.5 text-xs text-slate-600 dark:bg-slate-900/40 dark:text-slate-400">
