@@ -6,6 +6,7 @@ import { Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDeletePartnerLead } from "../hooks/use-delete-partner-lead";
+import { useApprovePartnerLead } from "../hooks/use-approve-partner-lead";
 import { PartnerLeadData } from "../types/partner-lead.types";
 
 interface PartnerLeadActionsCellProps {
@@ -15,7 +16,9 @@ interface PartnerLeadActionsCellProps {
 
 export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
   const { mutateAsync: deleteLead, isPending: isDeleting } = useDeletePartnerLead(lead.id);
+  const { mutateAsync: approveLead, isPending: isApproving } = useApprovePartnerLead(lead.id);
 
   const handleDelete = async () => {
     try {
@@ -24,6 +27,16 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
       toast.success(`"${lead.businessName}" has been moved to the Recycle Bin.`);
     } catch {
       toast.error(`Failed to delete "${lead.businessName}".`);
+    }
+  };
+
+  const handleApprove = async () => {
+    try {
+      await approveLead();
+      setApproveOpen(false);
+      toast.success(`"${lead.businessName}" has been approved. Store and Admin created.`);
+    } catch {
+      toast.error(`Failed to approve "${lead.businessName}".`);
     }
   };
 
@@ -45,6 +58,33 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
 
         <Tooltip>
           <TooltipTrigger
+            onClick={() => setApproveOpen(true)}
+            disabled={isApproving || lead.status === "APPROVED"}
+            className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-blue-200 text-blue-500 shadow-xs transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-blue-950/30"
+            title="Approve Lead"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-check"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Approve Lead</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger
             onClick={() => setDeleteOpen(true)}
             disabled={isDeleting}
             className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 text-slate-500 shadow-xs transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-red-950/30"
@@ -57,6 +97,16 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+
+      <ConfirmationDialog
+        open={approveOpen}
+        onOpenChange={setApproveOpen}
+        title="Approve Partner Lead"
+        description={`Are you sure you want to approve "${lead.businessName}"? This will create a Store and a Store Admin account, and email the login credentials to the user.`}
+        confirmLabel="Approve Lead"
+        onConfirm={handleApprove}
+        isLoading={isApproving}
+      />
 
       <ConfirmationDialog
         open={deleteOpen}

@@ -17,11 +17,33 @@ interface EditStoreDialogProps {
 }
 
 export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogProps) {
+  const cleanPhone = (code?: string | null, num?: string | null) => {
+    if (!code || !num) return num ?? undefined;
+
+    let result = num.trim();
+    if (result.startsWith(code)) {
+      result = result.slice(code.length).trim();
+    } else {
+      // If it starts with the numeric part of the code (e.g. 91 instead of +91)
+      const cleanCode = code.replace(/\D/g, "");
+      if (cleanCode && result.startsWith(cleanCode)) {
+        // Only strip if the remaining part is a valid 10-digit number
+        // (to prevent stripping 91 from a 10-digit Indian number starting with 91)
+        const stripped = result.slice(cleanCode.length).trim();
+        if (stripped.length >= 10) {
+          result = stripped;
+        }
+      }
+    }
+
+    return result || undefined;
+  };
+
   const initialValues: Partial<StoreFormValues> = {
     storeImage: store.storeImage,
     storeName: store.storeName,
-    storePhoneCode: store.storePhoneCode,
-    storePhoneNumber: store.storePhoneNumber,
+    storePhoneCode: store.storePhoneCode || "+91",
+    storePhoneNumber: cleanPhone(store.storePhoneCode || "+91", store.storePhoneNumber),
     storeAddress: store.storeAddress,
     address2: store.address2,
     storeCountry: store.storeCountry,
@@ -32,8 +54,8 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
     managerFirstName: store.managerFirstName,
     managerLastName: store.managerLastName,
     managerEmail: store.managerEmail,
-    managerPhoneCode: store.managerPhoneCode,
-    managerPhoneNumber: store.managerPhoneNumber,
+    managerPhoneCode: store.managerPhoneCode || "+91",
+    managerPhoneNumber: cleanPhone(store.managerPhoneCode || "+91", store.managerPhoneNumber),
     managerAddress: store.managerAddress,
     managerCountry: store.managerCountry,
     managerState: store.managerState,

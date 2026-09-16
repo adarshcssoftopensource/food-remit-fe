@@ -23,6 +23,7 @@ import Link from "next/link";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Country } from "country-state-city";
+import { CitySelect } from "@/components/common/city-select";
 import { useDebounce } from "@/lib/debounce";
 import { CountrySelect } from "@/components/common/country-select";
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
@@ -279,18 +280,6 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       // ignore storage access errors
     }
   }, [formValues, currentStep, isSubmitSuccessful]);
-
-  // Warn before leaving page if there are unsaved changes
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty && !isSubmitSuccessful) {
-        e.preventDefault();
-        e.returnValue = "";
-      }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty, isSubmitSuccessful]);
 
   function handleResetForm() {
     try {
@@ -924,17 +913,19 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         htmlFor="businessCity"
                         className="text-xs font-semibold text-slate-700"
                       >
-                        Business City <span className="font-normal text-slate-400">(Optional)</span>
+                        Business City <span className="text-red-500">*</span>
                       </FieldLabel>
-                      <Input
-                        {...field}
+                      <CitySelect
+                        countryId={watch("country")}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={!watch("country")}
+                        invalid={Boolean(errors.businessCity)}
+                        className={errors.businessCity ? "border-red-400 bg-red-50/30" : ""}
                         id="businessCity"
-                        placeholder="Enter city"
-                        aria-invalid={!!errors.businessCity}
-                        className={cn(
-                          "h-11 rounded-xl border-slate-200 bg-white text-sm transition-colors focus-visible:border-emerald-600 focus-visible:ring-emerald-600/20",
-                          errors.businessCity && "border-red-400 bg-red-50/30",
-                        )}
+                        placeholder="Select city"
+                        includeAll={false}
+                        valueKey="name"
                       />
                       {errors.businessCity && (
                         <p className="text-xs font-medium text-red-500">
