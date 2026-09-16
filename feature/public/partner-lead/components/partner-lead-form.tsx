@@ -852,13 +852,14 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name="country"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <div className="flex flex-col gap-1.5">
                       <FieldLabel
                         htmlFor="country"
                         className="text-xs font-semibold text-slate-700"
                       >
                         Country <span className="text-red-500">*</span>
                       </FieldLabel>
+
                       <CountrySelect
                         value={field.value}
                         onValueChange={field.onChange}
@@ -866,6 +867,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         invalid={Boolean(errors.country)}
                         valueKey="name"
                       />
+
                       {errors.country && (
                         <p className="text-xs font-medium text-red-500">{errors.country.message}</p>
                       )}
@@ -885,6 +887,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         State / Province / Region{" "}
                         <span className="font-normal text-slate-400">(Optional)</span>
                       </FieldLabel>
+
                       <Input
                         {...field}
                         id="stateProvinceRegion"
@@ -895,6 +898,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           errors.stateProvinceRegion && "border-red-400 bg-red-50/30",
                         )}
                       />
+
                       {errors.stateProvinceRegion && (
                         <p className="text-xs font-medium text-red-500">
                           {errors.stateProvinceRegion.message}
@@ -915,6 +919,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       >
                         Business City <span className="text-red-500">*</span>
                       </FieldLabel>
+
                       <CitySelect
                         countryId={watch("country")}
                         value={field.value}
@@ -927,6 +932,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         includeAll={false}
                         valueKey="name"
                       />
+
                       {errors.businessCity && (
                         <p className="text-xs font-medium text-red-500">
                           {errors.businessCity.message}
@@ -940,13 +946,14 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name="currency"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <div className="flex flex-col gap-1.5">
                       <FieldLabel
                         htmlFor="currency"
                         className="text-xs font-semibold text-slate-700"
                       >
                         Currency <span className="font-normal text-slate-400">(Auto-detected)</span>
                       </FieldLabel>
+
                       <Input
                         {...field}
                         value={field.value || ""}

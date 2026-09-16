@@ -2,7 +2,7 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Eye, Trash2 } from "lucide-react";
+import { CircleCheck, Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDeletePartnerLead } from "../hooks/use-delete-partner-lead";
@@ -63,20 +63,7 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
             className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-blue-200 text-blue-500 shadow-xs transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-blue-950/30"
             title="Approve Lead"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-check"
-            >
-              <path d="M20 6 9 17l-5-5" />
-            </svg>
+            <CircleCheck size={20} />
           </TooltipTrigger>
           <TooltipContent>
             <p>Approve Lead</p>
