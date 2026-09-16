@@ -1,8 +1,9 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bell, CheckCheck, Inbox, Trash2 } from "lucide-react";
+import { Bell, CheckCheck, Inbox, Trash2, ShoppingBag } from "lucide-react";
 import { useMemo, useState } from "react";
+import { OrderNotificationCard } from "./order-notification-card";
 
 import { DataTablePagination } from "@/components/common/data-table/data-table-pagination";
 import { NoDataFound } from "@/components/common/no-data-found";
@@ -178,7 +179,12 @@ export function NotificationsInbox() {
                         : "bg-emerald-100 text-emerald-700 ring-emerald-200",
                     )}
                   >
-                    <Bell className="size-4" />
+                    {item.title.toLowerCase().includes("order") ||
+                    item.message.includes("Order Reference:") ? (
+                      <ShoppingBag className="size-4" />
+                    ) : (
+                      <Bell className="size-4" />
+                    )}
                   </div>
 
                   <div className="min-w-0 flex-1">
@@ -192,9 +198,9 @@ export function NotificationsInbox() {
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-sm leading-relaxed whitespace-pre-wrap text-slate-600">
-                      {item.message}
-                    </p>
+
+                    <OrderNotificationCard message={item.message} isRead={item.isRead} />
+
                     <p className="mt-2 text-xs text-slate-400">
                       {formatWhen(item.createdAt || item.addedOn)}
                     </p>
