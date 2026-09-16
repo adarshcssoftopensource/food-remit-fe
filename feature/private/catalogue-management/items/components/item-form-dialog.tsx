@@ -268,8 +268,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                       }
                                     }}
                                     onChange={(e) => {
-                                      const val = e.target.value;
-                                      field.onChange(val === "" ? undefined : Number(val));
+                                      field.onChange(e.target.value);
                                     }}
                                   />
                                 </FormControl>
@@ -296,12 +295,20 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                   </FormControl>
 
                                   <SelectContent>
-                                    <SelectItem value="kg">Kg</SelectItem>
-                                    <SelectItem value="g">g</SelectItem>
-                                    <SelectItem value="piece">Piece</SelectItem>
-                                    <SelectItem value="pack">Pack</SelectItem>
-                                    <SelectItem value="l">Litre</SelectItem>
-                                    <SelectItem value="ml">ml</SelectItem>
+                                    <SelectItem value="kg">KG</SelectItem>
+                                    <SelectItem value="g">G</SelectItem>
+                                    <SelectItem value="mg">MG</SelectItem>
+                                    <SelectItem value="ltr">LTR</SelectItem>
+                                    <SelectItem value="ml">ML</SelectItem>
+                                    <SelectItem value="pcs">PCS</SelectItem>
+                                    <SelectItem value="dozen">DOZEN</SelectItem>
+                                    <SelectItem value="box">BOX</SelectItem>
+                                    <SelectItem value="pack">PACK</SelectItem>
+                                    <SelectItem value="set">SET</SelectItem>
+                                    <SelectItem value="pair">PAIR</SelectItem>
+                                    <SelectItem value="bottle">BOTTLE</SelectItem>
+                                    <SelectItem value="can">CAN</SelectItem>
+                                    <SelectItem value="bag">BAG</SelectItem>
                                   </SelectContent>
                                 </Select>
 
