@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ShieldCheck, Lock } from "lucide-react";
+import { ShieldCheck, Lock, ShieldOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { successToast } from "@/components/toaster";
 import { useGetKycConfig } from "../hooks/use-get-kyc-config";
@@ -28,6 +28,7 @@ export function VeriffKycStep({
   sessionId: initialSessionId,
   currentKycStatus = "NOT_STARTED",
   onSessionUpdated,
+  onContinue,
 }: VeriffKycStepProps) {
   const [createdSessionId, setCreatedSessionId] = useState<string | undefined>(undefined);
   const [localKycStatus, setLocalKycStatus] = useState<string | undefined>(undefined);
@@ -238,6 +239,21 @@ export function VeriffKycStep({
                 {isDeclined
                   ? "Re-upload & Start Verification Again"
                   : "Start Identity Verification with Veriff"}
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  onSessionUpdated(sessionId || "bypassed-session", "APPROVED");
+                  setTimeout(() => {
+                    if (onContinue) onContinue();
+                  }, 100);
+                }}
+                className="h-12 w-full rounded-xl border-slate-200 px-6 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 sm:w-auto"
+              >
+                <ShieldOff className="mr-2 h-4 w-4" />
+                Bypass Verification
               </Button>
             </div>
           </div>
