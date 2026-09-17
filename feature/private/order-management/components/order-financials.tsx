@@ -72,7 +72,7 @@ function FinancialCard({
       >
         <div className="flex items-center gap-2">
           <div
-            className={`flex size-6 items-center justify-center rounded-full text-xs font-bold text-white ${totalColor.replace("text-", "bg-").split(" ")[0]}`}
+            className={`bg-primary/80 flex size-6 items-center justify-center rounded-full text-xs font-bold text-white ${totalColor.replace("text-", "bg-").split(" ")[0]}`}
           >
             {step}
           </div>

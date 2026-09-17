@@ -45,6 +45,7 @@ export const ROUTES = {
       ROOT: "/order-management",
     },
     MY_ORDERS: "/my-orders",
+    MY_ORDER_DETAIL: (id: string) => `/my-orders/${id}`,
     CONTENT_MANAGEMENT: {
       ROOT: "/content-management",
       LANDING_PAGE: "/content-management/landing-page",
