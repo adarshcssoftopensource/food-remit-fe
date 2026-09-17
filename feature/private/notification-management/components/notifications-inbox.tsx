@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bell, CheckCheck, Inbox, Trash2, ShoppingBag } from "lucide-react";
+import { Bell, CheckCheck, Inbox, Trash2, ShoppingBag, Handshake } from "lucide-react";
 import { useMemo, useState } from "react";
 import { OrderNotificationCard } from "./order-notification-card";
 
@@ -179,8 +179,11 @@ export function NotificationsInbox() {
                         : "bg-emerald-100 text-emerald-700 ring-emerald-200",
                     )}
                   >
-                    {item.title.toLowerCase().includes("order") ||
-                    item.message.includes("Order Reference:") ? (
+                    {item.title.toLowerCase().includes("partner") ||
+                    item.message.includes("Partner Lead") ? (
+                      <Handshake className="size-4" />
+                    ) : item.title.toLowerCase().includes("order") ||
+                      item.message.includes("Order Reference:") ? (
                       <ShoppingBag className="size-4" />
                     ) : (
                       <Bell className="size-4" />
