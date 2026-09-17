@@ -11,6 +11,7 @@ export function PhoneField({
   label,
   required,
   disabled,
+  defaultCountry,
 }: {
   codeValue: string;
   onCodeChange: (v: string) => void;
@@ -21,6 +22,7 @@ export function PhoneField({
   label: string;
   required?: boolean;
   disabled?: boolean;
+  defaultCountry?: string;
 }) {
   return (
     <div className="space-y-1.5">
@@ -29,6 +31,7 @@ export function PhoneField({
         {required && <span className="ml-0.5 text-red-500">*</span>}
       </Label>
       <PhoneInputComponent
+        defaultCountry={defaultCountry}
         value={(codeValue || "") + (numberValue || "")}
         onChange={(val, data) => {
           if (data && data.dialCode) {

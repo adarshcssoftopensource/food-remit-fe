@@ -2,6 +2,8 @@ import { Label } from "@/components/ui/label";
 import { CountrySelect } from "@/components/common/country-select";
 import { CitySelect } from "@/components/common/city-select";
 
+import type { CountryDropdownItem } from "@/feature/private/settings/types/settings.types";
+
 export function CountryCityFields({
   countryValue,
   onCountryChange,
@@ -9,9 +11,10 @@ export function CountryCityFields({
   onCityChange,
   countryError,
   cityError,
+  disabled = false,
 }: {
   countryValue: string;
-  onCountryChange: (v: string) => void;
+  onCountryChange: (v: string, country?: CountryDropdownItem) => void;
   cityValue: string;
   onCityChange: (v: string) => void;
   countryError?: string;
@@ -20,6 +23,7 @@ export function CountryCityFields({
   stateValue?: string;
   onStateChange?: (v: string) => void;
   stateError?: string;
+  disabled?: boolean;
 }) {
   return (
     <>
@@ -29,12 +33,13 @@ export function CountryCityFields({
         </Label>
         <CountrySelect
           value={countryValue}
-          onValueChange={(v) => {
-            onCountryChange(v);
+          onValueChange={(v, country) => {
+            onCountryChange(v, country);
             onCityChange("");
           }}
           placeholder="Select Country"
           includeAll={false}
+          disabled={disabled}
           invalid={!!countryError}
           className={countryError ? "border-red-500 bg-red-50" : ""}
         />
@@ -49,7 +54,7 @@ export function CountryCityFields({
           countryId={countryValue}
           value={cityValue}
           onValueChange={(v) => onCityChange(v)}
-          disabled={!countryValue}
+          disabled={disabled || !countryValue}
           placeholder="Select City"
           includeAll={false}
           invalid={!!cityError}
