@@ -22,6 +22,7 @@ export const API_CACHE_KEYS = {
   SETTINGS_CITIES_DROPDOWN: ["settings-cities-dropdown"],
   SETTINGS_MARKUP: ["settings-markup"],
   SETTINGS_PROCESSING_FEES: ["settings-processing-fees"],
+  SETTINGS_EMAIL_NOTIFICATIONS: ["settings-email-notifications"],
 
   // Flash Images
   FLASH_IMAGES: ["flash-images"],
