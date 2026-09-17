@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/components/common/status-badge";
+import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -368,12 +369,14 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
     createSNoColumn(),
     createSelectColumn(),
     {
-      accessorKey: "name",
+      accessorKey: "firstName",
       header: "Name",
       cell: ({ row }) => (
-        <span className="font-medium">
-          {row.original.firstName} {row.original.lastName}
-        </span>
+        <ImageNameCell
+          name={`${row.original.firstName} ${row.original.lastName}`}
+          image={row.original.image || undefined}
+          type="profile"
+        />
       ),
     },
     {
@@ -382,6 +385,7 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
     },
     {
       id: "actions",
+      header: "Actions",
       cell: ({ row }) => <RecycledEntityActionsCell entityType="employees" entity={row.original} />,
     },
   ],

@@ -78,7 +78,7 @@ export function StoreManagerDashboard() {
 
   const topCards = [
     {
-      title: "Total Pending Orders",
+      title: "Total Sent Orders",
       href: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
       icon: Clock,
       accentColor: "amber" as const,
@@ -91,7 +91,7 @@ export function StoreManagerDashboard() {
     },
     {
       title: "Total Requested Orders",
-      href: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
+      href: `${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=requested-orders`,
       icon: HandPlatter,
       accentColor: "cyan" as const,
       iconBgClassName: "bg-cyan-500/10 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400",
@@ -102,8 +102,8 @@ export function StoreManagerDashboard() {
       ],
     },
     {
-      title: "Total Orders Completed",
-      href: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
+      title: "Total Completed Orders",
+      href: `${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=completed-orders`,
       icon: CheckCircle2,
       accentColor: "emerald" as const,
       iconBgClassName:
