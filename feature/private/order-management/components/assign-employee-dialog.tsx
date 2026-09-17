@@ -28,10 +28,10 @@ import { useAssignOrder } from "@/feature/private/employee-management/hooks/use-
 interface AssignEmployeeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  order: OrderData;
+  orders: OrderData[];
 }
 
-export function AssignEmployeeDialog({ open, onOpenChange, order }: AssignEmployeeDialogProps) {
+export function AssignEmployeeDialog({ open, onOpenChange, orders }: AssignEmployeeDialogProps) {
   const [search, setSearch] = useState("");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
 
@@ -51,7 +51,7 @@ export function AssignEmployeeDialog({ open, onOpenChange, order }: AssignEmploy
   const handleAssign = async () => {
     if (!selectedEmployeeId) return;
     try {
-      await assignOrder(order.id);
+      await assignOrder(orders.map((o) => o.id));
       onOpenChange(false);
       setSelectedEmployeeId(null);
     } catch (e) {
@@ -61,42 +61,56 @@ export function AssignEmployeeDialog({ open, onOpenChange, order }: AssignEmploy
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-0 shadow-2xl sm:max-w-xl dark:border-slate-800 dark:bg-slate-950">
-        <div className="relative px-8 pb-10">
-          <DialogHeader className="mb-7 space-y-4 text-center">
-            <div className="bg-primary/10 text-primary ring-primary/10 mx-auto flex h-16 w-16 items-center justify-center rounded-2xl shadow-sm ring-1">
-              <UserRoundPlus className="h-8 w-8" strokeWidth={2.2} />
+      <DialogContent className="max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 shadow-lg sm:max-w-lg dark:border-slate-800 dark:bg-slate-950">
+        <div className="flex h-full max-h-[85vh] flex-col">
+          <DialogHeader className="border-b border-slate-100 p-6 dark:border-slate-800">
+            <div className="flex items-center gap-4">
+              <div className="bg-primary/10 text-primary ring-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-sm ring-1">
+                <UserRoundPlus className="h-5 w-5" strokeWidth={2} />
+              </div>
+              <div className="flex-1 text-left">
+                <DialogTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                  Assign to Employee
+                </DialogTitle>
+                <DialogDescription className="text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  Select an employee to handle {orders.length === 1 ? "this order" : "these orders"}
+                  .
+                </DialogDescription>
+              </div>
             </div>
 
-            <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              Assign to Employee
-            </DialogTitle>
-
-            <DialogDescription className="mx-auto max-w-90 text-sm leading-6 text-slate-500 sm:text-base dark:text-slate-400">
-              Choose an employee to handle this order and keep the delivery process moving smoothly.
-            </DialogDescription>
-
-            <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-              <ClipboardList className="text-primary h-4 w-4" />
-              <span>Order</span>
-              <span className="font-bold text-slate-900 dark:text-white">
-                #{order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}
-              </span>
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {orders.slice(0, 5).map((o) => (
+                <div
+                  key={o.id}
+                  className="flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300"
+                >
+                  <ClipboardList className="text-primary h-3 w-3 shrink-0" />
+                  <span className="font-semibold">
+                    #{o.refrenceNumber || o.id.substring(0, 8).toUpperCase()}
+                  </span>
+                </div>
+              ))}
+              {orders.length > 5 && (
+                <div className="flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-800/60">
+                  +{orders.length - 5} more
+                </div>
+              )}
             </div>
           </DialogHeader>
 
-          <div className="mb-8 space-y-5">
+          <div className="space-y-4 p-6 pb-2">
             <div className="group relative">
               <Input
                 placeholder="Search employees..."
-                className="h-14 rounded-2xl border-slate-200 bg-white pl-12 text-base shadow-sm group-hover:border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500/20 dark:border-slate-800 dark:bg-slate-900"
+                className="h-10 rounded-lg border-slate-200 bg-slate-50/50 pl-9 text-sm shadow-sm group-hover:border-emerald-200 focus:border-emerald-500 focus:bg-white focus:ring-emerald-500/20 dark:border-slate-800 dark:bg-slate-900/50"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <Search className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate-400 transition-colors group-hover:text-emerald-500" />
+              <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400 transition-colors group-hover:text-emerald-500" />
             </div>
 
-            <ScrollArea className="h-80 rounded-2xl border border-slate-100 bg-slate-50/50 p-2 shadow-inner dark:border-slate-800 dark:bg-slate-900/30">
+            <ScrollArea className="h-64 rounded-lg border border-slate-200 bg-slate-50/50 p-1.5 dark:border-slate-800 dark:bg-slate-900/30">
               {loadingEmployees ? (
                 <div className="flex h-32 items-center justify-center">
                   <Loader2 className="size-8 animate-spin text-emerald-500" />
@@ -112,32 +126,30 @@ export function AssignEmployeeDialog({ open, onOpenChange, order }: AssignEmploy
                         key={emp.id}
                         type="button"
                         onClick={() => setSelectedEmployeeId(emp.id)}
-                        className={`flex w-full items-center gap-4 rounded-xl p-3 transition-all duration-200 ${
+                        className={`flex w-full items-center gap-3 rounded-md p-2 transition-all duration-200 ${
                           isSelected
-                            ? "border-2 border-emerald-500 bg-white shadow-md ring-4 ring-emerald-50 dark:bg-slate-900 dark:ring-emerald-950/30"
-                            : "border-2 border-transparent bg-white shadow-sm hover:border-emerald-100 hover:shadow-md dark:bg-slate-900 dark:hover:border-slate-700"
+                            ? "border border-emerald-500 bg-emerald-50/50 shadow-sm dark:border-emerald-600 dark:bg-emerald-950/20"
+                            : "border border-transparent bg-white shadow-sm hover:border-emerald-100 dark:bg-slate-900 dark:hover:border-slate-700"
                         }`}
                       >
                         <div
-                          className={`flex size-12 shrink-0 items-center justify-center rounded-[0.8rem] text-lg font-bold text-white shadow-sm transition-colors ${
-                            isSelected
-                              ? "bg-linear-to-br from-emerald-500 to-teal-600"
-                              : "bg-slate-300 dark:bg-slate-700"
+                          className={`flex size-9 shrink-0 items-center justify-center rounded-md text-sm font-bold text-white shadow-sm transition-colors ${
+                            isSelected ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-700"
                           }`}
                         >
                           {initials}
                         </div>
                         <div className="flex-1 overflow-hidden text-left">
-                          <p className="truncate text-base font-bold text-slate-900 dark:text-white">
+                          <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
                             {fullName}
                           </p>
-                          <p className="truncate text-sm font-medium text-slate-500 dark:text-slate-400">
+                          <p className="truncate text-xs font-medium text-slate-500 dark:text-slate-400">
                             {emp.email}
                           </p>
                         </div>
                         {isSelected && (
-                          <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
-                            <CheckCircle size={20} />
+                          <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
+                            <CheckCircle size={14} />
                           </div>
                         )}
                       </button>
@@ -153,29 +165,26 @@ export function AssignEmployeeDialog({ open, onOpenChange, order }: AssignEmploy
             </ScrollArea>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/50 p-6 pt-4 dark:border-slate-800 dark:bg-slate-900/20">
             <Button
               variant="outline"
-              className="h-14 flex-1 rounded-[1.25rem] border-2 border-slate-200 text-base font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100"
+              className="h-10 rounded-md border-slate-200 px-4 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
               onClick={() => onOpenChange(false)}
             >
               Cancel
             </Button>
             <Button
-              className="h-14 flex-[1.5] rounded-[1.25rem] bg-linear-to-r from-emerald-500 to-teal-600 text-base font-bold text-white hover:from-emerald-600 hover:to-teal-700"
+              className="h-10 rounded-md bg-emerald-500 px-6 text-sm font-semibold text-white hover:bg-emerald-600"
               onClick={handleAssign}
               disabled={isAssigning || !selectedEmployeeId}
             >
               {isAssigning ? (
                 <>
-                  <Loader2 className="mr-2 size-5 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Assigning...
                 </>
               ) : (
-                <>
-                  <UserCheck className="mr-2 size-5" />
-                  Confirm Assignment
-                </>
+                <>Confirm Assignment</>
               )}
             </Button>
           </div>

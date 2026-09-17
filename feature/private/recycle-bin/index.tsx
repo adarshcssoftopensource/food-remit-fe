@@ -158,8 +158,8 @@ export function RecycledUsersManagement() {
       <ModuleFilters
         title={ENTITY_TABS.find((t) => t.id === activeTab)?.label || "Filter Recycle Bin"}
         description="Select the module to view recycled records."
-        hasFilters={activeTab !== "users"}
-        activeFilterCount={activeTab !== "users" ? 1 : 0}
+        hasFilters={true}
+        activeFilterCount={1}
       >
         <div className="min-w-44 flex-1 space-y-3">
           <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
@@ -170,25 +170,22 @@ export function RecycledUsersManagement() {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
-                <DrawerClose
-                  key={tab.id}
-                  render={
-                    <button
-                      onClick={() => handleTabChange(tab.id)}
-                      className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
-                        isActive
-                          ? "text-secondary bg-teal-900 shadow-md dark:bg-teal-50 dark:text-teal-900"
-                          : "bg-slate-50 text-slate-600 hover:bg-slate-100 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:bg-slate-800"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon className="h-4 w-4" />
-                        {tab.label}
-                      </div>
-                      {isActive && <Check className="h-4 w-4" />}
-                    </button>
-                  }
-                />
+                <DrawerClose key={tab.id}>
+                  <button
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                      isActive
+                        ? "text-secondary bg-teal-900 shadow-md dark:bg-teal-50 dark:text-teal-900"
+                        : "bg-slate-50 text-slate-600 hover:bg-slate-100 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className="h-4 w-4" />
+                      {tab.label}
+                    </div>
+                    {isActive && <Check className="h-4 w-4" />}
+                  </button>
+                </DrawerClose>
               );
             })}
           </div>
@@ -217,8 +214,8 @@ export function RecycledUsersManagement() {
       <ConfirmationDialog
         open={isBulkRestoreDialogOpen}
         onOpenChange={setIsBulkRestoreDialogOpen}
-        title="Restore Selected Records"
-        description={`Are you sure you want to restore ${selectedIds.length} selected records? They will be active in the system again.`}
+        title={`Restore Selected ${ENTITY_TABS.find((t) => t.id === activeTab)?.label}`}
+        description={`Are you sure you want to restore ${selectedIds.length} selected ${ENTITY_TABS.find((t) => t.id === activeTab)?.label.toLowerCase()}? They will be active in the system again.`}
         confirmLabel="Restore Records"
         onConfirm={handleBulkRestore}
         isLoading={bulkRestore.isPending}
@@ -227,8 +224,8 @@ export function RecycledUsersManagement() {
       <ConfirmationDialog
         open={isBulkPermanentDeleteDialogOpen}
         onOpenChange={setIsBulkPermanentDeleteDialogOpen}
-        title="Permanently Delete Selected Records"
-        description={`Are you sure you want to permanently delete ${selectedIds.length} selected records? This action cannot be undone and all associated data will be erased forever.`}
+        title={`Permanently Delete Selected ${ENTITY_TABS.find((t) => t.id === activeTab)?.label}`}
+        description={`Are you sure you want to permanently delete ${selectedIds.length} selected ${ENTITY_TABS.find((t) => t.id === activeTab)?.label.toLowerCase()}? This action cannot be undone and all associated data will be erased forever.`}
         confirmLabel="Delete Permanently"
         variant="destructive"
         onConfirm={handleBulkPermanentDelete}

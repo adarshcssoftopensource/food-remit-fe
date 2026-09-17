@@ -5,9 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SortingState } from "@tanstack/react-table";
 import { CheckCircle2, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/config/routes";
 import { getEmployeeOrderColumns } from "../columns/employee-order-columns";
 
 interface EmployeeOrdersTableProps {
+  employeeId: string;
   employeeName: string;
   data: any[];
   isLoading: boolean;
@@ -23,6 +26,7 @@ interface EmployeeOrdersTableProps {
 }
 
 export function EmployeeOrdersTable({
+  employeeId,
   employeeName,
   data,
   isLoading,
@@ -36,7 +40,13 @@ export function EmployeeOrdersTable({
   onSortingChange,
   onUnassign,
 }: EmployeeOrdersTableProps) {
-  const columns = getEmployeeOrderColumns({ onUnassign, isUnassigning });
+  const router = useRouter();
+  const columns = getEmployeeOrderColumns({
+    employeeId,
+    onView: (id) => router.push(ROUTES.ADMIN.EMPLOYEE_ORDER_DETAIL(employeeId, id)),
+    onUnassign,
+    isUnassigning,
+  });
 
   return (
     <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">

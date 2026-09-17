@@ -4,6 +4,26 @@ import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { OrderStatusSelect } from "../components/order-status-select";
 import { OrderData } from "../types/order.types";
+import { Button } from "@/components/ui/button";
+import { Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/config/routes";
+
+function MyOrderActionsCell({ orderId }: { orderId: string }) {
+  const router = useRouter();
+
+  return (
+    <Button
+      size="sm"
+      variant="outline"
+      className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950/20 dark:text-slate-300"
+      onClick={() => router.push(ROUTES.ADMIN.MY_ORDER_DETAIL(orderId))}
+    >
+      <Eye className="mr-1.5 size-3.5" />
+      View
+    </Button>
+  );
+}
 
 export const myOrderColumns: ColumnDef<OrderData>[] = [
   {
@@ -101,5 +121,10 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
     cell: ({ row }) => (
       <OrderStatusSelect orderId={row.original.id} currentStatus={row.original.orderStatus} />
     ),
+  },
+  {
+    id: "actions",
+    header: "Action",
+    cell: ({ row }) => <MyOrderActionsCell orderId={row.original.id} />,
   },
 ];

@@ -45,6 +45,7 @@ export const ROUTES = {
       ROOT: "/order-management",
     },
     MY_ORDERS: "/my-orders",
+    MY_ORDER_DETAIL: (id: string) => `/my-orders/${id}`,
     CONTENT_MANAGEMENT: {
       ROOT: "/content-management",
       LANDING_PAGE: "/content-management/landing-page",
@@ -82,6 +83,8 @@ export const ROUTES = {
     PROFILE: "/profile",
     SETTINGS: "/settings",
     EMPLOYEE_MANAGEMENT: "/employee-management",
+    EMPLOYEE_ORDER_DETAIL: (employeeId: string, orderId: string) =>
+      `/employee-management/${employeeId}/orders/${orderId}`,
   },
 } as const;
 

@@ -45,7 +45,7 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
             <UserPlus className="size-4" />
           </Button>
           {assignOpen && (
-            <AssignEmployeeDialog open={assignOpen} onOpenChange={setAssignOpen} order={order} />
+            <AssignEmployeeDialog open={assignOpen} onOpenChange={setAssignOpen} orders={[order]} />
           )}
         </>
       )}

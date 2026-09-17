@@ -2,8 +2,68 @@ import { ColumnDef } from "@tanstack/react-table";
 import { OrderData } from "../types/order.types";
 import { OrderActionsCell } from "../components/order-actions-cell";
 import { formatDate } from "@/lib/date";
+import { Checkbox } from "@/components/ui/checkbox";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { UserCheck } from "lucide-react";
 
 export const orderColumns: ColumnDef<OrderData>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          (table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")) as any
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        disabled={!table.getRowModel().rows.some((row) => row.getCanSelect())}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => {
+      const isAssigned = !!row.original.assignedEmployeeId;
+
+      if (isAssigned) {
+        return (
+          <TooltipProvider delay={200}>
+            <Tooltip>
+              <TooltipTrigger>
+                <div className="inline-flex cursor-not-allowed items-center opacity-40">
+                  <Checkbox
+                    checked={false}
+                    disabled
+                    aria-label="Already assigned"
+                    className="translate-y-[2px]"
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-slate-900 text-slate-50 dark:bg-white dark:text-slate-900"
+              >
+                <span className="flex items-center gap-1.5 font-medium">
+                  <UserCheck className="size-3.5 text-emerald-400 dark:text-emerald-600" />
+                  Already assigned
+                </span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      }
+
+      return (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          className="translate-y-[2px]"
+        />
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     id: "sno",
     header: "S.No",

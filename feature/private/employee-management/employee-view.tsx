@@ -72,6 +72,7 @@ export function EmployeeViewPage({ id }: EmployeeViewPageProps) {
 
       {/* Assigned Orders */}
       <EmployeeOrdersTable
+        employeeId={id}
         employeeName={employee.firstName}
         data={assignedOrdersData?.data ?? []}
         isLoading={assignedOrdersLoading}

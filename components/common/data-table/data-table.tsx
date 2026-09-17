@@ -54,6 +54,7 @@ interface DataTableProps<TData, TValue> {
   ) => void;
   hidePagination?: boolean;
   getRowId?: (originalRow: TData, index: number, parent?: any) => string;
+  enableRowSelection?: boolean | ((row: import("@tanstack/react-table").Row<TData>) => boolean);
 }
 
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
@@ -78,6 +79,7 @@ export function DataTable<TData, TValue>({
   rowSelection = EMPTY_ROW_SELECTION,
   onRowSelectionChange,
   getRowId,
+  enableRowSelection = true,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -106,7 +108,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     manualSorting,
     manualFiltering,
-    enableRowSelection: true,
+    enableRowSelection,
     onRowSelectionChange,
     getRowId,
     initialState: {

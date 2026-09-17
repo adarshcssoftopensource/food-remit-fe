@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { ArrowLeft, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ItemDetailsCard } from "./components/item-details-card";
 import { ItemInfoSection } from "./components/item-info-section";
 import { ItemMediaCard } from "./components/item-media-card";
@@ -26,11 +26,11 @@ export function ItemView({ id }: ItemViewProps) {
 
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
-  const [imageList, setImageList] = useState<{ src: string; label: string; type: string }[]>([]);
-  const [initializedForId, setInitializedForId] = useState<string | null>(null);
+  const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
 
-  if (item && item.id !== initializedForId) {
+  const imageList = useMemo(() => {
     const list: { src: string; label: string; type: string }[] = [];
+    if (!item) return list;
 
     if (item.productImageUrls && item.productImageUrls.length > 0) {
       item.productImageUrls.forEach((url: string, idx: number) => {
@@ -45,16 +45,21 @@ export function ItemView({ id }: ItemViewProps) {
     if (item.nutritionInfoImageUrl)
       list.push({ src: item.nutritionInfoImageUrl, label: "Nutrition Info", type: "additional" });
 
-    setImageList(list);
-    setInitializedForId(item.id);
-  }
+    if (selectedImageSrc) {
+      const selectedIdx = list.findIndex((img) => img.src === selectedImageSrc);
+      if (selectedIdx !== -1) {
+        [list[0], list[selectedIdx]] = [list[selectedIdx], list[0]];
+      }
+    }
+
+    return list;
+  }, [item, selectedImageSrc]);
 
   const swapWithMain = (idx: number) => {
-    setImageList((prev) => {
-      const next = [...prev];
-      [next[0], next[idx]] = [next[idx], next[0]];
-      return next;
-    });
+    const selected = imageList[idx];
+    if (selected) {
+      setSelectedImageSrc(selected.src);
+    }
   };
 
   const mainImage = imageList[0] ?? null;
