@@ -13,6 +13,9 @@ import {
   Receipt,
   Calendar,
   Sparkles,
+  Building2,
+  Globe,
+  Handshake,
 } from "lucide-react";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
@@ -153,8 +156,143 @@ export function parseOrderNotification(message: string) {
   };
 }
 
+export function parsePartnerLeadNotification(message: string) {
+  const isLead =
+    message.includes("Partner Lead Reference:") || message.includes("partner registration lead");
+  if (!isLead) return { isLead: false };
+
+  const lines = message
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  let ref = "";
+  let business = "";
+  let contact = "";
+  let email = "";
+  let phone = "";
+  let country = "";
+
+  for (const line of lines) {
+    if (line.startsWith("Partner Lead Reference:")) {
+      ref = line.replace("Partner Lead Reference:", "").trim();
+    } else if (line.startsWith("Business:")) {
+      business = line.replace("Business:", "").trim();
+    } else if (line.startsWith("Contact:")) {
+      contact = line.replace("Contact:", "").trim();
+    } else if (line.startsWith("Email:")) {
+      email = line.replace("Email:", "").trim();
+    } else if (line.startsWith("Phone:")) {
+      phone = line.replace("Phone:", "").trim();
+    } else if (line.startsWith("Country:")) {
+      country = line.replace("Country:", "").trim();
+    }
+  }
+
+  return {
+    isLead: true,
+    ref,
+    business,
+    contact,
+    email,
+    phone,
+    country,
+  };
+}
+
 export function OrderNotificationCard({ message, isRead }: OrderNotificationCardProps) {
   const parsed = useMemo(() => parseOrderNotification(message), [message]);
+  const parsedLead = useMemo(() => parsePartnerLeadNotification(message), [message]);
+
+  if (parsedLead.isLead) {
+    return (
+      <div
+        className={cn(
+          "mt-3 overflow-hidden rounded-2xl border transition-all duration-200",
+          isRead
+            ? "border-slate-200/80 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-900/30"
+            : "border-emerald-200/90 bg-emerald-50/20 shadow-xs dark:border-emerald-900/50 dark:bg-emerald-950/10",
+        )}
+      >
+        {/* Top Banner */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/60 bg-white px-4 py-3 dark:border-slate-800/80 dark:bg-slate-900">
+          <div className="flex flex-wrap items-center gap-2">
+            {parsedLead.ref && (
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-100/70 px-2.5 py-1 text-xs font-bold text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
+                <Handshake className="size-3.5" />
+                {parsedLead.ref}
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1 rounded-full border border-teal-300/40 bg-teal-500/15 px-2.5 py-0.5 text-[11px] font-bold text-teal-700 uppercase dark:bg-teal-500/20 dark:text-teal-300">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-teal-500" />
+              Vendor Registration
+            </span>
+            {parsedLead.business && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <Building2 className="size-3.5 text-slate-400" />
+                {parsedLead.business}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Details Content */}
+        <div className="space-y-3 p-4">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {/* Business & Contact */}
+            <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+              <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                <User className="size-3.5 text-emerald-600" />
+                <span>Contact Person</span>
+              </div>
+              <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                {parsedLead.contact || "N/A"}
+              </div>
+              {parsedLead.country && (
+                <div className="mt-1 flex items-center gap-1 text-[11px] text-slate-500">
+                  <Globe className="size-3 text-slate-400" />
+                  <span>{parsedLead.country}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Email & Phone */}
+            <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+              <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                <Mail className="size-3.5 text-teal-600" />
+                <span>Contact Info</span>
+              </div>
+              <div className="space-y-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">
+                {parsedLead.email && (
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="size-3 text-slate-400" />
+                    <span>{parsedLead.email}</span>
+                  </div>
+                )}
+                {parsedLead.phone && (
+                  <div className="flex items-center gap-1.5">
+                    <Phone className="size-3 text-slate-400" />
+                    <span>{parsedLead.phone}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Action Footer */}
+          <div className="flex items-center justify-end pt-1">
+            <Link
+              href={ROUTES.ADMIN.PARTNER_LEADS}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              <span>View in Partner Leads CRM</span>
+              <ArrowUpRight className="size-3.5 text-emerald-600" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!parsed.isOrder) {
     // Regular plain text notification

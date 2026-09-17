@@ -28,6 +28,20 @@ export function ProfileForm() {
   const firstName = profile?.firstName || nameParts[0] || "";
   const lastName = profile?.lastName || nameParts.slice(1).join(" ") || "";
 
+  const resolvedCountry =
+    (profile as any)?.countryName ||
+    (profile as any)?.stores?.find((s: any) => s.country === (profile as any)?.country)
+      ?.countryName ||
+    (profile as any)?.stores?.[0]?.countryName ||
+    (profile as any)?.country ||
+    "";
+
+  const resolvedCity =
+    (profile as any)?.cityName ||
+    (profile as any)?.stores?.find((s: any) => s.city === (profile as any)?.city)?.cityName ||
+    (profile as any)?.city ||
+    "";
+
   const {
     control,
     handleSubmit,
@@ -41,10 +55,10 @@ export function ProfileForm() {
       email: profile?.email || "",
       contactNumber: profile?.phoneNumber || "",
       address: profile?.address || "",
-      country: (profile as any)?.country || "",
+      country: resolvedCountry,
       state: (profile as any)?.state || "",
-      city: (profile as any)?.city || "",
-      zipCode: (profile as any)?.zipCode || "",
+      city: resolvedCity,
+      zipCode: (profile as any)?.zipCode || (profile as any)?.zipcode || "",
       image: undefined,
     },
     mode: "onChange",

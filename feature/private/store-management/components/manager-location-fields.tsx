@@ -32,11 +32,19 @@ export function ManagerLocationFields({
   stateError?: string;
 }) {
   const allCountries = Country.getAllCountries();
-  const selectedCountryObj = allCountries.find((c) => c.name === countryValue);
+  const selectedCountryObj = allCountries.find(
+    (c) =>
+      c.name.toLowerCase() === countryValue?.trim().toLowerCase() ||
+      c.isoCode.toLowerCase() === countryValue?.trim().toLowerCase(),
+  );
   const stateOptions = selectedCountryObj
     ? State.getStatesOfCountry(selectedCountryObj.isoCode)
     : [];
-  const selectedStateObj = stateOptions.find((s) => s.name === stateValue);
+  const selectedStateObj = stateOptions.find(
+    (s) =>
+      s.name.toLowerCase() === stateValue?.trim().toLowerCase() ||
+      s.isoCode.toLowerCase() === stateValue?.trim().toLowerCase(),
+  );
   const cityOptions =
     selectedCountryObj && selectedStateObj
       ? City.getCitiesOfState(selectedCountryObj.isoCode, selectedStateObj.isoCode)

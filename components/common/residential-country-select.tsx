@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
 import { useUserCountry } from "@/hooks/use-user-country";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,7 @@ export function ResidentialCountrySelect({
   const autoDetectApplied = useRef(false);
 
   const { countryName: detectedName, isLoading: isDetecting } = useUserCountry();
+  const { countries: apiCountries } = useGetCountriesDropdown();
 
   useEffect(() => {
     if (disableAutoDetect) return;
@@ -66,10 +68,48 @@ export function ResidentialCountrySelect({
     autoDetectApplied.current = true;
   }, [detectedName, isDetecting, value, onValueChange]);
 
-  const selectedCountry = useMemo(
-    () => ALL_WORLD_COUNTRIES.find((c) => c.name === value) ?? null,
-    [value],
-  );
+  const selectedCountry = useMemo(() => {
+    if (!value) return null;
+    const valTrimmed = value.trim().toLowerCase();
+
+    // 1. Direct name match
+    const matchByName = ALL_WORLD_COUNTRIES.find((c) => c.name.toLowerCase() === valTrimmed);
+    if (matchByName) return matchByName;
+
+    // 2. ISO code match
+    const matchByIso = ALL_WORLD_COUNTRIES.find((c) => c.isoCode.toLowerCase() === valTrimmed);
+    if (matchByIso) return matchByIso;
+
+    // 3. API country dropdown match (by UUID, countryCode, or name)
+    if (apiCountries?.length) {
+      const apiMatch = apiCountries.find(
+        (ac) =>
+          ac.id?.toLowerCase() === valTrimmed ||
+          ac.name?.toLowerCase() === valTrimmed ||
+          ac.countryName?.toLowerCase() === valTrimmed ||
+          ac.countryCode?.toLowerCase() === valTrimmed,
+      );
+      if (apiMatch) {
+        const countryName = apiMatch.name || apiMatch.countryName;
+        const fromApi = ALL_WORLD_COUNTRIES.find(
+          (c) =>
+            (countryName && c.name.toLowerCase() === countryName.toLowerCase()) ||
+            (apiMatch.countryCode &&
+              c.isoCode.toLowerCase() === apiMatch.countryCode.toLowerCase()),
+        );
+        if (fromApi) return fromApi;
+      }
+    }
+
+    return null;
+  }, [value, apiCountries]);
+
+  // Sync normalized country name back if it was resolved from a UUID or ISO code
+  useEffect(() => {
+    if (selectedCountry && selectedCountry.name !== value) {
+      onValueChange(selectedCountry.name);
+    }
+  }, [selectedCountry, value, onValueChange]);
 
   const filteredCountries = useMemo(() => {
     const q = query.trim().toLowerCase();
