@@ -70,7 +70,6 @@ export function OrderItemsTable({
           </p>
         </div>
 
-        {/* Backend Filter Tabs */}
         <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
           <Button
             variant={itemFilter === "all" ? "default" : "ghost"}

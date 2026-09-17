@@ -161,23 +161,6 @@ export function getOrderItemColumns(
       },
     },
     {
-      accessorKey: "deliveredStatus",
-      header: "Delivery Status",
-      cell: ({ row }) => (
-        <div className="text-start">
-          {row.original.deliveredStatus === 1 ? (
-            <Badge className="rounded-full border-emerald-500/30 bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-              Delivered
-            </Badge>
-          ) : (
-            <Badge className="rounded-full border-amber-500/30 bg-amber-500/15 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
-              Available
-            </Badge>
-          )}
-        </div>
-      ),
-    },
-    {
       id: "qrCode",
       header: "QR Code",
       cell: ({ row }) => {
