@@ -31,7 +31,6 @@ import { UpdateStatusDialog } from "./components/update-status-dialog";
 import { usePartnerLead } from "./hooks/use-get-partner-lead";
 import { useUpdateLeadStatus } from "./hooks/use-update-lead-status";
 import { useDeletePartnerLead } from "./hooks/use-delete-partner-lead";
-import { useApprovePartnerLead } from "./hooks/use-approve-partner-lead";
 
 interface PartnerLeadDetailProps {
   id: string;
@@ -42,7 +41,6 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
   const { lead, isLoading } = usePartnerLead(id);
   const { isUpdatingStatus } = useUpdateLeadStatus();
   const { mutateAsync: deleteLead, isPending: isDeleting } = useDeletePartnerLead(id);
-  const { mutateAsync: approveLead, isPending: isApproving } = useApprovePartnerLead(id);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -79,6 +77,7 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
       {dialogOpen && (
         <UpdateStatusDialog
           leadId={lead.id}
+          leadName={lead.businessName}
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           defaultStatus={selectedStatus}
@@ -119,23 +118,11 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
             <div className="flex shrink-0 items-center self-start rounded-[1.25rem] border border-slate-200 bg-white p-1.5 shadow-sm md:self-auto">
               <Select
                 value={lead.status}
-                disabled={isUpdatingStatus || isApproving}
-                onValueChange={async (value) => {
+                disabled={isUpdatingStatus}
+                onValueChange={(value) => {
                   if (value && value !== lead.status) {
-                    if (value === "APPROVED") {
-                      try {
-                        await approveLead();
-                        toast.success(
-                          `"${lead.businessName}" has been approved. Store and Admin created.`,
-                        );
-                        router.push(ROUTES.ADMIN.PARTNER_LEADS);
-                      } catch {
-                        toast.error(`Failed to approve "${lead.businessName}".`);
-                      }
-                    } else {
-                      setSelectedStatus(value);
-                      setDialogOpen(true);
-                    }
+                    setSelectedStatus(value);
+                    setDialogOpen(true);
                   }
                 }}
               >
