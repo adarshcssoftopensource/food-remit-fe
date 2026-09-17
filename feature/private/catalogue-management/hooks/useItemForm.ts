@@ -34,9 +34,10 @@ const itemSchema = z
     nutritionInfo: z.string().optional(),
     discountPercentage: z
       .string()
-      .min(1, "Discount is required")
+      .optional()
       .refine(
         (val) => {
+          if (!val) return true;
           const num = parseFloat(val);
           return !isNaN(num) && num >= 0 && num <= 100;
         },
@@ -45,7 +46,10 @@ const itemSchema = z
         },
       ),
 
-    baseQuantity: z.string().min(1, "Base quantity is required"),
+    itemsPerPack: z.string().min(1, "Items per pack is required"),
+    stockQuantity: z.string().min(1, "Stock quantity is required"),
+    netWeight: z.string().optional(),
+    weightUnit: z.string().optional(),
     unit: z.string().min(1, "Unit is required"),
     placements: z.array(placementSchema).min(1, "Add at least one country price"),
     productImageFile: z
@@ -186,7 +190,10 @@ export function useItemForm(
         item?.discountPercentage !== null && item?.discountPercentage !== undefined
           ? item.discountPercentage.toString()
           : "",
-      baseQuantity: item?.baseQuantity?.toString() ?? "",
+      itemsPerPack: item?.itemsPerPack?.toString() ?? "",
+      stockQuantity: item?.stockQuantity?.toString() ?? "0",
+      netWeight: item?.netWeight?.toString() ?? "",
+      weightUnit: item?.weightUnit ?? "",
       unit: item?.unit ?? "",
       placements: mapItemPlacements(item),
       productImageFile: [],
@@ -212,7 +219,10 @@ export function useItemForm(
             item?.discountPercentage !== null && item?.discountPercentage !== undefined
               ? item.discountPercentage.toString()
               : "0",
-          baseQuantity: item?.baseQuantity?.toString() ?? "",
+          itemsPerPack: item?.itemsPerPack?.toString() ?? "",
+          stockQuantity: item?.stockQuantity?.toString() ?? "0",
+          netWeight: item?.netWeight?.toString() ?? "",
+          weightUnit: item?.weightUnit ?? "",
           unit: item?.unit ?? "",
           placements: mapItemPlacements(item),
           productImageFile: [],
@@ -265,11 +275,14 @@ export function useItemForm(
         formData.append("discountPercentage", values.discountPercentage);
         const pct = Number(values.discountPercentage);
         formData.append("discountAvailability", !Number.isNaN(pct) && pct > 0 ? "true" : "false");
-      } else if (item) {
+      } else {
         formData.append("discountPercentage", "0");
         formData.append("discountAvailability", "false");
       }
-      formData.append("baseQuantity", values.baseQuantity);
+      formData.append("itemsPerPack", values.itemsPerPack);
+      formData.append("stockQuantity", values.stockQuantity);
+      if (values.netWeight) formData.append("netWeight", values.netWeight);
+      if (values.weightUnit) formData.append("weightUnit", values.weightUnit);
       formData.append("unit", values.unit);
 
       if (item && values.existingProductImages !== undefined) {

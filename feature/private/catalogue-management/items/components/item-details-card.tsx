@@ -27,6 +27,13 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
         <CardTitle className="flex items-center gap-3 text-base font-bold text-slate-900 dark:text-white">
           <div className="h-4 w-1.5 rounded-full bg-orange-500" />
           Information Overview
+          {item.stockQuantity !== null &&
+            item.stockQuantity !== undefined &&
+            item.stockQuantity <= 0 && (
+              <span className="rounded-md bg-red-100 px-2 py-1 text-[10px] font-bold tracking-wider text-red-600 uppercase dark:bg-red-500/20 dark:text-red-400">
+                Out of Stock
+              </span>
+            )}
         </CardTitle>
       </CardHeader>
 
@@ -62,8 +69,22 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           />
           <InfoCard
             icon={<Scale className="h-4 w-4 text-emerald-500" />}
-            label="Base Quantity"
-            value={item.baseQuantity && item.unit ? `${item.baseQuantity} ${item.unit}` : "-"}
+            label="Items Per Pack"
+            value={item.itemsPerPack && item.unit ? `${item.itemsPerPack} ${item.unit}` : "-"}
+          />
+          <InfoCard
+            icon={<Layers className="h-4 w-4 text-orange-500" />}
+            label="Stock Quantity"
+            value={
+              item.stockQuantity !== null && item.stockQuantity !== undefined
+                ? String(item.stockQuantity)
+                : "-"
+            }
+          />
+          <InfoCard
+            icon={<Scale className="h-4 w-4 text-slate-500" />}
+            label="Net Weight"
+            value={item.netWeight && item.weightUnit ? `${item.netWeight} ${item.weightUnit}` : "-"}
           />
           <InfoCard
             icon={<Calendar className="h-4 w-4 text-slate-400" />}
