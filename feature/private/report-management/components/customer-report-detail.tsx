@@ -315,8 +315,7 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
         </div>
       </Card>
 
-      {/* Stats Overview Grid */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Card
           onClick={() => {
             setSelectedOrderType(undefined);
@@ -407,7 +406,7 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
           </div>
         </Card>
 
-        <Card className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+        {/* <Card className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Spent</p>
@@ -419,10 +418,9 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
               <CreditCard className="size-5" />
             </div>
           </div>
-        </Card>
+        </Card> */}
       </div>
 
-      {/* Orders Table Card */}
       <Card className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
@@ -437,7 +435,6 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
             </Badge>
           </div>
 
-          {/* Filter Pills: All / Sent / Requested */}
           <div className="flex items-center gap-1 rounded-xl border border-slate-200/80 bg-slate-100/80 p-1 dark:border-slate-800 dark:bg-slate-800/60">
             <button
               type="button"
