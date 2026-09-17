@@ -78,7 +78,11 @@ export function ProfileHeader() {
 
   return (
     <div className="brand-glass-card relative mb-6 overflow-hidden rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
-      {profile?.roleCode === "STORE_MANAGER" && profile?.stores?.[0] ? (
+      {(profile?.roleCode === "STORE_MANAGER" ||
+        profile?.roleCode === "EMPLOYEE" ||
+        profile?.role === "employee" ||
+        profile?.role === "store_manager") &&
+      profile?.stores?.[0] ? (
         <div
           className="group/banner relative flex h-24 w-full items-center justify-center bg-cover bg-center bg-no-repeat transition-all sm:h-32"
           style={{
