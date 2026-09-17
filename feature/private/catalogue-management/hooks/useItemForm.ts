@@ -92,6 +92,27 @@ const itemSchema = z
         });
       }
     });
+
+    const stock = Number(data.stockQuantity);
+    if (!Number.isNaN(stock) && stock > 0) {
+      const pack = Number(data.itemsPerPack);
+      if (Number.isNaN(pack) || pack <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["itemsPerPack"],
+          message: "Items per pack must be > 0 when stock is added",
+        });
+      }
+
+      const weight = Number(data.netWeight);
+      if (!data.netWeight || Number.isNaN(weight) || weight <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["netWeight"],
+          message: "Net weight must be > 0 when stock is added",
+        });
+      }
+    }
   });
 
 export type ItemFormValues = z.infer<typeof itemSchema>;

@@ -1,5 +1,5 @@
 "use client";
-import { ArrowLeftRight, ChevronDown, Globe2, MapPin, Settings, User } from "lucide-react";
+import { ArrowLeftRight, ChevronDown, Globe2, MapPin, Settings, User, Store } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { APP_ASSETS } from "@/config/assets";
@@ -105,6 +105,18 @@ export function AppTopBar() {
             >
               {profile.stores[0].cityName || profile.stores[0].city || "—"}
             </span>
+            {(profile?.roleCode === "EMPLOYEE" || profile?.role === "employee") &&
+              profile.stores[0].storeName && (
+                <>
+                  <span className="text-slate-300 dark:text-slate-600">·</span>
+                  <div
+                    className="max-w-[120px] truncate rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                    title={profile.stores[0].storeName}
+                  >
+                    {profile.stores[0].storeName}
+                  </div>
+                </>
+              )}
           </div>
         </div>
       )}
@@ -154,18 +166,23 @@ export function AppTopBar() {
               >
                 {displayName}
               </span>
-              {profile?.stores && profile.stores.length > 0 && (
-                <span
-                  className={cn(
-                    "max-w-36 truncate text-[10px] font-medium",
-                    isProfilePage || isSettingsPage
-                      ? "text-emerald-100"
-                      : "text-slate-500 dark:text-slate-400",
-                  )}
-                >
-                  {profile.stores.map((s) => s.storeName).join(", ")}
-                </span>
-              )}
+              {(profile?.roleCode === "EMPLOYEE" || profile?.role === "employee") &&
+                profile?.stores &&
+                profile.stores.length > 0 && (
+                  <div
+                    className={cn(
+                      "mt-1 flex w-fit items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-bold shadow-xs",
+                      isProfilePage || isSettingsPage
+                        ? "bg-white/20 text-white"
+                        : "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
+                    )}
+                  >
+                    <Store className="h-2.5 w-2.5" />
+                    <span className="max-w-36 truncate">
+                      {profile.stores.map((s) => s.storeName).join(", ")}
+                    </span>
+                  </div>
+                )}
             </div>
 
             <ChevronDown

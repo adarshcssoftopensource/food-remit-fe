@@ -23,6 +23,7 @@ export function ProfileForm() {
   const { profile } = useProfile();
   const queryClient = useQueryClient();
   const updateProfileMutation = useUpdateProfile();
+  const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
 
   const nameParts = (profile?.name || "").trim().split(" ");
   const firstName = profile?.firstName || nameParts[0] || "";
@@ -179,7 +180,8 @@ export function ProfileForm() {
                       id="email"
                       type="email"
                       placeholder="Enter your email"
-                      className="h-12 rounded-xl border-gray-200/50 bg-gray-50/50 pl-10 text-sm focus-visible:border-[#1B3A8C] focus-visible:bg-white"
+                      disabled={isEmployee}
+                      className="h-12 rounded-xl border-gray-200/50 bg-gray-50/50 pl-10 text-sm focus-visible:border-[#1B3A8C] focus-visible:bg-white disabled:cursor-not-allowed disabled:opacity-60"
                     />
                   </div>
                 </div>
