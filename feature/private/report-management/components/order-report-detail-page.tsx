@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
   BadgeDollarSign,
@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   Store,
   UserX,
+  RefreshCw,
 } from "lucide-react";
 
 import { ImageLightbox } from "@/components/common/image-lightbox";
@@ -22,7 +23,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import apiClient from "@/lib/api/client";
 import { REPORT_ENDPOINTS } from "@/lib/api/endpoints/reports.endpoints";
+import { ORDER_ENDPOINTS } from "@/lib/api/endpoints/order.endpoints";
 import { useDebounce } from "@/lib/debounce";
+import { toast } from "sonner";
 import { getCurrencySymbol, cleanCurrencyDisplay } from "@/lib/utils/currency";
 import { OrderStatusBadge } from "./order-status-badge";
 import { OrderPartyCard } from "./order-party-card";
@@ -121,12 +124,32 @@ interface OrderDetailResponse {
 
 export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPageProps) {
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  // Refund mutation
+  const refundMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiClient.post(ORDER_ENDPOINTS.TRIGGER_REFUND(orderId));
+      return res.data;
+    },
+    onSuccess: (data) => {
+      toast.success(
+        `Partial refund of ${data?.data?.refundAmount?.toFixed(2) ?? ""} processed successfully via ${data?.data?.paymentMethod ?? "Stripe"}.`,
+      );
+      queryClient.invalidateQueries({ queryKey: ["order-report-detail", orderId] });
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || err?.message || "Failed to process refund.");
+    },
+  });
 
   // Table state for order items
   const [itemSearch, setItemSearch] = useState("");
   const debouncedItemSearch = useDebounce(itemSearch, 400);
 
-  const [itemFilter, setItemFilter] = useState<"all" | "available" | "delivered">("all");
+  const [itemFilter, setItemFilter] = useState<"all" | "available" | "delivered" | "outOfStock">(
+    "all",
+  );
   const [itemPage, setItemPage] = useState(1);
   const [itemPageSize, setItemPageSize] = useState(50);
   const [itemSortBy, setItemSortBy] = useState("productName");
@@ -276,6 +299,27 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* Process Refund button — only for partial orders with pending refund */}
+          {(order.orderStatus === 9 || order.orderStatus === 5) &&
+            vendorSettlement?.customerRefundTotal &&
+            !refundMutation.isSuccess && (
+              <Button
+                id="btn-process-partial-refund"
+                size="sm"
+                onClick={() => refundMutation.mutate()}
+                disabled={refundMutation.isPending}
+                className="h-8 gap-2 rounded-xl bg-rose-600 px-3 text-xs font-bold text-white shadow-sm hover:bg-rose-700 disabled:opacity-60"
+              >
+                {refundMutation.isPending ? (
+                  <RefreshCw className="size-3.5 animate-spin" />
+                ) : (
+                  <RotateCcw className="size-3.5" />
+                )}
+                {refundMutation.isPending
+                  ? "Processing..."
+                  : `Process Refund ${vendorSettlement.customerRefundTotal}`}
+              </Button>
+            )}
           <Badge
             variant="outline"
             className="rounded-xl border-amber-500/20 bg-amber-500/5 px-3 py-1.5 text-xs font-bold text-amber-700 dark:text-amber-300"
@@ -376,7 +420,11 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
               {isRefunded ? `-${refundedDisplay}` : `${currencySymbol}0.00`}
             </h3>
             <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
-              {isRefunded ? "Order Cancelled / Refunded" : "No Refund"}
+              {order.orderStatus === 0 || order.orderStatus === 7
+                ? "Order Cancelled / Refunded"
+                : isRefunded
+                  ? "Partial Refund"
+                  : "No Refund"}
             </p>
           </CardContent>
         </Card>

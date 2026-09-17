@@ -159,7 +159,7 @@ export function RecycledUsersManagement() {
         title={ENTITY_TABS.find((t) => t.id === activeTab)?.label || "Filter Recycle Bin"}
         description="Select the module to view recycled records."
         hasFilters={true}
-        activeFilterCount={1}
+        // activeFilterCount={1}
       >
         <div className="min-w-44 flex-1 space-y-3">
           <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">

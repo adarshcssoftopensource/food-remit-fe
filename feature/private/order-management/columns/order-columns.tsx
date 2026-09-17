@@ -13,12 +13,12 @@ export const orderColumns: ColumnDef<OrderData>[] = [
       <Checkbox
         checked={
           (table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")) as any
+            (table.getIsSomePageRowsSelected() && "indeterminate")) as boolean
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         disabled={!table.getRowModel().rows.some((row) => row.getCanSelect())}
         aria-label="Select all"
-        className="translate-y-[2px]"
+        className="translate-y-0.5"
       />
     ),
     cell: ({ row }) => {
@@ -159,6 +159,15 @@ export const orderColumns: ColumnDef<OrderData>[] = [
     },
   },
   {
+    accessorKey: "assignedEmployeeName",
+    header: "Employee",
+    cell: ({ row }) => (
+      <span className="font-medium text-slate-800 dark:text-slate-200">
+        {row.original.assignedEmployeeName || "Unassigned"}
+      </span>
+    ),
+  },
+  {
     accessorKey: "orderStatus",
     header: "Status",
     cell: ({ row }) => {
@@ -184,7 +193,7 @@ export const orderColumns: ColumnDef<OrderData>[] = [
           "border-sky-200 bg-sky-50 text-sky-600 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-400";
         dotClass = "bg-sky-500";
       } else if (status === 5) {
-        label = isRequested ? "Accepted" : "Sent";
+        label = "Processing";
         colorClass =
           "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400";
         dotClass = "bg-blue-500";
@@ -193,6 +202,11 @@ export const orderColumns: ColumnDef<OrderData>[] = [
         colorClass =
           "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400";
         dotClass = "bg-emerald-500";
+      } else if (status === 9) {
+        label = "Partial";
+        colorClass =
+          "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-400";
+        dotClass = "bg-purple-500";
       }
 
       return (

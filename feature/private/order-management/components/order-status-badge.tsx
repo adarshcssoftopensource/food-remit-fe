@@ -32,7 +32,7 @@ const STATUS_MAP: Record<number, { label: string; colorClass: string; dotClass: 
     dotClass: "bg-indigo-500",
   },
   5: {
-    label: "Accepted / Sent",
+    label: "Processing",
     colorClass:
       "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400",
     dotClass: "bg-blue-500",
@@ -54,6 +54,12 @@ const STATUS_MAP: Record<number, { label: string; colorClass: string; dotClass: 
     colorClass:
       "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400",
     dotClass: "bg-emerald-500",
+  },
+  9: {
+    label: "Partial",
+    colorClass:
+      "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-400",
+    dotClass: "bg-purple-500",
   },
 };
 

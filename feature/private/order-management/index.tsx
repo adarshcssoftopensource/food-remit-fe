@@ -155,7 +155,11 @@ export function OrdersManagementPage() {
                 </CardHeader>
                 <CardContent className="p-4">
                   <DataTable
-                    columns={orderColumns}
+                    columns={
+                      activeTab === "sent-orders" || activeTab === "requested-orders"
+                        ? orderColumns
+                        : orderColumns.filter((c) => c.id !== "select")
+                    }
                     data={filteredData}
                     searchKey="id"
                     searchValue={searchQuery}

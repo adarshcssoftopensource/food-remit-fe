@@ -14,9 +14,9 @@ export type OrderRow = {
 export type OrderSectionKey =
   | "sent-orders"
   | "requested-orders"
+  | "processing"
   | "partial-orders"
   | "completed-orders"
-  | "fulfilment"
   | "history";
 
 export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; description: string }> = {
@@ -28,6 +28,10 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
     title: "Requested Orders",
     description: "Track requested orders awaiting fulfillment.",
   },
+  processing: {
+    title: "Processing",
+    description: "Orders that are currently assigned to employees and being processed.",
+  },
   "partial-orders": {
     title: "Partial Orders",
     description: "Manage partially completed order records.",
@@ -35,10 +39,6 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
   "completed-orders": {
     title: "Completed Orders",
     description: "View successfully completed orders.",
-  },
-  fulfilment: {
-    title: "Fulfilment",
-    description: "Orders that have been paid and are being prepared or picked up.",
   },
   history: {
     title: "History",
@@ -49,8 +49,7 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
 export const ORDER_TABS: { label: string; value: OrderSectionKey }[] = [
   { label: "Sent Orders", value: "sent-orders" },
   { label: "Requested Orders", value: "requested-orders" },
+  { label: "Processing", value: "processing" },
   { label: "Partial Orders", value: "partial-orders" },
   { label: "Completed Orders", value: "completed-orders" },
-  { label: "Fulfilment", value: "fulfilment" },
-  { label: "History", value: "history" },
 ];

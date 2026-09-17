@@ -1,4 +1,5 @@
 export interface OrderDataItem {
+  id: string;
   itemId?: string;
   itemName?: string;
   productBarcode?: string;
@@ -94,4 +95,5 @@ export interface OrderData {
   customerSignature?: string;
   identityProf?: string;
   assignedEmployeeId?: string | null;
+  assignedEmployeeName?: string | null;
 }

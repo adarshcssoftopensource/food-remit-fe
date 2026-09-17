@@ -14,14 +14,15 @@ export interface ItemStats {
   allCount: number;
   availableCount: number;
   deliveredCount: number;
+  outOfStockCount?: number;
 }
 
 interface OrderItemsTableProps {
   orderItems: OrderItem[];
   currency: string;
   itemStats?: ItemStats;
-  itemFilter: "all" | "available" | "delivered";
-  onItemFilterChange: (filter: "all" | "available" | "delivered") => void;
+  itemFilter: "all" | "available" | "delivered" | "outOfStock";
+  onItemFilterChange: (filter: "all" | "available" | "delivered" | "outOfStock") => void;
   searchValue: string;
   onSearchChange: (val: string) => void;
   currentPage: number;
@@ -87,6 +88,16 @@ export function OrderItemsTable({
           >
             Available ({itemStats.availableCount})
           </Button>
+          {(itemStats.outOfStockCount ?? 0) > 0 && (
+            <Button
+              variant={itemFilter === "outOfStock" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => onItemFilterChange("outOfStock")}
+              className="h-7 rounded-lg px-3 text-xs font-semibold text-rose-600 hover:text-rose-700 data-[state=active]:bg-rose-500 data-[state=active]:text-white"
+            >
+              Out of Stock ({itemStats.outOfStockCount})
+            </Button>
+          )}
           <Button
             variant={itemFilter === "delivered" ? "default" : "ghost"}
             size="sm"

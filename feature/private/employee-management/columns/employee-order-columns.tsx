@@ -1,23 +1,22 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeOrderActionsCell } from "../components/employee-order-actions-cell";
 
 interface GetEmployeeOrderColumnsOptions {
-  employeeId: string;
+  _employeeId: string;
   onView: (orderId: string) => void;
   onUnassign: (orderId: string) => void;
   isUnassigning: boolean;
 }
 
 export function getEmployeeOrderColumns({
-  employeeId,
+  _employeeId,
   onView,
   onUnassign,
   isUnassigning,
-}: GetEmployeeOrderColumnsOptions): ColumnDef<any>[] {
+}: GetEmployeeOrderColumnsOptions): ColumnDef<Record<string, unknown>>[] {
   return [
     {
       id: "sno",
@@ -35,21 +34,21 @@ export function getEmployeeOrderColumns({
       header: "Reference No",
       cell: ({ row }) => (
         <span className="font-mono text-xs">
-          {row.original.refrenceNumber || row.original.id.substring(0, 8)}
+          {(row.original.refrenceNumber as string) || (row.original.id as string).substring(0, 8)}
         </span>
       ),
     },
     {
       accessorKey: "createdAt",
       header: "Order Date",
-      cell: ({ row }) => <span>{formatDate(row.original.createdAt)}</span>,
+      cell: ({ row }) => <span>{formatDate(row.original.createdAt as string)}</span>,
     },
     {
       accessorKey: "userName",
       header: "Sender",
       cell: ({ row }) => (
         <span className="font-medium text-slate-800 dark:text-slate-200">
-          {row.original.userName || "N/A"}
+          {(row.original.userName as string) || "N/A"}
         </span>
       ),
     },
@@ -58,7 +57,7 @@ export function getEmployeeOrderColumns({
       header: "Receiver",
       cell: ({ row }) => (
         <span className="font-medium text-slate-800 dark:text-slate-200">
-          {row.original.recieverName || "N/A"}
+          {(row.original.recieverName as string) || "N/A"}
         </span>
       ),
     },
@@ -67,7 +66,7 @@ export function getEmployeeOrderColumns({
       header: "Store",
       cell: ({ row }) => (
         <span className="font-medium text-slate-800 dark:text-slate-200">
-          {row.original.storeName || "N/A"}
+          {(row.original.storeName as string) || "N/A"}
         </span>
       ),
     },
@@ -75,8 +74,8 @@ export function getEmployeeOrderColumns({
       accessorKey: "price",
       header: "Price",
       cell: ({ row }) => {
-        const originalPrice = row.original.price || "$0.00";
-        const cp = row.original.customerPayment;
+        const originalPrice = (row.original.price as string) || "$0.00";
+        const cp = row.original.customerPayment as any;
         const isCompletedRefund =
           cp?.refundStatus === "Completed" && Boolean(cp?.actualRetainedAmount);
         const isPendingRefund = cp?.refundStatus === "Pending";
@@ -119,8 +118,8 @@ export function getEmployeeOrderColumns({
       accessorKey: "orderStatus",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.original.orderStatus;
-        const isRequested = row.original.orderType === 2;
+        const status = row.original.orderStatus as number;
+        const isRequested = (row.original.orderType as number) === 2;
         let label = "Pending";
         let colorClass = "border-slate-200 bg-slate-50 text-slate-700";
         let dotClass = "bg-slate-500";
@@ -141,7 +140,7 @@ export function getEmployeeOrderColumns({
             "border-sky-200 bg-sky-50 text-sky-600 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-400";
           dotClass = "bg-sky-500";
         } else if (status === 5) {
-          label = isRequested ? "Accepted" : "Sent";
+          label = "Processing";
           colorClass =
             "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400";
           dotClass = "bg-blue-500";
@@ -150,6 +149,11 @@ export function getEmployeeOrderColumns({
           colorClass =
             "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400";
           dotClass = "bg-emerald-500";
+        } else if (status === 9) {
+          label = "Partial";
+          colorClass =
+            "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-400";
+          dotClass = "bg-purple-500";
         }
 
         return (
@@ -167,7 +171,7 @@ export function getEmployeeOrderColumns({
       header: "Action",
       cell: ({ row }) => (
         <EmployeeOrderActionsCell
-          order={row.original}
+          order={row.original as { id: string; orderStatus: number }}
           onView={onView}
           onUnassign={onUnassign}
           isUnassigning={isUnassigning}

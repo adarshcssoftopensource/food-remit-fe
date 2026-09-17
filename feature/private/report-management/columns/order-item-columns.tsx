@@ -26,6 +26,7 @@ export interface OrderItemRow {
   barcodeValue?: string | null;
   upcCode?: string | null;
   deliveredStatus: number;
+  inStock?: boolean | null;
 }
 
 export function getOrderItemColumns(
@@ -132,6 +133,33 @@ export function getOrderItemColumns(
     //     );
     //   },
     // },
+    {
+      accessorKey: "inStock",
+      header: "Stock Status",
+      cell: ({ row }) => {
+        const { inStock, deliveredStatus } = row.original;
+        if (inStock === false)
+          return (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
+              <span className="size-1.5 rounded-full bg-rose-500" />
+              Out of Stock
+            </span>
+          );
+        if (inStock === true || deliveredStatus === 1)
+          return (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+              <span className="size-1.5 rounded-full bg-emerald-500" />
+              In Stock
+            </span>
+          );
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400">
+            <span className="size-1.5 rounded-full bg-amber-500" />
+            Available
+          </span>
+        );
+      },
+    },
     {
       accessorKey: "deliveredStatus",
       header: "Delivery Status",

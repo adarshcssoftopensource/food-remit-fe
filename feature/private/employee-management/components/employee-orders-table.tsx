@@ -42,7 +42,7 @@ export function EmployeeOrdersTable({
 }: EmployeeOrdersTableProps) {
   const router = useRouter();
   const columns = getEmployeeOrderColumns({
-    employeeId,
+    _employeeId: employeeId,
     onView: (id) => router.push(ROUTES.ADMIN.EMPLOYEE_ORDER_DETAIL(employeeId, id)),
     onUnassign,
     isUnassigning,

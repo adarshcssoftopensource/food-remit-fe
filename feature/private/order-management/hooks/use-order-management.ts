@@ -52,18 +52,16 @@ export function useOrderManagement(section?: OrderSectionKey) {
 
   if (section === "sent-orders") {
     type = 1;
-    excludeStatus = "6";
+    excludeStatus = "5,6,9";
   } else if (section === "requested-orders") {
     type = 2;
-    excludeStatus = "6";
+    excludeStatus = "5,6,9";
+  } else if (section === "processing") {
+    status = "5";
   } else if (section === "partial-orders") {
-    status = "5"; // 5 represents partial/accepted
+    status = "9"; // 9 represents partial
   } else if (section === "completed-orders") {
     status = "6"; // 6 represents completed
-  } else if (section === "fulfilment") {
-    status = "2,3,4"; // 2 = Preparing, 3/4 = Out for Delivery / Picked
-  } else if (section === "history") {
-    // History shows all orders across statuses
   }
 
   const {

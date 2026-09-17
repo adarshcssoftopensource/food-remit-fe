@@ -44,6 +44,8 @@ interface FinancialCardProps {
   paymentMethod?: string;
   paymentStatus?: string;
   refundAmount?: string;
+  customerRefundTotal?: string;
+  feeRefundable?: boolean;
 }
 
 function FinancialCard({
@@ -63,6 +65,8 @@ function FinancialCard({
   paymentMethod,
   paymentStatus,
   refundAmount,
+  customerRefundTotal,
+  feeRefundable,
 }: FinancialCardProps) {
   return (
     <Card className={`rounded-2xl border bg-white shadow-xs dark:bg-slate-900 ${borderColor}`}>
@@ -87,16 +91,55 @@ function FinancialCard({
         <div>
           <p className={`text-xs font-semibold ${totalColor}`}>{totalLabel}</p>
           <p className={`text-xl font-black ${totalColor}`}>{cleanCurrencyDisplay(totalValue)}</p>
+          {/* Customer Total Refund (shown in vendor settlement for partial orders) */}
+          {customerRefundTotal && (
+            <div className="mt-2 rounded-xl border border-rose-100 bg-rose-50/60 p-3 dark:border-rose-900/30 dark:bg-rose-950/20">
+              <p className="text-[10px] font-semibold tracking-wider text-rose-500 uppercase dark:text-rose-400">
+                Total Customer Refund
+              </p>
+              <p className="text-base font-black text-rose-600 dark:text-rose-400">
+                -{cleanCurrencyDisplay(customerRefundTotal)}
+              </p>
+              {refundDeduction && (
+                <div className="mt-1.5 space-y-1 border-t border-rose-100 pt-1.5 dark:border-rose-900/30">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-500 dark:text-slate-400">Vendor Portion</span>
+                    <span className="font-bold text-rose-600 dark:text-rose-400">
+                      -{cleanCurrencyDisplay(refundDeduction)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-500 dark:text-slate-400">Food Remit Portion</span>
+                    <span className="font-bold text-purple-600 dark:text-purple-400">
+                      {/* Difference = customer refund - vendor portion */}
+                      Markup Reversed
+                    </span>
+                  </div>
+                  {feeRefundable !== undefined && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-500 dark:text-slate-400">Processing Fee</span>
+                      <span
+                        className={`font-semibold ${feeRefundable ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}
+                      >
+                        {feeRefundable ? "Refunded" : "Retained"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+          {/* Vendor actual settlement after partial deduction */}
+          {!customerRefundTotal && refundDeduction && (
+            <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
+              <span className="font-semibold">Refund Deduction</span>
+              <span className="font-bold">-{cleanCurrencyDisplay(refundDeduction)}</span>
+            </div>
+          )}
           {refundAmount && (
             <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
               <span className="font-semibold">Refunded Amount</span>
               <span className="font-bold">-{cleanCurrencyDisplay(refundAmount)}</span>
-            </div>
-          )}
-          {refundDeduction && (
-            <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
-              <span className="font-semibold">Refund Deduction</span>
-              <span className="font-bold">-{cleanCurrencyDisplay(refundDeduction)}</span>
             </div>
           )}
           {actualLabel && actualValue && (
@@ -168,6 +211,8 @@ export interface VendorSettlementData {
   settlementStatus?: string;
   refundDeduction?: string;
   actualVendorEarnings?: string;
+  customerRefundTotal?: string;
+  feeRefundable?: boolean;
   inStockItemsCount?: number;
   totalItemsCount?: number;
 }
@@ -281,13 +326,6 @@ export function OrderFinancialBreakdown({
           totalColor="text-emerald-600 dark:text-emerald-400"
           totalValue={vs?.totalVendorSettlement || vs?.vendorProceeds || "₹0.00"}
           rows={[
-            // {
-            //   label: "Items Count",
-            //   value:
-            //     vs?.inStockItemsCount !== undefined && vs?.totalItemsCount !== undefined
-            //       ? `${vs.inStockItemsCount} of ${vs.totalItemsCount}`
-            //       : "All",
-            // },
             { label: "Base Price", value: vs?.vendorBaseAmount || "₹0.00" },
             ...(vs?.govtTax
               ? [{ label: `Store Govt Tax (${vs?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
@@ -300,6 +338,8 @@ export function OrderFinancialBreakdown({
           refundDeduction={vs?.refundDeduction}
           actualLabel="Actual Settlement"
           actualValue={vs?.actualVendorEarnings}
+          customerRefundTotal={vs?.customerRefundTotal}
+          feeRefundable={vs?.feeRefundable}
         />
       )}
     </div>

@@ -36,8 +36,11 @@ export interface OrderReportRow {
   markupVal?: number;
   refundedAmount?: string;
   refundedAmountVal?: number;
+  isPartial?: boolean;
+  outOfStockItemsCount?: number;
   addedOn: string;
   createdAt?: string;
+  assignedEmployeeName?: string | null;
 }
 
 export interface GetOrderReportColumnsOptions {
@@ -162,51 +165,15 @@ export function getOrderReportColumns(
         </span>
       ),
     },
-    // {
-    //   accessorKey: "processingFee",
-    //   header: "Processing Fee",
-    //   cell: ({ row }) => (
-    //     <span className="font-mono text-xs font-semibold text-blue-600 dark:text-blue-400">
-    //       {cleanCurrencyDisplay(row.original.processingFee)}
-    //     </span>
-    //   ),
-    // },
-    // {
-    //   accessorKey: "commissionEarnings",
-    //   header: "Commission",
-    //   cell: ({ row }) => (
-    //     <span className="font-mono text-xs font-semibold text-amber-600 dark:text-amber-400">
-    //       {cleanCurrencyDisplay(row.original.commissionEarnings)}
-    //     </span>
-    //   ),
-    // },
-    // {
-    //   accessorKey: "itemTax",
-    //   header: "Item Tax",
-    //   cell: ({ row }) => (
-    //     <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
-    //       {cleanCurrencyDisplay(row.original.itemTax)}
-    //     </span>
-    //   ),
-    // },
-    // {
-    //   accessorKey: "refundedAmount",
-    //   header: "Refunded",
-    //   cell: ({ row }) => {
-    //     const isRefunded = (row.original.refundedAmountVal ?? 0) > 0;
-    //     return (
-    //       <span
-    //         className={`font-mono text-xs ${
-    //           isRefunded
-    //             ? "font-bold text-rose-500 dark:text-rose-400"
-    //             : "text-slate-400 dark:text-slate-500"
-    //         }`}
-    //       >
-    //         {isRefunded ? `-${cleanCurrencyDisplay(row.original.refundedAmount)}` : "₹0.00"}
-    //       </span>
-    //     );
-    //   },
-    // },
+    {
+      accessorKey: "assignedEmployeeName",
+      header: "Employee",
+      cell: ({ row }) => (
+        <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
+          {row.original.assignedEmployeeName || "Unassigned"}
+        </span>
+      ),
+    },
     {
       accessorKey: "totalAmount",
       header: "Total Amount",
@@ -215,6 +182,28 @@ export function getOrderReportColumns(
           {cleanCurrencyDisplay(row.original.totalAmount)}
         </span>
       ),
+    },
+    {
+      accessorKey: "refundedAmount",
+      header: "Refunded",
+      cell: ({ row }) => {
+        const val = row.original.refundedAmountVal ?? 0;
+        const display = row.original.refundedAmount;
+        const isPartial = row.original.isPartial;
+        if (val <= 0) return <span className="text-muted-foreground font-mono text-xs">—</span>;
+        return (
+          <div className="flex flex-col gap-0.5">
+            <span className="font-mono text-xs font-extrabold text-rose-600 dark:text-rose-400">
+              -{cleanCurrencyDisplay(display)}
+            </span>
+            {isPartial && (
+              <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400">
+                Partial
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "orderStatus",
