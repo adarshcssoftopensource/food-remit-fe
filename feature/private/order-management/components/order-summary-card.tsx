@@ -8,6 +8,8 @@ import type { OrderData } from "../types/order.types";
 
 interface OrderSummaryCardProps {
   order: OrderData;
+  hideQrCode?: boolean;
+  maskReference?: boolean;
 }
 
 function InfoField({
@@ -30,10 +32,13 @@ function InfoField({
   );
 }
 
-export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
+export function OrderSummaryCard({ order, hideQrCode, maskReference }: OrderSummaryCardProps) {
   const recurringDateList = order.recurringDateList || [];
   const completedDates = recurringDateList.filter((d) => d.status === 1);
   const pendingDates = recurringDateList.filter((d) => d.status === 0);
+
+  const refNumber = order.refrenceNumber || order.id;
+  const displayRef = maskReference ? `********${refNumber.slice(-4)}` : refNumber;
 
   return (
     <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
@@ -56,16 +61,14 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
                   Reference Number
                 </p>
                 <p className="mt-1 font-mono text-sm font-bold text-slate-900 dark:text-white">
-                  {order.refrenceNumber || order.id}
+                  {displayRef}
                 </p>
               </div>
               <div>
                 <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                   Order ID
                 </p>
-                <p className="mt-1 truncate font-mono text-xs font-semibold text-slate-600 dark:text-slate-300">
-                  {order.id}
-                </p>
+                <div className="text-slate-600 dark:text-slate-300">{order.id}</div>
               </div>
               <InfoField
                 label="Date & Time"
@@ -189,7 +192,7 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
           </div>
 
           {/* Right: QR Code */}
-          {order.qrCode && (
+          {!hideQrCode && order.qrCode && (
             <div className="flex w-full shrink-0 flex-col items-center justify-center border-t border-slate-100 bg-slate-50/50 p-6 md:w-72 md:border-t-0 md:border-l dark:border-slate-800 dark:bg-slate-800/30">
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

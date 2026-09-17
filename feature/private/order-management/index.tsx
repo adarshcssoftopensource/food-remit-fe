@@ -24,7 +24,7 @@ export function OrdersManagementPage() {
 
   const [overrideTab, setOverrideTab] = useState<{ param: string | null; tab: OrderSectionKey }>({
     param: tabParam,
-    tab: validTabParam ?? "sent-orders",
+    tab: validTabParam ?? "all-orders",
   });
 
   const { profile } = useProfile();
@@ -37,7 +37,7 @@ export function OrdersManagementPage() {
   const [bulkAssignOpen, setBulkAssignOpen] = useState(false);
 
   const activeTab =
-    overrideTab.param === tabParam ? overrideTab.tab : (validTabParam ?? "sent-orders");
+    overrideTab.param === tabParam ? overrideTab.tab : (validTabParam ?? "all-orders");
 
   const handleTabChange = (v: string) => {
     setOverrideTab({ param: tabParam, tab: v as OrderSectionKey });
@@ -156,7 +156,9 @@ export function OrdersManagementPage() {
                 <CardContent className="p-4">
                   <DataTable
                     columns={
-                      activeTab === "sent-orders" || activeTab === "requested-orders"
+                      activeTab === "sent-orders" ||
+                      activeTab === "requested-orders" ||
+                      activeTab === "all-orders"
                         ? orderColumns
                         : orderColumns.filter((c) => c.id !== "select")
                     }
@@ -176,7 +178,11 @@ export function OrdersManagementPage() {
                     rowSelection={rowSelection}
                     onRowSelectionChange={setRowSelection}
                     getRowId={(row: any) => row.id}
-                    enableRowSelection={(row: any) => !row.original.assignedEmployeeId}
+                    enableRowSelection={(row: any) =>
+                      !row.original.assignedEmployeeId &&
+                      row.original.orderStatus === 8 &&
+                      (row.original.orderType === 1 || row.original.orderType === 2)
+                    }
                   />
                 </CardContent>
               </Card>

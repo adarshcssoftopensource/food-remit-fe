@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useGetOrder } from "@/feature/private/order-management/hooks/use-get-order";
 import { OrderDetailSkeleton } from "@/feature/private/order-management/components/order-detail-skeleton";
-import { CompleteOrderDialog } from "./components/complete-order-dialog";
-import { CheckCircle2 } from "lucide-react";
+import { PrepareOrderDialog } from "./components/prepare-order-dialog";
+import { CheckCircle2, Clock } from "lucide-react";
 import { OrderNotFound } from "@/feature/private/order-management/components/order-not-found";
 import { OrderSummaryCard } from "@/feature/private/order-management/components/order-summary-card";
 import { OrderPeopleAndStore } from "@/feature/private/order-management/components/order-people-and-store";
@@ -20,7 +20,7 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
   const { data: order, isLoading } = useGetOrder(id);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-  const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
+  const [isPrepareDialogOpen, setIsPrepareDialogOpen] = useState(false);
 
   if (isLoading) return <OrderDetailSkeleton />;
   if (!order) return <OrderNotFound onBack={() => router.back()} />;
@@ -30,21 +30,21 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
       <div className="flex items-center justify-between">
         <PageHeader
           title="Order Details"
-          description={`Viewing order #${order.refrenceNumber || order.id}`}
+          description={`Viewing order #...${(order.refrenceNumber || order.id).slice(-4)}`}
         />
         <div className="flex items-center gap-3">
-          {(order.orderStatus === 5 || order.orderStatus === 8) && (
+          {(order.orderStatus === 4 || order.orderStatus === 5 || order.orderStatus === 8) && (
             <>
               <Button
-                onClick={() => setIsCompleteDialogOpen(true)}
-                className="rounded-full bg-emerald-600 font-semibold text-white shadow-sm hover:bg-emerald-700"
+                onClick={() => setIsPrepareDialogOpen(true)}
+                className="rounded-full bg-amber-600 font-semibold text-white shadow-sm hover:bg-amber-700"
               >
-                <CheckCircle2 className="mr-2 size-4" /> Complete Order
+                <Clock className="mr-2 size-4" /> Preparing Order
               </Button>
-              <CompleteOrderDialog
+              <PrepareOrderDialog
                 orderId={order.id}
-                open={isCompleteDialogOpen}
-                onOpenChange={setIsCompleteDialogOpen}
+                open={isPrepareDialogOpen}
+                onOpenChange={setIsPrepareDialogOpen}
               />
             </>
           )}
@@ -58,13 +58,17 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
         </div>
       </div>
 
-      <OrderSummaryCard order={order} />
+      <OrderSummaryCard order={order} hideQrCode={true} maskReference={true} />
 
       <EmployeeOrderFinancials order={order} />
 
       <OrderPeopleAndStore order={order} />
 
-      <OrderItemsTable items={order.items ?? []} onImageClick={setLightboxImage} />
+      <OrderItemsTable
+        items={order.items ?? []}
+        onImageClick={setLightboxImage}
+        hideQrCode={true}
+      />
 
       <ImageLightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />
     </div>

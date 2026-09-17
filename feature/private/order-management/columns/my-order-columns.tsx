@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Eye, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CompleteOrderDialog } from "../../my-orders/components/complete-order-dialog";
+import { PrepareOrderDialog } from "../../my-orders/components/prepare-order-dialog";
 
 function MyOrderActionsCell({ orderId, orderStatus }: { orderId: string; orderStatus: number }) {
   const router = useRouter();
-  const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
+  const [isPrepareDialogOpen, setIsPrepareDialogOpen] = useState(false);
 
   return (
     <div className="flex items-center gap-2">
@@ -27,22 +27,22 @@ function MyOrderActionsCell({ orderId, orderStatus }: { orderId: string; orderSt
         View
       </Button>
 
-      {/* Show Complete Order button if status is 5 (Sent/Processing) or 8 (Paid) */}
-      {(orderStatus === 5 || orderStatus === 8) && (
+      {/* Show Prepare Order button if status is 5 (Sent/Processing) or 8 (Paid) or 4 */}
+      {(orderStatus === 4 || orderStatus === 5 || orderStatus === 8) && (
         <>
           <Button
             size="sm"
-            className="h-8 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white transition-all hover:bg-emerald-700"
-            onClick={() => setIsCompleteDialogOpen(true)}
+            className="h-8 rounded-lg bg-amber-600 px-3 text-xs font-semibold text-white transition-all hover:bg-amber-700"
+            onClick={() => setIsPrepareDialogOpen(true)}
           >
             <CheckCircle2 className="mr-1.5 size-3.5" />
-            Complete
+            Preparing
           </Button>
 
-          <CompleteOrderDialog
+          <PrepareOrderDialog
             orderId={orderId}
-            open={isCompleteDialogOpen}
-            onOpenChange={setIsCompleteDialogOpen}
+            open={isPrepareDialogOpen}
+            onOpenChange={setIsPrepareDialogOpen}
           />
         </>
       )}
@@ -76,7 +76,13 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
     header: "Order Date",
     cell: ({ row }) => (
       <span className="text-xs text-slate-600 dark:text-slate-400">
-        {formatDate(row.original.createdAt)}
+        {formatDate(row.original.createdAt)} •{" "}
+        {row.original.createdAt
+          ? new Date(row.original.createdAt).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "N/A"}
       </span>
     ),
   },
