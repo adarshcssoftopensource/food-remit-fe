@@ -394,7 +394,7 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                Completed Orders
+                Received Orders
               </p>
               <p className="text-2xl font-bold tracking-tight text-violet-600 dark:text-violet-400">
                 {stats?.completedOrders ?? 0}
@@ -491,6 +491,23 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
               <span>Requested</span>
               <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
                 {stats?.ordersRequested ?? 0}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedOrderType(3);
+                orderTableFilters.setPage(1);
+              }}
+              className={`flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                selectedOrderType === 3
+                  ? "bg-white text-slate-900 shadow-xs ring-1 ring-purple-500/20 dark:bg-slate-900 dark:text-white"
+                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              }`}
+            >
+              <span>Received</span>
+              <span className="rounded-full bg-purple-100 px-1.5 py-0.5 text-[10px] font-bold text-purple-800 dark:bg-purple-950/60 dark:text-purple-300">
+                {stats?.completedOrders ?? 0}
               </span>
             </button>
           </div>

@@ -178,9 +178,8 @@ export function ProfileForm() {
                       {...field}
                       id="email"
                       type="email"
-                      disabled
                       placeholder="Enter your email"
-                      className="h-12 cursor-not-allowed rounded-xl border-gray-200/50 bg-gray-100/50 pl-10 text-sm text-gray-400"
+                      className="h-12 rounded-xl border-gray-200/50 bg-gray-50/50 pl-10 text-sm focus-visible:border-[#1B3A8C] focus-visible:bg-white"
                     />
                   </div>
                 </div>
@@ -197,7 +196,6 @@ export function ProfileForm() {
                   </FieldLabel>
                   <PhoneInputComponent
                     value={field.value}
-                    disabled
                     onChange={(value) => field.onChange(value)}
                     onBlur={field.onBlur}
                     error={!!errors.contactNumber}
