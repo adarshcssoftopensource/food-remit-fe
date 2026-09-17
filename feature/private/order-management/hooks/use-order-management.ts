@@ -50,12 +50,16 @@ export function useOrderManagement(section?: OrderSectionKey) {
   let excludeStatus: string | undefined = undefined;
   let type: string | number | undefined = undefined;
 
-  if (section === "sent-orders") {
+  if (section === "all-orders") {
+    // no specific filter, show all
+  } else if (section === "sent-orders") {
     type = 1;
     excludeStatus = "5,6,9";
   } else if (section === "requested-orders") {
     type = 2;
     excludeStatus = "5,6,9";
+  } else if (section === "preparing") {
+    status = "2"; // 2 represents preparing
   } else if (section === "processing") {
     status = "5";
   } else if (section === "partial-orders") {

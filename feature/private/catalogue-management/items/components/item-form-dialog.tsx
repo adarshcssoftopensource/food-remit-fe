@@ -229,7 +229,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                           render={({ field }) => (
                             <FormItem className="space-y-2">
                               <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                Discount (%) <span className="text-destructive">*</span>
+                                Discount (%)
                               </FormLabel>
 
                               <FormControl>
@@ -257,11 +257,11 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                         <div className="grid grid-cols-2 gap-3">
                           <FormField
                             control={form.control}
-                            name="baseQuantity"
+                            name="itemsPerPack"
                             render={({ field }) => (
                               <FormItem className="space-y-2">
                                 <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                  Base Quantity <span className="text-destructive">*</span>
+                                  Items Per Pack <span className="text-destructive">*</span>
                                 </FormLabel>
 
                                 <FormControl>
@@ -286,6 +286,39 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                             )}
                           />
 
+                          <FormField
+                            control={form.control}
+                            name="stockQuantity"
+                            render={({ field }) => (
+                              <FormItem className="space-y-2">
+                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                  Stock Quantity <span className="text-destructive">*</span>
+                                </FormLabel>
+
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder="0"
+                                    className="h-11 rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                                    {...field}
+                                    onFocus={(e) => {
+                                      if (e.target.value === "0" || Number(e.target.value) === 0) {
+                                        field.onChange("");
+                                      }
+                                    }}
+                                    onChange={(e) => {
+                                      field.onChange(e.target.value);
+                                    }}
+                                  />
+                                </FormControl>
+
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-3">
                           <FormField
                             control={form.control}
                             name="unit"
@@ -320,6 +353,65 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                   </SelectContent>
                                 </Select>
 
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="netWeight"
+                            render={({ field }) => (
+                              <FormItem className="space-y-2">
+                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                  Net Weight
+                                </FormLabel>
+
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder="0"
+                                    className="h-11 rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                                    {...field}
+                                    onFocus={(e) => {
+                                      if (e.target.value === "0" || Number(e.target.value) === 0) {
+                                        field.onChange("");
+                                      }
+                                    }}
+                                    onChange={(e) => {
+                                      field.onChange(e.target.value);
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="weightUnit"
+                            render={({ field }) => (
+                              <FormItem className="space-y-2">
+                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                  Weight Unit
+                                </FormLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  value={field.value || undefined}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="h-11 w-full rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950">
+                                      <SelectValue placeholder="Select" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="kg">KG</SelectItem>
+                                    <SelectItem value="g">G</SelectItem>
+                                    <SelectItem value="lbs">LBS</SelectItem>
+                                    <SelectItem value="oz">OZ</SelectItem>
+                                  </SelectContent>
+                                </Select>
                                 <FormMessage />
                               </FormItem>
                             )}

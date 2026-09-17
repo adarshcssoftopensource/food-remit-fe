@@ -9,6 +9,7 @@ import type { OrderDataItem } from "../types/order.types";
 interface OrderItemsTableProps {
   items: OrderDataItem[];
   onImageClick: (src: string) => void;
+  hideQrCode?: boolean;
 }
 
 function StockBadge({ inStock }: { inStock?: boolean }) {
@@ -27,7 +28,7 @@ function StockBadge({ inStock }: { inStock?: boolean }) {
   return <span className="text-xs text-slate-400 dark:text-slate-500">N/A</span>;
 }
 
-export function OrderItemsTable({ items, onImageClick }: OrderItemsTableProps) {
+export function OrderItemsTable({ items, onImageClick, hideQrCode }: OrderItemsTableProps) {
   return (
     <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
       <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
@@ -44,7 +45,7 @@ export function OrderItemsTable({ items, onImageClick }: OrderItemsTableProps) {
                 <tr>
                   <th className="px-6 py-4">Product Picture</th>
                   <th className="px-6 py-4">Product Name</th>
-                  <th className="px-6 py-4">Product QR Code</th>
+                  {!hideQrCode && <th className="px-6 py-4">Product QR Code</th>}
                   <th className="px-6 py-4">Stock Status</th>
                   <th className="px-6 py-4">Unit Price</th>
                   <th className="px-6 py-4">Quantity</th>
@@ -105,39 +106,41 @@ export function OrderItemsTable({ items, onImageClick }: OrderItemsTableProps) {
                       </td>
 
                       {/* QR */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="group relative inline-block">
-                            <div className="flex size-12 items-center justify-center rounded-xl border border-slate-200 bg-white p-1 shadow-xs transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-950">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={qrImageUrl}
-                                alt={`QR Code ${qrCodeText}`}
-                                className="size-10 rounded-md object-contain"
-                              />
+                      {!hideQrCode && (
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="group relative inline-block">
+                              <div className="flex size-12 items-center justify-center rounded-xl border border-slate-200 bg-white p-1 shadow-xs transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-950">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={qrImageUrl}
+                                  alt={`QR Code ${qrCodeText}`}
+                                  className="size-10 rounded-md object-contain"
+                                />
+                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onImageClick(qrImageUrl)}
+                                className="absolute -top-1 -right-1 h-6 w-6 rounded-full border border-white bg-slate-900/80 p-0 text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 hover:bg-slate-900"
+                                title="Zoom QR Code"
+                              >
+                                <Expand className="h-3 w-3" />
+                              </Button>
                             </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => onImageClick(qrImageUrl)}
-                              className="absolute -top-1 -right-1 h-6 w-6 rounded-full border border-white bg-slate-900/80 p-0 text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 hover:bg-slate-900"
-                              title="Zoom QR Code"
-                            >
-                              <Expand className="h-3 w-3" />
-                            </Button>
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <div className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
-                              <QrCode className="size-3.5 shrink-0 text-emerald-500" />
-                              <span>{qrCodeText}</span>
+                            <div className="flex flex-col gap-1">
+                              <div className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
+                                <QrCode className="size-3.5 shrink-0 text-emerald-500" />
+                                <span>{qrCodeText}</span>
+                              </div>
+                              <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                                Product Reference QR
+                              </span>
                             </div>
-                            <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
-                              Product Reference QR
-                            </span>
                           </div>
-                        </div>
-                      </td>
+                        </td>
+                      )}
 
                       {/* Stock */}
                       <td className="px-6 py-4">

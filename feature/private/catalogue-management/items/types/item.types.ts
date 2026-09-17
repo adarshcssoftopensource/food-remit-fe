@@ -52,7 +52,10 @@ export interface ItemData {
   productInfo?: string | null;
   nutritionInfo?: string | null;
   upcCode?: string | null;
-  baseQuantity?: number | null;
+  itemsPerPack?: number | null;
+  stockQuantity?: number | null;
+  netWeight?: number | null;
+  weightUnit?: string | null;
   unit?: string | null;
   discountPercentage?: number | null;
 
@@ -150,7 +153,10 @@ export interface CreateItemPayload {
   productInfo?: string;
   nutritionInfo?: string;
   upcCode?: string;
-  baseQuantity?: number;
+  itemsPerPack?: number;
+  stockQuantity?: number;
+  netWeight?: number;
+  weightUnit?: string;
   unit?: string;
   discountPercentage?: number;
   status?: ItemStatus;
