@@ -394,7 +394,7 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                Completed Orders
+                Received Orders
               </p>
               <p className="text-2xl font-bold tracking-tight text-violet-600 dark:text-violet-400">
                 {stats?.completedOrders ?? 0}
@@ -505,7 +505,7 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              <span>Completed</span>
+              <span>Received</span>
               <span className="rounded-full bg-purple-100 px-1.5 py-0.5 text-[10px] font-bold text-purple-800 dark:bg-purple-950/60 dark:text-purple-300">
                 {stats?.completedOrders ?? 0}
               </span>
