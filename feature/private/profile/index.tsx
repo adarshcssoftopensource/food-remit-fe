@@ -11,10 +11,17 @@ import { ChangePassword } from "./components/change-password";
 import { ProfileForm } from "./components/profile-form";
 import { ProfileHeader } from "./components/profile-header";
 import { ProfilePermissions } from "./components/profile-permissions";
+import { StoreInformation } from "./components/store-information";
 
 export function ProfilePage() {
   const { profile } = useProfile();
-  const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+  const isEmployee =
+    profile?.roleCode === "EMPLOYEE" ||
+    profile?.role === "employee" ||
+    profile?.role === "store_manager" ||
+    profile?.roleCode === "STORE_MANAGER";
+
+  const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
 
   return (
     <div className="w-full space-y-6">
@@ -39,13 +46,23 @@ export function ProfilePage() {
       <ProfileHeader />
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="mb-4 grid h-auto w-full max-w-md grid-cols-2 gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl sm:mb-6 dark:border-slate-800/80 dark:bg-slate-900/60">
+        <TabsList
+          className={`mb-4 grid h-auto w-full gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl sm:mb-6 dark:border-slate-800/80 dark:bg-slate-900/60 ${isStoreManager ? "max-w-2xl grid-cols-3" : "max-w-md grid-cols-2"}`}
+        >
           <TabsTrigger
             value="general"
             className="h-10 rounded-xl px-3 text-xs font-semibold sm:px-4 sm:text-sm"
           >
             General Details
           </TabsTrigger>
+          {isStoreManager && (
+            <TabsTrigger
+              value="store"
+              className="h-10 rounded-xl px-3 text-xs font-semibold sm:px-4 sm:text-sm"
+            >
+              Store Information
+            </TabsTrigger>
+          )}
           <TabsTrigger
             value="security"
             className="h-10 rounded-xl px-3 text-xs font-semibold sm:px-4 sm:text-sm"
@@ -58,6 +75,12 @@ export function ProfilePage() {
           <ProfileForm />
           {!isEmployee && <ProfilePermissions />}
         </TabsContent>
+
+        {isStoreManager && (
+          <TabsContent value="store" className="mt-0 space-y-6">
+            <StoreInformation />
+          </TabsContent>
+        )}
 
         <TabsContent value="security" className="mt-0">
           <ChangePassword />
