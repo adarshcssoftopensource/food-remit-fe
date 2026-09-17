@@ -15,10 +15,13 @@ import {
   RefreshCw,
   ShieldCheck,
   Store,
+  Upload,
   User,
   Trash2,
   Home,
+  X,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -105,6 +108,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       businessName: "",
       businessType: "",
       otherBusinessType: "",
+      storeLogo: undefined,
       locationsCount: "1",
       locations: [{ address: "", daysOpen: [], hoursOfOperation: "" }],
       hasBusinessAccount: undefined,
@@ -472,6 +476,13 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       if (data.otherBusinessType?.trim()) {
         formData.append("otherBusinessType", data.otherBusinessType.trim());
       }
+      if (data.storeLogo instanceof File) {
+        formData.append("storeLogo", data.storeLogo, data.storeLogo.name);
+      } else if (Array.isArray(data.storeLogo) && data.storeLogo[0] instanceof File) {
+        formData.append("storeLogo", data.storeLogo[0], data.storeLogo[0].name);
+      } else if (typeof data.storeLogo === "string" && data.storeLogo.trim()) {
+        formData.append("storeLogo", data.storeLogo.trim());
+      }
       formData.append("locationsCount", data.locationsCount || "1");
       if (data.locations && data.locations.length > 0) {
         const cleanLocations = data.locations.filter((loc) => loc.address.trim() !== "");
@@ -788,6 +799,111 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   )}
                 />
               )}
+
+              {/* Store Logo Field (with default image preview & fallback) */}
+              <Controller
+                name="storeLogo"
+                control={control}
+                render={({ field }) => {
+                  const logoFile = field.value instanceof File ? field.value : null;
+                  const logoUrl =
+                    typeof field.value === "string"
+                      ? field.value
+                      : logoFile
+                        ? URL.createObjectURL(logoFile)
+                        : null;
+
+                  return (
+                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                      <FieldLabel className="text-xs font-semibold text-slate-700">
+                        Store Logo{" "}
+                        <span className="font-normal text-slate-400">
+                          (Optional — Default store picture will be used if not uploaded)
+                        </span>
+                      </FieldLabel>
+
+                      <div className="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4 transition hover:border-emerald-500/50 sm:flex-row sm:items-center">
+                        {/* Logo Preview (Default or Uploaded) */}
+                        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs">
+                          <Image
+                            src={logoUrl || "/default-store.svg"}
+                            alt="Store Logo Preview"
+                            fill
+                            unoptimized
+                            className="object-contain p-2"
+                          />
+                        </div>
+
+                        {/* Upload Controls & Information */}
+                        <div className="flex flex-1 flex-col gap-1.5">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className={cn(
+                                "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
+                                logoUrl
+                                  ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                                  : "border border-slate-200 bg-white text-slate-500",
+                              )}
+                            >
+                              {logoUrl ? "Custom Logo Uploaded" : "Default Store Picture"}
+                            </span>
+                            {logoFile && (
+                              <span className="max-w-[200px] truncate text-xs text-slate-400">
+                                {logoFile.name} ({(logoFile.size / 1024).toFixed(0)} KB)
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-xs text-slate-500">
+                            Upload your store or brand logo (PNG, JPG, or WEBP up to 5MB). If left
+                            empty, the default picture above is used.
+                          </p>
+
+                          <div className="mt-1 flex items-center gap-2">
+                            <label
+                              htmlFor="vendorStoreLogoInput"
+                              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-emerald-700"
+                            >
+                              <Upload className="size-3.5 text-emerald-600" />
+                              <span>{logoUrl ? "Change Logo" : "Upload Store Logo"}</span>
+                            </label>
+                            <input
+                              id="vendorStoreLogoInput"
+                              type="file"
+                              accept="image/png,image/jpeg,image/webp"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                if (file.size > 5 * 1024 * 1024) {
+                                  errorToast({
+                                    title: "Image Too Large",
+                                    description: "Image size must be less than 5MB",
+                                  });
+                                  return;
+                                }
+                                field.onChange(file);
+                                e.target.value = "";
+                              }}
+                            />
+
+                            {logoUrl && (
+                              <button
+                                type="button"
+                                onClick={() => field.onChange(undefined)}
+                                className="inline-flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
+                              >
+                                <X className="size-3.5" />
+                                <span>Reset to Default</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }}
+              />
 
               <Controller
                 name="hasBusinessAccount"

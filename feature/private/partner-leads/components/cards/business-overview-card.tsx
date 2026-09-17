@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Link as LinkIcon } from "lucide-react";
+import Image from "next/image";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
 export function BusinessOverviewCard({ lead }: { lead: PartnerLeadData }) {
@@ -19,6 +20,34 @@ export function BusinessOverviewCard({ lead }: { lead: PartnerLeadData }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
+        {/* Store Logo Banner */}
+        <div className="mb-6 flex items-center gap-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3.5">
+          <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xs">
+            <Image
+              src={lead.storeLogo || "/default-store.svg"}
+              alt={lead.businessName}
+              fill
+              unoptimized
+              className="object-contain p-1.5"
+            />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold tracking-wider text-slate-900 uppercase">
+                Store Logo
+              </span>
+              <span className="py-0.2 rounded-full border border-slate-200 bg-white px-2 text-[10px] font-semibold text-slate-500">
+                {lead.storeLogo ? "Custom Uploaded" : "Default Image"}
+              </span>
+            </div>
+            <p className="mt-0.5 text-xs text-slate-500">
+              {lead.storeLogo
+                ? "Partner provided a custom store logo"
+                : "Using system default store image"}
+            </p>
+          </div>
+        </div>
+
         <dl className="grid grid-cols-2 gap-x-4 gap-y-6">
           <div>
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">

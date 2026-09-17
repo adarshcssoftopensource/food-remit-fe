@@ -63,6 +63,7 @@ export interface PartnerLeadData {
   referenceNumber: string;
   businessName: string;
   businessType: string;
+  storeLogo?: string | null;
   locationsCount: string;
   locations: { address: string; daysOpen: string[]; hoursOfOperation: string }[];
   languages: string[];

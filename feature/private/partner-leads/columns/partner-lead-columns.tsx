@@ -7,6 +7,7 @@ import { AlertCircle, Clock, Eye, Landmark, ShieldAlert, ShieldCheck } from "luc
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { getStatusColor } from "@/constants/partner.leads";
 import { ColumnDef } from "@tanstack/react-table";
+import Image from "next/image";
 import { PartnerLeadData } from "../types/partner-lead.types";
 import { PartnerLeadActionsCell } from "../components/partner-lead-actions-cell";
 
@@ -26,11 +27,22 @@ export const getPartnerLeadColumns = (
     accessorKey: "businessName",
     header: "Business Name",
     cell: ({ row }) => (
-      <TruncatedTextCell
-        text={row.getValue("businessName")}
-        maxWords={8}
-        className="cursor-default font-semibold text-slate-800 dark:text-slate-200"
-      />
+      <div className="flex items-center gap-2.5">
+        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+          <Image
+            src={row.original.storeLogo || "/default-store.svg"}
+            alt={row.original.businessName}
+            fill
+            unoptimized
+            className="object-contain p-0.5"
+          />
+        </div>
+        <TruncatedTextCell
+          text={row.getValue("businessName")}
+          maxWords={8}
+          className="cursor-default font-semibold text-slate-800 dark:text-slate-200"
+        />
+      </div>
     ),
   },
   {

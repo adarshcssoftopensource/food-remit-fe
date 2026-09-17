@@ -13,6 +13,7 @@ export const partnerLeadSchema = z
       .max(100, "Business name cannot exceed 100 characters"),
     businessType: z.string().min(1, "Please select a business type"),
     otherBusinessType: z.string().optional(),
+    storeLogo: z.any().optional(),
     locationsCount: z.string().optional(),
     locations: z
       .array(
