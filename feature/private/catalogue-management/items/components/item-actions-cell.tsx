@@ -96,10 +96,6 @@ export function ItemAvailabilityCell({ item }: { item: ItemData }) {
           setPendingActive(null);
           successToast({ description: "Item status updated successfully" });
         },
-        onError: () => {
-          setPendingActive(null);
-          errorToast({ description: "Failed to update item status" });
-        },
       },
     );
   };
