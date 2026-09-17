@@ -20,6 +20,7 @@ export function ManagerLocationFields({
   countryError,
   cityError,
   stateError,
+  disabled = false,
 }: {
   countryValue: string;
   onCountryChange: (v: string) => void;
@@ -30,6 +31,7 @@ export function ManagerLocationFields({
   countryError?: string;
   cityError?: string;
   stateError?: string;
+  disabled?: boolean;
 }) {
   const allCountries = Country.getAllCountries();
   const selectedCountryObj = allCountries.find(
@@ -63,6 +65,7 @@ export function ManagerLocationFields({
             onStateChange("");
             onCityChange("");
           }}
+          disabled={disabled}
           invalid={!!countryError}
         />
         {countryError && <p className="text-xs font-medium text-red-500">{countryError}</p>}
@@ -78,7 +81,7 @@ export function ManagerLocationFields({
             onStateChange(v ?? "");
             onCityChange("");
           }}
-          disabled={!countryValue}
+          disabled={disabled || !countryValue}
         >
           <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50">
             <SelectValue placeholder={countryValue ? "Select State" : "Select country first"} />
@@ -103,7 +106,7 @@ export function ManagerLocationFields({
         <Select
           value={cityValue}
           onValueChange={(value) => onCityChange(value || "")}
-          disabled={!stateValue}
+          disabled={disabled || !stateValue}
         >
           <SelectTrigger className="h-11! w-full min-w-full rounded-xl border-slate-200">
             <SelectValue placeholder={stateValue ? "Select City" : "Select state first"} />

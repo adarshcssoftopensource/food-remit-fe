@@ -374,7 +374,11 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
   const selectedCountryIsoCode = useMemo(() => {
     if (!selectedCountryName) return undefined;
-    return Country.getAllCountries().find((c) => c.name === selectedCountryName)?.isoCode;
+    const clean = selectedCountryName.trim().toLowerCase();
+    const found = Country.getAllCountries().find(
+      (c) => c.name.trim().toLowerCase() === clean || c.isoCode.toLowerCase() === clean,
+    );
+    return found?.isoCode;
   }, [selectedCountryName]);
 
   async function handleNextStep() {
@@ -1292,6 +1296,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       onChange={(value) => field.onChange(value)}
                       onBlur={field.onBlur}
                       error={!!errors.phoneNumber}
+                      defaultCountry={selectedCountryIsoCode || "IN"}
                     />
                     {errors.phoneNumber && (
                       <p className="text-xs font-medium text-red-500">

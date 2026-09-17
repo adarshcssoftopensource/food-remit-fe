@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({ className, type, onKeyDown, ...props }: React.ComponentProps<"input">) {
   return (
     <InputPrimitive
       type={type}
@@ -19,10 +19,19 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         className,
       )}
       onKeyDown={(e) => {
-        const cursorPosition = e.currentTarget.selectionStart ?? 0;
-        if (e.key === " " && cursorPosition === 0) {
-          e.preventDefault();
+        try {
+          const target = e.currentTarget;
+          const inputType = target.type?.toLowerCase();
+          if (!inputType || ["text", "search", "url", "tel", "password"].includes(inputType)) {
+            const cursorPosition = target.selectionStart ?? 0;
+            if (e.key === " " && cursorPosition === 0) {
+              e.preventDefault();
+            }
+          }
+        } catch {
+          // Ignore selectionStart errors on unsupported input types (e.g. type="number" in Firefox)
         }
+        onKeyDown?.(e);
       }}
       {...props}
     />

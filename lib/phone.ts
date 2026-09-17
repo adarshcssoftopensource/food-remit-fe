@@ -1,3 +1,4 @@
+import { Country } from "country-state-city";
 import {
   type CountryCode,
   getExampleNumber,
@@ -140,4 +141,120 @@ export function getSplitPhoneError(phoneCode: string, phoneNumber: string): stri
   }
 
   return null;
+}
+
+export type CountryPhoneInfo = {
+  isoCode: string;
+  dialCode: string;
+  rawDialCode: string;
+};
+
+export function getCountryPhoneInfo(
+  countryNameOrId?: string | null,
+  fallbackCountries?: {
+    id?: string;
+    name?: string;
+    countryName?: string;
+    countryCode?: string | null;
+  }[],
+): CountryPhoneInfo | null {
+  if (!countryNameOrId) return null;
+  const clean = countryNameOrId.trim().toLowerCase();
+
+  const allCountries = Country.getAllCountries();
+  let found = allCountries.find(
+    (c) => c.name.toLowerCase() === clean || c.isoCode.toLowerCase() === clean,
+  );
+
+  if (!found && fallbackCountries?.length) {
+    const apiMatch = fallbackCountries.find(
+      (ac) =>
+        ac.id?.toLowerCase() === clean ||
+        ac.name?.toLowerCase() === clean ||
+        ac.countryName?.toLowerCase() === clean,
+    );
+    if (apiMatch) {
+      const matchName = apiMatch.name || apiMatch.countryName;
+      found = allCountries.find(
+        (c) =>
+          (matchName && c.name.toLowerCase() === matchName.toLowerCase()) ||
+          (apiMatch.countryCode && c.isoCode.toLowerCase() === apiMatch.countryCode.toLowerCase()),
+      );
+    }
+  }
+
+  if (found && found.phonecode) {
+    const rawDialCode = found.phonecode.replace(/\D/g, "");
+    if (rawDialCode) {
+      return {
+        isoCode: found.isoCode,
+        dialCode: `+${rawDialCode}`,
+        rawDialCode,
+      };
+    }
+  }
+
+  return null;
+}
+
+export function parseInitialPhone(
+  savedCode?: string | null,
+  savedNumber?: string | null,
+  countryPhoneInfo?: CountryPhoneInfo | null,
+): { phoneCode: string; phoneNumber: string } {
+  const defaultDialCode = countryPhoneInfo?.dialCode || "+91";
+
+  if (!savedNumber) {
+    return {
+      phoneCode: savedCode && savedCode !== "+91" ? savedCode : defaultDialCode,
+      phoneNumber: "",
+    };
+  }
+
+  const num = savedNumber.trim();
+
+  // If phone number starts with '+':
+  if (num.startsWith("+")) {
+    if (countryPhoneInfo && num.startsWith(countryPhoneInfo.dialCode)) {
+      return {
+        phoneCode: countryPhoneInfo.dialCode,
+        phoneNumber: num.slice(countryPhoneInfo.dialCode.length).trim(),
+      };
+    }
+    if (savedCode && num.startsWith(savedCode)) {
+      return {
+        phoneCode: savedCode,
+        phoneNumber: num.slice(savedCode.length).trim(),
+      };
+    }
+  }
+
+  // If phone number starts with country's raw dial code (e.g. "6390812628" starts with "63"):
+  if (countryPhoneInfo?.rawDialCode && num.startsWith(countryPhoneInfo.rawDialCode)) {
+    return {
+      phoneCode: countryPhoneInfo.dialCode,
+      phoneNumber: num.slice(countryPhoneInfo.rawDialCode.length).trim(),
+    };
+  }
+
+  // Effective code: if savedCode was "+91" (default fallback) but country is something else (e.g. Philippines):
+  const effectiveCode =
+    countryPhoneInfo && (!savedCode || savedCode === "+91")
+      ? countryPhoneInfo.dialCode
+      : savedCode || defaultDialCode;
+
+  let cleanNum = num;
+  if (cleanNum.startsWith(effectiveCode)) {
+    cleanNum = cleanNum.slice(effectiveCode.length).trim();
+  } else {
+    const cleanRaw = effectiveCode.replace(/\D/g, "");
+    if (cleanRaw && cleanNum.startsWith(cleanRaw)) {
+      cleanNum = cleanNum.slice(cleanRaw.length).trim();
+    }
+  }
+
+  return {
+    phoneCode: effectiveCode,
+    phoneNumber: cleanNum,
+  };
 }

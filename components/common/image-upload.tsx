@@ -26,6 +26,8 @@ export interface ImageUploadProps {
   hint?: string;
   initialImages?: string[];
   id?: string;
+  disabled?: boolean;
+  defaultImage?: string;
 }
 
 export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
@@ -41,6 +43,8 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
       hint = "PNG, JPG or WEBP",
       initialImages = [],
       id,
+      disabled = false,
+      defaultImage,
     },
     ref,
   ) => {
@@ -127,7 +131,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
 
     return (
       <div className={cn("space-y-3", className)}>
-        {images.length < maxFiles && (
+        {!disabled && images.length < maxFiles && (
           <label
             htmlFor={inputId}
             className="border-primary/25 hover:border-primary hover:bg-primary/5 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed p-4 transition"
@@ -169,24 +173,44 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
                   className="object-cover"
                 />
 
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="secondary"
-                  onClick={() => removeImage(index)}
-                  title="Remove image"
-                  className="absolute top-1 right-1 h-6 w-6 rounded-full bg-white/90 p-0 text-red-500 shadow-sm transition-all hover:bg-red-500 hover:text-white sm:opacity-0 sm:group-hover:opacity-100 dark:bg-slate-900/90 dark:hover:bg-red-600"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </Button>
+                {!disabled && (
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => removeImage(index)}
+                    title="Remove image"
+                    className="absolute top-1 right-1 h-6 w-6 rounded-full bg-white/90 p-0 text-red-500 shadow-sm transition-all hover:bg-red-500 hover:text-white sm:opacity-0 sm:group-hover:opacity-100 dark:bg-slate-900/90 dark:hover:bg-red-600"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>
         )}
 
-        <p className="text-muted-foreground text-xs">
-          {images.length}/{maxFiles} images selected
-        </p>
+        {images.length === 0 && defaultImage && (
+          <div className="flex items-center gap-3">
+            <div className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-xs">
+              <Image
+                src={defaultImage}
+                alt="Default Image"
+                fill
+                unoptimized
+                sizes="80px"
+                className="object-cover"
+              />
+            </div>
+            <span className="text-xs font-medium text-slate-400">Default image</span>
+          </div>
+        )}
+
+        {!disabled && (
+          <p className="text-muted-foreground text-xs">
+            {images.length}/{maxFiles} images selected
+          </p>
+        )}
       </div>
     );
   },

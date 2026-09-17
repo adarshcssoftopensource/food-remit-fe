@@ -4,6 +4,7 @@ import { successToast } from "@/components/toaster";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { type StoreData } from "@/feature/private/store-management/types/store-management";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { getCountryPhoneInfo, parseInitialPhone } from "@/lib/phone";
 import { useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import { useUpdateStore, useUpdateStoreManager } from "../hooks/use-update-store";
@@ -17,33 +18,23 @@ interface EditStoreDialogProps {
 }
 
 export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogProps) {
-  const cleanPhone = (code?: string | null, num?: string | null) => {
-    if (!code || !num) return num ?? undefined;
+  const storePhone = parseInitialPhone(
+    store.storePhoneCode,
+    store.storePhoneNumber,
+    getCountryPhoneInfo(store.storeCountryName || store.storeCountry),
+  );
 
-    let result = num.trim();
-    if (result.startsWith(code)) {
-      result = result.slice(code.length).trim();
-    } else {
-      // If it starts with the numeric part of the code (e.g. 91 instead of +91)
-      const cleanCode = code.replace(/\D/g, "");
-      if (cleanCode && result.startsWith(cleanCode)) {
-        // Only strip if the remaining part is a valid 10-digit number
-        // (to prevent stripping 91 from a 10-digit Indian number starting with 91)
-        const stripped = result.slice(cleanCode.length).trim();
-        if (stripped.length >= 10) {
-          result = stripped;
-        }
-      }
-    }
-
-    return result || undefined;
-  };
+  const managerPhone = parseInitialPhone(
+    store.managerPhoneCode,
+    store.managerPhoneNumber,
+    getCountryPhoneInfo(store.managerCountry),
+  );
 
   const initialValues: Partial<StoreFormValues> = {
     storeImage: store.storeImage,
     storeName: store.storeName,
-    storePhoneCode: store.storePhoneCode || "+91",
-    storePhoneNumber: cleanPhone(store.storePhoneCode || "+91", store.storePhoneNumber),
+    storePhoneCode: storePhone.phoneCode,
+    storePhoneNumber: storePhone.phoneNumber,
     storeAddress: store.storeAddress,
     address2: store.address2,
     storeCountry: store.storeCountry,
@@ -54,8 +45,8 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
     managerFirstName: store.managerFirstName,
     managerLastName: store.managerLastName,
     managerEmail: store.managerEmail,
-    managerPhoneCode: store.managerPhoneCode || "+91",
-    managerPhoneNumber: cleanPhone(store.managerPhoneCode || "+91", store.managerPhoneNumber),
+    managerPhoneCode: managerPhone.phoneCode,
+    managerPhoneNumber: managerPhone.phoneNumber,
     managerAddress: store.managerAddress,
     managerCountry: store.managerCountry,
     managerState: store.managerState,

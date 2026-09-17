@@ -10,7 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { applyPlaceToLocationFields } from "@/lib/places/apply-place-to-location-fields";
-import React from "react";
+import React, { useMemo } from "react";
+import { useProfile } from "@/components/providers/profile-provider";
+import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
+import { getCountryPhoneInfo } from "@/lib/phone";
 import { storeSchema, type StoreFormValues } from "../schema/store.schema";
 import { CountryCityFields } from "./country-city-fields";
 import { ManagerLocationFields } from "./manager-location-fields";
@@ -55,6 +58,7 @@ export function StoreForm({
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<StoreFormValues>({
     resolver: zodResolver(storeSchema),
@@ -68,7 +72,10 @@ export function StoreForm({
       storeCountry: initialValues?.storeCountry ?? "",
       storeCity: initialValues?.storeCity ?? "",
       storeTax: initialValues?.storeTax !== null ? initialValues?.storeTax : undefined,
-      foodRemitCommission: initialValues?.foodRemitCommission ?? undefined,
+      foodRemitCommission:
+        initialValues?.foodRemitCommission !== null
+          ? initialValues?.foodRemitCommission
+          : undefined,
       managerImage: initialValues?.managerImage ?? undefined,
       managerFirstName: initialValues?.managerFirstName ?? "",
       managerLastName: initialValues?.managerLastName ?? "",
@@ -83,6 +90,22 @@ export function StoreForm({
     },
     mode: "onBlur",
   });
+
+  const { isSuperAdmin } = useProfile();
+  const isNonCommissionDisabled = isSuperAdmin && mode === "edit";
+
+  const { countries: apiCountries } = useGetCountriesDropdown();
+  const currentStoreCountry = watch("storeCountry");
+  const storePhoneInfo = useMemo(
+    () => getCountryPhoneInfo(currentStoreCountry, apiCountries),
+    [currentStoreCountry, apiCountries],
+  );
+
+  const currentManagerCountry = watch("managerCountry");
+  const managerPhoneInfo = useMemo(
+    () => getCountryPhoneInfo(currentManagerCountry, apiCountries),
+    [currentManagerCountry, apiCountries],
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col">
@@ -104,11 +127,7 @@ export function StoreForm({
                 name="storeImage"
                 control={control}
                 render={({ field }) => (
-                  <FormField
-                    label="Store Image"
-                    error={errors.storeImage?.message as string}
-                    required
-                  >
+                  <FormField label="Store Image" error={errors.storeImage?.message as string}>
                     <ImageUpload
                       label="Upload store image"
                       hint="PNG, JPG or WEBP"
@@ -124,6 +143,8 @@ export function StoreForm({
                         field.value && typeof field.value !== "string" ? [field.value as File] : []
                       }
                       initialImages={initialValues?.storeImage ? [initialValues.storeImage] : []}
+                      disabled={isNonCommissionDisabled}
+                      defaultImage="/default-store.svg"
                     />
                   </FormField>
                 )}
@@ -138,7 +159,8 @@ export function StoreForm({
                       {...field}
                       id="storeName"
                       placeholder="Enter Store Name"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      disabled={isNonCommissionDisabled}
+                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
                     />
                   </FormField>
                 )}
@@ -161,6 +183,8 @@ export function StoreForm({
                         onNumberChange={numField.onChange}
                         codeError={errors.storePhoneCode?.message}
                         numberError={errors.storePhoneNumber?.message}
+                        defaultCountry={storePhoneInfo?.isoCode || "IN"}
+                        disabled={isNonCommissionDisabled}
                       />
                     )}
                   />
@@ -178,13 +202,20 @@ export function StoreForm({
                       <CountryCityFields
                         prefix="store"
                         countryValue={cField.value}
-                        onCountryChange={cField.onChange}
+                        onCountryChange={(v, countryItem) => {
+                          cField.onChange(v);
+                          const info = getCountryPhoneInfo(countryItem?.name || v, apiCountries);
+                          if (info?.dialCode) {
+                            setValue("storePhoneCode", info.dialCode, { shouldValidate: true });
+                          }
+                        }}
                         stateValue=""
                         onStateChange={() => {}}
                         cityValue={cityField.value}
                         onCityChange={cityField.onChange}
                         countryError={errors.storeCountry?.message}
                         cityError={errors.storeCity?.message}
+                        disabled={isNonCommissionDisabled}
                       />
                     )}
                   />
@@ -203,6 +234,7 @@ export function StoreForm({
                       addressFormat="full"
                       placeholder="Enter Address"
                       invalid={!!errors.storeAddress}
+                      disabled={isNonCommissionDisabled}
                     />
                   </FormField>
                 )}
@@ -217,7 +249,8 @@ export function StoreForm({
                       {...field}
                       id="storeAddress2"
                       placeholder="Enter Address 2 (optional)"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      disabled={isNonCommissionDisabled}
+                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
                     />
                   </FormField>
                 )}
@@ -236,11 +269,29 @@ export function StoreForm({
                       max={100}
                       step={0.01}
                       placeholder="Government Store Tax"
-                      className="h-11 rounded-xl border-slate-200"
+                      className="h-11 rounded-xl border-slate-200 disabled:cursor-not-allowed disabled:opacity-75"
+                      value={field.value ?? ""}
+                      disabled={isNonCommissionDisabled}
                       onFocus={(e) => {
-                        if (e.target.value === "0" || Number(e.target.value) === 0) {
-                          field.onChange("");
+                        e.target.select();
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
+                          e.preventDefault();
                         }
+                      }}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === "") {
+                          field.onChange("");
+                          return;
+                        }
+                        const num = Number(val);
+                        if (!isNaN(num) && num > 100) {
+                          field.onChange(100);
+                          return;
+                        }
+                        field.onChange(val);
                       }}
                     />
                   </FormField>
@@ -263,16 +314,29 @@ export function StoreForm({
                       max={100}
                       step={0.01}
                       placeholder="Enter Commission %"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      className="h-11 rounded-xl border-slate-200"
                       value={field.value ?? ""}
                       onFocus={(e) => {
-                        if (e.target.value === "0" || Number(e.target.value) === 0) {
-                          field.onChange(undefined);
+                        e.target.select();
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
+                          e.preventDefault();
                         }
                       }}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
-                      }
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === "") {
+                          field.onChange("");
+                          return;
+                        }
+                        const num = Number(val);
+                        if (!isNaN(num) && num > 100) {
+                          field.onChange(100);
+                          return;
+                        }
+                        field.onChange(val);
+                      }}
                     />
                   </FormField>
                 )}
@@ -306,6 +370,8 @@ export function StoreForm({
                       field.value && typeof field.value !== "string" ? [field.value as File] : []
                     }
                     initialImages={initialValues?.managerImage ? [initialValues.managerImage] : []}
+                    disabled={isNonCommissionDisabled}
+                    defaultImage="/default-avatar.svg"
                   />
                 )}
               />
@@ -319,7 +385,8 @@ export function StoreForm({
                       {...field}
                       id="managerFirstName"
                       placeholder="Enter First Name"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      disabled={isNonCommissionDisabled}
+                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
                     />
                   </FormField>
                 )}
@@ -334,7 +401,8 @@ export function StoreForm({
                       {...field}
                       id="managerLastName"
                       placeholder="Enter Last Name"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      disabled={isNonCommissionDisabled}
+                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
                     />
                   </FormField>
                 )}
@@ -350,8 +418,8 @@ export function StoreForm({
                       id="managerEmail"
                       type="email"
                       placeholder="Enter Email"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
-                      disabled={mode === "edit"}
+                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
+                      disabled={isNonCommissionDisabled || mode === "edit"}
                     />
                   </FormField>
                 )}
@@ -374,7 +442,8 @@ export function StoreForm({
                         numberError={errors.managerPhoneNumber?.message}
                         label="Phone Number"
                         required
-                        disabled={mode === "edit"}
+                        disabled={isNonCommissionDisabled || mode === "edit"}
+                        defaultCountry={managerPhoneInfo?.isoCode || "IN"}
                       />
                     )}
                   />
@@ -393,6 +462,7 @@ export function StoreForm({
                       addressFormat="street"
                       placeholder="Enter Address"
                       invalid={!!errors.managerAddress}
+                      disabled={isNonCommissionDisabled}
                       onPlaceSelect={(place) => {
                         applyPlaceToLocationFields(place, setValue, {
                           country: "managerCountry",
@@ -400,6 +470,12 @@ export function StoreForm({
                           city: "managerCity",
                           zipcode: "managerZipCode",
                         });
+                        if (place.country) {
+                          const info = getCountryPhoneInfo(place.country, apiCountries);
+                          if (info?.dialCode) {
+                            setValue("managerPhoneCode", info.dialCode, { shouldValidate: true });
+                          }
+                        }
                       }}
                     />
                   </FormField>
@@ -420,7 +496,15 @@ export function StoreForm({
                         render={({ field: cityField }) => (
                           <ManagerLocationFields
                             countryValue={cField.value}
-                            onCountryChange={cField.onChange}
+                            onCountryChange={(v) => {
+                              cField.onChange(v);
+                              const info = getCountryPhoneInfo(v, apiCountries);
+                              if (info?.dialCode) {
+                                setValue("managerPhoneCode", info.dialCode, {
+                                  shouldValidate: true,
+                                });
+                              }
+                            }}
                             stateValue={sField.value}
                             onStateChange={sField.onChange}
                             cityValue={cityField.value}
@@ -428,6 +512,7 @@ export function StoreForm({
                             countryError={errors.managerCountry?.message}
                             stateError={errors.managerState?.message}
                             cityError={errors.managerCity?.message}
+                            disabled={isNonCommissionDisabled}
                           />
                         )}
                       />
@@ -445,7 +530,8 @@ export function StoreForm({
                       {...field}
                       id="managerZipCode"
                       placeholder="Enter Zipcode"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                      disabled={isNonCommissionDisabled}
+                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
                     />
                   </FormField>
                 )}

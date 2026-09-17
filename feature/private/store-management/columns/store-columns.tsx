@@ -38,7 +38,7 @@ export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<
     cell: ({ row }) => (
       <ImageNameCell
         name={row.original.storeName}
-        image={row.original.storeImage}
+        image={row.original.storeImage || "/default-store.svg"}
         type="profile"
         onImageClick={onImageClick}
         enableZoom={!!onImageClick}

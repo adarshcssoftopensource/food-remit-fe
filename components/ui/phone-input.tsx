@@ -29,6 +29,7 @@ interface PhoneInputComponentProps {
   onBlur?: () => void;
   error?: boolean;
   disabled?: boolean;
+  defaultCountry?: string;
 }
 
 const DEFAULT_ISO = "IN";
@@ -53,12 +54,28 @@ const ALL_COUNTRIES = buildCountries();
 const COUNTRIES_BY_ISO = new Map(ALL_COUNTRIES.map((country) => [country.isoCode, country]));
 const DIAL_CODES_DESC = [...ALL_COUNTRIES].sort((a, b) => b.dialCode.length - a.dialCode.length);
 
-export function resolveFromValue(value: string): { country: PhoneCountry; nationalNumber: string } {
+export function resolveFromValue(
+  value: string,
+  defaultIso = DEFAULT_ISO,
+): { country: PhoneCountry; nationalNumber: string } {
   const digits = toPhoneDigits(value || "");
-  const fallback = COUNTRIES_BY_ISO.get(DEFAULT_ISO) ?? ALL_COUNTRIES[0];
+  const normalizedDefault = defaultIso ? defaultIso.toUpperCase() : DEFAULT_ISO;
+  const fallback =
+    COUNTRIES_BY_ISO.get(normalizedDefault) ??
+    COUNTRIES_BY_ISO.get(DEFAULT_ISO) ??
+    ALL_COUNTRIES[0];
 
   if (!digits) {
     return { country: fallback, nationalNumber: "" };
+  }
+
+  // When defaultIso matches the starting dial code (e.g. Canada CA and US both have dialCode "1"),
+  // prioritize the defaultIso country so that CA is selected instead of US!
+  if (fallback && digits.startsWith(fallback.dialCode)) {
+    return {
+      country: fallback,
+      nationalNumber: digits.slice(fallback.dialCode.length),
+    };
   }
 
   const matched = DIAL_CODES_DESC.find((country) => digits.startsWith(country.dialCode));
@@ -78,13 +95,26 @@ export function PhoneInputComponent({
   onBlur,
   error,
   disabled,
+  defaultCountry = DEFAULT_ISO,
 }: PhoneInputComponentProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   /** Remembers user country pick when dial codes overlap (e.g. US/CA +1). */
   const [countryOverride, setCountryOverride] = useState<PhoneCountry | null>(null);
 
-  const resolved = useMemo(() => resolveFromValue(value), [value]);
+  const [prevDefaultCountry, setPrevDefaultCountry] = useState(defaultCountry);
+
+  // Sync if defaultCountry prop changes externally (e.g. Country changed in Step 1)
+  if (defaultCountry && defaultCountry !== prevDefaultCountry) {
+    setPrevDefaultCountry(defaultCountry);
+    const targetCountry = COUNTRIES_BY_ISO.get(defaultCountry.toUpperCase());
+    if (targetCountry) {
+      setCountryOverride(targetCountry);
+    }
+  }
+
+  const activeIso = countryOverride?.isoCode || defaultCountry || DEFAULT_ISO;
+  const resolved = useMemo(() => resolveFromValue(value, activeIso), [value, activeIso]);
 
   const selectedCountry = useMemo(() => {
     const digits = toPhoneDigits(value || "");
