@@ -7,9 +7,9 @@ import { successToast, errorToast } from "@/components/toaster";
 export function useAssignOrder(employeeId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (orderId: string) => {
+    mutationFn: async (orderIds: string[]) => {
       const { data } = await apiClient.post(EMPLOYEE_ENDPOINTS.ASSIGN_ORDER(employeeId), {
-        orderId,
+        orderIds,
       });
       return data;
     },

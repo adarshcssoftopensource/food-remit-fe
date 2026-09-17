@@ -11,6 +11,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ORDER_SECTION_META, ORDER_TABS, type OrderSectionKey } from "@/constants/order-management";
 import { orderColumns } from "./columns/order-columns";
 import { useOrderManagement } from "./hooks/use-order-management";
+import { RowSelectionState } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { UserPlus } from "lucide-react";
+import { AssignEmployeeDialog } from "./components/assign-employee-dialog";
+import { useProfile } from "@/components/providers/profile-provider";
 
 export function OrdersManagementPage() {
   const searchParams = useSearchParams();
@@ -21,6 +26,15 @@ export function OrdersManagementPage() {
     param: tabParam,
     tab: validTabParam ?? "sent-orders",
   });
+
+  const { profile } = useProfile();
+  const isStoreManager =
+    profile?.role === "STORE_MANAGER" ||
+    profile?.roleCode === "STORE_MANAGER" ||
+    profile?.role === "store_manager";
+
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [bulkAssignOpen, setBulkAssignOpen] = useState(false);
 
   const activeTab =
     overrideTab.param === tabParam ? overrideTab.tab : (validTabParam ?? "sent-orders");
@@ -61,6 +75,11 @@ export function OrdersManagementPage() {
     if (city && city !== "All" && city !== "all") count++;
     return count;
   }, [fromDate, toDate, country, city]);
+
+  const selectedOrders = useMemo(() => {
+    const ids = Object.keys(rowSelection).filter((id) => rowSelection[id]);
+    return filteredData.filter((o: any) => ids.includes(o.id));
+  }, [filteredData, rowSelection]);
 
   return (
     <div className="space-y-6">
@@ -122,6 +141,16 @@ export function OrdersManagementPage() {
                         {pagination?.total || 0} order{pagination?.total !== 1 ? "s" : ""} found
                       </p>
                     </div>
+                    {isStoreManager && selectedOrders.length > 0 && (
+                      <Button
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 mt-2 sm:mt-0"
+                        onClick={() => setBulkAssignOpen(true)}
+                      >
+                        <UserPlus className="mr-2 size-4" />
+                        Assign {selectedOrders.length}{" "}
+                        {selectedOrders.length === 1 ? "Order" : "Orders"}
+                      </Button>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
@@ -140,6 +169,10 @@ export function OrdersManagementPage() {
                     loading={isLoading}
                     manualSorting
                     manualFiltering
+                    rowSelection={rowSelection}
+                    onRowSelectionChange={setRowSelection}
+                    getRowId={(row: any) => row.id}
+                    enableRowSelection={(row: any) => !row.original.assignedEmployeeId}
                   />
                 </CardContent>
               </Card>
@@ -147,6 +180,19 @@ export function OrdersManagementPage() {
           ))}
         </Tabs>
       </div>
+
+      {bulkAssignOpen && (
+        <AssignEmployeeDialog
+          open={bulkAssignOpen}
+          onOpenChange={(open) => {
+            setBulkAssignOpen(open);
+            if (!open) {
+              setRowSelection({});
+            }
+          }}
+          orders={selectedOrders}
+        />
+      )}
     </div>
   );
 }

@@ -82,6 +82,8 @@ export const ROUTES = {
     PROFILE: "/profile",
     SETTINGS: "/settings",
     EMPLOYEE_MANAGEMENT: "/employee-management",
+    EMPLOYEE_ORDER_DETAIL: (employeeId: string, orderId: string) =>
+      `/employee-management/${employeeId}/orders/${orderId}`,
   },
 } as const;
 
