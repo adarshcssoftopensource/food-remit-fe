@@ -10,10 +10,8 @@ import { OrderSummaryCard } from "@/feature/private/order-management/components/
 import { OrderPeopleAndStore } from "@/feature/private/order-management/components/order-people-and-store";
 import { OrderItemsTable } from "@/feature/private/order-management/components/order-items-table";
 import { OrderStatusBadge } from "@/feature/private/order-management/components/order-status-badge";
-import {
-  getOrderReference,
-  maskOrderReference,
-} from "@/feature/private/order-management/utils/mask-order-reference";
+import { MaskedReferenceBadge } from "@/feature/private/order-management/components/masked-reference-badge";
+import { getOrderReference } from "@/feature/private/order-management/utils/mask-order-reference";
 import { ArrowLeft, Clock3, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -32,7 +30,6 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
   if (!order) return <OrderNotFound onBack={() => router.back()} />;
 
   const fullRef = getOrderReference(order);
-  const maskedRef = maskOrderReference(fullRef);
   const canStartPreparing =
     order.orderStatus === 4 || order.orderStatus === 5 || order.orderStatus === 8;
   const canMarkComplete = order.orderStatus === 2;
@@ -44,9 +41,7 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
           <PageHeader title="Order Details" />
           <div className="flex flex-wrap items-center gap-2">
             <OrderStatusBadge status={order.orderStatus} />
-            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 font-mono text-xs font-semibold tracking-wide text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-              Ref: {maskedRef}
-            </span>
+            <MaskedReferenceBadge reference={fullRef} size="md" />
           </div>
         </div>
 

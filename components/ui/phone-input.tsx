@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { getExpectedNationalDigits, getMaxNationalDigits, toPhoneDigits } from "@/lib/phone";
+import { getMaxNationalDigits, toPhoneDigits } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
 type PhoneCountry = {
@@ -30,6 +30,11 @@ interface PhoneInputComponentProps {
   error?: boolean;
   disabled?: boolean;
   defaultCountry?: string;
+  /**
+   * - "international": value is dial+national (e.g. "13322359345") — default for profile/partner
+   * - "national": value is national digits only (e.g. "3322359345") — use with split countryCode fields
+   */
+  valueMode?: "international" | "national";
 }
 
 const DEFAULT_ISO = "IN";
@@ -188,6 +193,7 @@ export function PhoneInputComponent({
   error,
   disabled,
   defaultCountry = DEFAULT_ISO,
+  valueMode = "international",
 }: PhoneInputComponentProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -230,32 +236,24 @@ export function PhoneInputComponent({
     const digits = toPhoneDigits(value || "");
     if (!digits) return "";
 
-    const expected = getExpectedNationalDigits(selectedCountry.isoCode);
-
-    // Full international: dial + exact national length (e.g. US "1" + 10 digits)
-    if (digits.startsWith(selectedCountry.dialCode)) {
-      const rest = digits.slice(selectedCountry.dialCode.length);
-      if (expected && rest.length === expected) {
-        return rest;
-      }
-      if (!expected && digits.length > maxDigits && rest.length > 0 && rest.length <= maxDigits) {
-        return rest.slice(0, maxDigits);
-      }
+    // Split-field forms pass national digits only — never strip a dial prefix.
+    if (valueMode === "national") {
+      return digits.slice(0, maxDigits);
     }
 
-    // National-only — never strip another country's dial (e.g. FR +33 from "3322...")
+    // International: value is dial + national. Always strip the selected dial for display
+    // so typing/backspace never accumulates country-code digits (e.g. "1111...").
+    if (digits.startsWith(selectedCountry.dialCode)) {
+      return digits.slice(selectedCountry.dialCode.length).slice(0, maxDigits);
+    }
+
+    // Fallback: national-looking value without dial prefix
     if (digits.length <= maxDigits) {
       return digits.slice(0, maxDigits);
     }
 
     return resolved.nationalNumber.slice(0, maxDigits);
-  }, [
-    value,
-    selectedCountry.dialCode,
-    selectedCountry.isoCode,
-    resolved.nationalNumber,
-    maxDigits,
-  ]);
+  }, [value, valueMode, selectedCountry.dialCode, resolved.nationalNumber, maxDigits]);
 
   const filteredCountries = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -288,8 +286,9 @@ export function PhoneInputComponent({
     setSearchQuery("");
   }
 
-  function handleNumberChange(nextNational: string) {
-    // Always emit with the currently selected country — never re-resolve by digits.
+  function handleNumberChange(raw: string) {
+    // Digits only — no free junk characters; backspace removes cleanly.
+    const nextNational = toPhoneDigits(raw).slice(0, maxDigits);
     emitChange(selectedCountry, nextNational);
   }
 

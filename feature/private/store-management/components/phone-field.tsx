@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import PhoneInputComponent from "@/components/ui/phone-input";
+import { toPhoneDigits } from "@/lib/phone";
 
 export function PhoneField({
   codeValue,
@@ -36,8 +37,9 @@ export function PhoneField({
         {required && <span className="ml-0.5 text-red-500">*</span>}
       </Label>
       <PhoneInputComponent
+        valueMode="national"
         defaultCountry={phoneIso || defaultCountry || "US"}
-        value={(codeValue || "") + (numberValue || "")}
+        value={numberValue || ""}
         onChange={(val, data) => {
           if (data && data.dialCode) {
             const dialCode = data.dialCode;
@@ -49,7 +51,7 @@ export function PhoneField({
             onCodeChange("+" + dialCode);
             onNumberChange(nationalNumber);
           } else {
-            onNumberChange(val);
+            onNumberChange(toPhoneDigits(val));
           }
         }}
         disabled={disabled}

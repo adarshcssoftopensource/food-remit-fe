@@ -18,6 +18,7 @@ import { toPhoneDigits } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { ManagerLocationFields } from "@/feature/private/store-management/components/manager-location-fields";
+import { MapPin } from "lucide-react";
 import { useUpdateProfile } from "../hooks/use-update-profile";
 import { getProfileDetailsSchema, type ProfileDetailsValues } from "../schema/profile.schema";
 
@@ -63,6 +64,7 @@ export function ProfileForm() {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors, isDirty },
     reset,
   } = useForm<ProfileDetailsValues>({
@@ -75,7 +77,7 @@ export function ProfileForm() {
       address: profile?.address || "",
       country: resolvedCountry,
       state: (profile as any)?.state || "",
-      city: resolvedCity,
+      city: resolvedCity || (profile as any)?.city || "",
       zipCode: (profile as any)?.zipCode || (profile as any)?.zipcode || "",
       image: undefined,
     },
@@ -248,28 +250,126 @@ export function ProfileForm() {
               )}
             />
 
-            <Controller
-              name="address"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1.5 md:col-span-2">
-                  <FieldLabel htmlFor="address" className="text-sm font-semibold">
-                    Address
-                  </FieldLabel>
-                  <AddressAutocompleteInput
-                    id="address"
-                    value={field.value || ""}
-                    onChange={(val) => field.onChange(val)}
-                    addressFormat="full"
-                    placeholder="Search address..."
-                    invalid={!!errors.address}
-                  />
-                  {errors.address && (
-                    <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
-                  )}
+            {isEmployee ? (
+              <div className="md:col-span-2">
+                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800">
+                  <div className="flex items-center gap-3 border-b border-slate-100 bg-linear-to-r from-violet-50/80 to-transparent px-5 py-4 dark:border-slate-800 dark:from-violet-950/30">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-950/50">
+                      <MapPin className="size-5 text-violet-600 dark:text-violet-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-slate-800 dark:text-white">
+                        Location
+                      </h3>
+                      <p className="text-xs text-slate-500">Your residential address details</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+                    <Controller
+                      name="address"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="flex flex-col gap-1.5">
+                          <FieldLabel htmlFor="address" className="text-sm font-semibold">
+                            Address
+                          </FieldLabel>
+                          <AddressAutocompleteInput
+                            id="address"
+                            value={field.value || ""}
+                            onChange={(val) => field.onChange(val)}
+                            onPlaceSelect={(place) => {
+                              setValue("address", place.streetAddress || place.name || "", {
+                                shouldDirty: true,
+                              });
+                              setValue("city", place.city || "", { shouldDirty: true });
+                              setValue("state", place.state || "", { shouldDirty: true });
+                              setValue("zipCode", place.postalCode || "", { shouldDirty: true });
+                            }}
+                            addressFormat="full"
+                            placeholder="Search address..."
+                            invalid={!!errors.address}
+                          />
+                          {errors.address && (
+                            <p className="text-xs font-medium text-red-500">
+                              {errors.address.message}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    />
+                    <Controller
+                      name="city"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="flex flex-col gap-1.5">
+                          <FieldLabel className="text-sm font-semibold">City</FieldLabel>
+                          <Input
+                            {...field}
+                            value={field.value || ""}
+                            placeholder="City"
+                            className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                          />
+                        </div>
+                      )}
+                    />
+                    <Controller
+                      name="state"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="flex flex-col gap-1.5">
+                          <FieldLabel className="text-sm font-semibold">State</FieldLabel>
+                          <Input
+                            {...field}
+                            value={field.value || ""}
+                            placeholder="State"
+                            className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                          />
+                        </div>
+                      )}
+                    />
+                    <Controller
+                      name="zipCode"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="flex flex-col gap-1.5">
+                          <FieldLabel className="text-sm font-semibold">Zip Code</FieldLabel>
+                          <Input
+                            {...field}
+                            value={field.value || ""}
+                            placeholder="Zip Code"
+                            className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                          />
+                        </div>
+                      )}
+                    />
+                  </div>
                 </div>
-              )}
-            />
+              </div>
+            ) : (
+              <Controller
+                name="address"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5 md:col-span-2">
+                    <FieldLabel htmlFor="address" className="text-sm font-semibold">
+                      Address
+                    </FieldLabel>
+                    <AddressAutocompleteInput
+                      id="address"
+                      value={field.value || ""}
+                      onChange={(val) => field.onChange(val)}
+                      addressFormat="full"
+                      placeholder="Search address..."
+                      invalid={!!errors.address}
+                    />
+                    {errors.address && (
+                      <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
+                    )}
+                  </div>
+                )}
+              />
+            )}
+
             {profile?.roleCode === "STORE_MANAGER" && (
               <>
                 <Controller

@@ -26,9 +26,10 @@ import {
   EmployeeFormValues,
 } from "@/feature/private/employee-management/schema/employee.schema";
 import { type Employee } from "@/feature/private/employee-management/types/employee-management";
+import { toPhoneDigits } from "@/lib/phone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Contact, MapPin, Save, UserCircle, UserPen, UserPlus, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateEmployee } from "../hooks/use-create-employee";
 import { useUpdateEmployee } from "../hooks/use-update-employee";
@@ -76,8 +77,12 @@ export function EmployeeDialog({
     },
   });
 
-  useEffect(() => {
+  // Reset form when dialog opens (render-time adjust — avoids setState-in-effect lint).
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
+      setPhoneIso(undefined);
       if (isEdit && employee) {
         form.reset({
           firstName: employee.firstName,
@@ -92,7 +97,6 @@ export function EmployeeDialog({
           image: employee.image || undefined,
           accountStatus: employee.accountStatus,
         });
-        setPhoneIso(undefined);
       } else {
         form.reset({
           firstName: "",
@@ -106,10 +110,9 @@ export function EmployeeDialog({
           zipCode: "",
           accountStatus: "ACTIVE",
         });
-        setPhoneIso(undefined);
       }
     }
-  }, [open, employee, isEdit, form]);
+  }
 
   const onSubmit = (data: EmployeeFormValues) => {
     const formData = new FormData();
@@ -297,6 +300,7 @@ export function EmployeeDialog({
                           </FormLabel>
                           <FormControl>
                             <PhoneInputComponent
+                              valueMode="national"
                               defaultCountry={
                                 phoneIso ||
                                 (profile as any)?.country ||
@@ -304,7 +308,7 @@ export function EmployeeDialog({
                                 (profile as any)?.stores?.[0]?.country ||
                                 "US"
                               }
-                              value={(form.watch("countryCode") || "") + (field.value || "")}
+                              value={field.value || ""}
                               onChange={(val, data) => {
                                 if (data && data.dialCode) {
                                   const dialCode = data.dialCode;
@@ -312,14 +316,13 @@ export function EmployeeDialog({
                                   if (val.startsWith(dialCode)) {
                                     nationalNumber = val.slice(dialCode.length);
                                   }
-                                  // Lock ISO separately so "+1" never overwrites US → CA
                                   setPhoneIso(data.countryCode);
                                   form.setValue("countryCode", "+" + dialCode, {
                                     shouldValidate: true,
                                   });
                                   field.onChange(nationalNumber);
                                 } else {
-                                  field.onChange(val);
+                                  field.onChange(toPhoneDigits(val));
                                 }
                               }}
                               error={

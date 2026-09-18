@@ -10,8 +10,9 @@ import { useState } from "react";
 import { CompleteOrderByReferenceDialog } from "../../my-orders/components/complete-order-by-reference-dialog";
 import { PrepareOrderDialog } from "../../my-orders/components/prepare-order-dialog";
 import { OrderStatusBadge } from "../components/order-status-badge";
+import { MaskedReferenceBadge } from "../components/masked-reference-badge";
 import { OrderData } from "../types/order.types";
-import { getOrderReference, maskOrderReference } from "../utils/mask-order-reference";
+import { getOrderReference } from "../utils/mask-order-reference";
 
 function MyOrderActionsCell({
   orderId,
@@ -102,18 +103,8 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
   },
   {
     id: "refrenceNumber",
-    header: "Reference",
-    cell: ({ row }) => {
-      const full = getOrderReference(row.original);
-      return (
-        <span
-          className="font-mono text-xs font-semibold tracking-wide text-slate-700 dark:text-slate-200"
-          title="Only last 4 digits are visible"
-        >
-          {maskOrderReference(full)}
-        </span>
-      );
-    },
+    header: "Reference Number",
+    cell: ({ row }) => <MaskedReferenceBadge reference={getOrderReference(row.original)} />,
   },
   {
     accessorKey: "createdAt",

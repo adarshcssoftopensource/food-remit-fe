@@ -345,8 +345,9 @@ export function CityManagerForm({
                       control={control}
                       render={({ field: codeField }) => (
                         <PhoneInputComponent
+                          valueMode="national"
                           defaultCountry={phoneIso || "US"}
-                          value={(codeField.value || "") + (numberField.value || "")}
+                          value={numberField.value || ""}
                           onChange={(val, data) => {
                             if (data && data.dialCode) {
                               const dialCode = data.dialCode;

@@ -261,9 +261,10 @@ export function CountryManagerForm({
                       control={control}
                       render={({ field: codeField }) => (
                         <PhoneInputComponent
+                          valueMode="national"
                           disabled={mode === "edit"}
                           defaultCountry={phoneIso || "US"}
-                          value={(codeField.value || "") + (numberField.value || "")}
+                          value={numberField.value || ""}
                           onChange={(val, data) => {
                             if (data && data.dialCode) {
                               const dialCode = data.dialCode;

@@ -243,8 +243,9 @@ export function StoreInformation() {
                       control={control}
                       render={({ field: codeField }) => (
                         <PhoneInputComponent
+                          valueMode="national"
                           defaultCountry={phoneIso || "US"}
-                          value={`${codeField.value || ""}${field.value || ""}`}
+                          value={field.value || ""}
                           onChange={(val, data) => {
                             if (data) {
                               setPhoneIso(data.countryCode);
