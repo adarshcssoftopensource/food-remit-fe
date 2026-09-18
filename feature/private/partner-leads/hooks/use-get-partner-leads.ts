@@ -16,6 +16,20 @@ interface RawGetPartnerLeadsResponse {
   };
 }
 
+export type PartnerLeadPipeline = "pending" | "approved" | "rejected";
+
+const TERMINAL = new Set(["APPROVED", "REJECTED", "NOT_QUALIFIED"]);
+
+function filterLeadsByPipeline(leads: PartnerLeadData[], pipeline: PartnerLeadPipeline) {
+  if (pipeline === "approved") {
+    return leads.filter((l) => l.status === "APPROVED");
+  }
+  if (pipeline === "rejected") {
+    return leads.filter((l) => l.status === "REJECTED" || l.status === "NOT_QUALIFIED");
+  }
+  return leads.filter((l) => !TERMINAL.has(l.status));
+}
+
 export function usePartnerLeads(
   search?: string,
   sortBy?: string,
@@ -28,56 +42,89 @@ export function usePartnerLeads(
   status?: string,
   kycStatus?: string,
   bankStatus?: string,
+  pipeline?: PartnerLeadPipeline,
 ) {
+  const resolvedPipeline = pipeline ?? "pending";
+  const resolvedSortOrder = sortOrder ?? "desc";
+  const resolvedPage = page ?? 1;
+  const resolvedLimit = limit ?? 10;
+
   const { data: response, isLoading } = useApiQuery<RawGetPartnerLeadsResponse>(
     [
       ...API_CACHE_KEYS.PARTNER_LEADS_LIST,
-      search,
-      sortBy,
-      sortOrder,
-      page,
-      limit,
-      fromDate,
-      toDate,
-      businessType,
-      status,
-      kycStatus,
-      bankStatus,
-    ].filter(Boolean) as string[],
+      `pipeline:${resolvedPipeline}`,
+      `page:${resolvedPage}`,
+      `limit:${resolvedLimit}`,
+      `sort:${sortBy || "createdAt"}:${resolvedSortOrder}`,
+      `search:${search || ""}`,
+      `from:${fromDate || ""}`,
+      `to:${toDate || ""}`,
+      `businessType:${businessType || ""}`,
+      `status:${status || ""}`,
+      `kyc:${kycStatus || ""}`,
+      `bank:${bankStatus || ""}`,
+    ],
     PARTNER_LEAD_ENDPOINTS.GET_LEADS(
       search,
       sortBy,
-      sortOrder ?? "desc",
-      page ?? 1,
-      limit ?? 10,
+      resolvedSortOrder,
+      resolvedPage,
+      resolvedLimit,
       fromDate,
       toDate,
       businessType,
       status,
       kycStatus,
       bankStatus,
+      resolvedPipeline,
     ),
   );
-  const leads = response?.data;
-  const pagination = response?.pagination;
-  const apiStats = response?.stats;
 
-  const leadsArray = leads || [];
+  const apiStats = response?.stats;
+  const rawLeads = response?.data || [];
+  const leadsArray = filterLeadsByPipeline(rawLeads, resolvedPipeline);
+
+  const pending =
+    (apiStats?.PENDING ?? 0) +
+    (apiStats?.NEW ?? 0) +
+    (apiStats?.CONTACTED ?? 0) +
+    (apiStats?.QUALIFIED ?? 0) +
+    (apiStats?.REGISTRATION_INVITED ?? 0) +
+    (apiStats?.REGISTRATION_STARTED ?? 0);
+  const rejected = (apiStats?.REJECTED ?? 0) + (apiStats?.NOT_QUALIFIED ?? 0);
+  const approved = apiStats?.APPROVED ?? 0;
+
   const stats = {
-    total: apiStats?.total ?? pagination?.total ?? leadsArray.length,
+    total: apiStats?.total ?? 0,
+    pendingBucket: pending,
+    pending: apiStats?.PENDING ?? 0,
     new: apiStats?.NEW ?? 0,
     contacted: apiStats?.CONTACTED ?? 0,
     qualified: apiStats?.QUALIFIED ?? 0,
     registrationInvited: apiStats?.REGISTRATION_INVITED ?? 0,
     registrationStarted: apiStats?.REGISTRATION_STARTED ?? 0,
-    approved: apiStats?.APPROVED ?? 0,
+    approved,
+    rejectedBucket: rejected,
+    rejected: apiStats?.REJECTED ?? 0,
     notQualified: apiStats?.NOT_QUALIFIED ?? 0,
   };
+
+  const bucketTotal =
+    resolvedPipeline === "approved"
+      ? approved
+      : resolvedPipeline === "rejected"
+        ? rejected
+        : pending;
 
   return {
     leads: leadsArray,
     stats,
-    pagination: pagination ?? { page: 1, limit: 10, total: leadsArray.length, totalPages: 1 },
+    pagination: {
+      page: response?.pagination?.page ?? resolvedPage,
+      limit: response?.pagination?.limit ?? resolvedLimit,
+      total: bucketTotal,
+      totalPages: Math.max(1, Math.ceil(bucketTotal / resolvedLimit) || 1),
+    },
     isLoading,
   };
 }

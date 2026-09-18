@@ -12,6 +12,7 @@ export const PARTNER_LEAD_ENDPOINTS = {
     status?: string,
     kycStatus?: string,
     bankStatus?: string,
+    pipeline?: "pending" | "approved" | "rejected",
   ) => {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
@@ -25,6 +26,7 @@ export const PARTNER_LEAD_ENDPOINTS = {
     if (status) params.append("status", status);
     if (kycStatus) params.append("kycStatus", kycStatus);
     if (bankStatus) params.append("bankStatus", bankStatus);
+    if (pipeline) params.append("pipeline", pipeline);
     const qs = params.toString();
     return qs ? `partner-leads?${qs}` : "partner-leads";
   },

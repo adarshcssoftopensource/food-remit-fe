@@ -70,7 +70,7 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
       managerFormData.append("phoneNumber", values.managerPhoneNumber);
       managerFormData.append("address", values.managerAddress);
       managerFormData.append("country", values.managerCountry);
-      managerFormData.append("state", values.managerState);
+      if (values.managerState) managerFormData.append("state", values.managerState);
       managerFormData.append("city", values.managerCity);
       if (values.managerZipCode) managerFormData.append("zipCode", values.managerZipCode);
 

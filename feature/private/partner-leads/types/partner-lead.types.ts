@@ -1,10 +1,12 @@
 export type PartnerLeadStatus =
+  | "PENDING"
   | "NEW"
   | "CONTACTED"
   | "QUALIFIED"
   | "REGISTRATION_INVITED"
   | "REGISTRATION_STARTED"
   | "APPROVED"
+  | "REJECTED"
   | "NOT_QUALIFIED";
 
 export interface KycPerson {

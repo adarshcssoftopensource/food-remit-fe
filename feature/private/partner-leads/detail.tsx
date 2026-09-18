@@ -4,7 +4,7 @@ import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { format } from "date-fns";
-import { Activity, ArrowLeft, Trash2 } from "lucide-react";
+import { Activity, ArrowLeft, Lock, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -17,7 +17,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PARTNER_LEAD_STATUSES, getStatusColor } from "@/constants/partner.leads";
+import {
+  getStatusColor,
+  isTerminalLeadStatus,
+  PARTNER_LEAD_MUTABLE_STATUSES,
+} from "@/constants/partner.leads";
 import { AdditionalInfoCard } from "./components/cards/additional-info-card";
 import { BusinessOverviewCard } from "./components/cards/business-overview-card";
 import { ContactInformationCard } from "./components/cards/contact-information-card";
@@ -72,9 +76,11 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
     );
   }
 
+  const statusLocked = isTerminalLeadStatus(lead.status);
+
   return (
     <div>
-      {dialogOpen && (
+      {dialogOpen && !statusLocked && (
         <UpdateStatusDialog
           leadId={lead.id}
           leadName={lead.businessName}
@@ -88,7 +94,7 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="Delete Partner Lead"
-        description={`Are you sure you want to delete "${lead.businessName}"? It will be moved to the Recycle Bin and can be restored or permanently deleted from there.`}
+        description={`Are you sure you want to delete "${lead.businessName}"? It will be moved to the Recycle Bin and can be restored back to the same ${lead.status.replace(/_/g, " ").toLowerCase()} bucket.`}
         confirmLabel="Delete Lead"
         onConfirm={handleDelete}
         isLoading={isDeleting}
@@ -115,42 +121,55 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
               Delete Lead
             </Button>
 
-            <div className="flex shrink-0 items-center self-start rounded-[1.25rem] border border-slate-200 bg-white p-1.5 shadow-sm md:self-auto">
-              <Select
-                value={lead.status}
-                disabled={isUpdatingStatus}
-                onValueChange={(value) => {
-                  if (value && value !== lead.status) {
-                    setSelectedStatus(value);
-                    setDialogOpen(true);
-                  }
-                }}
+            {statusLocked ? (
+              <div
+                className={`inline-flex h-11 items-center gap-2.5 rounded-[1.25rem] border px-4 font-extrabold shadow-sm ${getStatusColor(lead.status)}`}
+                title="Status is locked after approve/reject"
               >
-                <SelectTrigger
-                  className={`h-11 w-65 rounded-[1rem] border-0 px-4 font-extrabold transition-all hover:bg-slate-50 focus:ring-4 focus:ring-blue-500/20 ${getStatusColor(lead.status)}`}
+                <Lock className="h-4 w-4 opacity-75" />
+                <span>{lead.status.replace(/_/g, " ")}</span>
+                <span className="rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase opacity-80">
+                  Locked
+                </span>
+              </div>
+            ) : (
+              <div className="flex shrink-0 items-center self-start rounded-[1.25rem] border border-slate-200 bg-white p-1.5 shadow-sm md:self-auto">
+                <Select
+                  value={lead.status}
+                  disabled={isUpdatingStatus}
+                  onValueChange={(value) => {
+                    if (value && value !== lead.status) {
+                      setSelectedStatus(value);
+                      setDialogOpen(true);
+                    }
+                  }}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <Activity className="h-4.5 w-4.5 opacity-75" />
-                    <SelectValue placeholder="Status" />
-                  </div>
-                </SelectTrigger>
-                <SelectContent
-                  alignItemWithTrigger={false}
-                  sideOffset={8}
-                  className="min-w-65 rounded-2xl border-slate-200 p-1.5 shadow-2xl"
-                >
-                  {PARTNER_LEAD_STATUSES.map((s) => (
-                    <SelectItem
-                      key={s}
-                      value={s}
-                      className={`my-0.5 cursor-pointer rounded-xl px-4 py-3 text-sm font-bold transition-colors focus:bg-slate-100 ${s === lead.status ? "bg-blue-50/50 text-blue-900" : "text-slate-700"}`}
-                    >
-                      {s.replace(/_/g, " ")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                  <SelectTrigger
+                    className={`h-11 w-65 rounded-[1rem] border-0 px-4 font-extrabold transition-all hover:bg-slate-50 focus:ring-4 focus:ring-blue-500/20 ${getStatusColor(lead.status)}`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Activity className="h-4.5 w-4.5 opacity-75" />
+                      <SelectValue placeholder="Status" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent
+                    alignItemWithTrigger={false}
+                    sideOffset={8}
+                    className="min-w-65 rounded-2xl border-slate-200 p-1.5 shadow-2xl"
+                  >
+                    {PARTNER_LEAD_MUTABLE_STATUSES.map((s) => (
+                      <SelectItem
+                        key={s}
+                        value={s}
+                        className={`my-0.5 cursor-pointer rounded-xl px-4 py-3 text-sm font-bold transition-colors focus:bg-slate-100 ${s === lead.status ? "bg-blue-50/50 text-blue-900" : "text-slate-700"}`}
+                      >
+                        {s.replace(/_/g, " ")}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         }
       />

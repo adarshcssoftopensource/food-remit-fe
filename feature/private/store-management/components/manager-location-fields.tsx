@@ -22,35 +22,41 @@ export function ManagerLocationFields({
   stateError,
   disabled = false,
 }: {
-  countryValue: string;
+  countryValue?: string | null;
   onCountryChange: (v: string) => void;
-  cityValue: string;
+  cityValue?: string | null;
   onCityChange: (v: string) => void;
-  stateValue: string;
+  stateValue?: string | null;
   onStateChange: (v: string) => void;
   countryError?: string;
   cityError?: string;
   stateError?: string;
   disabled?: boolean;
 }) {
+  const country = countryValue ?? "";
+  const state = stateValue ?? "";
+  const city = cityValue ?? "";
+
   const allCountries = Country.getAllCountries();
   const selectedCountryObj = allCountries.find(
     (c) =>
-      c.name.toLowerCase() === countryValue?.trim().toLowerCase() ||
-      c.isoCode.toLowerCase() === countryValue?.trim().toLowerCase(),
+      c.name.toLowerCase() === country.trim().toLowerCase() ||
+      c.isoCode.toLowerCase() === country.trim().toLowerCase(),
   );
   const stateOptions = selectedCountryObj
-    ? State.getStatesOfCountry(selectedCountryObj.isoCode)
+    ? (State.getStatesOfCountry(selectedCountryObj.isoCode) ?? [])
     : [];
   const selectedStateObj = stateOptions.find(
     (s) =>
-      s.name.toLowerCase() === stateValue?.trim().toLowerCase() ||
-      s.isoCode.toLowerCase() === stateValue?.trim().toLowerCase(),
+      s.name.toLowerCase() === state.trim().toLowerCase() ||
+      s.isoCode.toLowerCase() === state.trim().toLowerCase(),
   );
   const cityOptions =
     selectedCountryObj && selectedStateObj
-      ? City.getCitiesOfState(selectedCountryObj.isoCode, selectedStateObj.isoCode)
-      : [];
+      ? (City.getCitiesOfState(selectedCountryObj.isoCode, selectedStateObj.isoCode) ?? [])
+      : selectedCountryObj
+        ? (City.getCitiesOfCountry(selectedCountryObj.isoCode) ?? [])
+        : [];
 
   return (
     <>
@@ -59,7 +65,7 @@ export function ManagerLocationFields({
           Residential Country <span className="text-red-500">*</span>
         </Label>
         <ResidentialCountrySelect
-          value={countryValue}
+          value={country}
           onValueChange={(name) => {
             onCountryChange(name);
             onStateChange("");
@@ -72,19 +78,19 @@ export function ManagerLocationFields({
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-sm font-semibold text-slate-700">
-          State <span className="text-red-500">*</span>
-        </Label>
+        <Label className="text-sm font-semibold text-slate-700">State</Label>
         <Select
-          value={stateValue}
+          value={state}
           onValueChange={(v) => {
             onStateChange(v ?? "");
             onCityChange("");
           }}
-          disabled={disabled || !countryValue}
+          disabled={disabled || !country}
         >
           <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100">
-            <SelectValue placeholder={countryValue ? "Select State" : "Select country first"} />
+            <SelectValue
+              placeholder={country ? "Select State (optional)" : "Select country first"}
+            />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -104,17 +110,17 @@ export function ManagerLocationFields({
           City <span className="text-red-500">*</span>
         </Label>
         <Select
-          value={cityValue}
+          value={city}
           onValueChange={(value) => onCityChange(value || "")}
-          disabled={disabled || !stateValue}
+          disabled={disabled || !country}
         >
           <SelectTrigger className="h-11! w-full min-w-full rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100">
-            <SelectValue placeholder={stateValue ? "Select City" : "Select state first"} />
+            <SelectValue placeholder={country ? "Select City" : "Select country first"} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {cityOptions.map((c) => (
-                <SelectItem key={c.name} value={c.name}>
+                <SelectItem key={`${c.name}-${c.stateCode || ""}`} value={c.name}>
                   {c.name}
                 </SelectItem>
               ))}

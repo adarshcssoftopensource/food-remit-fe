@@ -22,7 +22,7 @@ export const storeSchema = z
     managerPhoneNumber: z.string().min(1, "Manager phone number is required"),
     managerAddress: z.string().min(3, "Manager address is required"),
     managerCountry: z.string().min(1, "Country is required"),
-    managerState: z.string().min(1, "State is required"),
+    managerState: z.string().optional(),
     managerCity: z.string().min(1, "City is required"),
     managerZipCode: z.string().optional(),
   })
