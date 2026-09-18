@@ -29,6 +29,7 @@ export type StoreData = {
   managerState: string;
   managerCity: string;
   managerZipCode: string;
+  partnerLead?: any;
 };
 
 export interface CreateStoreManagerPayload {
@@ -110,6 +111,7 @@ export interface RawStore {
   assignedCityManager?: string | null;
   cityManager?: RawStoreManager | null;
   storeManager?: RawStoreManager;
+  partnerLead?: any;
 }
 
 export interface StoreStats {

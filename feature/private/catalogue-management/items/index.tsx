@@ -9,7 +9,7 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { useProfile } from "@/components/providers/profile-provider";
-import { infoToast, successToast } from "@/components/toaster";
+import { errorToast } from "@/components/toaster";
 import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,25 +18,34 @@ import { ROUTES } from "@/config/routes";
 import { ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import apiClient from "@/lib/api/client";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-management.endpoints";
+import { useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { Download, Image as ImageIcon, Package, Plus, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { getItemColumns } from "./columns/item-columns";
+import { CsvFormatHelpDialog } from "./components/csv-format-help-dialog";
+import { CsvImportResult, CsvImportResultDialog } from "./components/csv-import-result-dialog";
 import { ItemFormDialog } from "./components/item-form-dialog";
 import { useGetItems } from "./hooks/use-get-items";
-import { useUploadItemCsv } from "./hooks/use-upload-item-csv";
+import { uploadItemCsvFile } from "./hooks/use-upload-item-csv";
 import { ItemData } from "./types/item.types";
 
 export function ItemsManagement() {
   const { profile } = useProfile();
+  const queryClient = useQueryClient();
   const isStoreManager =
     profile?.role === "store_manager" ||
     profile?.roleCode === "STORE_MANAGER" ||
     profile?.role === "store_admin" ||
     profile?.roleCode === "STORE_ADMIN";
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const uploadCsvMutation = useUploadItemCsv();
+  const [isUploadingCsv, setIsUploadingCsv] = useState(false);
+  const [csvFormatOpen, setCsvFormatOpen] = useState(false);
+  const [csvResultOpen, setCsvResultOpen] = useState(false);
+  const [csvResult, setCsvResult] = useState<CsvImportResult | null>(null);
   const {
     fromDate,
     setFromDate,
@@ -199,37 +208,89 @@ export function ItemsManagement() {
     }
   };
 
-  const handleCsvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const showCsvResult = (result: CsvImportResult) => {
+    setCsvResult(result);
+    setCsvResultOpen(true);
+  };
+
+  const handleCsvFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+    if (!file.name.toLowerCase().endsWith(".csv") && !file.name.toLowerCase().match(/\.xlsx?$/)) {
+      errorToast({
+        description: "Please upload a .csv or Excel file.",
+      });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
 
-    uploadCsvMutation.mutate(formData, {
-      onSuccess: (res: any) => {
-        const errorCount = res?.data?.errorCount || 0;
-        const successCount = res?.data?.successCount || 0;
-        if (errorCount > 0 && successCount > 0) {
-          const errors = res?.data?.errors || [];
-          infoToast({
-            title: "CSV Upload Notice",
-            description: `Imported ${successCount} item(s). ${errorCount} row(s) had errors:\n${errors.slice(0, 3).join("; ")}`,
-            duration: 6000,
-          });
-        } else {
-          successToast({ description: "CSV uploaded successfully" });
-        }
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-      },
-      onError: () => {
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-      },
-    });
+    setIsUploadingCsv(true);
+    try {
+      const res = await uploadItemCsvFile(file);
+      const data = res?.data;
+      const errors = data?.errors || [];
+      const successCount = data?.successCount ?? 0;
+      const errorCount = data?.errorCount ?? errors.length;
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ITEMS }),
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.DEPARTMENTS }),
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.CATEGORIES }),
+      ]);
+
+      showCsvResult({
+        title: errorCount > 0 ? "Import completed with errors." : "Import completed successfully.",
+        description: res?.message,
+        successCount,
+        errorCount,
+        departmentsCreated: data?.departmentsCreated ?? 0,
+        categoriesCreated: data?.categoriesCreated ?? 0,
+        errors,
+        isError: errorCount > 0 && successCount === 0,
+      });
+    } catch (err) {
+      const axiosError = err as AxiosError<{
+        message?: string | string[];
+        errors?: string[];
+        data?: {
+          successCount?: number;
+          errorCount?: number;
+          departmentsCreated?: number;
+          categoriesCreated?: number;
+          errors?: string[];
+        };
+      }>;
+      const payload = axiosError.response?.data;
+      const errors =
+        payload?.errors ||
+        payload?.data?.errors ||
+        (Array.isArray(payload?.message)
+          ? payload.message
+          : payload?.message
+            ? [String(payload.message)]
+            : ["CSV import failed. Please check your file and try again."]);
+
+      showCsvResult({
+        title: "CSV import failed validation.",
+        description: Array.isArray(payload?.message)
+          ? payload.message[0]
+          : typeof payload?.message === "string"
+            ? payload.message
+            : "Please fix the listed rows and upload again.",
+        successCount: payload?.data?.successCount ?? 0,
+        errorCount: payload?.data?.errorCount ?? errors.length,
+        departmentsCreated: payload?.data?.departmentsCreated ?? 0,
+        categoriesCreated: payload?.data?.categoriesCreated ?? 0,
+        errors,
+        isError: true,
+      });
+    } finally {
+      setIsUploadingCsv(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   return (
@@ -237,10 +298,20 @@ export function ItemsManagement() {
       <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
       <input
         type="file"
-        accept=".csv"
+        accept=".csv,.xlsx,.xls"
         className="hidden"
         ref={fileInputRef}
         onChange={handleCsvFileChange}
+      />
+      <CsvFormatHelpDialog
+        open={csvFormatOpen}
+        onOpenChange={setCsvFormatOpen}
+        onDownloadTemplate={handleDownloadCsv}
+      />
+      <CsvImportResultDialog
+        open={csvResultOpen}
+        onOpenChange={setCsvResultOpen}
+        result={csvResult}
       />
 
       <PageHeader
@@ -250,7 +321,11 @@ export function ItemsManagement() {
           <div className="flex flex-wrap items-center gap-2">
             {isStoreManager && (
               <>
-                <Button onClick={handleDownloadCsv} variant="outline" className="gap-2 rounded-xl">
+                <Button
+                  onClick={() => setCsvFormatOpen(true)}
+                  variant="outline"
+                  className="gap-2 rounded-xl"
+                >
                   <Download className="h-4 w-4" />
                   Format
                 </Button>
@@ -258,10 +333,10 @@ export function ItemsManagement() {
                   onClick={() => fileInputRef.current?.click()}
                   variant="outline"
                   className="gap-2 rounded-xl"
-                  disabled={uploadCsvMutation.isPending}
+                  disabled={isUploadingCsv}
                 >
                   <Upload className="h-4 w-4" />
-                  Import CSV
+                  {isUploadingCsv ? "Importing..." : "Import CSV"}
                 </Button>
                 <Button
                   onClick={() =>

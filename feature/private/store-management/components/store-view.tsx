@@ -5,6 +5,10 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
+import { AdditionalDocumentsCard } from "@/feature/private/partner-leads/components/cards/additional-documents-card";
+import { BankVerificationCard } from "@/feature/private/partner-leads/components/cards/bank-verification-card";
+import { KycVerificationCard } from "@/feature/private/partner-leads/components/cards/kyc-verification-card";
+import { LocationDetailsCard } from "@/feature/private/partner-leads/components/cards/location-details-card";
 import { useGetStore } from "@/feature/private/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
 import { Building2, Expand, Mail, MapPin, Phone, UserCircle } from "lucide-react";
@@ -232,6 +236,15 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
           </div>
         </div>
       </div>
+
+      {store.partnerLead && (
+        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <KycVerificationCard lead={store.partnerLead} />
+          <BankVerificationCard lead={store.partnerLead} />
+          <AdditionalDocumentsCard lead={store.partnerLead} />
+          <LocationDetailsCard lead={store.partnerLead} />
+        </div>
+      )}
     </div>
   );
 }

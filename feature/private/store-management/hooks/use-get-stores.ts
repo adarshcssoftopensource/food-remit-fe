@@ -65,6 +65,7 @@ export function useGetStores(args?: UseGetStoresArgs) {
       managerState: item.storeManager?.state ?? "",
       managerCity: item.storeManager?.city ?? "",
       managerZipCode: item.storeManager?.zipCode ?? "",
+      partnerLead: item.partnerLead,
     }));
   }, [data]);
 
@@ -120,6 +121,7 @@ export function useGetStore(id: string) {
       managerState: item.storeManager?.state ?? "",
       managerCity: item.storeManager?.city ?? "",
       managerZipCode: item.storeManager?.zipCode ?? "",
+      partnerLead: item.partnerLead,
     };
   }, [data]);
 

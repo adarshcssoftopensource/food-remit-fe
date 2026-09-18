@@ -60,7 +60,7 @@ export function ProfilePermissions() {
   const [isRestrictedOpen, setIsRestrictedOpen] = useState(false);
 
   // If the user is Super Admin, don't show the permissions section
-  if (isSuperAdmin) {
+  if (isSuperAdmin || profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER") {
     return null;
   }
 

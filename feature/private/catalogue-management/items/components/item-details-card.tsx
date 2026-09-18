@@ -84,7 +84,13 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           <InfoCard
             icon={<Scale className="h-4 w-4 text-slate-500" />}
             label="Net Weight"
-            value={item.netWeight && item.weightUnit ? `${item.netWeight} ${item.weightUnit}` : "-"}
+            value={
+              item.netWeight
+                ? item.weightUnit
+                  ? `${item.netWeight} ${item.weightUnit}`
+                  : String(item.netWeight)
+                : "-"
+            }
           />
           <InfoCard
             icon={<Calendar className="h-4 w-4 text-slate-400" />}

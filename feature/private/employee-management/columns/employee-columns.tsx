@@ -69,7 +69,8 @@ export const employeeColumns = (onImageClick?: (image: string) => void): ColumnD
     header: "Location",
     cell: ({ row }) => (
       <span className="text-sm text-slate-600">
-        {[row.original.city, row.original.state].filter(Boolean).join(", ") || "-"}
+        {[row.original.city, row.original.state, row.original.zipCode].filter(Boolean).join(", ") ||
+          "-"}
       </span>
     ),
     enableSorting: true,

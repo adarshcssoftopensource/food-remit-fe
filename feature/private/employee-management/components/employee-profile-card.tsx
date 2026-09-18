@@ -86,7 +86,7 @@ export function EmployeeProfileCard({ employee, totalOrders }: EmployeeProfileCa
               </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <InfoTile
                 icon={<Mail className="size-4" />}
                 iconBg="bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
@@ -99,14 +99,32 @@ export function EmployeeProfileCard({ employee, totalOrders }: EmployeeProfileCa
                 label="Phone"
                 value={`${employee.countryCode ? `${employee.countryCode} ` : ""}${employee.phoneNumber || "N/A"}`}
               />
-              {employee.city && (
+              <InfoTile
+                icon={<MapPin className="size-4" />}
+                iconBg="bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400"
+                label="City"
+                value={employee.city || "—"}
+              />
+              <InfoTile
+                icon={<MapPin className="size-4" />}
+                iconBg="bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400"
+                label="State"
+                value={employee.state || "—"}
+              />
+              <InfoTile
+                icon={<MapPin className="size-4" />}
+                iconBg="bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400"
+                label="Zip Code"
+                value={employee.zipCode || "—"}
+              />
+              {employee.address ? (
                 <InfoTile
                   icon={<MapPin className="size-4" />}
-                  iconBg="bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400"
-                  label="Location"
-                  value={[employee.city, employee.state].filter(Boolean).join(", ")}
+                  iconBg="bg-teal-500/10 text-teal-600 dark:bg-teal-500/20 dark:text-teal-400"
+                  label="Address"
+                  value={employee.address}
                 />
-              )}
+              ) : null}
             </div>
           </div>
 

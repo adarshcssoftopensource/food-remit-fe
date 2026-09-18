@@ -15,7 +15,11 @@ import { ImageUpload } from "@/components/common/image-upload";
 import { PhoneInputComponent } from "@/components/ui/phone-input";
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { CountryCityFields } from "@/feature/private/store-management/components/country-city-fields";
-import { StoreCrmDetails } from "./store-crm-details";
+
+import { KycVerificationCard } from "@/feature/private/partner-leads/components/cards/kyc-verification-card";
+import { BankVerificationCard } from "@/feature/private/partner-leads/components/cards/bank-verification-card";
+import { LocationDetailsCard } from "@/feature/private/partner-leads/components/cards/location-details-card";
+import { AdditionalDocumentsCard } from "@/feature/private/partner-leads/components/cards/additional-documents-card";
 
 import { useProfile } from "@/components/providers/profile-provider";
 import { useUpdateStore } from "@/feature/private/store-management/hooks/use-update-store";
@@ -144,90 +148,10 @@ export function StoreInformation() {
 
   if (!storeId) return null;
 
-  const storeProfile = profile?.stores?.[0];
   const partnerLead = profile?.partnerLead;
-
-  const formatDate = (dateStr: string | number | null | undefined) => {
-    if (!dateStr) return "N/A";
-    const date = new Date(typeof dateStr === "number" ? dateStr : dateStr);
-    if (isNaN(date.getTime())) return "N/A";
-    return format(date, "MMM dd, yyyy, hh:mm a");
-  };
 
   return (
     <div className="space-y-6">
-      {/* CRM Info Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
-          <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 p-4 pb-3 sm:p-5 sm:pb-3 dark:border-slate-800/60 dark:bg-slate-900/40">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-                <ShieldCheck className="size-4" />
-              </div>
-              <CardTitle className="text-sm font-semibold tracking-tight text-slate-800 dark:text-slate-100">
-                KYC Status
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 pt-3 sm:p-5 sm:pt-4">
-            <div className="flex flex-col gap-1">
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
-                {partnerLead?.kycStatus?.replace(/_/g, " ") || "NOT STARTED"}
-              </span>
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                {formatDate(partnerLead?.kycVerifiedAt)}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
-          <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 p-4 pb-3 sm:p-5 sm:pb-3 dark:border-slate-800/60 dark:bg-slate-900/40">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
-                <Landmark className="size-4" />
-              </div>
-              <CardTitle className="text-sm font-semibold tracking-tight text-slate-800 dark:text-slate-100">
-                Bank Approval
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 pt-3 sm:p-5 sm:pt-4">
-            <div className="flex flex-col gap-1">
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
-                {partnerLead?.bankStatus?.replace(/_/g, " ") || "NOT STARTED"}
-              </span>
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                {formatDate(partnerLead?.bankVerifiedAt)}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
-          <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 p-4 pb-3 sm:p-5 sm:pb-3 dark:border-slate-800/60 dark:bg-slate-900/40">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
-                <CalendarClock className="size-4" />
-              </div>
-              <CardTitle className="text-sm font-semibold tracking-tight text-slate-800 dark:text-slate-100">
-                Store Open Date
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 pt-3 sm:p-5 sm:pt-4">
-            <div className="flex flex-col gap-1">
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
-                {storeProfile?.addedOn ? "OPENED" : "N/A"}
-              </span>
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                {formatDate(storeProfile?.createdAt || storeProfile?.addedOn)}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
         <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-4 py-4 sm:px-8 sm:py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
           <div className="flex items-center gap-3">
@@ -410,7 +334,14 @@ export function StoreInformation() {
         </CardContent>
       </Card>
 
-      <StoreCrmDetails partnerLead={partnerLead} />
+      {partnerLead && (
+        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <KycVerificationCard lead={partnerLead} />
+          <BankVerificationCard lead={partnerLead} />
+          <AdditionalDocumentsCard lead={partnerLead} />
+          <LocationDetailsCard lead={partnerLead} />
+        </div>
+      )}
     </div>
   );
 }
