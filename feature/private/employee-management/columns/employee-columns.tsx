@@ -3,6 +3,7 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { StatusBadge } from "@/components/common/status-badge";
+import { PhoneDisplay } from "@/components/ui/phone-display";
 import { type Employee } from "@/feature/private/employee-management/types/employee-management";
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeActionsCell } from "../components/employee-actions-cell";
@@ -46,10 +47,11 @@ export const employeeColumns = (onImageClick?: (image: string) => void): ColumnD
     accessorKey: "phoneNumber",
     header: "Contact",
     cell: ({ row }) => (
-      <span className="text-sm font-medium text-slate-600">
-        {row.original.countryCode ? `${row.original.countryCode} ` : ""}
-        {row.original.phoneNumber || "-"}
-      </span>
+      <PhoneDisplay
+        countryCode={row.original.countryCode}
+        phoneNumber={row.original.phoneNumber}
+        emptyLabel="-"
+      />
     ),
     enableSorting: true,
   },

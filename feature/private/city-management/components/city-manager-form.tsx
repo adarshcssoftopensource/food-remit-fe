@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Globe2, Home, Mail, MapPin, UserRound } from "lucide-react";
+import { useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
@@ -81,6 +82,8 @@ export function CityManagerForm({
   mode = "add",
   managerId,
 }: CityManagerFormProps) {
+  const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
+
   const {
     control,
     handleSubmit,
@@ -342,6 +345,7 @@ export function CityManagerForm({
                       control={control}
                       render={({ field: codeField }) => (
                         <PhoneInputComponent
+                          defaultCountry={phoneIso || "US"}
                           value={(codeField.value || "") + (numberField.value || "")}
                           onChange={(val, data) => {
                             if (data && data.dialCode) {
@@ -350,6 +354,7 @@ export function CityManagerForm({
                               if (val.startsWith(dialCode)) {
                                 nationalNumber = val.slice(dialCode.length);
                               }
+                              setPhoneIso(data.countryCode);
                               setValue("phoneCode", "+" + dialCode, { shouldValidate: true });
                               setValue("phoneNumber", nationalNumber, { shouldValidate: true });
                             } else {

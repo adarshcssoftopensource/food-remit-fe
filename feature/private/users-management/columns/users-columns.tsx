@@ -1,5 +1,6 @@
 import { StatusBadge } from "@/components/common/status-badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { PhoneDisplay } from "@/components/ui/phone-display";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
@@ -111,9 +112,11 @@ export const usersColumns = (onImageClick?: (image: string) => void): ColumnDef<
     header: "Contact",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="text-sm text-slate-700">
-        {row.original.countryCode} {row.original.phoneNumber}
-      </span>
+      <PhoneDisplay
+        countryCode={row.original.countryCode}
+        phoneNumber={row.original.phoneNumber}
+        emptyLabel="-"
+      />
     ),
   },
   {

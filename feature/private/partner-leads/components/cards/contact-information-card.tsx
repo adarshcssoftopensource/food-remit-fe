@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Phone, User } from "lucide-react";
+import { PhoneDisplay } from "@/components/ui/phone-display";
+import { Mail, User } from "lucide-react";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
 export function ContactInformationCard({ lead }: { lead: PartnerLeadData }) {
@@ -29,7 +30,7 @@ export function ContactInformationCard({ lead }: { lead: PartnerLeadData }) {
           </div>
           <div className="col-span-2 sm:col-span-1">
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
-              Email Address
+              Business Email
             </dt>
             <dd className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <Mail className="h-3.5 w-3.5 text-slate-400" />
@@ -45,13 +46,12 @@ export function ContactInformationCard({ lead }: { lead: PartnerLeadData }) {
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
               Phone Number
             </dt>
-            <dd className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <Phone className="h-3.5 w-3.5 text-slate-400" />
+            <dd>
               <a
                 href={`tel:${lead.phoneNumber}`}
                 className="transition-colors hover:text-emerald-600"
               >
-                {lead.phoneNumber}
+                <PhoneDisplay value={lead.phoneNumber} className="font-semibold" emptyLabel="N/A" />
               </a>
             </dd>
           </div>

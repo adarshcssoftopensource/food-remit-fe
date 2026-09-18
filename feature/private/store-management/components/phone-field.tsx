@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import PhoneInputComponent from "@/components/ui/phone-input";
 
@@ -24,6 +27,8 @@ export function PhoneField({
   disabled?: boolean;
   defaultCountry?: string;
 }) {
+  const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
+
   return (
     <div className="space-y-1.5">
       <Label className="text-sm font-semibold text-slate-700">
@@ -31,7 +36,7 @@ export function PhoneField({
         {required && <span className="ml-0.5 text-red-500">*</span>}
       </Label>
       <PhoneInputComponent
-        defaultCountry={defaultCountry}
+        defaultCountry={phoneIso || defaultCountry || "US"}
         value={(codeValue || "") + (numberValue || "")}
         onChange={(val, data) => {
           if (data && data.dialCode) {
@@ -40,6 +45,7 @@ export function PhoneField({
             if (val.startsWith(dialCode)) {
               nationalNumber = val.slice(dialCode.length);
             }
+            setPhoneIso(data.countryCode);
             onCodeChange("+" + dialCode);
             onNumberChange(nationalNumber);
           } else {

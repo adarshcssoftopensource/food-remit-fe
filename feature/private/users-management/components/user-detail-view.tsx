@@ -3,10 +3,11 @@
 import type { SortingState } from "@tanstack/react-table";
 import { User } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
+import { PhoneDisplay } from "@/components/ui/phone-display";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROUTES } from "@/config/routes";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
@@ -20,11 +21,11 @@ import { UserData } from "../types/user.types";
 
 type TabKey = "profile" | "requested" | "sent" | "received";
 
-function InfoCard({ title, value }: { title: string; value?: string }) {
+function InfoCard({ title, value }: { title: string; value?: ReactNode }) {
   return (
     <div className="rounded-xl border bg-slate-50 p-4">
       <p className="text-xs font-medium text-slate-500">{title}</p>
-      <p className="mt-1 truncate text-sm font-semibold text-slate-800">{value || "—"}</p>
+      <div className="mt-1 truncate text-sm font-semibold text-slate-800">{value || "—"}</div>
     </div>
   );
 }
@@ -85,7 +86,16 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
     { value: user?.state ?? "N/A", title: "State" },
     { value: user?.city ?? "N/A", title: "City" },
     { value: user?.address ?? "N/A", title: "Address" },
-    { value: `${user?.countryCode} ${user?.phoneNumber}`, title: "Phone" },
+    {
+      value: (
+        <PhoneDisplay
+          countryCode={user?.countryCode}
+          phoneNumber={user?.phoneNumber}
+          className="font-semibold"
+        />
+      ),
+      title: "Phone",
+    },
     { value: user?.userType, title: "User Type" },
     { value: user?.userStatus, title: "Status" },
     { value: formatDate(user?.createdAt), title: "Registered On" },

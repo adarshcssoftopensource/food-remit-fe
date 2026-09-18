@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Mail, User } from "lucide-react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
@@ -24,6 +25,7 @@ export function ProfileForm() {
   const queryClient = useQueryClient();
   const updateProfileMutation = useUpdateProfile();
   const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+  const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
 
   const nameParts = (profile?.name || "").trim().split(" ");
   const firstName = profile?.firstName || nameParts[0] || "";
@@ -198,14 +200,18 @@ export function ProfileForm() {
                   </FieldLabel>
                   <PhoneInputComponent
                     value={field.value}
-                    onChange={(value) => field.onChange(value)}
+                    onChange={(value, data) => {
+                      if (data?.countryCode) setPhoneIso(data.countryCode);
+                      field.onChange(value);
+                    }}
                     onBlur={field.onBlur}
                     error={!!errors.contactNumber}
                     defaultCountry={
+                      phoneIso ||
                       resolvedCountry ||
                       (profile as any)?.countryCode ||
                       (profile as any)?.country ||
-                      "IN"
+                      "US"
                     }
                   />
                   {errors.contactNumber && (

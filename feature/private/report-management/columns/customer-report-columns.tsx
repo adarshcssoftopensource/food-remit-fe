@@ -2,6 +2,7 @@
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
+import { PhoneDisplay } from "@/components/ui/phone-display";
 import { ROUTES } from "@/config/routes";
 import type { CustomerReportRow } from "@/constants/report-management";
 import { cn } from "@/lib/utils";
@@ -51,11 +52,7 @@ export const customerReportColumns: ColumnDef<CustomerReportRow>[] = [
     id: "phoneNumber",
     header: "Phone Number",
     enableSorting: true,
-    cell: ({ row }) => (
-      <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-        {row.original.phoneNumber}
-      </span>
-    ),
+    cell: ({ row }) => <PhoneDisplay value={row.original.phoneNumber} emptyLabel="—" />,
   },
   {
     accessorKey: "totalOrders",

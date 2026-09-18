@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -44,6 +44,7 @@ type StoreInfoValues = z.infer<typeof storeInfoSchema>;
 export function StoreInformation() {
   const { profile } = useProfile();
   const storeId = profile?.stores?.[0]?.id;
+  const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
 
   const { data: storeData, isLoading } = useQuery({
     queryKey: ["store", storeId],
@@ -242,9 +243,11 @@ export function StoreInformation() {
                       control={control}
                       render={({ field: codeField }) => (
                         <PhoneInputComponent
+                          defaultCountry={phoneIso || "US"}
                           value={`${codeField.value || ""}${field.value || ""}`}
                           onChange={(val, data) => {
                             if (data) {
+                              setPhoneIso(data.countryCode);
                               codeField.onChange(`+${data.dialCode}`);
                               const national = val.startsWith(data.dialCode)
                                 ? val.slice(data.dialCode.length)

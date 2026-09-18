@@ -1,17 +1,19 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { PhoneDisplay } from "@/components/ui/phone-display";
 import { cn } from "@/lib/utils";
 import { getInitials } from "@/lib/get-initials";
 import { CheckCircle2, Clock, Mail, MapPin, Package, Phone } from "lucide-react";
 import type { Employee } from "@/feature/private/employee-management/types/employee-management";
 import Image from "next/image";
+import type { ReactNode } from "react";
 
 interface InfoTileProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   iconBg: string;
   label: string;
-  value: string;
+  value: ReactNode;
 }
 
 function InfoTile({ icon, iconBg, label, value }: InfoTileProps) {
@@ -22,7 +24,7 @@ function InfoTile({ icon, iconBg, label, value }: InfoTileProps) {
       </div>
       <div className="min-w-0">
         <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">{label}</p>
-        <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{value}</p>
+        <div className="truncate text-sm font-semibold text-slate-900 dark:text-white">{value}</div>
       </div>
     </div>
   );
@@ -97,7 +99,14 @@ export function EmployeeProfileCard({ employee, totalOrders }: EmployeeProfileCa
                 icon={<Phone className="size-4" />}
                 iconBg="bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400"
                 label="Phone"
-                value={`${employee.countryCode ? `${employee.countryCode} ` : ""}${employee.phoneNumber || "N/A"}`}
+                value={
+                  <PhoneDisplay
+                    countryCode={employee.countryCode}
+                    phoneNumber={employee.phoneNumber}
+                    className="font-semibold"
+                    emptyLabel="N/A"
+                  />
+                }
               />
               <InfoTile
                 icon={<MapPin className="size-4" />}

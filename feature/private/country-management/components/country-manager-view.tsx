@@ -4,19 +4,20 @@ import { CountryManagerViewPageProps } from "@/app/(private)/country-management/
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
+import { PhoneDisplay } from "@/components/ui/phone-display";
 import { ROUTES } from "@/config/routes";
 import { useGetCountryManager } from "@/feature/private/country-management/hooks/use-get-country-manager";
 import { formatDate } from "@/lib/date";
 import { Expand, Globe2, UserCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { use, useState, type ReactNode } from "react";
 import ViewPageLoading from "./view-page-loading";
 
-const DetailCard = ({ label, value }: { label: string; value?: string }) => (
+const DetailCard = ({ label, value }: { label: string; value?: ReactNode }) => (
   <div className="rounded-xl bg-slate-50 p-3 transition hover:bg-slate-100">
     <p className="text-xs font-medium text-slate-500">{label}</p>
-    <p className="mt-1 text-sm font-semibold text-slate-900">{value || "-"}</p>
+    <div className="mt-1 text-sm font-semibold text-slate-900">{value || "-"}</div>
   </div>
 );
 
@@ -124,7 +125,13 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
               <DetailCard label="Email Address" value={manager.email} />
               <DetailCard
                 label="Phone Number"
-                value={`${manager.phoneCode} ${manager.phoneNumber}`}
+                value={
+                  <PhoneDisplay
+                    countryCode={manager.phoneCode}
+                    phoneNumber={manager.phoneNumber}
+                    className="font-semibold"
+                  />
+                }
               />
             </div>
           </section>

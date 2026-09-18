@@ -1,6 +1,7 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
+import { PhoneDisplay } from "@/components/ui/phone-display";
 import { Switch } from "@/components/ui/switch";
 import type { CountryManagerData } from "@/feature/private/country-management/types/country-manager";
 import { formatDate } from "@/lib/date";
@@ -69,7 +70,11 @@ export function getCountryManagerColumns({
       header: "Phone",
       accessorFn: (row) => `${row.phoneCode}${row.phoneNumber}`,
       cell: ({ row }) => (
-        <span className="text-sm text-slate-700">{`${row.original.phoneCode} ${row.original.phoneNumber}`}</span>
+        <PhoneDisplay
+          countryCode={row.original.phoneCode}
+          phoneNumber={row.original.phoneNumber}
+          emptyLabel="-"
+        />
       ),
     },
     {

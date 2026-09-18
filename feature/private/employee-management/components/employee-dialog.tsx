@@ -57,6 +57,8 @@ export function EmployeeDialog({
 
   const isPending = isCreating || isUpdating;
   const { profile } = useProfile();
+  /** Locked ISO for phone flag (US vs CA for +1). Never pass only "+1" as defaultCountry. */
+  const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(EmployeeFormSchema),
@@ -90,6 +92,7 @@ export function EmployeeDialog({
           image: employee.image || undefined,
           accountStatus: employee.accountStatus,
         });
+        setPhoneIso(undefined);
       } else {
         form.reset({
           firstName: "",
@@ -103,6 +106,7 @@ export function EmployeeDialog({
           zipCode: "",
           accountStatus: "ACTIVE",
         });
+        setPhoneIso(undefined);
       }
     }
   }, [open, employee, isEdit, form]);
@@ -294,11 +298,11 @@ export function EmployeeDialog({
                           <FormControl>
                             <PhoneInputComponent
                               defaultCountry={
-                                form.watch("countryCode") ||
+                                phoneIso ||
                                 (profile as any)?.country ||
                                 (profile as any)?.countryName ||
                                 (profile as any)?.stores?.[0]?.country ||
-                                undefined
+                                "US"
                               }
                               value={(form.watch("countryCode") || "") + (field.value || "")}
                               onChange={(val, data) => {
@@ -308,6 +312,8 @@ export function EmployeeDialog({
                                   if (val.startsWith(dialCode)) {
                                     nationalNumber = val.slice(dialCode.length);
                                   }
+                                  // Lock ISO separately so "+1" never overwrites US → CA
+                                  setPhoneIso(data.countryCode);
                                   form.setValue("countryCode", "+" + dialCode, {
                                     shouldValidate: true,
                                   });

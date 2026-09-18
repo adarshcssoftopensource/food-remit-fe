@@ -1528,10 +1528,12 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     </FieldLabel>
                     <PhoneInputComponent
                       value={field.value}
-                      onChange={(value) => field.onChange(value)}
+                      onChange={(value, data) => {
+                        field.onChange(value);
+                      }}
                       onBlur={field.onBlur}
                       error={!!errors.phoneNumber}
-                      defaultCountry={selectedCountryIsoCode || selectedCountryName || "IN"}
+                      defaultCountry={selectedCountryIsoCode || selectedCountryName || "US"}
                     />
                     {errors.phoneNumber && (
                       <p className="text-xs font-medium text-red-500">
