@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useGetOrder } from "@/feature/private/order-management/hooks/use-get-order";
 import { OrderDetailSkeleton } from "@/feature/private/order-management/components/order-detail-skeleton";
 import { PrepareOrderDialog } from "./components/prepare-order-dialog";
-import { CheckCircle2, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { OrderNotFound } from "@/feature/private/order-management/components/order-not-found";
 import { OrderSummaryCard } from "@/feature/private/order-management/components/order-summary-card";
 import { OrderPeopleAndStore } from "@/feature/private/order-management/components/order-people-and-store";

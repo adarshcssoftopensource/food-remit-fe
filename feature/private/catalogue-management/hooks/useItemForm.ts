@@ -46,9 +46,18 @@ const itemSchema = z
         },
       ),
 
-    itemsPerPack: z.string().min(1, "Items per pack is required"),
-    stockQuantity: z.string().min(1, "Stock quantity is required"),
-    netWeight: z.string().optional(),
+    itemsPerPack: z
+      .string()
+      .min(1, "Items per pack is required")
+      .refine((val) => Number(val) >= 0, "Cannot be negative"),
+    stockQuantity: z
+      .string()
+      .min(1, "Stock quantity is required")
+      .refine((val) => Number(val) >= 0, "Cannot be negative"),
+    netWeight: z
+      .string()
+      .optional()
+      .refine((val) => !val || Number(val) >= 0, "Cannot be negative"),
     weightUnit: z.string().optional(),
     unit: z.string().min(1, "Unit is required"),
     placements: z.array(placementSchema).min(1, "Add at least one country price"),

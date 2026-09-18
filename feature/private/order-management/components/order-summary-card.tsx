@@ -32,13 +32,10 @@ function InfoField({
   );
 }
 
-export function OrderSummaryCard({ order, hideQrCode, maskReference }: OrderSummaryCardProps) {
+export function OrderSummaryCard({ order, hideQrCode }: OrderSummaryCardProps) {
   const recurringDateList = order.recurringDateList || [];
   const completedDates = recurringDateList.filter((d) => d.status === 1);
   const pendingDates = recurringDateList.filter((d) => d.status === 0);
-
-  const refNumber = order.refrenceNumber || order.id;
-  const displayRef = maskReference ? `********${refNumber.slice(-4)}` : refNumber;
 
   return (
     <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
@@ -56,14 +53,6 @@ export function OrderSummaryCard({ order, hideQrCode, maskReference }: OrderSumm
           {/* Left: Details */}
           <div className="flex-1 p-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <div>
-                <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                  Reference Number
-                </p>
-                <p className="mt-1 font-mono text-sm font-bold text-slate-900 dark:text-white">
-                  {displayRef}
-                </p>
-              </div>
               <div>
                 <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                   Order ID

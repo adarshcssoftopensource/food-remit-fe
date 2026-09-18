@@ -132,13 +132,25 @@ export function AssignEmployeeDialog({ open, onOpenChange, orders }: AssignEmplo
                             : "border border-transparent bg-white shadow-sm hover:border-emerald-100 dark:bg-slate-900 dark:hover:border-slate-700"
                         }`}
                       >
-                        <div
-                          className={`flex size-9 shrink-0 items-center justify-center rounded-md text-sm font-bold text-white shadow-sm transition-colors ${
-                            isSelected ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-700"
-                          }`}
-                        >
-                          {initials}
-                        </div>
+                        {emp.image ? (
+                          <div
+                            className={`relative flex size-9 shrink-0 overflow-hidden rounded-md shadow-sm ${isSelected ? "ring-2 ring-emerald-500 ring-offset-1" : ""}`}
+                          >
+                            <img
+                              src={emp.image}
+                              alt={fullName}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            className={`flex size-9 shrink-0 items-center justify-center rounded-md text-sm font-bold text-white shadow-sm transition-colors ${
+                              isSelected ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-700"
+                            }`}
+                          >
+                            {initials}
+                          </div>
+                        )}
                         <div className="flex-1 overflow-hidden text-left">
                           <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
                             {fullName}

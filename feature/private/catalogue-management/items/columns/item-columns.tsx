@@ -16,6 +16,7 @@ export function getItemColumns(
   onView: (item: ItemData) => void,
   onImageClick?: (image: string) => void,
   isStoreScoped?: boolean,
+  isSuperAdmin?: boolean,
 ): ColumnDef<ItemData>[] {
   const columns: ColumnDef<ItemData>[] = [
     {
@@ -144,7 +145,7 @@ export function getItemColumns(
       header: () => <div className="text-center">Food Remit Markup</div>,
       cell: ({ row }) => (
         <div className="flex justify-center">
-          <ItemAdminShareCell item={row.original} />
+          <ItemAdminShareCell item={row.original} isSuperAdmin={!!isSuperAdmin} />
         </div>
       ),
     },
