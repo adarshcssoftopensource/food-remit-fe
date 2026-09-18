@@ -83,7 +83,7 @@ export function ManagerLocationFields({
           }}
           disabled={disabled || !countryValue}
         >
-          <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-slate-50">
+          <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100">
             <SelectValue placeholder={countryValue ? "Select State" : "Select country first"} />
           </SelectTrigger>
           <SelectContent>
@@ -108,7 +108,7 @@ export function ManagerLocationFields({
           onValueChange={(value) => onCityChange(value || "")}
           disabled={disabled || !stateValue}
         >
-          <SelectTrigger className="h-11! w-full min-w-full rounded-xl border-slate-200">
+          <SelectTrigger className="h-11! w-full min-w-full rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100">
             <SelectValue placeholder={stateValue ? "Select City" : "Select state first"} />
           </SelectTrigger>
           <SelectContent>

@@ -162,7 +162,12 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
             {images.map((image, index) => (
               <div
                 key={image.url}
-                className="group relative h-20 w-20 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
+                className={cn(
+                  "group relative h-20 w-20 overflow-hidden rounded-lg border dark:border-slate-800 dark:bg-slate-900",
+                  disabled
+                    ? "cursor-not-allowed border-slate-200 bg-slate-100"
+                    : "border-slate-200 bg-slate-50",
+                )}
               >
                 <Image
                   src={image.url}
@@ -170,7 +175,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
                   fill
                   unoptimized
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
+                  className={cn("object-cover", disabled && "cursor-not-allowed")}
                 />
 
                 {!disabled && (
@@ -192,14 +197,22 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
 
         {images.length === 0 && defaultImage && (
           <div className="flex items-center gap-3">
-            <div className="group relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-xs">
+            <div
+              className={cn(
+                "group relative h-20 w-20 overflow-hidden border shadow-xs",
+                defaultImage.includes("avatar") ? "rounded-full" : "rounded-xl",
+                disabled
+                  ? "cursor-not-allowed border-slate-200 bg-slate-100"
+                  : "border-slate-200 bg-slate-50",
+              )}
+            >
               <Image
                 src={defaultImage}
                 alt="Default Image"
                 fill
                 unoptimized
                 sizes="80px"
-                className="object-cover"
+                className={cn("object-cover", disabled && "cursor-not-allowed")}
               />
             </div>
             <span className="text-xs font-medium text-slate-400">Default image</span>

@@ -133,8 +133,11 @@ export function ResidentialCountrySelect({
             disabled={disabled}
             aria-invalid={invalid}
             className={cn(
-              "h-11! w-full justify-between rounded-xl border-slate-200 bg-slate-50/80 px-3 text-sm font-normal text-slate-900 transition hover:bg-white",
-              isPlaceholder && "text-slate-500",
+              "h-11! w-full justify-between rounded-xl border-slate-200 px-3 text-sm font-normal transition-colors",
+              disabled
+                ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-600 opacity-100 hover:border-slate-200 hover:bg-slate-100 hover:text-slate-600"
+                : "bg-white text-slate-900 hover:bg-slate-50",
+              isPlaceholder && !disabled && "text-slate-500",
               invalid && "border-red-400 bg-red-50/30",
               className,
             )}

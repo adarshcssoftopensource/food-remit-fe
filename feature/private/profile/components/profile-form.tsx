@@ -201,6 +201,12 @@ export function ProfileForm() {
                     onChange={(value) => field.onChange(value)}
                     onBlur={field.onBlur}
                     error={!!errors.contactNumber}
+                    defaultCountry={
+                      resolvedCountry ||
+                      (profile as any)?.countryCode ||
+                      (profile as any)?.country ||
+                      "IN"
+                    }
                   />
                   {errors.contactNumber && (
                     <p className="text-xs font-medium text-red-500">

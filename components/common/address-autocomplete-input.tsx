@@ -186,8 +186,10 @@ export function AddressAutocompleteInput({
             }}
             placeholder={placeholder}
             className={cn(
-              "h-11 rounded-xl border-slate-200 bg-slate-50/80 pr-8 pl-9 text-sm",
-              "focus-visible:ring-primary/10 transition-all duration-200 focus-visible:bg-white",
+              "h-11 rounded-xl border-slate-200 pr-8 pl-9 text-sm transition-all duration-200",
+              disabled
+                ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-600 opacity-100 hover:border-slate-200"
+                : "focus-visible:ring-primary/10 bg-white text-slate-900 hover:border-slate-300 focus-visible:bg-white",
               invalid && "border-red-400 bg-red-50/30 focus-visible:ring-red-100",
             )}
           />

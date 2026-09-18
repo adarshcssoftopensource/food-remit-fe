@@ -1531,7 +1531,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       onChange={(value) => field.onChange(value)}
                       onBlur={field.onBlur}
                       error={!!errors.phoneNumber}
-                      defaultCountry={selectedCountryIsoCode || "IN"}
+                      defaultCountry={selectedCountryIsoCode || selectedCountryName || "IN"}
                     />
                     {errors.phoneNumber && (
                       <p className="text-xs font-medium text-red-500">

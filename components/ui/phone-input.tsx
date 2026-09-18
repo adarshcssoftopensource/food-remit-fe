@@ -54,23 +54,72 @@ const ALL_COUNTRIES = buildCountries();
 const COUNTRIES_BY_ISO = new Map(ALL_COUNTRIES.map((country) => [country.isoCode, country]));
 const DIAL_CODES_DESC = [...ALL_COUNTRIES].sort((a, b) => b.dialCode.length - a.dialCode.length);
 
+export function findPhoneCountry(input?: string | null): PhoneCountry | undefined {
+  if (!input) return undefined;
+  const trimmed = input.trim();
+  if (!trimmed) return undefined;
+
+  // 1. Direct ISO code match (e.g. "IN", "US", "CA", "GB")
+  const upper = trimmed.toUpperCase();
+  const byIso = COUNTRIES_BY_ISO.get(upper);
+  if (byIso) return byIso;
+
+  // 2. Common aliases
+  const lower = trimmed.toLowerCase();
+  if (lower === "usa" || lower === "united states of america" || lower === "us")
+    return COUNTRIES_BY_ISO.get("US");
+  if (lower === "uk" || lower === "united kingdom" || lower === "gb")
+    return COUNTRIES_BY_ISO.get("GB");
+  if (lower === "uae" || lower === "united arab emirates" || lower === "ae")
+    return COUNTRIES_BY_ISO.get("AE");
+
+  // 3. Exact country name match (case-insensitive)
+  const byName = ALL_COUNTRIES.find((c) => c.name.toLowerCase() === lower);
+  if (byName) return byName;
+
+  // 4. Prefix / substring match
+  const byPrefix = ALL_COUNTRIES.find(
+    (c) => lower.startsWith(c.name.toLowerCase()) || c.name.toLowerCase().startsWith(lower),
+  );
+  if (byPrefix) return byPrefix;
+
+  // 5. Check country-state-city database directly
+  const cscMatch = Country.getAllCountries().find(
+    (c) =>
+      c.name.toLowerCase() === lower ||
+      c.isoCode.toLowerCase() === lower ||
+      lower.startsWith(c.name.toLowerCase()) ||
+      c.name.toLowerCase().startsWith(lower),
+  );
+  if (cscMatch) {
+    const fromCsc = COUNTRIES_BY_ISO.get(cscMatch.isoCode);
+    if (fromCsc) return fromCsc;
+  }
+
+  // 6. Dial code match (e.g. "+1", "1", "+91", "91", "+44")
+  const cleanDigits = toPhoneDigits(trimmed);
+  if (cleanDigits) {
+    const byDial = DIAL_CODES_DESC.find((c) => c.dialCode === cleanDigits);
+    if (byDial) return byDial;
+  }
+
+  return undefined;
+}
+
 export function resolveFromValue(
   value: string,
-  defaultIso = DEFAULT_ISO,
+  defaultCountryOrIso = DEFAULT_ISO,
 ): { country: PhoneCountry; nationalNumber: string } {
   const digits = toPhoneDigits(value || "");
-  const normalizedDefault = defaultIso ? defaultIso.toUpperCase() : DEFAULT_ISO;
   const fallback =
-    COUNTRIES_BY_ISO.get(normalizedDefault) ??
-    COUNTRIES_BY_ISO.get(DEFAULT_ISO) ??
-    ALL_COUNTRIES[0];
+    findPhoneCountry(defaultCountryOrIso) ?? COUNTRIES_BY_ISO.get(DEFAULT_ISO) ?? ALL_COUNTRIES[0];
 
   if (!digits) {
     return { country: fallback, nationalNumber: "" };
   }
 
-  // When defaultIso matches the starting dial code (e.g. Canada CA and US both have dialCode "1"),
-  // prioritize the defaultIso country so that CA is selected instead of US!
+  // When default country matches the starting dial code (e.g. Canada CA and US both have dialCode "1"),
+  // prioritize the default country so that CA is selected instead of US!
   if (fallback && digits.startsWith(fallback.dialCode)) {
     return {
       country: fallback,
@@ -99,21 +148,24 @@ export function PhoneInputComponent({
 }: PhoneInputComponentProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  /** Remembers user country pick when dial codes overlap (e.g. US/CA +1). */
-  const [countryOverride, setCountryOverride] = useState<PhoneCountry | null>(null);
 
+  const initialTargetCountry = useMemo(() => findPhoneCountry(defaultCountry), [defaultCountry]);
+  const [countryOverride, setCountryOverride] = useState<PhoneCountry | null>(
+    initialTargetCountry || null,
+  );
   const [prevDefaultCountry, setPrevDefaultCountry] = useState(defaultCountry);
 
   // Sync if defaultCountry prop changes externally (e.g. Country changed in Step 1)
   if (defaultCountry && defaultCountry !== prevDefaultCountry) {
     setPrevDefaultCountry(defaultCountry);
-    const targetCountry = COUNTRIES_BY_ISO.get(defaultCountry.toUpperCase());
+    const targetCountry = findPhoneCountry(defaultCountry);
     if (targetCountry) {
       setCountryOverride(targetCountry);
     }
   }
 
-  const activeIso = countryOverride?.isoCode || defaultCountry || DEFAULT_ISO;
+  const activeCountry = countryOverride || initialTargetCountry;
+  const activeIso = activeCountry?.isoCode || defaultCountry || DEFAULT_ISO;
   const resolved = useMemo(() => resolveFromValue(value, activeIso), [value, activeIso]);
 
   const selectedCountry = useMemo(() => {
@@ -173,11 +225,12 @@ export function PhoneInputComponent({
   return (
     <div
       className={cn(
-        "flex h-12 w-full items-stretch overflow-visible rounded-xl border bg-gray-50/50 transition-colors",
-        "border-gray-200/80 focus-within:border-[#1B3A8C] focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(27,58,140,0.1)]",
+        "flex h-12 w-full items-stretch overflow-visible rounded-xl border transition-colors",
+        disabled
+          ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-600 shadow-none hover:border-slate-200"
+          : "border-gray-200/80 bg-white focus-within:border-[#1B3A8C] focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] hover:border-slate-300",
         error &&
           "border-red-400 bg-red-50/40 focus-within:border-red-400 focus-within:shadow-[0_0_0_4px_rgba(248,113,113,0.12)]",
-        disabled && "pointer-events-none cursor-not-allowed opacity-60",
       )}
     >
       <Popover
@@ -192,10 +245,13 @@ export function PhoneInputComponent({
           render={
             <button
               type="button"
+              disabled={disabled}
               aria-label="Select country code"
               className={cn(
                 "flex h-full shrink-0 items-center gap-1 border-r border-slate-200/90 px-2.5 text-sm",
-                "text-slate-700 transition-colors hover:bg-white/80",
+                disabled
+                  ? "cursor-not-allowed text-slate-600 hover:bg-transparent"
+                  : "text-slate-700 transition-colors hover:bg-slate-50",
                 "focus-visible:ring-2 focus-visible:ring-[#1B3A8C]/25 focus-visible:outline-none",
               )}
             >
@@ -277,7 +333,10 @@ export function PhoneInputComponent({
         onChange={(event) => handleNumberChange(event.target.value)}
         onBlur={onBlur}
         placeholder={`${maxDigits}-digit number`}
-        className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+        className={cn(
+          "h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400",
+          disabled && "cursor-not-allowed text-slate-600",
+        )}
       />
     </div>
   );

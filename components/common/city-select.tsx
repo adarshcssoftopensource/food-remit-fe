@@ -91,8 +91,11 @@ export function CitySelect({
             disabled={isDisabled}
             aria-invalid={invalid}
             className={cn(
-              "h-11! w-full justify-between rounded-xl border-slate-200 bg-white px-3 text-sm font-normal text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800",
-              !selectedCity && (!includeAll || value !== "All") && "text-slate-500",
+              "h-11! w-full justify-between rounded-xl border-slate-200 px-3 text-sm font-normal transition-colors dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800",
+              isDisabled
+                ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-600 opacity-100 hover:border-slate-200 hover:bg-slate-100 hover:text-slate-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400"
+                : "bg-white text-slate-900 hover:bg-slate-50",
+              !selectedCity && (!includeAll || value !== "All") && !isDisabled && "text-slate-500",
               invalid && "border-red-400 bg-red-50/30",
               className,
             )}
