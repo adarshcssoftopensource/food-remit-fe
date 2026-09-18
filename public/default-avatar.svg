@@ -1,18 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
   <defs>
-    <linearGradient id="avatarBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3b82f6" />
-      <stop offset="100%" stop-color="#1d4ed8" />
+    <linearGradient id="emeraldAvatar" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#0f766e" />
     </linearGradient>
   </defs>
-  <rect width="200" height="200" rx="100" fill="url(#avatarBg)"/>
+  <rect width="200" height="200" rx="100" fill="url(#emeraldAvatar)"/>
   
-  <!-- Subtle halo -->
-  <circle cx="100" cy="100" r="88" fill="#ffffff" fill-opacity="0.08"/>
+  <!-- Subtle inner halo -->
+  <circle cx="100" cy="100" r="88" fill="#ffffff" fill-opacity="0.06"/>
 
+  <!-- Outline User Icon (lucide-user style) -->
   <!-- Head -->
-  <circle cx="100" cy="78" r="32" fill="#ffffff"/>
+  <circle cx="100" cy="74" r="28" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
 
-  <!-- Body / Shoulders -->
-  <path d="M48 168 C52 128, 72 120, 100 120 C128 120, 148 128, 152 168 C138 184, 120 192, 100 192 C80 192, 62 184, 48 168 Z" fill="#ffffff"/>
+  <!-- Shoulders -->
+  <path d="M48 162 A52 52 0 0 1 152 162" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

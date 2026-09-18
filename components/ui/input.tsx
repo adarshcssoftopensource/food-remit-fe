@@ -9,13 +9,13 @@ function Input({ className, type, onKeyDown, ...props }: React.ComponentProps<"i
       type={type}
       data-slot="input"
       className={cn(
-        "h-10 w-full min-w-0 rounded-xl border border-slate-200/80 bg-white/70 px-3 py-1.5 text-sm text-slate-900 shadow-xs backdrop-blur-md transition-all outline-none",
+        "h-10 w-full min-w-0 rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-sm text-slate-900 shadow-xs transition-all outline-none",
         "placeholder:text-slate-400",
         "hover:border-slate-300",
         "focus-visible:border-emerald-500 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-emerald-500/20",
-        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+        "disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:shadow-none disabled:hover:border-slate-200",
         "aria-invalid:border-red-500 aria-invalid:ring-red-500/20",
-        "dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-700 dark:focus-visible:border-emerald-500 dark:focus-visible:bg-slate-900",
+        "dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-700 dark:focus-visible:border-emerald-500 dark:focus-visible:bg-slate-900 dark:disabled:bg-slate-800 dark:disabled:text-slate-400",
         className,
       )}
       onKeyDown={(e) => {

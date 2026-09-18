@@ -160,7 +160,7 @@ export function StoreForm({
                       id="storeName"
                       placeholder="Enter Store Name"
                       disabled={isNonCommissionDisabled}
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
+                      className="h-11 rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
                     />
                   </FormField>
                 )}
@@ -250,7 +250,7 @@ export function StoreForm({
                       id="storeAddress2"
                       placeholder="Enter Address 2 (optional)"
                       disabled={isNonCommissionDisabled}
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
+                      className="h-11 rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
                     />
                   </FormField>
                 )}
@@ -269,7 +269,7 @@ export function StoreForm({
                       max={100}
                       step={0.01}
                       placeholder="Government Store Tax"
-                      className="h-11 rounded-xl border-slate-200 disabled:cursor-not-allowed disabled:opacity-75"
+                      className="h-11 rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
                       value={field.value ?? ""}
                       disabled={isNonCommissionDisabled}
                       onFocus={(e) => {
@@ -386,7 +386,7 @@ export function StoreForm({
                       id="managerFirstName"
                       placeholder="Enter First Name"
                       disabled={isNonCommissionDisabled}
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
+                      className="h-11 rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
                     />
                   </FormField>
                 )}
@@ -402,7 +402,7 @@ export function StoreForm({
                       id="managerLastName"
                       placeholder="Enter Last Name"
                       disabled={isNonCommissionDisabled}
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
+                      className="h-11 rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
                     />
                   </FormField>
                 )}
@@ -418,7 +418,7 @@ export function StoreForm({
                       id="managerEmail"
                       type="email"
                       placeholder="Enter Email"
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
+                      className="h-11 rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
                       disabled={isNonCommissionDisabled || mode === "edit"}
                     />
                   </FormField>
@@ -531,7 +531,7 @@ export function StoreForm({
                       id="managerZipCode"
                       placeholder="Enter Zipcode"
                       disabled={isNonCommissionDisabled}
-                      className="h-11 rounded-xl border-slate-200 bg-slate-50 disabled:cursor-not-allowed disabled:opacity-75"
+                      className="h-11 rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
                     />
                   </FormField>
                 )}

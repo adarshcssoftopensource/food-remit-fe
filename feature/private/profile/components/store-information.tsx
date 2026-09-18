@@ -233,6 +233,12 @@ export function StoreInformation() {
                     control={control}
                     render={({ field: codeField }) => (
                       <PhoneInputComponent
+                        defaultCountry={
+                          codeField.value ||
+                          storeData?.storeCountryCode ||
+                          storeData?.country ||
+                          undefined
+                        }
                         value={`${codeField.value || ""}${field.value || ""}`}
                         onChange={(val, data) => {
                           if (data) {

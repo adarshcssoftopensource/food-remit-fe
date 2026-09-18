@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import PhoneInputComponent from "@/components/ui/phone-input";
+import { useProfile } from "@/components/providers/profile-provider";
 import {
   EmployeeFormSchema,
   EmployeeFormValues,
@@ -55,6 +56,7 @@ export function EmployeeDialog({
   const { mutate: updateEmployee, isPending: isUpdating } = useUpdateEmployee(employee?.id || "");
 
   const isPending = isCreating || isUpdating;
+  const { profile } = useProfile();
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(EmployeeFormSchema),
@@ -291,6 +293,13 @@ export function EmployeeDialog({
                           </FormLabel>
                           <FormControl>
                             <PhoneInputComponent
+                              defaultCountry={
+                                form.watch("countryCode") ||
+                                (profile as any)?.country ||
+                                (profile as any)?.countryName ||
+                                (profile as any)?.stores?.[0]?.country ||
+                                undefined
+                              }
                               value={(form.watch("countryCode") || "") + (field.value || "")}
                               onChange={(val, data) => {
                                 if (data && data.dialCode) {
