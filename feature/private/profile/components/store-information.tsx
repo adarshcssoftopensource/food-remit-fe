@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Building2 } from "lucide-react";
+import { Building2, ShieldCheck, Landmark, CalendarClock } from "lucide-react";
+import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +15,7 @@ import { ImageUpload } from "@/components/common/image-upload";
 import { PhoneInputComponent } from "@/components/ui/phone-input";
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { CountryCityFields } from "@/feature/private/store-management/components/country-city-fields";
+import { StoreCrmDetails } from "./store-crm-details";
 
 import { useProfile } from "@/components/providers/profile-provider";
 import { useUpdateStore } from "@/feature/private/store-management/hooks/use-update-store";
@@ -142,193 +144,273 @@ export function StoreInformation() {
 
   if (!storeId) return null;
 
+  const storeProfile = profile?.stores?.[0];
+  const partnerLead = profile?.partnerLead;
+
+  const formatDate = (dateStr: string | number | null | undefined) => {
+    if (!dateStr) return "N/A";
+    const date = new Date(typeof dateStr === "number" ? dateStr : dateStr);
+    if (isNaN(date.getTime())) return "N/A";
+    return format(date, "MMM dd, yyyy, hh:mm a");
+  };
+
   return (
-    <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
-      <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-4 py-4 sm:px-8 sm:py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
-        <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
-            <Building2 className="size-5" />
-          </div>
-          <div>
-            <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
-              Store Details
-            </CardTitle>
-            <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm dark:text-slate-400">
-              Basic information about the store
-            </CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="p-4 sm:p-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <Controller
-            name="storeImage"
-            control={control}
-            render={({ field }) => (
-              <div className="flex flex-col gap-2">
-                <FieldLabel className="text-sm font-semibold">
-                  Store Image <span className="text-red-500">*</span>
-                </FieldLabel>
-                <ImageUpload
-                  value={
-                    field.value && typeof field.value !== "string" ? [field.value as File] : []
-                  }
-                  onChange={(files) => field.onChange(files[0] || null)}
-                  onAllImagesChange={(all) => {
-                    if (all.length === 0) field.onChange(null);
-                  }}
-                  initialImages={typeof field.value === "string" ? [field.value] : []}
-                  maxFiles={1}
-                  multiple={false}
-                  label="Upload store image"
-                  hint="PNG, JPG or WEBP"
-                  accept="image/jpeg,image/png,image/webp"
-                />
-                {errors.storeImage && (
-                  <p className="text-xs font-medium text-red-500">
-                    {errors.storeImage.message as string}
-                  </p>
-                )}
+    <div className="space-y-6">
+      {/* CRM Info Cards */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
+          <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 p-4 pb-3 sm:p-5 sm:pb-3 dark:border-slate-800/60 dark:bg-slate-900/40">
+            <div className="flex items-center gap-3">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                <ShieldCheck className="size-4" />
               </div>
-            )}
-          />
+              <CardTitle className="text-sm font-semibold tracking-tight text-slate-800 dark:text-slate-100">
+                KYC Status
+              </CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 pt-3 sm:p-5 sm:pt-4">
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
+                {partnerLead?.kycStatus?.replace(/_/g, " ") || "NOT STARTED"}
+              </span>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                {formatDate(partnerLead?.kycVerifiedAt)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
 
-          <div className="space-y-6">
+        <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
+          <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 p-4 pb-3 sm:p-5 sm:pb-3 dark:border-slate-800/60 dark:bg-slate-900/40">
+            <div className="flex items-center gap-3">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                <Landmark className="size-4" />
+              </div>
+              <CardTitle className="text-sm font-semibold tracking-tight text-slate-800 dark:text-slate-100">
+                Bank Approval
+              </CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 pt-3 sm:p-5 sm:pt-4">
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
+                {partnerLead?.bankStatus?.replace(/_/g, " ") || "NOT STARTED"}
+              </span>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                {formatDate(partnerLead?.bankVerifiedAt)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
+          <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 p-4 pb-3 sm:p-5 sm:pb-3 dark:border-slate-800/60 dark:bg-slate-900/40">
+            <div className="flex items-center gap-3">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                <CalendarClock className="size-4" />
+              </div>
+              <CardTitle className="text-sm font-semibold tracking-tight text-slate-800 dark:text-slate-100">
+                Store Open Date
+              </CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 pt-3 sm:p-5 sm:pt-4">
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
+                {storeProfile?.addedOn ? "OPENED" : "N/A"}
+              </span>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                {formatDate(storeProfile?.createdAt || storeProfile?.addedOn)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
+        <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-4 py-4 sm:px-8 sm:py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+              <Building2 className="size-5" />
+            </div>
+            <div>
+              <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
+                Store Details
+              </CardTitle>
+              <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm dark:text-slate-400">
+                Basic information about the store
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-4 sm:p-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <Controller
-              name="storeName"
+              name="storeImage"
               control={control}
               render={({ field }) => (
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2">
                   <FieldLabel className="text-sm font-semibold">
-                    Store Name <span className="text-red-500">*</span>
+                    Store Image <span className="text-red-500">*</span>
                   </FieldLabel>
-                  <Input
-                    {...field}
-                    placeholder="Enter Store Name"
-                    className={cn(
-                      "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 text-sm",
-                      "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
-                      errors.storeName &&
-                        "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:ring-red-400/15",
-                    )}
+                  <ImageUpload
+                    value={
+                      field.value && typeof field.value !== "string" ? [field.value as File] : []
+                    }
+                    onChange={(files) => field.onChange(files[0] || null)}
+                    onAllImagesChange={(all) => {
+                      if (all.length === 0) field.onChange(null);
+                    }}
+                    initialImages={typeof field.value === "string" ? [field.value] : []}
+                    maxFiles={1}
+                    multiple={false}
+                    label="Upload store image"
+                    hint="PNG, JPG or WEBP"
+                    accept="image/jpeg,image/png,image/webp"
                   />
-                  {errors.storeName && (
-                    <p className="text-xs font-medium text-red-500">{errors.storeName.message}</p>
+                  {errors.storeImage && (
+                    <p className="text-xs font-medium text-red-500">
+                      {errors.storeImage.message as string}
+                    </p>
                   )}
                 </div>
               )}
             />
 
-            <Controller
-              name="storePhoneNumber"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1.5">
-                  <FieldLabel className="text-sm font-semibold">
-                    Store Phone Number <span className="text-red-500">*</span>
-                  </FieldLabel>
+            <div className="space-y-6">
+              <Controller
+                name="storeName"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel className="text-sm font-semibold">
+                      Store Name <span className="text-red-500">*</span>
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      placeholder="Enter Store Name"
+                      className={cn(
+                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 text-sm",
+                        "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
+                        errors.storeName &&
+                          "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:ring-red-400/15",
+                      )}
+                    />
+                    {errors.storeName && (
+                      <p className="text-xs font-medium text-red-500">{errors.storeName.message}</p>
+                    )}
+                  </div>
+                )}
+              />
+
+              <Controller
+                name="storePhoneNumber"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel className="text-sm font-semibold">
+                      Store Phone Number <span className="text-red-500">*</span>
+                    </FieldLabel>
+                    <Controller
+                      name="storePhoneCode"
+                      control={control}
+                      render={({ field: codeField }) => (
+                        <PhoneInputComponent
+                          value={`${codeField.value || ""}${field.value || ""}`}
+                          onChange={(val, data) => {
+                            if (data) {
+                              codeField.onChange(`+${data.dialCode}`);
+                              const national = val.startsWith(data.dialCode)
+                                ? val.slice(data.dialCode.length)
+                                : val;
+                              field.onChange(national);
+                            } else {
+                              field.onChange(val);
+                            }
+                          }}
+                          error={!!errors.storePhoneNumber}
+                        />
+                      )}
+                    />
+                    {errors.storePhoneNumber && (
+                      <p className="text-xs font-medium text-red-500">
+                        {errors.storePhoneNumber.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+
+              <Controller
+                name="storeCountry"
+                control={control}
+                render={({ field: countryField }) => (
                   <Controller
-                    name="storePhoneCode"
+                    name="storeCity"
                     control={control}
-                    render={({ field: codeField }) => (
-                      <PhoneInputComponent
-                        defaultCountry={
-                          codeField.value ||
-                          storeData?.storeCountryCode ||
-                          storeData?.country ||
-                          undefined
-                        }
-                        value={`${codeField.value || ""}${field.value || ""}`}
-                        onChange={(val, data) => {
-                          if (data) {
-                            codeField.onChange(`+${data.dialCode}`);
-                            const national = val.startsWith(data.dialCode)
-                              ? val.slice(data.dialCode.length)
-                              : val;
-                            field.onChange(national);
-                          } else {
-                            field.onChange(val);
-                          }
+                    render={({ field: cityField }) => (
+                      <CountryCityFields
+                        prefix="store"
+                        countryValue={countryField.value}
+                        cityValue={cityField.value}
+                        onCountryChange={(val) => {
+                          countryField.onChange(val);
+                          cityField.onChange("");
                         }}
-                        error={!!errors.storePhoneNumber}
+                        onCityChange={cityField.onChange}
+                        countryError={errors.storeCountry?.message}
+                        cityError={errors.storeCity?.message}
                       />
                     )}
                   />
-                  {errors.storePhoneNumber && (
-                    <p className="text-xs font-medium text-red-500">
-                      {errors.storePhoneNumber.message}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
+                )}
+              />
 
-            <Controller
-              name="storeCountry"
-              control={control}
-              render={({ field: countryField }) => (
-                <Controller
-                  name="storeCity"
-                  control={control}
-                  render={({ field: cityField }) => (
-                    <CountryCityFields
-                      prefix="store"
-                      countryValue={countryField.value}
-                      cityValue={cityField.value}
-                      onCountryChange={(val) => {
-                        countryField.onChange(val);
-                        cityField.onChange("");
+              <Controller
+                name="storeAddress"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel className="text-sm font-semibold">
+                      Address <span className="text-red-500">*</span>
+                    </FieldLabel>
+                    <AddressAutocompleteInput
+                      value={field.value}
+                      onChange={field.onChange}
+                      onPlaceSelect={(place) => {
+                        field.onChange(place.formattedAddress);
+                        if (place.country) setValue("storeCountry", place.country);
+                        if (place.city) setValue("storeCity", place.city);
                       }}
-                      onCityChange={cityField.onChange}
-                      countryError={errors.storeCountry?.message}
-                      cityError={errors.storeCity?.message}
+                      placeholder="Enter Address"
+                      invalid={!!errors.storeAddress}
                     />
-                  )}
-                />
-              )}
-            />
+                    {errors.storeAddress && (
+                      <p className="text-xs font-medium text-red-500">
+                        {errors.storeAddress.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+            </div>
 
-            <Controller
-              name="storeAddress"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1.5">
-                  <FieldLabel className="text-sm font-semibold">
-                    Address <span className="text-red-500">*</span>
-                  </FieldLabel>
-                  <AddressAutocompleteInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    onPlaceSelect={(place) => {
-                      field.onChange(place.formattedAddress);
-                      if (place.country) setValue("storeCountry", place.country);
-                      if (place.city) setValue("storeCity", place.city);
-                    }}
-                    placeholder="Enter Address"
-                    invalid={!!errors.storeAddress}
-                  />
-                  {errors.storeAddress && (
-                    <p className="text-xs font-medium text-red-500">
-                      {errors.storeAddress.message}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
-          </div>
+            <div className="flex justify-end border-t border-slate-100 pt-6 dark:border-slate-800">
+              <Button
+                type="submit"
+                disabled={updateStoreMutation.isPending}
+                className="h-12 w-full rounded-xl bg-[#1B3A8C] px-8 text-sm font-bold text-white shadow-md transition-all hover:bg-[#1B3A8C]/90 hover:shadow-lg sm:w-auto dark:bg-indigo-600 dark:hover:bg-indigo-700"
+              >
+                {updateStoreMutation.isPending ? "Saving changes..." : "Save Store Changes"}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
 
-          <div className="flex justify-end border-t border-slate-100 pt-6 dark:border-slate-800">
-            <Button
-              type="submit"
-              disabled={updateStoreMutation.isPending}
-              className="h-12 w-full rounded-xl bg-[#1B3A8C] px-8 text-sm font-bold text-white shadow-md transition-all hover:bg-[#1B3A8C]/90 hover:shadow-lg sm:w-auto dark:bg-indigo-600 dark:hover:bg-indigo-700"
-            >
-              {updateStoreMutation.isPending ? "Saving changes..." : "Save Store Changes"}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+      <StoreCrmDetails partnerLead={partnerLead} />
+    </div>
   );
 }
