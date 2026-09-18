@@ -293,7 +293,7 @@ export function EmployeeDialog({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="font-semibold text-slate-700">
-                            Phone Number
+                            Phone Number <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <PhoneInputComponent

@@ -23,6 +23,7 @@ export interface AdminProfile {
   role: string;
   roleCode: string;
   phoneNumber: string;
+  countryCode?: string | null;
   permissions: ProfilePermissions;
   image?: string | null;
   address?: string | null;

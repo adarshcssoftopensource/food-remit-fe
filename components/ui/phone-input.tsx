@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { getMaxNationalDigits, toPhoneDigits } from "@/lib/phone";
+import { getExpectedNationalDigits, getMaxNationalDigits, toPhoneDigits } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
 type PhoneCountry = {
@@ -142,8 +142,7 @@ export function resolveFromValue(
     return { country: fallback, nationalNumber: "" };
   }
 
-  // Always prefer the active/default country when its dial matches the value prefix.
-  // This keeps USA selected for +1 instead of flipping to Canada while typing.
+  // Prefer the active/default country when its dial matches the value prefix.
   if (fallback && digits.startsWith(fallback.dialCode)) {
     return {
       country: fallback,
@@ -151,7 +150,15 @@ export function resolveFromValue(
     };
   }
 
-  // Shared dial codes: prefer canonical country (e.g. +1 → US, never CA by accident)
+  // Locked country + national-only digits (fits that country's max length):
+  // keep as national — do not match France (+33) against a US number like 3322...
+  if (fallback) {
+    const maxNat = getMaxNationalDigits(fallback.isoCode);
+    if (digits.length <= maxNat) {
+      return { country: fallback, nationalNumber: digits };
+    }
+  }
+
   const matched = DIAL_CODES_DESC.find((country) => digits.startsWith(country.dialCode));
   if (!matched) {
     return { country: fallback, nationalNumber: digits };
@@ -222,11 +229,33 @@ export function PhoneInputComponent({
   const nationalNumber = useMemo(() => {
     const digits = toPhoneDigits(value || "");
     if (!digits) return "";
+
+    const expected = getExpectedNationalDigits(selectedCountry.isoCode);
+
+    // Full international: dial + exact national length (e.g. US "1" + 10 digits)
     if (digits.startsWith(selectedCountry.dialCode)) {
-      return digits.slice(selectedCountry.dialCode.length).slice(0, maxDigits);
+      const rest = digits.slice(selectedCountry.dialCode.length);
+      if (expected && rest.length === expected) {
+        return rest;
+      }
+      if (!expected && digits.length > maxDigits && rest.length > 0 && rest.length <= maxDigits) {
+        return rest.slice(0, maxDigits);
+      }
     }
+
+    // National-only — never strip another country's dial (e.g. FR +33 from "3322...")
+    if (digits.length <= maxDigits) {
+      return digits.slice(0, maxDigits);
+    }
+
     return resolved.nationalNumber.slice(0, maxDigits);
-  }, [value, selectedCountry.dialCode, resolved.nationalNumber, maxDigits]);
+  }, [
+    value,
+    selectedCountry.dialCode,
+    selectedCountry.isoCode,
+    resolved.nationalNumber,
+    maxDigits,
+  ]);
 
   const filteredCountries = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();

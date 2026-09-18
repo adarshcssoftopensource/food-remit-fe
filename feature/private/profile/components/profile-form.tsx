@@ -12,13 +12,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { PhoneInputComponent } from "@/components/ui/phone-input";
+import { PhoneInputComponent, resolveFromValue } from "@/components/ui/phone-input";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { toPhoneDigits } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { ManagerLocationFields } from "@/feature/private/store-management/components/manager-location-fields";
 import { useUpdateProfile } from "../hooks/use-update-profile";
 import { getProfileDetailsSchema, type ProfileDetailsValues } from "../schema/profile.schema";
+
+function buildProfileContactNumber(
+  phoneNumber?: string | null,
+  countryCode?: string | null,
+): string {
+  const national = toPhoneDigits(phoneNumber || "");
+  const dial = toPhoneDigits(countryCode || "");
+  if (!national) return "";
+  // Already includes dial (e.g. saved as full "13322359345")
+  if (dial && national.startsWith(dial) && national.length > dial.length) {
+    return national;
+  }
+  return dial ? `${dial}${national}` : national;
+}
 
 export function ProfileForm() {
   const { profile } = useProfile();
@@ -56,7 +71,7 @@ export function ProfileForm() {
       firstName,
       lastName,
       email: profile?.email || "",
-      contactNumber: profile?.phoneNumber || "",
+      contactNumber: buildProfileContactNumber(profile?.phoneNumber, (profile as any)?.countryCode),
       address: profile?.address || "",
       country: resolvedCountry,
       state: (profile as any)?.state || "",
@@ -75,7 +90,17 @@ export function ProfileForm() {
       formData.append("firstName", data.firstName);
       formData.append("lastName", data.lastName);
       formData.append("name", `${data.firstName} ${data.lastName}`.trim());
-      formData.append("contactNumber", data.contactNumber);
+
+      // Persist national number + dial separately (same shape as employee create)
+      const isoHint =
+        phoneIso ||
+        resolvedCountry ||
+        (profile as any)?.countryCode ||
+        (profile as any)?.country ||
+        "US";
+      const { country, nationalNumber } = resolveFromValue(data.contactNumber, isoHint);
+      formData.append("contactNumber", nationalNumber);
+      formData.append("countryCode", `+${country.dialCode}`);
 
       if (data.address !== undefined) {
         formData.append("address", data.address);
@@ -208,8 +233,8 @@ export function ProfileForm() {
                     error={!!errors.contactNumber}
                     defaultCountry={
                       phoneIso ||
-                      resolvedCountry ||
                       (profile as any)?.countryCode ||
+                      resolvedCountry ||
                       (profile as any)?.country ||
                       "US"
                     }

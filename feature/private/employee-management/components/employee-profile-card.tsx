@@ -126,14 +126,12 @@ export function EmployeeProfileCard({ employee, totalOrders }: EmployeeProfileCa
                 label="Zip Code"
                 value={employee.zipCode || "—"}
               />
-              {employee.address ? (
-                <InfoTile
-                  icon={<MapPin className="size-4" />}
-                  iconBg="bg-teal-500/10 text-teal-600 dark:bg-teal-500/20 dark:text-teal-400"
-                  label="Address"
-                  value={employee.address}
-                />
-              ) : null}
+              <InfoTile
+                icon={<MapPin className="size-4" />}
+                iconBg="bg-teal-500/10 text-teal-600 dark:bg-teal-500/20 dark:text-teal-400"
+                label="Address"
+                value={employee.address || "—"}
+              />
             </div>
           </div>
 
