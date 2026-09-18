@@ -109,6 +109,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       businessType: "",
       otherBusinessType: "",
       storeLogo: undefined,
+      profileImage: undefined,
       locationsCount: "1",
       locations: [{ address: "", daysOpen: [], hoursOfOperation: "" }],
       hasBusinessAccount: undefined,
@@ -482,6 +483,13 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         formData.append("storeLogo", data.storeLogo[0], data.storeLogo[0].name);
       } else if (typeof data.storeLogo === "string" && data.storeLogo.trim()) {
         formData.append("storeLogo", data.storeLogo.trim());
+      }
+      if (data.profileImage instanceof File) {
+        formData.append("profileImage", data.profileImage, data.profileImage.name);
+      } else if (Array.isArray(data.profileImage) && data.profileImage[0] instanceof File) {
+        formData.append("profileImage", data.profileImage[0], data.profileImage[0].name);
+      } else if (typeof data.profileImage === "string" && data.profileImage.trim()) {
+        formData.append("profileImage", data.profileImage.trim());
       }
       formData.append("locationsCount", data.locationsCount || "1");
       if (data.locations && data.locations.length > 0) {
@@ -1341,6 +1349,117 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     )}
                   </div>
                 )}
+              />
+
+              {/* Profile Image Upload */}
+              <Controller
+                name="profileImage"
+                control={control}
+                render={({ field }) => {
+                  const imgFile = field.value instanceof File ? field.value : null;
+                  const imgUrl =
+                    typeof field.value === "string"
+                      ? field.value
+                      : imgFile
+                        ? URL.createObjectURL(imgFile)
+                        : null;
+
+                  return (
+                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                      <FieldLabel className="text-xs font-semibold text-slate-700">
+                        Profile Photo{" "}
+                        <span className="font-normal text-slate-400">
+                          (Optional — Default avatar will be used if not uploaded)
+                        </span>
+                      </FieldLabel>
+
+                      <div className="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4 transition hover:border-emerald-500/50 sm:flex-row sm:items-center">
+                        {/* Avatar Preview */}
+                        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-200 bg-white shadow-xs">
+                          {imgUrl ? (
+                            <Image
+                              src={imgUrl}
+                              alt="Profile Preview"
+                              fill
+                              unoptimized
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-emerald-600 to-teal-700">
+                              <User className="h-8 w-8 text-white" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Upload Controls */}
+                        <div className="flex flex-1 flex-col gap-1.5">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className={cn(
+                                "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
+                                imgUrl
+                                  ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                                  : "border border-slate-200 bg-white text-slate-500",
+                              )}
+                            >
+                              {imgUrl ? "Custom Photo Uploaded" : "Default Avatar"}
+                            </span>
+                            {imgFile && (
+                              <span className="max-w-[200px] truncate text-xs text-slate-400">
+                                {imgFile.name} ({(imgFile.size / 1024).toFixed(0)} KB)
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-xs text-slate-500">
+                            Upload your profile photo (PNG, JPG, or WEBP up to 5MB). This will be
+                            your store manager avatar.
+                          </p>
+
+                          <div className="mt-1 flex items-center gap-2">
+                            <label
+                              htmlFor="vendorProfileImageInput"
+                              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-emerald-700"
+                            >
+                              <Upload className="size-3.5 text-emerald-600" />
+                              <span>{imgUrl ? "Change Photo" : "Upload Photo"}</span>
+                            </label>
+                            <input
+                              id="vendorProfileImageInput"
+                              type="file"
+                              accept="image/png,image/jpeg,image/webp"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                if (file.size > 5 * 1024 * 1024) {
+                                  errorToast({
+                                    title: "Image Too Large",
+                                    description: "Image size must be less than 5MB",
+                                  });
+                                  return;
+                                }
+                                field.onChange(file);
+                                e.target.value = "";
+                              }}
+                            />
+
+                            {imgUrl && (
+                              <button
+                                type="button"
+                                onClick={() => field.onChange(undefined)}
+                                className="inline-flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
+                              >
+                                <X className="size-3.5" />
+                                <span>Reset to Default</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }}
               />
 
               <Controller

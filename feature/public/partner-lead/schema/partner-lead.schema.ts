@@ -14,6 +14,7 @@ export const partnerLeadSchema = z
     businessType: z.string().min(1, "Please select a business type"),
     otherBusinessType: z.string().optional(),
     storeLogo: z.any().optional(),
+    profileImage: z.any().optional(),
     locationsCount: z.string().optional(),
     locations: z
       .array(

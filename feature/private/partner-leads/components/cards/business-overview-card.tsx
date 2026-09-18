@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Link as LinkIcon } from "lucide-react";
+import { Building2, Link as LinkIcon, User } from "lucide-react";
 import Image from "next/image";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
@@ -44,6 +44,40 @@ export function BusinessOverviewCard({ lead }: { lead: PartnerLeadData }) {
               {lead.storeLogo
                 ? "Partner provided a custom store logo"
                 : "Using system default store image"}
+            </p>
+          </div>
+        </div>
+
+        {/* Manager Profile Image */}
+        <div className="mb-6 flex items-center gap-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3.5">
+          <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-200 bg-white shadow-2xs">
+            {lead.profileImage ? (
+              <Image
+                src={lead.profileImage}
+                alt={`${lead.firstName} ${lead.lastName}`}
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-emerald-600 to-teal-700">
+                <User className="h-6 w-6 text-white" />
+              </div>
+            )}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold tracking-wider text-slate-900 uppercase">
+                Manager Photo
+              </span>
+              <span className="py-0.2 rounded-full border border-slate-200 bg-white px-2 text-[10px] font-semibold text-slate-500">
+                {lead.profileImage ? "Custom Uploaded" : "Default Avatar"}
+              </span>
+            </div>
+            <p className="mt-0.5 text-xs text-slate-500">
+              {lead.profileImage
+                ? "Partner provided a profile photo"
+                : "Using default avatar — can be updated later"}
             </p>
           </div>
         </div>
