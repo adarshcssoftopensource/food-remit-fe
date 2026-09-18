@@ -62,15 +62,7 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
       </span>
     ),
   },
-  {
-    accessorKey: "refrenceNumber",
-    header: "Ref No",
-    cell: ({ row }) => (
-      <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
-        {row.original.refrenceNumber || `#${row.original.id.substring(0, 8).toUpperCase()}`}
-      </span>
-    ),
-  },
+
   {
     accessorKey: "createdAt",
     header: "Order Date",

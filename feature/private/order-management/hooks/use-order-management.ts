@@ -54,10 +54,10 @@ export function useOrderManagement(section?: OrderSectionKey) {
     // no specific filter, show all
   } else if (section === "sent-orders") {
     type = 1;
-    excludeStatus = "5,6,9";
+    excludeStatus = "2,5,6,9";
   } else if (section === "requested-orders") {
     type = 2;
-    excludeStatus = "5,6,9";
+    excludeStatus = "2,5,6,9";
   } else if (section === "preparing") {
     status = "2"; // 2 represents preparing
   } else if (section === "processing") {

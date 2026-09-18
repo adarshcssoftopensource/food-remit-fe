@@ -75,6 +75,16 @@ export const employeeColumns = (onImageClick?: (image: string) => void): ColumnD
     enableSorting: true,
   },
   {
+    accessorKey: "assignedOrdersCount",
+    header: "Assigned Orders",
+    cell: ({ row }) => (
+      <span className="text-sm font-semibold text-slate-700">
+        {(row.original as any).assignedOrdersCount || 0}
+      </span>
+    ),
+    enableSorting: true,
+  },
+  {
     accessorKey: "accountStatus",
     header: "Status",
     cell: ({ row }) => (

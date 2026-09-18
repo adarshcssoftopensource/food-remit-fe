@@ -85,6 +85,10 @@ export function ItemAvailabilityCell({ item }: { item: ItemData }) {
   const isActive = pendingActive !== null ? pendingActive : item.status === "ACTIVE";
 
   const handleToggle = (checked: boolean) => {
+    if (checked && (!item.stockQuantity || Number(item.stockQuantity) <= 0)) {
+      errorToast({ description: "Cannot enable availability when stock quantity is 0" });
+      return;
+    }
     setPendingActive(checked);
     updateStatus(
       {
@@ -95,6 +99,10 @@ export function ItemAvailabilityCell({ item }: { item: ItemData }) {
         onSuccess: () => {
           setPendingActive(null);
           successToast({ description: "Item status updated successfully" });
+        },
+        onError: () => {
+          setPendingActive(null);
+          errorToast({ description: "Failed to update item status" });
         },
       },
     );
@@ -111,7 +119,13 @@ export function ItemAvailabilityCell({ item }: { item: ItemData }) {
   );
 }
 
-export function ItemAdminShareCell({ item }: { item: ItemData }) {
+export function ItemAdminShareCell({
+  item,
+  isSuperAdmin = false,
+}: {
+  item: ItemData;
+  isSuperAdmin?: boolean;
+}) {
   const [pendingActive, setPendingActive] = useState<boolean | null>(null);
   const { mutate: updateStatus, isPending } = useUpdateItemStatus(item.id);
 
@@ -138,7 +152,7 @@ export function ItemAdminShareCell({ item }: { item: ItemData }) {
     <Switch
       checked={isActive}
       onCheckedChange={handleToggle}
-      disabled={isPending}
+      disabled={!isSuperAdmin || isPending}
       className="data-[state=checked]:bg-green-500"
       title={isActive ? "Active" : "Inactive"}
     />

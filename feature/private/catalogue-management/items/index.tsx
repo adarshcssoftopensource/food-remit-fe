@@ -173,9 +173,12 @@ export function ItemsManagement() {
     profile?.roleCode === "STORE_MANAGER" ||
     profile?.roleCode === "EMPLOYEE";
 
+  const isSuperAdmin = profile?.role === "super_admin" || profile?.roleCode === "SUPER_ADMIN";
+
   const columns = useMemo(
-    () => getItemColumns(handleEdit, handleViewDetails, handleImageClick, isStoreScoped),
-    [handleEdit, handleViewDetails, handleImageClick, isStoreScoped],
+    () =>
+      getItemColumns(handleEdit, handleViewDetails, handleImageClick, isStoreScoped, isSuperAdmin),
+    [handleEdit, handleViewDetails, handleImageClick, isStoreScoped, isSuperAdmin],
   );
 
   const handleDownloadCsv = async () => {
