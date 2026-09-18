@@ -49,6 +49,7 @@ export function PrepareOrderDialog({ orderId, open, onOpenChange }: PrepareOrder
           </Button>
           <Button
             onClick={handlePrepare}
+            variant={"secondary"}
             disabled={isPending}
             className="bg-amber-600 text-white hover:bg-amber-700"
           >

@@ -1,22 +1,36 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
-import { ROUTES } from "@/config/routes";
-import { OrderStatusBadge } from "../components/order-status-badge";
-import { OrderData } from "../types/order.types";
-import { Button } from "@/components/ui/button";
-import { Eye, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Clock3, Eye, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { CompleteOrderByReferenceDialog } from "../../my-orders/components/complete-order-by-reference-dialog";
 import { PrepareOrderDialog } from "../../my-orders/components/prepare-order-dialog";
+import { OrderStatusBadge } from "../components/order-status-badge";
+import { OrderData } from "../types/order.types";
+import { getOrderReference, maskOrderReference } from "../utils/mask-order-reference";
 
-function MyOrderActionsCell({ orderId, orderStatus }: { orderId: string; orderStatus: number }) {
+function MyOrderActionsCell({
+  orderId,
+  orderStatus,
+  referenceHint,
+}: {
+  orderId: string;
+  orderStatus: number;
+  referenceHint?: string;
+}) {
   const router = useRouter();
-  const [isPrepareDialogOpen, setIsPrepareDialogOpen] = useState(false);
+  const [prepareOpen, setPrepareOpen] = useState(false);
+  const [completeOpen, setCompleteOpen] = useState(false);
+
+  const canStartPreparing = orderStatus === 4 || orderStatus === 5 || orderStatus === 8;
+  const canMarkComplete = orderStatus === 2; // After Preparing
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <Button
         size="sm"
         variant="outline"
@@ -27,24 +41,48 @@ function MyOrderActionsCell({ orderId, orderStatus }: { orderId: string; orderSt
         View
       </Button>
 
-      {/* Show Prepare Order button if status is 5 (Sent/Processing) or 8 (Paid) or 4 */}
-      {(orderStatus === 4 || orderStatus === 5 || orderStatus === 8) && (
+      {canStartPreparing && (
         <>
           <Button
             size="sm"
-            className="h-8 rounded-lg bg-amber-600 px-3 text-xs font-semibold text-white transition-all hover:bg-amber-700"
-            onClick={() => setIsPrepareDialogOpen(true)}
+            variant={"secondary"}
+            className="h-8 rounded-lg bg-amber-600! px-3 text-xs font-semibold text-white shadow-sm transition-all hover:bg-amber-700"
+            onClick={() => setPrepareOpen(true)}
           >
-            <CheckCircle2 className="mr-1.5 size-3.5" />
-            Preparing
+            <Clock3 className="mr-1.5 size-3.5" />
+            Mark as Preparing
           </Button>
+          <PrepareOrderDialog orderId={orderId} open={prepareOpen} onOpenChange={setPrepareOpen} />
+        </>
+      )}
 
-          <PrepareOrderDialog
+      {canMarkComplete && (
+        <>
+          <Button
+            size="sm"
+            className="h-8 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-sm transition-all hover:bg-emerald-700"
+            onClick={() => setCompleteOpen(true)}
+          >
+            <ShieldCheck className="mr-1.5 size-3.5" />
+            Mark as Complete
+          </Button>
+          <CompleteOrderByReferenceDialog
             orderId={orderId}
-            open={isPrepareDialogOpen}
-            onOpenChange={setIsPrepareDialogOpen}
+            open={completeOpen}
+            onOpenChange={setCompleteOpen}
+            maskedHint={referenceHint}
           />
         </>
+      )}
+
+      {orderStatus === 6 && (
+        <Button
+          variant={"outline"}
+          className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-300"
+        >
+          <CheckCircle2 className="size-3.5" />
+          Completed
+        </Button>
       )}
     </div>
   );
@@ -62,7 +100,21 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
       </span>
     ),
   },
-
+  {
+    id: "refrenceNumber",
+    header: "Reference",
+    cell: ({ row }) => {
+      const full = getOrderReference(row.original);
+      return (
+        <span
+          className="font-mono text-xs font-semibold tracking-wide text-slate-700 dark:text-slate-200"
+          title="Only last 4 digits are visible"
+        >
+          {maskOrderReference(full)}
+        </span>
+      );
+    },
+  },
   {
     accessorKey: "createdAt",
     header: "Order Date",
@@ -141,24 +193,17 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
   {
     id: "orderStatus",
     header: "Status",
-    cell: ({ row }) => {
-      const status = row.original.orderStatus;
-      if (status === 5) {
-        return (
-          <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400">
-            <span className="size-2 rounded-full bg-blue-500" />
-            Processing
-          </span>
-        );
-      }
-      return <OrderStatusBadge status={status} />;
-    },
+    cell: ({ row }) => <OrderStatusBadge status={row.original.orderStatus} />,
   },
   {
     id: "actions",
     header: "Action",
     cell: ({ row }) => (
-      <MyOrderActionsCell orderId={row.original.id} orderStatus={row.original.orderStatus} />
+      <MyOrderActionsCell
+        orderId={row.original.id}
+        orderStatus={row.original.orderStatus}
+        referenceHint={getOrderReference(row.original)}
+      />
     ),
   },
 ];

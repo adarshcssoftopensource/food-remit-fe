@@ -3,5 +3,6 @@ export const ORDER_ENDPOINTS = {
   DETAILS: (id: string) => `/admin/orders/${id}`,
   UPDATE_STATUS: (id: string) => `/admin/orders/${id}`,
   COMPLETE: (id: string) => `/admin/orders/${id}/complete`,
+  COMPLETE_BY_REFERENCE: (id: string) => `/admin/orders/${id}/complete-by-reference`,
   TRIGGER_REFUND: (id: string) => `/admin/orders/${id}/refund`,
 };
