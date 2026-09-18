@@ -257,37 +257,6 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                         <div className="grid grid-cols-2 gap-3">
                           <FormField
                             control={form.control}
-                            name="itemsPerPack"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                  Items Per Pack <span className="text-destructive">*</span>
-                                </FormLabel>
-
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    placeholder="0"
-                                    className="h-11 rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
-                                    {...field}
-                                    onFocus={(e) => {
-                                      if (e.target.value === "0" || Number(e.target.value) === 0) {
-                                        field.onChange("");
-                                      }
-                                    }}
-                                    onChange={(e) => {
-                                      field.onChange(e.target.value);
-                                    }}
-                                  />
-                                </FormControl>
-
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
                             name="stockQuantity"
                             render={({ field }) => (
                               <FormItem className="space-y-2">
@@ -316,16 +285,75 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                               </FormItem>
                             )}
                           />
+                          <FormField
+                            control={form.control}
+                            name="itemsPerPack"
+                            render={({ field }) => (
+                              <FormItem className="space-y-2">
+                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                  Items Per Pack <span className="text-destructive">*</span>
+                                </FormLabel>
+
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder="0"
+                                    className="h-11 rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                                    {...field}
+                                    onFocus={(e) => {
+                                      if (e.target.value === "0" || Number(e.target.value) === 0) {
+                                        field.onChange("");
+                                      }
+                                    }}
+                                    onChange={(e) => {
+                                      field.onChange(e.target.value);
+                                    }}
+                                  />
+                                </FormControl>
+
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         </div>
 
                         <div className="grid grid-cols-3 gap-3">
+                          <FormField
+                            control={form.control}
+                            name="netWeight"
+                            render={({ field }) => (
+                              <FormItem className="space-y-2">
+                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                  Net Weight
+                                </FormLabel>
+
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder="0"
+                                    className="h-11 rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
+                                    {...field}
+                                    onFocus={(e) => {
+                                      if (e.target.value === "0" || Number(e.target.value) === 0) {
+                                        field.onChange("");
+                                      }
+                                    }}
+                                    onChange={(e) => {
+                                      field.onChange(e.target.value);
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                           <FormField
                             control={form.control}
                             name="unit"
                             render={({ field }) => (
                               <FormItem className="space-y-2">
                                 <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                  Unit <span className="text-destructive">*</span>
+                                  Weight Unit <span className="text-destructive">*</span>
                                 </FormLabel>
 
                                 <Select onValueChange={field.onChange} value={field.value}>
@@ -358,37 +386,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                             )}
                           />
 
-                          <FormField
-                            control={form.control}
-                            name="netWeight"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                  Net Weight
-                                </FormLabel>
-
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    placeholder="0"
-                                    className="h-11 rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950"
-                                    {...field}
-                                    onFocus={(e) => {
-                                      if (e.target.value === "0" || Number(e.target.value) === 0) {
-                                        field.onChange("");
-                                      }
-                                    }}
-                                    onChange={(e) => {
-                                      field.onChange(e.target.value);
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
+                          {/* <FormField
                             control={form.control}
                             name="weightUnit"
                             render={({ field }) => (
@@ -415,7 +413,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                                 <FormMessage />
                               </FormItem>
                             )}
-                          />
+                          /> */}
                         </div>
                       </div>
                     </section>

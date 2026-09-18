@@ -115,6 +115,23 @@ export function getItemColumns(
       },
     },
     {
+      id: "stockQuantity",
+      header: "Item Quantity",
+      cell: ({ row }) => {
+        const qty = row.original.stockQuantity;
+        const unit = row.original.unit;
+        if (qty === null || qty === undefined) {
+          return <span className="text-sm text-slate-400">-</span>;
+        }
+        return (
+          <span className="text-sm font-semibold text-slate-700 tabular-nums">
+            {Number(qty).toLocaleString()}
+            {/* {unit ? <span className="ml-1 text-xs font-medium text-slate-500">{unit}</span> : null} */}
+          </span>
+        );
+      },
+    },
+    {
       id: "createdBy",
       header: "Created/Edited by",
       cell: ({ row }) => (
@@ -142,7 +159,7 @@ export function getItemColumns(
     },
     {
       id: "adminShare",
-      header: () => <div className="text-center">Food Remit Markup</div>,
+      header: () => <div className="text-center">Automated Markup</div>,
       cell: ({ row }) => (
         <div className="flex justify-center">
           <ItemAdminShareCell item={row.original} isSuperAdmin={!!isSuperAdmin} />

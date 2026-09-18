@@ -37,10 +37,9 @@ const CSV_COLUMNS = [
   {
     name: "unit",
     required: true,
-    note: "kg, g, mg, ltr, ml, pcs, dozen, box, pack, set, pair, bottle, can, bag",
+    note: "Weight Unit: kg, g, mg, ltr, ml, pcs, dozen, box, pack, set, pair, bottle, can, bag",
   },
   { name: "netWeight", required: false, note: "Required > 0 when stock > 0" },
-  { name: "weightUnit", required: false, note: "kg, g, lbs, oz" },
   { name: "upcCode", required: false, note: "8–12 digits (SKU / barcode)" },
   { name: "price", required: true, note: "Valid number ≥ 0" },
   {

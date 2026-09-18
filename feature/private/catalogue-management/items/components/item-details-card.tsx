@@ -74,10 +74,12 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           />
           <InfoCard
             icon={<Layers className="h-4 w-4 text-orange-500" />}
-            label="Stock Quantity"
+            label="Item Quantity"
             value={
               item.stockQuantity !== null && item.stockQuantity !== undefined
-                ? String(item.stockQuantity)
+                ? item.unit
+                  ? `${item.stockQuantity} ${item.unit}`
+                  : String(item.stockQuantity)
                 : "-"
             }
           />
@@ -85,12 +87,13 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
             icon={<Scale className="h-4 w-4 text-slate-500" />}
             label="Net Weight"
             value={
-              item.netWeight
-                ? item.weightUnit
-                  ? `${item.netWeight} ${item.weightUnit}`
-                  : String(item.netWeight)
-                : "-"
+              item.netWeight !== null && item.netWeight !== undefined ? String(item.netWeight) : "-"
             }
+          />
+          <InfoCard
+            icon={<Scale className="h-4 w-4 text-teal-500" />}
+            label="Weight Unit"
+            value={item.unit || "-"}
           />
           <InfoCard
             icon={<Calendar className="h-4 w-4 text-slate-400" />}
