@@ -15,11 +15,7 @@ import { StoreInformation } from "./components/store-information";
 
 export function ProfilePage() {
   const { profile } = useProfile();
-  const isEmployee =
-    profile?.roleCode === "EMPLOYEE" ||
-    profile?.role === "employee" ||
-    profile?.role === "store_manager" ||
-    profile?.roleCode === "STORE_MANAGER";
+  const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
 
   const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
 

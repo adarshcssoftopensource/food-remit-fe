@@ -88,16 +88,16 @@ export function ItemPlacementsCard({ item }: ItemPlacementsCardProps) {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                            {symbol} {priceText}
+                            {code} {priceText}
                           </span>
-                          {code && code !== symbol ? (
+                          {/* {code && code !== symbol ? (
                             <Badge
                               variant="outline"
                               className="rounded-md text-[10px] font-semibold"
                             >
                               {code}
                             </Badge>
-                          ) : null}
+                          ) : null} */}
                         </div>
                       </TableCell>
                       <TableCell className="text-slate-600 dark:text-slate-300">

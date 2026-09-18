@@ -52,6 +52,34 @@ export const orderColumns: ColumnDef<OrderData>[] = [
         );
       }
 
+      const isRequested = row.original.orderType === 2;
+      if (isRequested && row.original.orderStatus !== 8) {
+        return (
+          <TooltipProvider delay={200}>
+            <Tooltip>
+              <TooltipTrigger>
+                <div className="inline-flex cursor-not-allowed items-center opacity-40">
+                  <Checkbox
+                    checked={false}
+                    disabled
+                    aria-label="Must be Accepted & Paid"
+                    className="translate-y-[2px]"
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-slate-900 text-slate-50 dark:bg-white dark:text-slate-900"
+              >
+                <span className="flex items-center gap-1.5 font-medium">
+                  Order must be Accepted and Paid to assign
+                </span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      }
+
       return (
         <Checkbox
           checked={row.getIsSelected()}
@@ -183,10 +211,15 @@ export const orderColumns: ColumnDef<OrderData>[] = [
           "border-red-200 bg-red-50 text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400";
         dotClass = "bg-red-500";
       } else if (status === 1) {
-        label = isRequested ? "Requested" : "Pending";
+        label = "Requested";
         colorClass =
           "border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400";
         dotClass = "bg-amber-500";
+      } else if (status === 10) {
+        label = "Accepted";
+        colorClass =
+          "border-indigo-200 bg-indigo-50 text-indigo-600 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-400";
+        dotClass = "bg-indigo-500";
       } else if (status === 2) {
         label = "Preparing";
         colorClass =
@@ -198,7 +231,7 @@ export const orderColumns: ColumnDef<OrderData>[] = [
           "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400";
         dotClass = "bg-blue-500";
       } else if (status === 6 || status === 8) {
-        label = status === 8 ? "Paid" : "Completed";
+        label = status === 8 ? (isRequested ? "Accepted & Paid" : "Paid") : "Completed";
         colorClass =
           "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400";
         dotClass = "bg-emerald-500";

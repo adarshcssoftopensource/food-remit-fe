@@ -23,6 +23,9 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
   const { profile } = useProfile();
 
   const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
+  const isRequested = order.orderType === 2;
+  const canAssign =
+    isStoreManager && !order.assignedEmployeeId && (!isRequested || order.orderStatus === 8);
 
   const handleDelete = async () => {
     try {
@@ -33,7 +36,7 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
 
   return (
     <div className="flex items-center gap-2">
-      {isStoreManager && !order.assignedEmployeeId && (
+      {canAssign && (
         <>
           <Button
             variant="outline"

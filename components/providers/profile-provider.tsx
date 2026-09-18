@@ -34,7 +34,22 @@ export interface AdminProfile {
     country: string;
     cityName?: string | null;
     countryName?: string | null;
+    addedOn?: string | null;
+    addedOnTimestamp?: string | number | null;
+    createdAt?: string | null;
   }[];
+  partnerLead?: {
+    kycStatus: string | null;
+    kycVerifiedAt: string | null;
+    bankStatus: string | null;
+    bankVerifiedAt: string | null;
+    locations: any[] | null;
+    additionalDocuments: any | null;
+    kycData: any | null;
+    bankData: any | null;
+    kycVerifications: any[] | null;
+    bankVerifications: any[] | null;
+  } | null;
   isReadOnly?: boolean;
 }
 
