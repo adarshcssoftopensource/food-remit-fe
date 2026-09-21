@@ -133,9 +133,6 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
               >
                 <Lock className="h-4 w-4 opacity-75" />
                 <span>{lead.status.replace(/_/g, " ")}</span>
-                <span className="rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase opacity-80">
-                  Locked
-                </span>
               </div>
             ) : (
               <div className="flex shrink-0 items-center self-start rounded-[1.25rem] border border-slate-200 bg-white p-1.5 shadow-sm md:self-auto">
