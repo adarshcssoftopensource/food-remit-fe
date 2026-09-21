@@ -8,6 +8,7 @@ export const AUTH_ENDPOINTS = {
   PROFILE: "admin/profile",
   CHANGE_PASSWORD: "admin/change-password",
   IMPERSONATE: "admin/impersonate",
+  VERIFY_PASSWORD: "admin/verify-password",
 } as const;
 
 export interface AuthTokenResponse {

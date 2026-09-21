@@ -1,6 +1,6 @@
 "use client";
 
-import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
+import { AdminPasswordDialog } from "@/components/common/admin-password-dialog";
 import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
@@ -24,36 +24,34 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
   const updateStore = useUpdateStore(store.id);
   const impersonate = useImpersonateStore();
   const { mutateAsync: deleteStore, isPending: isDeleting } = useDeleteStore(store.id);
-  const [isActive, setIsActive] = useState(store.status === "Active");
+  const isActive = store.status === "Active";
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [targetStatus, setTargetStatus] = useState<boolean>(!isActive);
 
-  const handleStatusChange = async (checked: boolean) => {
-    const previousState = isActive;
-    setIsActive(checked);
-
-    try {
-      await updateStore.mutateAsync({
-        status: checked ? "ACTIVE" : "INACTIVE",
-      });
-      successToast({
-        title: `${store.storeName} is now ${checked ? "Active" : "Inactive"}`,
-      });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.STORES });
-    } catch {
-      setIsActive(previousState);
-    }
+  const handleStatusSwitchClick = () => {
+    setTargetStatus(!isActive);
+    setStatusOpen(true);
   };
 
-  const handleDelete = async () => {
-    try {
-      const response = await deleteStore();
-      setDeleteOpen(false);
-      successToast({
-        title: "Store Deleted",
-        description: response?.message || "Store has been deleted successfully.",
-      });
-    } catch {}
+  const handleConfirmStatusChange = async () => {
+    const nextStatus = targetStatus;
+    await updateStore.mutateAsync({
+      status: nextStatus ? "ACTIVE" : "INACTIVE",
+    });
+    successToast({
+      title: `${store.storeName} is now ${nextStatus ? "Active" : "Inactive"}`,
+    });
+    queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.STORES });
+  };
+
+  const handleConfirmDelete = async () => {
+    const response = await deleteStore();
+    successToast({
+      title: "Store Deleted",
+      description: response?.message || "Store has been deleted successfully.",
+    });
   };
 
   const handleImpersonate = async () => {
@@ -98,7 +96,7 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
         </Button>
         <Switch
           checked={isActive}
-          onCheckedChange={handleStatusChange}
+          onCheckedChange={handleStatusSwitchClick}
           disabled={updateStore.isPending}
           className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-slate-200"
           title={isActive ? "Active" : "Inactive"}
@@ -120,15 +118,24 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
 
       <EditStoreDialog store={store} open={editOpen} onOpenChange={setEditOpen} />
 
-      <ConfirmationDialog
+      <AdminPasswordDialog
+        open={statusOpen}
+        onOpenChange={setStatusOpen}
+        title={targetStatus ? "Activate Store" : "Deactivate Store"}
+        description={`Are you sure you want to ${targetStatus ? "activate" : "deactivate"} "${store.storeName}"? Please enter your admin password to proceed.`}
+        confirmLabel={targetStatus ? "Activate Store" : "Deactivate Store"}
+        variant={targetStatus ? "default" : "destructive"}
+        onConfirm={handleConfirmStatusChange}
+      />
+
+      <AdminPasswordDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="Delete Store"
-        description={`Are you sure you want to delete ${store.storeName}? It will be moved to the Recycle Bin and can be restored later.`}
+        description={`Are you sure you want to delete "${store.storeName}"? It will be moved to the Recycle Bin and can be restored later. Please enter your admin password to proceed.`}
         confirmLabel="Delete Store"
-        onConfirm={handleDelete}
-        isLoading={isDeleting}
         variant="destructive"
+        onConfirm={handleConfirmDelete}
       />
     </>
   );
