@@ -1,8 +1,11 @@
 "use client";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
+import {
+  DataTableRowActionItem,
+  DataTableRowActions,
+} from "@/components/common/data-table/data-table-row-actions";
 import { successToast } from "@/components/toaster";
-import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useDeleteAmountLimit } from "../hooks/use-delete-amount-limit";
@@ -27,28 +30,25 @@ export function AmountLimitActionsCell({ data }: { data: AmountLimitData }) {
     }
   };
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "Edit Limit",
+      icon: <Pencil className="size-4" />,
+      onClick: () => setEditOpen(true),
+    },
+    {
+      label: "Delete Limit",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setDeleteOpen(true),
+      variant: "destructive",
+      disabled: deleteMutation.isPending,
+    },
+  ];
+
   return (
     <>
       <div className="flex items-center gap-1.5">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8 rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
-          onClick={() => setEditOpen(true)}
-          title="Edit amount limit"
-        >
-          <Pencil className="size-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8 rounded-lg text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
-          onClick={() => setDeleteOpen(true)}
-          disabled={deleteMutation.isPending}
-          title="Delete amount limit"
-        >
-          <Trash2 className="size-4" />
-        </Button>
+        <DataTableRowActions items={actionItems} />
       </div>
 
       <AmountLimitDialog

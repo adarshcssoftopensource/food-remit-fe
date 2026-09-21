@@ -29,11 +29,15 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           Information Overview
           {item.stockQuantity !== null &&
             item.stockQuantity !== undefined &&
-            item.stockQuantity <= 0 && (
+            (item.stockQuantity <= 0 ? (
               <span className="rounded-md bg-red-100 px-2 py-1 text-[10px] font-bold tracking-wider text-red-600 uppercase dark:bg-red-500/20 dark:text-red-400">
                 Out of Stock
               </span>
-            )}
+            ) : item.stockQuantity <= 5 ? (
+              <span className="rounded-md bg-amber-100 px-2 py-1 text-[10px] font-bold tracking-wider text-amber-700 uppercase dark:bg-amber-500/20 dark:text-amber-400">
+                Low Stock
+              </span>
+            ) : null)}
         </CardTitle>
       </CardHeader>
 

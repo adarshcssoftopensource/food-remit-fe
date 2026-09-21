@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ROUTES } from "@/config/routes";
 import { type Employee } from "@/feature/private/employee-management/types/employee-management";
@@ -11,6 +10,10 @@ import { useUpdateEmployeeStatus } from "../hooks/use-update-employee-status";
 import { EmployeeDialog } from "./employee-dialog";
 import { useDeleteEmployee } from "../hooks/use-delete-employee";
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 interface EmployeeActionsCellProps {
   employee: Employee;
@@ -44,6 +47,26 @@ export function EmployeeActionsCell({ employee }: EmployeeActionsCellProps) {
     } catch {}
   };
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "View Employee",
+      icon: <Eye className="size-4" />,
+      onClick: () => router.push(`${ROUTES.ADMIN.EMPLOYEE_MANAGEMENT}/${employee.id}`),
+    },
+    {
+      label: "Edit Employee",
+      icon: <Edit className="size-4" />,
+      onClick: () => setIsEditOpen(true),
+    },
+    {
+      label: "Delete Employee",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setDeleteOpen(true),
+      variant: "destructive",
+      disabled: isDeleting,
+    },
+  ];
+
   return (
     <>
       <div className="flex items-center gap-2">
@@ -54,36 +77,8 @@ export function EmployeeActionsCell({ employee }: EmployeeActionsCellProps) {
           disabled={isPending}
           className="data-[state=checked]:bg-green-500"
         />
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          title="View Employee"
-          onClick={() => router.push(`${ROUTES.ADMIN.EMPLOYEE_MANAGEMENT}/${employee.id}`)}
-        >
-          <Eye className="size-4" />
-        </Button>
 
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500 hover:border-slate-300 hover:bg-slate-50"
-          title="Edit Employee"
-          onClick={() => setIsEditOpen(true)}
-        >
-          <Edit className="size-4" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-          title="Delete Employee"
-          onClick={() => setDeleteOpen(true)}
-          disabled={isDeleting}
-        >
-          <Trash2 className="size-4" />
-        </Button>
+        <DataTableRowActions items={actionItems} />
       </div>
 
       <EmployeeDialog open={isEditOpen} onOpenChange={setIsEditOpen} employee={employee} />

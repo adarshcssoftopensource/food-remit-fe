@@ -190,6 +190,18 @@ export function ItemsManagement() {
     [handleEdit, handleViewDetails, handleImageClick, isStoreScoped, isSuperAdmin],
   );
 
+  const getRowClassName = useCallback((row: import("@tanstack/react-table").Row<ItemData>) => {
+    const qty = row.original.stockQuantity;
+    if (qty === null || qty === undefined) return undefined;
+    if (qty <= 0) {
+      return "bg-rose-50/30 hover:bg-rose-50/60! dark:bg-rose-950/10 dark:hover:bg-rose-950/25!";
+    }
+    if (qty <= 5) {
+      return "bg-amber-50/30 hover:bg-amber-50/60! dark:bg-amber-950/10 dark:hover:bg-amber-950/25!";
+    }
+    return undefined;
+  }, []);
+
   const handleDownloadCsv = async () => {
     try {
       const response = await apiClient.get(CATALOGUE_MANAGEMENT_ENDPOINTS.DOWNLOAD_ITEM_CSV, {
@@ -495,6 +507,7 @@ export function ItemsManagement() {
             rowsPerPage={pagination.limit}
             onPageChange={(p) => setPage(p)}
             onRowsPerPageChange={(l) => setLimit(l)}
+            getRowClassName={getRowClassName}
           />
         </CardContent>
       </Card>

@@ -1,6 +1,9 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { StatusBadge } from "@/components/common/status-badge";
-import { Button } from "@/components/ui/button";
+import {
+  DataTableRowActionItem,
+  DataTableRowActions,
+} from "@/components/common/data-table/data-table-row-actions";
 import { PhoneDisplay } from "@/components/ui/phone-display";
 import { Switch } from "@/components/ui/switch";
 import type { CityManagerData } from "@/feature/private/city-management/types/city-manager";
@@ -92,43 +95,38 @@ export function getCityManagerColumns({
     {
       id: "actions",
       header: "Action",
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8 rounded-full text-slate-500"
-            onClick={() => onView(row.original)}
-            title="View manager"
-          >
-            <Eye className="size-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8 rounded-full text-slate-500"
-            onClick={() => onEdit(row.original)}
-            title="Edit manager"
-          >
-            <Pencil className="size-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-            onClick={() => onDelete(row.original)}
-            title="Delete manager"
-          >
-            <Trash2 className="size-4" />
-          </Button>
-          <Switch
-            checked={row.original.status === "Active"}
-            onCheckedChange={(checked) => onToggleStatus(row.original.id, checked)}
-            className="data-[state=checked]:bg-emerald-500"
-            title={row.original.status === "Active" ? "Active" : "Inactive"}
-          />
-        </div>
-      ),
+      cell: ({ row }) => {
+        const actionItems: DataTableRowActionItem[] = [
+          {
+            label: "View Manager",
+            icon: <Eye className="size-4" />,
+            onClick: () => onView(row.original),
+          },
+          {
+            label: "Edit Manager",
+            icon: <Pencil className="size-4" />,
+            onClick: () => onEdit(row.original),
+          },
+          {
+            label: "Delete Manager",
+            icon: <Trash2 className="size-4" />,
+            onClick: () => onDelete(row.original),
+            variant: "destructive",
+          },
+        ];
+
+        return (
+          <div className="flex items-center gap-2">
+            <DataTableRowActions items={actionItems} />
+            <Switch
+              checked={row.original.status === "Active"}
+              onCheckedChange={(checked) => onToggleStatus(row.original.id, checked)}
+              className="data-[state=checked]:bg-emerald-500"
+              title={row.original.status === "Active" ? "Active" : "Inactive"}
+            />
+          </div>
+        );
+      },
     },
   ];
 }

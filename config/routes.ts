@@ -10,6 +10,7 @@ export const ROUTES = {
     DASHBOARD: "/dashboard",
     USERS_MANAGEMENT: "/users-management",
     RECYCLE_BIN: "/recycle-bin",
+    HISTORY: "/history",
     PARTNER_LEADS: "/partner-leads",
     FOUNDATION_MANAGEMENT: "/foundation-management",
     PHILANTHROPIST_MANAGEMENT: "/philanthropist-management",

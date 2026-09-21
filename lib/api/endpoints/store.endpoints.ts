@@ -11,4 +11,9 @@ export const STORE_ENDPOINTS = {
   PERMANENT_DELETE_STORE: (id: string) => `${ADMIN}/stores/${id}/permanent`,
   BULK_PERMANENT_DELETE_STORES: `${ADMIN}/stores/recycle-bin/bulk-permanent-delete`,
   BULK_DELETE_STORES: `${ADMIN}/stores/bulk-delete`,
+  GET_HISTORY_STORES: `${ADMIN}/stores/history`,
+  RESTORE_HISTORY_STORE: (id: string) => `${ADMIN}/stores/history/${id}/restore`,
+  BULK_RESTORE_HISTORY_STORES: `${ADMIN}/stores/history/bulk-restore`,
+  PERMANENT_DELETE_HISTORY_STORE: (id: string) => `${ADMIN}/stores/history/${id}`,
+  BULK_PERMANENT_DELETE_HISTORY_STORES: `${ADMIN}/stores/history/bulk-permanent-delete`,
 } as const;

@@ -3,7 +3,6 @@
 import { AdminPasswordDialog } from "@/components/common/admin-password-dialog";
 import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ROUTES } from "@/config/routes";
 import { type StoreData } from "@/feature/private/store-management/types/store-management";
@@ -16,6 +15,10 @@ import { useDeleteStore } from "../hooks/use-delete-store";
 import { useImpersonateStore } from "../hooks/use-impersonate-store";
 import { useUpdateStore } from "../hooks/use-update-store";
 import { EditStoreDialog } from "./edit-store-dialog";
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 export function StoreActionsCell({ store }: { store: StoreData }) {
   const router = useRouter();
@@ -61,39 +64,36 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
     } catch {}
   };
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "View Details",
+      icon: <Eye className="size-4" />,
+      onClick: () => router.push(`${ROUTES.ADMIN.STORE_MANAGEMENT.ROOT}/${store.id}`),
+    },
+    {
+      label: "Edit Store",
+      icon: <Pencil className="size-4" />,
+      onClick: () => setEditOpen(true),
+    },
+    {
+      label: "Go to portal",
+      icon: <ExternalLink className="size-4" />,
+      onClick: handleImpersonate,
+      disabled: impersonate.isPending,
+      hidden: !isSuperAdmin,
+    },
+    {
+      label: "Delete Store",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setDeleteOpen(true),
+      variant: "destructive",
+      disabled: isDeleting,
+    },
+  ];
+
   return (
     <>
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          onClick={() => router.push(`${ROUTES.ADMIN.STORE_MANAGEMENT.ROOT}/${store.id}`)}
-          title="View store details"
-        >
-          <Eye className="size-4" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          onClick={() => setEditOpen(true)}
-          title="Edit store"
-        >
-          <Pencil className="size-4" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-          onClick={() => setDeleteOpen(true)}
-          disabled={isDeleting}
-          title="Delete store"
-        >
-          <Trash2 className="size-4" />
-        </Button>
         <Switch
           checked={isActive}
           onCheckedChange={handleStatusSwitchClick}
@@ -102,18 +102,7 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
           title={isActive ? "Active" : "Inactive"}
         />
 
-        {isSuperAdmin && (
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8 rounded-full text-slate-500 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
-            onClick={handleImpersonate}
-            disabled={impersonate.isPending}
-            title="Bypass / Impersonate"
-          >
-            <ExternalLink className="size-4" />
-          </Button>
-        )}
+        <DataTableRowActions items={actionItems} />
       </div>
 
       <EditStoreDialog store={store} open={editOpen} onOpenChange={setEditOpen} />

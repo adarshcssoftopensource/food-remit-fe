@@ -2,13 +2,17 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { errorToast, successToast } from "@/components/toaster";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useDeleteItem } from "../hooks/use-delete-item";
 import { useUpdateItemStatus } from "../hooks/use-update-item-status";
 import { ItemData } from "../types/item.types";
+
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 interface ItemActionsCellProps {
   item: ItemData;
@@ -31,38 +35,29 @@ export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) 
     } catch {}
   };
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "View Details",
+      icon: <Eye className="size-4" />,
+      onClick: () => onView(item),
+    },
+    {
+      label: "Edit Item",
+      icon: <Pencil className="size-4" />,
+      onClick: () => onEdit(item),
+    },
+    {
+      label: "Delete Item",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setDeleteOpen(true),
+      variant: "destructive",
+      disabled: isDeleting,
+    },
+  ];
+
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-full text-slate-500"
-        onClick={() => onView(item)}
-        title="View item"
-      >
-        <Eye className="size-4" />
-      </Button>
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-full text-slate-500"
-        onClick={() => onEdit(item)}
-        title="Edit item"
-      >
-        <Pencil className="size-4" />
-      </Button>
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-        onClick={() => setDeleteOpen(true)}
-        disabled={isDeleting}
-        title="Delete item"
-      >
-        <Trash2 className="size-4" />
-      </Button>
+    <>
+      <DataTableRowActions items={actionItems} />
 
       <ConfirmationDialog
         open={deleteOpen}
@@ -74,7 +69,7 @@ export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) 
         isLoading={isDeleting}
         variant="destructive"
       />
-    </div>
+    </>
   );
 }
 
@@ -176,7 +171,6 @@ export function ItemDiscountAvailabilityCell({ item }: { item: ItemData }) {
         },
         onError: () => {
           setPendingActive(null);
-          errorToast({ description: "Failed to update discount availability" });
         },
       },
     );

@@ -28,7 +28,8 @@ import { Search } from "lucide-react";
 import { renderHeader } from "./data-table-column-header";
 import { DataTablePagination } from "./data-table-pagination";
 
-import { RowSelectionState } from "@tanstack/react-table";
+import { cn } from "@/lib/utils";
+import { RowSelectionState, Row } from "@tanstack/react-table";
 
 const EMPTY_ROW_SELECTION: RowSelectionState = {};
 
@@ -54,7 +55,8 @@ interface DataTableProps<TData, TValue> {
   ) => void;
   hidePagination?: boolean;
   getRowId?: (originalRow: TData, index: number, parent?: any) => string;
-  enableRowSelection?: boolean | ((row: import("@tanstack/react-table").Row<TData>) => boolean);
+  enableRowSelection?: boolean | ((row: Row<TData>) => boolean);
+  getRowClassName?: (row: Row<TData>) => string | undefined;
 }
 
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
@@ -80,6 +82,7 @@ export function DataTable<TData, TValue>({
   onRowSelectionChange,
   getRowId,
   enableRowSelection = true,
+  getRowClassName,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -160,7 +163,10 @@ export function DataTable<TData, TValue>({
       <TableRow
         key={row.id}
         data-state={row.getIsSelected() && "selected"}
-        className="group hover:bg-primary/5 dark:hover:bg-primary/10 border-b border-slate-100/50 transition-colors duration-200 last:border-0 hover:shadow-sm dark:border-slate-800/50"
+        className={cn(
+          "group hover:bg-primary/5 dark:hover:bg-primary/10 border-b border-slate-100/50 transition-colors duration-200 last:border-0 hover:shadow-sm dark:border-slate-800/50",
+          getRowClassName?.(row),
+        )}
       >
         {row.getVisibleCells().map((cell) => (
           <TableCell
@@ -172,7 +178,7 @@ export function DataTable<TData, TValue>({
         ))}
       </TableRow>
     ));
-  }, [loading, rows, columns, table, rowSelection]);
+  }, [loading, rows, columns, table, rowSelection, getRowClassName]);
 
   return (
     <div className="space-y-4">

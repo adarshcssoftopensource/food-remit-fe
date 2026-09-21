@@ -4,10 +4,14 @@ import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Calendar, Globe, Pencil, Store, Trash2 } from "lucide-react";
-import Link from "next/link";
-
+import { useRouter } from "next/navigation";
+import {
+  DataTableRowActionItem,
+  DataTableRowActions,
+} from "@/components/common/data-table/data-table-row-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
 import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
@@ -66,6 +70,7 @@ function StatusCell({ coupon }: { coupon: CouponItem }) {
 }
 
 function ActionCell({ coupon }: { coupon: CouponItem }) {
+  const router = useRouter();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const deleteMutation = useDeleteCoupon();
 
@@ -74,29 +79,25 @@ function ActionCell({ coupon }: { coupon: CouponItem }) {
     setDeleteOpen(false);
   };
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "Edit Coupon",
+      icon: <Pencil className="size-4" />,
+      onClick: () => router.push(ROUTES.ADMIN.COUPONS_MANAGEMENT.EDIT(coupon.id)),
+    },
+    {
+      label: "Delete Coupon",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setDeleteOpen(true),
+      variant: "destructive",
+      disabled: deleteMutation.isPending,
+    },
+  ];
+
   return (
     <>
       <div className="flex items-center gap-1.5">
-        <Button
-          asChild
-          variant="outline"
-          size="icon"
-          className="size-8 cursor-pointer rounded-lg text-slate-500 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/30"
-          title="Edit coupon"
-        >
-          <Link href={ROUTES.ADMIN.COUPONS_MANAGEMENT.EDIT(coupon.id)}>
-            <Pencil className="size-3.5" />
-          </Link>
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setDeleteOpen(true)}
-          className="size-8 cursor-pointer rounded-lg text-slate-500 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30"
-          title="Delete coupon"
-        >
-          <Trash2 className="size-3.5" />
-        </Button>
+        <DataTableRowActions items={actionItems} />
       </div>
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>

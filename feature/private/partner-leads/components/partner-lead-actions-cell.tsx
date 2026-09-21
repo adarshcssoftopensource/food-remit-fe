@@ -1,13 +1,17 @@
 "use client";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CircleCheck, Eye, Trash2 } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDeletePartnerLead } from "../hooks/use-delete-partner-lead";
 import { useApprovePartnerLead } from "../hooks/use-approve-partner-lead";
 import { PartnerLeadData } from "../types/partner-lead.types";
+
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 interface PartnerLeadActionsCellProps {
   lead: PartnerLeadData;
@@ -42,52 +46,25 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
 
   const isApproved = lead.status === "APPROVED";
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "View Details",
+      icon: <Eye className="size-4" />,
+      onClick: () => onView(lead.id),
+    },
+    {
+      label: "Delete Lead",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setDeleteOpen(true),
+      variant: "destructive",
+      disabled: isDeleting,
+      hidden: isApproved,
+    },
+  ];
+
   return (
-    <div className="flex items-center gap-1.5">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger
-            onClick={() => onView(lead.id)}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-emerald-100 bg-emerald-50 text-emerald-600 shadow-xs transition-colors hover:bg-emerald-100 hover:text-emerald-700"
-            title="View Details"
-          >
-            <Eye className="size-4" />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>View Details</p>
-          </TooltipContent>
-        </Tooltip>
-
-        {/* <Tooltip>
-          <TooltipTrigger
-            onClick={() => setApproveOpen(true)}
-            disabled={isApproving || lead.status === "APPROVED"}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-blue-200 text-blue-500 shadow-xs transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-blue-950/30"
-            title="Approve Lead"
-          >
-            <CircleCheck size={20} />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Approve Lead</p>
-          </TooltipContent>
-        </Tooltip> */}
-
-        {!isApproved && (
-          <Tooltip>
-            <TooltipTrigger
-              onClick={() => setDeleteOpen(true)}
-              disabled={isDeleting}
-              className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 text-slate-500 shadow-xs transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-red-950/30"
-              title="Delete Lead"
-            >
-              <Trash2 className="size-4" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Delete Lead</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
-      </TooltipProvider>
+    <>
+      <DataTableRowActions items={actionItems} />
 
       <ConfirmationDialog
         open={approveOpen}
@@ -111,6 +88,6 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
           variant="destructive"
         />
       )}
-    </div>
+    </>
   );
 }

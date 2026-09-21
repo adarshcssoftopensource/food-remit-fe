@@ -2,7 +2,6 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { successToast } from "@/components/toaster";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -10,6 +9,11 @@ import { useUpdateDepartmentStatus } from "../hooks/use-update-department-status
 import { useDeleteDepartment } from "../hooks/use-delete-department";
 import { DepartmentData } from "../types/department.types";
 import { useProfile } from "@/components/providers/profile-provider";
+
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 interface DepartmentActionsCellProps {
   department: DepartmentData;
@@ -48,41 +52,29 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
     } catch {}
   };
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "View Details",
+      icon: <Eye className="size-4" />,
+      onClick: () => onView(department),
+      hidden: isStoreScoped,
+    },
+    {
+      label: "Edit Department",
+      icon: <Pencil className="size-4" />,
+      onClick: () => onEdit(department),
+    },
+    {
+      label: "Delete Department",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setDeleteOpen(true),
+      variant: "destructive",
+      disabled: isDeleting,
+    },
+  ];
+
   return (
     <div className="flex items-center gap-2">
-      {!isStoreScoped && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          onClick={() => onView(department)}
-          title="View department"
-        >
-          <Eye className="size-4" />
-        </Button>
-      )}
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-full text-slate-500"
-        onClick={() => onEdit(department)}
-        title="Edit department"
-      >
-        <Pencil className="size-4" />
-      </Button>
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-        onClick={() => setDeleteOpen(true)}
-        disabled={isDeleting}
-        title="Delete department"
-      >
-        <Trash2 className="size-4" />
-      </Button>
-
       <Switch
         checked={isActive}
         onCheckedChange={handleStatusChange}
@@ -90,6 +82,8 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
         className="data-[state=checked]:bg-green-500"
         title={isActive ? "Active" : "Inactive"}
       />
+
+      <DataTableRowActions items={actionItems} />
 
       <ConfirmationDialog
         open={deleteOpen}

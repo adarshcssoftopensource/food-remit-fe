@@ -13,6 +13,7 @@ import {
   GraduationCap,
   HandHeart,
   Heart,
+  History,
   Info,
   List,
   MapPin,
@@ -267,6 +268,12 @@ export const navigationItems: NavItem[] = [
     title: "Recycle Bin",
     url: ROUTES.ADMIN.RECYCLE_BIN,
     icon: Trash2,
+    group: "UTILITIES",
+  },
+  {
+    title: "History",
+    url: ROUTES.ADMIN.HISTORY,
+    icon: History,
     group: "UTILITIES",
   },
 ];

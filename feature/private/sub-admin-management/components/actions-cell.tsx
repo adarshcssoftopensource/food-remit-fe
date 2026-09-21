@@ -1,17 +1,22 @@
 "use client";
 
 import { successToast } from "@/components/toaster";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ROUTES } from "@/config/routes";
 import { Eye, Pencil } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { useUpdateSubAdminStatus } from "../hooks/use-update-sub-admin-status";
 import { SubAdminData } from "../types/sub-admin.types";
 import { SubAdminDialog } from "./sub-admin-dialog";
 
+import { useRouter } from "next/navigation";
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
+
 export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
+  const router = useRouter();
   const [isActive, setIsActive] = useState(admin.status === "Active");
   const [editOpen, setEditOpen] = useState(false);
 
@@ -32,31 +37,22 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
     }
   };
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "View Details",
+      icon: <Eye className="size-4" />,
+      onClick: () => router.push(ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.DETAILS(admin.id)),
+    },
+    {
+      label: "Edit Sub-Admin",
+      icon: <Pencil className="size-4" />,
+      onClick: () => setEditOpen(true),
+    },
+  ];
+
   return (
     <>
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          title="View details"
-          asChild
-        >
-          <Link href={ROUTES.ADMIN.SUB_ADMIN_MANAGEMENT.DETAILS(admin.id)}>
-            <Eye className="size-4" />
-          </Link>
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          onClick={() => setEditOpen(true)}
-          title="Edit sub/co admin"
-        >
-          <Pencil className="size-4" />
-        </Button>
-
         <Switch
           checked={isActive}
           disabled={isStatusUpdating}
@@ -64,6 +60,8 @@ export function SubAdminActionsCell({ admin }: { admin: SubAdminData }) {
           className="data-[state=checked]:bg-emerald-500"
           title={isActive ? "Active" : "Inactive"}
         />
+
+        <DataTableRowActions items={actionItems} />
       </div>
 
       <SubAdminDialog mode="edit" admin={admin} open={editOpen} onOpenChange={setEditOpen} />

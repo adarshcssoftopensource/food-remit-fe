@@ -2,12 +2,16 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { successToast } from "@/components/toaster";
-import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useDeleteCity } from "../hooks/use-delete-city";
 import type { CityData } from "../types/settings.types";
 import { AddCityDialog } from "./add-city-dialog";
+
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 export function CityActionsCell({ city }: { city: CityData }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -28,30 +32,24 @@ export function CityActionsCell({ city }: { city: CityData }) {
 
   const displayName = city.cityName || city.name || "this city";
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "Edit City",
+      icon: <Edit className="size-4" />,
+      onClick: () => setIsEditDialogOpen(true),
+    },
+    {
+      label: "Delete City",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setIsDeleteDialogOpen(true),
+      variant: "destructive",
+      disabled: isDeleting,
+    },
+  ];
+
   return (
     <>
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          onClick={() => setIsEditDialogOpen(true)}
-          title="Edit city"
-        >
-          <Edit className="size-4" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-          onClick={() => setIsDeleteDialogOpen(true)}
-          disabled={isDeleting}
-          title="Delete city"
-        >
-          <Trash2 className="size-4" />
-        </Button>
-      </div>
+      <DataTableRowActions items={actionItems} />
 
       {isEditDialogOpen && (
         <AddCityDialog

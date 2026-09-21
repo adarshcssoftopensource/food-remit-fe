@@ -1,14 +1,15 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { ScopeBadge } from "@/components/common/scope-badge";
-import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
+
 import {
   ItemActionsCell,
   ItemAdminShareCell,
   ItemAvailabilityCell,
   ItemDiscountAvailabilityCell,
 } from "../components/item-actions-cell";
+import { StockIndicator } from "../components/stock-indicator";
 import { ItemData } from "../types/item.types";
 
 export function getItemColumns(
@@ -116,38 +117,16 @@ export function getItemColumns(
     },
     {
       id: "stockQuantity",
-      header: "Item Quantity",
-      cell: ({ row }) => {
-        const qty = row.original.stockQuantity;
-        const unit = row.original.unit;
-        if (qty === null || qty === undefined) {
-          return <span className="text-sm text-slate-400">-</span>;
-        }
-        return (
-          <span className="text-sm font-semibold text-slate-700 tabular-nums">
-            {Number(qty).toLocaleString()}
-            {/* {unit ? <span className="ml-1 text-xs font-medium text-slate-500">{unit}</span> : null} */}
-          </span>
-        );
-      },
-    },
-    {
-      id: "createdBy",
-      header: "Created/Edited by",
+      header: "Stock Quantity",
       cell: ({ row }) => (
-        <span className="text-sm text-slate-600">{row.original.createdBy || "Admin"}</span>
+        <StockIndicator
+          quantity={row.original.stockQuantity}
+          unit={row.original.unit}
+          lowStockThreshold={5}
+        />
       ),
     },
-    {
-      accessorKey: "createdAt",
-      header: "Created/Edited On",
-      enableSorting: true,
-      cell: ({ row }) => (
-        <span className="font-mono text-xs text-slate-500">
-          {formatDate(row.original.createdAt)}
-        </span>
-      ),
-    },
+
     {
       id: "availability",
       header: () => <div className="text-center">Availability</div>,

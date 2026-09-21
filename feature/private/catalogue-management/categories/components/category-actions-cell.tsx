@@ -2,7 +2,6 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { successToast } from "@/components/toaster";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -10,6 +9,10 @@ import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
 import { useDeleteCategory } from "../hooks/use-delete-category";
 import { CategoryData } from "../types/category.types";
 import { useProfile } from "@/components/providers/profile-provider";
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 interface CategoryActionsCellProps {
   category: CategoryData;
@@ -46,41 +49,29 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
     } catch {}
   };
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "View Details",
+      icon: <Eye className="size-4" />,
+      onClick: () => onView(category),
+      hidden: isStoreScoped,
+    },
+    {
+      label: "Edit Category",
+      icon: <Pencil className="size-4" />,
+      onClick: () => onEdit(category),
+    },
+    {
+      label: "Delete Category",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setDeleteOpen(true),
+      variant: "destructive",
+      disabled: isDeleting,
+    },
+  ];
+
   return (
     <div className="flex items-center gap-2">
-      {!isStoreScoped && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          onClick={() => onView(category)}
-          title="View category"
-        >
-          <Eye className="size-4" />
-        </Button>
-      )}
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-full text-slate-500"
-        onClick={() => onEdit(category)}
-        title="Edit category"
-      >
-        <Pencil className="size-4" />
-      </Button>
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-        onClick={() => setDeleteOpen(true)}
-        disabled={isDeleting}
-        title="Delete category"
-      >
-        <Trash2 className="size-4" />
-      </Button>
-
       <Switch
         checked={isActive}
         onCheckedChange={handleStatusChange}
@@ -88,6 +79,8 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
         className="data-[state=checked]:bg-green-500"
         title={isActive ? "Active" : "Inactive"}
       />
+
+      <DataTableRowActions items={actionItems} />
 
       <ConfirmationDialog
         open={deleteOpen}

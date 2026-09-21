@@ -1,7 +1,6 @@
 "use client";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ROUTES } from "@/config/routes";
 import { Eye, Trash2 } from "lucide-react";
@@ -11,6 +10,10 @@ import { toast } from "sonner";
 import { useDeleteUser } from "../hooks/use-delete-user";
 import { useUpdateUserStatus } from "../hooks/use-update-user-status";
 import { UserData } from "../types/user.types";
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 export function ActionsCell({ user }: { user: UserData }) {
   const router = useRouter();
@@ -52,19 +55,24 @@ export function ActionsCell({ user }: { user: UserData }) {
     }
   };
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "View Details",
+      icon: <Eye className="size-4" />,
+      onClick: () => router.push(`${ROUTES.ADMIN.USERS_MANAGEMENT}/${user.id}`),
+    },
+    {
+      label: "Delete User",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setIsDeleteDialogOpen(true),
+      variant: "destructive",
+      disabled: isDeleting || updateUserStatus.isPending,
+    },
+  ];
+
   return (
     <>
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          onClick={() => router.push(`${ROUTES.ADMIN.USERS_MANAGEMENT}/${user.id}`)}
-          title="View user details"
-        >
-          <Eye className="size-4" />
-        </Button>
-
         <Switch
           checked={isActive}
           title={isActive ? "Active" : "Inactive"}
@@ -73,16 +81,7 @@ export function ActionsCell({ user }: { user: UserData }) {
           className="data-[state=checked]:bg-green-500"
         />
 
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-          onClick={() => setIsDeleteDialogOpen(true)}
-          disabled={isDeleting || updateUserStatus.isPending}
-          title="Delete user"
-        >
-          <Trash2 className="size-4" />
-        </Button>
+        <DataTableRowActions items={actionItems} />
       </div>
 
       <ConfirmationDialog

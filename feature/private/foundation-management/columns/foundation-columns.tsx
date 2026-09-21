@@ -2,8 +2,11 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { FoundationData, FOUNDATION_STATUS_STYLES } from "@/constants/foundation-management";
-import { Button } from "@/components/ui/button";
-import { Eye, Trash } from "lucide-react";
+import {
+  DataTableRowActionItem,
+  DataTableRowActions,
+} from "@/components/common/data-table/data-table-row-actions";
+import { Eye, Trash2 } from "lucide-react";
 
 function FoundationStatusBadge({ status }: { status: FoundationData["status"] }) {
   return (
@@ -30,16 +33,27 @@ const websiteCell = ({ row }: { row: { original: FoundationData } }) => (
   </a>
 );
 
-const actionCell = () => (
-  <div className="flex gap-2">
-    <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10 h-8">
-      <Eye size={22} />
-    </Button>
-    <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 h-8">
-      <Trash size={22} />
-    </Button>
-  </div>
-);
+const actionCell = () => {
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "View Details",
+      icon: <Eye className="size-4" />,
+      onClick: () => {},
+    },
+    {
+      label: "Delete Foundation",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => {},
+      variant: "destructive",
+    },
+  ];
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <DataTableRowActions items={actionItems} />
+    </div>
+  );
+};
 
 export const foundationColumns: ColumnDef<FoundationData>[] = [
   { accessorKey: "foundationId", header: "Foundation ID" },

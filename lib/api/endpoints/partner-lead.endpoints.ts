@@ -41,4 +41,9 @@ export const PARTNER_LEAD_ENDPOINTS = {
   BULK_RESTORE_LEADS: "partner-leads/recycle-bin/bulk-restore",
   PERMANENT_DELETE_LEAD: (id: string) => `partner-leads/recycle-bin/${id}`,
   BULK_PERMANENT_DELETE_LEADS: "partner-leads/recycle-bin/bulk-permanent-delete",
+  GET_HISTORY_LEADS: "partner-leads/history",
+  RESTORE_HISTORY_LEAD: (id: string) => `partner-leads/history/${id}/restore`,
+  BULK_RESTORE_HISTORY_LEADS: "partner-leads/history/bulk-restore",
+  PERMANENT_DELETE_HISTORY_LEAD: (id: string) => `partner-leads/history/${id}`,
+  BULK_PERMANENT_DELETE_HISTORY_LEADS: "partner-leads/history/bulk-permanent-delete",
 } as const;

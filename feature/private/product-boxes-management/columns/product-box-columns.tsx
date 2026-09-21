@@ -1,8 +1,12 @@
-import { Button } from "@/components/ui/button";
+import {
+  DataTableRowActionItem,
+  DataTableRowActions,
+} from "@/components/common/data-table/data-table-row-actions";
 import { Switch } from "@/components/ui/switch";
 import { formatDateTime } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pencil, Trash2 } from "lucide-react";
+
 import Image from "next/image";
 import { ProductBox } from "../types/product-box.types";
 
@@ -94,24 +98,29 @@ export const getProductBoxColumns = ({
     header: "Action",
     cell: ({ row }) => {
       const box = row.original;
+      const actionItems: DataTableRowActionItem[] = [
+        {
+          label: "View Box",
+          icon: <Eye className="size-4" />,
+          onClick: () => onView(box),
+        },
+        {
+          label: "Edit Box",
+          icon: <Pencil className="size-4" />,
+          onClick: () => onEdit(box),
+        },
+        {
+          label: "Delete Box",
+          icon: <Trash2 className="size-4" />,
+          onClick: () => onDelete(box),
+          variant: "destructive",
+        },
+      ];
+
       return (
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" title="View Box" onClick={() => onView(box)}>
-            <Eye className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" title="Edit Box" onClick={() => onEdit(box)}>
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            title="Delete Box"
-            onClick={() => onDelete(box)}
-            className="text-red-600 hover:bg-red-50 hover:text-red-700"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-          <div className="ml-2">
+          <DataTableRowActions items={actionItems} />
+          <div className="ml-1">
             <Switch
               checked={box.status}
               onCheckedChange={(checked) => onToggleStatus(box, checked)}

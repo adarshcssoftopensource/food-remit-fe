@@ -2,12 +2,16 @@
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { successToast } from "@/components/toaster";
-import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useDeleteCountry } from "../hooks/use-delete-country";
 import type { CountryData } from "../types/settings.types";
 import { AddCountriesDialog } from "./add-countries-dialog";
+
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 export function CountryActionsCell({ country }: { country: CountryData }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -30,30 +34,24 @@ export function CountryActionsCell({ country }: { country: CountryData }) {
 
   const displayName = country.countryName || country.name || "this country";
 
+  const actionItems: DataTableRowActionItem[] = [
+    {
+      label: "Edit Country",
+      icon: <Edit className="size-4" />,
+      onClick: () => setIsEditDialogOpen(true),
+    },
+    {
+      label: "Delete Country",
+      icon: <Trash2 className="size-4" />,
+      onClick: () => setIsDeleteDialogOpen(true),
+      variant: "destructive",
+      disabled: isDeleting,
+    },
+  ];
+
   return (
     <>
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500"
-          onClick={() => setIsEditDialogOpen(true)}
-          title="Edit country"
-        >
-          <Edit className="size-4" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-8 rounded-full text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-          onClick={() => setIsDeleteDialogOpen(true)}
-          disabled={isDeleting}
-          title="Delete country"
-        >
-          <Trash2 className="size-4" />
-        </Button>
-      </div>
+      <DataTableRowActions items={actionItems} />
 
       {isEditDialogOpen && (
         <AddCountriesDialog

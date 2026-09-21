@@ -1,4 +1,7 @@
-import { Button } from "@/components/ui/button";
+import {
+  DataTableRowActionItem,
+  DataTableRowActions,
+} from "@/components/common/data-table/data-table-row-actions";
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
 import type { FaqData } from "../types";
@@ -47,26 +50,27 @@ export function getFaqColumns({ onEdit, onDelete }: FaqColumnsConfig): ColumnDef
       id: "actions",
       header: "Action",
       enableSorting: false,
-      cell: ({ row }) => (
-        <div className="flex items-center gap-1.5">
-          <Button
-            variant="outline"
-            size="icon-sm"
-            className="border-primary/20 text-primary hover:bg-primary/10"
-            onClick={() => onEdit(row.original)}
-          >
-            <Pencil size={16} />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon-sm"
-            className="border-red-200 text-red-500 hover:bg-red-50"
-            onClick={() => onDelete(row.original)}
-          >
-            <Trash2 size={16} />
-          </Button>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const actionItems: DataTableRowActionItem[] = [
+          {
+            label: "Edit FAQ",
+            icon: <Pencil className="size-4" />,
+            onClick: () => onEdit(row.original),
+          },
+          {
+            label: "Delete FAQ",
+            icon: <Trash2 className="size-4" />,
+            onClick: () => onDelete(row.original),
+            variant: "destructive",
+          },
+        ];
+
+        return (
+          <div className="flex items-center gap-1.5">
+            <DataTableRowActions items={actionItems} />
+          </div>
+        );
+      },
     },
   ];
 }
