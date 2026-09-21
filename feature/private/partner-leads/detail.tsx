@@ -77,6 +77,7 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
   }
 
   const statusLocked = isTerminalLeadStatus(lead.status);
+  const isApproved = lead.status === "APPROVED";
 
   return (
     <div>
@@ -90,16 +91,18 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
         />
       )}
 
-      <ConfirmationDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-        title="Delete Partner Lead"
-        description={`Are you sure you want to delete "${lead.businessName}"? It will be moved to the Recycle Bin and can be restored back to the same ${lead.status.replace(/_/g, " ").toLowerCase()} bucket.`}
-        confirmLabel="Delete Lead"
-        onConfirm={handleDelete}
-        isLoading={isDeleting}
-        variant="destructive"
-      />
+      {!isApproved && (
+        <ConfirmationDialog
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          title="Delete Partner Lead"
+          description={`Are you sure you want to delete "${lead.businessName}"? It will be moved to the Recycle Bin and can be restored back to the same ${lead.status.replace(/_/g, " ").toLowerCase()} bucket.`}
+          confirmLabel="Delete Lead"
+          onConfirm={handleDelete}
+          isLoading={isDeleting}
+          variant="destructive"
+        />
+      )}
 
       <PageHeader
         title={lead.businessName}
@@ -111,15 +114,17 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
         className="mb-6 border-b border-slate-100 pb-8"
         action={
           <div className="flex flex-wrap items-center gap-3">
-            <Button
-              variant="outline"
-              className="h-11 rounded-[1rem] border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/40 dark:text-red-400 dark:hover:bg-red-950/30"
-              onClick={() => setDeleteOpen(true)}
-              disabled={isDeleting}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Lead
-            </Button>
+            {!isApproved && (
+              <Button
+                variant="outline"
+                className="h-11 rounded-[1rem] border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/40 dark:text-red-400 dark:hover:bg-red-950/30"
+                onClick={() => setDeleteOpen(true)}
+                disabled={isDeleting}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Lead
+              </Button>
+            )}
 
             {statusLocked ? (
               <div

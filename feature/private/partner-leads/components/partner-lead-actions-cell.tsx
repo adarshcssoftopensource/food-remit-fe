@@ -40,6 +40,8 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
     }
   };
 
+  const isApproved = lead.status === "APPROVED";
+
   return (
     <div className="flex items-center gap-1.5">
       <TooltipProvider>
@@ -70,19 +72,21 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
           </TooltipContent>
         </Tooltip> */}
 
-        <Tooltip>
-          <TooltipTrigger
-            onClick={() => setDeleteOpen(true)}
-            disabled={isDeleting}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 text-slate-500 shadow-xs transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-red-950/30"
-            title="Delete Lead"
-          >
-            <Trash2 className="size-4" />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Delete Lead</p>
-          </TooltipContent>
-        </Tooltip>
+        {!isApproved && (
+          <Tooltip>
+            <TooltipTrigger
+              onClick={() => setDeleteOpen(true)}
+              disabled={isDeleting}
+              className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 text-slate-500 shadow-xs transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-red-950/30"
+              title="Delete Lead"
+            >
+              <Trash2 className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Delete Lead</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </TooltipProvider>
 
       <ConfirmationDialog
@@ -95,16 +99,18 @@ export function PartnerLeadActionsCell({ lead, onView }: PartnerLeadActionsCellP
         isLoading={isApproving}
       />
 
-      <ConfirmationDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-        title="Delete Partner Lead"
-        description={`Are you sure you want to delete "${lead.businessName}"? It will be moved to the Recycle Bin and can be restored or permanently deleted from there.`}
-        confirmLabel="Delete Lead"
-        onConfirm={handleDelete}
-        isLoading={isDeleting}
-        variant="destructive"
-      />
+      {!isApproved && (
+        <ConfirmationDialog
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          title="Delete Partner Lead"
+          description={`Are you sure you want to delete "${lead.businessName}"? It will be moved to the Recycle Bin and can be restored or permanently deleted from there.`}
+          confirmLabel="Delete Lead"
+          onConfirm={handleDelete}
+          isLoading={isDeleting}
+          variant="destructive"
+        />
+      )}
     </div>
   );
 }
