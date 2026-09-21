@@ -119,11 +119,7 @@ export function getItemColumns(
       id: "stockQuantity",
       header: "Stock Quantity",
       cell: ({ row }) => (
-        <StockIndicator
-          quantity={row.original.stockQuantity}
-          unit={row.original.unit}
-          lowStockThreshold={5}
-        />
+        <StockIndicator quantity={row.original.stockQuantity} lowStockThreshold={5} />
       ),
     },
 

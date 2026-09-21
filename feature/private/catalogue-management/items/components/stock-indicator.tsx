@@ -13,7 +13,6 @@ interface StockIndicatorProps {
 
 export function StockIndicator({
   quantity,
-  unit,
   lowStockThreshold = 5,
   className,
   showBadge = true,
@@ -29,11 +28,10 @@ export function StockIndicator({
   // 1. Normal Stock (> 5): Keep clean and minimalist without badge
   if (isNormal) {
     return (
-      <div className={cn("inline-flex items-baseline gap-1", className)}>
+      <div className={cn("inline-flex items-baseline", className)}>
         <span className="text-sm font-semibold text-slate-800 tabular-nums dark:text-slate-200">
           {qty.toLocaleString()}
         </span>
-        {unit && <span className="text-xs font-normal text-slate-400">{unit}</span>}
       </div>
     );
   }
@@ -76,7 +74,6 @@ export function StockIndicator({
       <div className="flex items-center gap-2">
         <span className="text-sm font-bold text-amber-700 tabular-nums dark:text-amber-400">
           {qty.toLocaleString()}
-          {unit && <span className="ml-1 text-xs font-normal text-amber-600/70">{unit}</span>}
         </span>
 
         {showBadge && (
