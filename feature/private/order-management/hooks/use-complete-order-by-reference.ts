@@ -26,10 +26,8 @@ export function useCompleteOrderByReference() {
   });
 }
 
-export function getCompleteByReferenceErrorMessage(error: unknown): string {
+export function getCompleteByReferenceErrorMessage(error: unknown) {
   const axiosError = error as AxiosError<{ message?: string | string[] }>;
   const message = axiosError?.response?.data?.message;
   if (Array.isArray(message)) return message[0] || "Invalid reference number.";
-  if (typeof message === "string" && message.trim()) return message;
-  return "Invalid reference number. Please check the reference number and try again.";
 }

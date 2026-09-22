@@ -31,7 +31,7 @@ export function EmployeeOrderActionsCell({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex w-full items-center justify-start gap-2">
       <Button
         size="sm"
         variant="outline"

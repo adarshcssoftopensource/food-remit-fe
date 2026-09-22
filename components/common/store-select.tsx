@@ -23,6 +23,7 @@ export type StoreSelectProps = {
   value?: string;
   includeAll?: boolean;
   allLabel?: string;
+  initialStoreName?: string;
 };
 
 export function StoreSelect({
@@ -37,6 +38,7 @@ export function StoreSelect({
   value = "",
   includeAll = false,
   allLabel = "All Stores",
+  initialStoreName,
 }: StoreSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -83,11 +85,14 @@ export function StoreSelect({
     if (currentStore) {
       return currentStore.storeName;
     }
+    if (initialStoreName && value) {
+      return initialStoreName;
+    }
     if (value && value !== "All" && value !== "all") {
       return value;
     }
     return placeholder;
-  }, [includeAll, value, allLabel, currentStore, placeholder]);
+  }, [includeAll, value, allLabel, currentStore, placeholder, initialStoreName]);
 
   const displayLocation = useMemo(() => {
     if (currentStore) {

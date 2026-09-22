@@ -86,7 +86,9 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
   ];
 
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className="flex w-full items-center justify-start gap-2">
+      <DataTableRowActions items={menuItems} />
+
       {showStart && (
         <Button
           size="sm"
@@ -113,8 +115,6 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
           Assign
         </Button>
       )}
-
-      <DataTableRowActions items={menuItems} />
 
       <AssignOrderSheet open={assignOpen} onOpenChange={setAssignOpen} order={order} />
 

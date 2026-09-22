@@ -32,11 +32,18 @@ export function getEmployeeOrderColumns({
     {
       accessorKey: "refrenceNumber",
       header: "Reference No",
-      cell: ({ row }) => (
-        <span className="font-mono text-xs">
-          {(row.original.refrenceNumber as string) || (row.original.id as string).substring(0, 8)}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const orderId =
+          (row.original.refrenceNumber as string) || (row.original.id as string).substring(0, 8);
+        return (
+          <div className="flex items-center">
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 font-mono text-xs font-semibold text-emerald-700 shadow-sm dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+              <span className="text-emerald-500/70">#</span>
+              {orderId.replace(/^#/, "")}
+            </span>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "createdAt",

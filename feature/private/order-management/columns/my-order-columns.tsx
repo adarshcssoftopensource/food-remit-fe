@@ -56,7 +56,9 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
   ];
 
   return (
-    <div className="flex items-center justify-start gap-2">
+    <div className="flex w-full items-center justify-start gap-2">
+      <DataTableRowActions items={menuItems} />
+
       {pending && (
         <Button
           size="sm"
@@ -114,8 +116,6 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
         </>
       )}
 
-      <DataTableRowActions items={menuItems} />
-
       <StartOrderConfirmDialog
         open={startOpen}
         onOpenChange={setStartOpen}
@@ -141,9 +141,12 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
     accessorKey: "refrenceNumber",
     header: "Order ID",
     cell: ({ row }) => (
-      <span className="font-mono text-xs font-bold text-slate-800">
-        #{maskOrderReference(row.original.refrenceNumber || row.original.id)}
-      </span>
+      <div className="flex items-center">
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 font-mono text-xs font-semibold text-emerald-700 shadow-sm dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+          <span className="text-emerald-500/70">#</span>
+          {maskOrderReference(row.original.refrenceNumber || row.original.id)}
+        </span>
+      </div>
     ),
   },
   {

@@ -430,6 +430,7 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
                             value={field.value ?? ""}
                             onValueChange={(val) => field.onChange(val)}
                             placeholder="Search and choose store from database (100K+ stores)..."
+                            initialStoreName={existingCoupon?.storeName || undefined}
                           />
                         )}
                       />

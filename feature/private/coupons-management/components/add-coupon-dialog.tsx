@@ -427,6 +427,7 @@ export function AddCouponDialog({
                           value={field.value ?? ""}
                           onValueChange={(val) => field.onChange(val)}
                           placeholder="Search and choose target store..."
+                          initialStoreName={coupon?.storeName || undefined}
                         />
                       )}
                     />

@@ -356,6 +356,7 @@ export function DepartmentFormDialog({
                           includeAll={true}
                           allLabel="All Stores (Location Wide)"
                           placeholder="Select store..."
+                          initialStoreName={department?.storeName || undefined}
                         />
 
                         <FormMessage />

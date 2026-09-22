@@ -79,7 +79,7 @@ export function CompleteOrderByReferenceDialog({
         onOpenChange(false);
       }, 650);
     } catch (err) {
-      setError(getCompleteByReferenceErrorMessage(err));
+      setError(getCompleteByReferenceErrorMessage(err) || "An unexpected error occurred.");
     }
   };
 

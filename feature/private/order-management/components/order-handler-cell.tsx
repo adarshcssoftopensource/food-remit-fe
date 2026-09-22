@@ -27,8 +27,17 @@ export function OrderHandlerCell({ order }: { order: OrderData }) {
   const isCompleted =
     order.orderStatus === ORDER_STATUS.COMPLETED || order.orderStatus === ORDER_STATUS.CLOSED;
 
-  // Prefer "Assigned" when an employee was designated; otherwise "Started"
-  const verb = isCompleted ? "Completed" : assignedName ? "Assigned" : "Started";
+  // Prefer "Assigned" when an employee was designated, unless they started it themselves
+  let verb = "Started";
+  if (isCompleted) {
+    verb = "Completed";
+  } else if (assignedName) {
+    if (order.assignedEmployeeId && order.assignedEmployeeId === order.startedById) {
+      verb = "Started";
+    } else {
+      verb = "Assigned";
+    }
+  }
 
   return (
     <>

@@ -106,9 +106,6 @@ export function RecycledUsersManagement() {
           setRowSelection({});
           setIsBulkRestoreDialogOpen(false);
         },
-        onError: () => {
-          toast.error("Failed to restore selected records.");
-        },
       },
     );
   };
