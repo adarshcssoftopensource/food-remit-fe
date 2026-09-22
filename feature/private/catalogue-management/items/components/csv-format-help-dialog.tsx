@@ -32,14 +32,14 @@ const CSV_COLUMNS = [
     required: false,
     note: "Nutrition image filename/URL (Additional Images)",
   },
-  { name: "itemsPerPack", required: true, note: "Number ≥ 0; > 0 when stock > 0" },
+  { name: "itemsPerPack", required: false, note: "Optional number ≥ 0" },
   { name: "stockQuantity", required: true, note: "Whole number ≥ 0" },
   {
     name: "weightUnit",
-    required: true,
-    note: "kg, g, mg, ltr, ml, pcs, dozen, box, pack, set, pair, bottle, can, bag",
+    required: false,
+    note: "Optional: kg, g, mg, ltr, ml, pcs, dozen, box, pack, set, pair, bottle, can, bag",
   },
-  { name: "netWeight", required: false, note: "Required > 0 when stock > 0" },
+  { name: "netWeight", required: false, note: "Optional number ≥ 0" },
   { name: "upcCode", required: false, note: "8–12 digits (SKU / barcode)" },
   {
     name: "isPerishable",

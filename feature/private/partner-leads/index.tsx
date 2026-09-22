@@ -191,16 +191,25 @@ export function PartnerLeadsManagement() {
 
       <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-950">
         <Card className="rounded-2xl border border-slate-100 bg-slate-50/40 shadow-none dark:border-slate-800 dark:bg-slate-900/40">
-          <CardHeader className="flex flex-row items-center gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-            <span className={cn("h-8 w-1 shrink-0 rounded-full", meta.accent)} />
+          <CardHeader className="flex flex-row items-center gap-4 border-b border-slate-100 px-6 py-5 dark:border-slate-800">
+            <div
+              className={cn(
+                "bg-opacity-15 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl",
+                meta.accent.replace("bg-", "text-"),
+                meta.accent.replace("bg-", "bg-").replace("-500", "-100").replace("-600", "-100"), // Simple fallback for light bg
+              )}
+            >
+              <ActiveIcon className="size-6" />
+            </div>
             <div className="min-w-0 flex-1">
-              <CardTitle className="flex items-center gap-2 text-base font-bold tracking-tight text-slate-900 dark:text-white">
-                <ActiveIcon className={cn("size-4", activeTab.iconColor)} />
+              <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
                 {meta.title}
               </CardTitle>
-              <p className="text-muted-foreground mt-0.5 text-xs">
+              <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
                 {pagination.total} lead{pagination.total !== 1 ? "s" : ""} · {meta.subtitle}
               </p>
+            </div>
+            <div className="ml-auto shrink-0">
               <ModuleFilters
                 title="Filter Leads Pipeline"
                 description="Filter partnership leads by submission date range"

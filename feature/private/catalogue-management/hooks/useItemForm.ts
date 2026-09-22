@@ -52,8 +52,8 @@ const itemSchema = z
 
     itemsPerPack: z
       .string()
-      .min(1, "Items per pack is required")
-      .refine((val) => Number(val) >= 0, "Cannot be negative"),
+      .optional()
+      .refine((val) => !val || Number(val) >= 0, "Cannot be negative"),
     stockQuantity: z
       .string()
       .min(1, "Stock quantity is required")
@@ -63,7 +63,7 @@ const itemSchema = z
       .optional()
       .refine((val) => !val || Number(val) >= 0, "Cannot be negative"),
     weightUnit: z.string().optional(),
-    unit: z.string().min(1, "Unit is required"),
+    unit: z.string().optional(),
     isPerishable: z.boolean(),
     placements: z.array(placementSchema).min(1, "Add at least one country price"),
     productImageFile: z
@@ -106,27 +106,6 @@ const itemSchema = z
         });
       }
     });
-
-    const stock = Number(data.stockQuantity);
-    if (!Number.isNaN(stock) && stock > 0) {
-      const pack = Number(data.itemsPerPack);
-      if (Number.isNaN(pack) || pack <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["itemsPerPack"],
-          message: "Items per pack must be > 0 when stock is added",
-        });
-      }
-
-      const weight = Number(data.netWeight);
-      if (!data.netWeight || Number.isNaN(weight) || weight <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["netWeight"],
-          message: "Net weight must be > 0 when stock is added",
-        });
-      }
-    }
   });
 
 export type ItemFormValues = z.infer<typeof itemSchema>;
@@ -316,11 +295,13 @@ export function useItemForm(
         formData.append("discountPercentage", "0");
         formData.append("discountAvailability", "false");
       }
-      formData.append("itemsPerPack", values.itemsPerPack);
       formData.append("stockQuantity", values.stockQuantity);
+      if (values.itemsPerPack !== undefined && values.itemsPerPack !== "") {
+        formData.append("itemsPerPack", values.itemsPerPack);
+      }
       if (values.netWeight) formData.append("netWeight", values.netWeight);
       if (values.weightUnit) formData.append("weightUnit", values.weightUnit);
-      formData.append("unit", values.unit);
+      if (values.unit) formData.append("unit", values.unit);
       formData.append("isPerishable", values.isPerishable ? "true" : "false");
 
       if (item && values.existingProductImages !== undefined) {

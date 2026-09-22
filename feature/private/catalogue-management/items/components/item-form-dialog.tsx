@@ -316,7 +316,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                             render={({ field }) => (
                               <FormItem className="space-y-2">
                                 <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                  Items Per Pack <span className="text-destructive">*</span>
+                                  Items Per Pack
                                 </FormLabel>
 
                                 <FormControl>
@@ -378,10 +378,13 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                             render={({ field }) => (
                               <FormItem className="space-y-2">
                                 <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                  Weight Unit <span className="text-destructive">*</span>
+                                  Weight Unit
                                 </FormLabel>
 
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  value={field.value || undefined}
+                                >
                                   <FormControl>
                                     <SelectTrigger className="h-11 w-full rounded-xl border-slate-200 bg-white shadow-none dark:border-slate-700 dark:bg-slate-950">
                                       <SelectValue placeholder="Select" />
