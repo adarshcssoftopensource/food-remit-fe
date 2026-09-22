@@ -28,7 +28,11 @@ const itemSchema = z
     description: z.string().min(1, "Description is required"),
     upcCode: z
       .string()
-      .regex(/^\d{8,12}$/, "UPC code must be between 8 and 12 digits")
+      .trim()
+      .refine(
+        (value) => value === "" || /^\d{8,12}$/.test(value),
+        "UPC code must be between 8 and 12 digits",
+      )
       .optional(),
     productInfo: z.string().min(1, "Product information is required"),
     nutritionInfo: z.string().optional(),
@@ -301,7 +305,7 @@ export function useItemForm(
       );
       formData.append("productName", values.productName);
       formData.append("description", values.description);
-      if (values.upcCode) formData.append("upcCode", values.upcCode);
+      formData.append("upcCode", values.upcCode || "");
       formData.append("productInfo", values.productInfo);
       if (values.nutritionInfo) formData.append("nutritionInfo", values.nutritionInfo);
       if (values.discountPercentage !== undefined && values.discountPercentage !== "") {
