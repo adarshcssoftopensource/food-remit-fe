@@ -3,6 +3,7 @@
 import { CompleteOrderByReferenceDialog } from "../../my-orders/components/complete-order-by-reference-dialog";
 import { OrderHandlerCell } from "../components/order-handler-cell";
 import { OrderStatusBadge } from "../components/order-status-badge";
+import { StartOrderConfirmDialog } from "../components/start-order-confirm-dialog";
 import { useMarkOrderCompleted, useStartOrder } from "../hooks/use-order-lifecycle";
 import { OrderData } from "../types/order.types";
 import { isPendingOrder, isProcessingOrder, ORDER_STATUS } from "../utils/order-workflow";
@@ -21,6 +22,7 @@ import {
 function MyOrderActionsCell({ order }: { order: OrderData }) {
   const router = useRouter();
   const [pickupOpen, setPickupOpen] = useState(false);
+  const [startOpen, setStartOpen] = useState(false);
   const { mutateAsync: startOrder, isPending: starting } = useStartOrder();
   const { mutateAsync: markCompleted, isPending: completing } = useMarkOrderCompleted();
 
@@ -28,6 +30,8 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
   const processing = isProcessingOrder(order);
   const completed = order.orderStatus === ORDER_STATUS.COMPLETED;
   const detail = ROUTES.ADMIN.MY_ORDER_DETAIL(order.id);
+  const orderRef = order.refrenceNumber || order.id.substring(0, 8).toUpperCase();
+  const customerName = order.recieverName || order.userName || "the customer";
 
   const menuItems: DataTableRowActionItem[] = [
     {
@@ -44,14 +48,7 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
           size="sm"
           className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700"
           disabled={starting}
-          onClick={async () => {
-            try {
-              await startOrder(order.id);
-              router.push(detail);
-            } catch {
-              /* toast in hook */
-            }
-          }}
+          onClick={() => setStartOpen(true)}
         >
           {starting ? (
             <Loader2 className="mr-1.5 size-3.5 animate-spin" />
@@ -104,6 +101,23 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
       )}
 
       <DataTableRowActions items={menuItems} />
+
+      <StartOrderConfirmDialog
+        open={startOpen}
+        onOpenChange={setStartOpen}
+        orderRef={orderRef}
+        customerName={customerName}
+        isLoading={starting}
+        onConfirm={async () => {
+          try {
+            await startOrder(order.id);
+            setStartOpen(false);
+            router.push(detail);
+          } catch {
+            /* toast in hook */
+          }
+        }}
+      />
     </div>
   );
 }

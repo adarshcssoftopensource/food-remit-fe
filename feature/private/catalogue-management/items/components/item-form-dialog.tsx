@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useMemo } from "react";
 import { ItemFormValues, useItemForm } from "../../hooks/useItemForm";
@@ -197,6 +198,30 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                               </div>
 
                               <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="isPerishable"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-950">
+                              <div className="space-y-0.5">
+                                <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                                  Perishable Item
+                                </FormLabel>
+                                <p className="text-[11px] leading-4 text-slate-400">
+                                  On = perishable pickup reminders. Off = non-perishable (default).
+                                </p>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  size="default"
+                                />
+                              </FormControl>
                             </FormItem>
                           )}
                         />

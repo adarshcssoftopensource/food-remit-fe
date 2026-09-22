@@ -57,6 +57,7 @@ interface DataTableProps<TData, TValue> {
   getRowId?: (originalRow: TData, index: number, parent?: any) => string;
   enableRowSelection?: boolean | ((row: Row<TData>) => boolean);
   getRowClassName?: (row: Row<TData>) => string | undefined;
+  emptyMessage?: string;
 }
 
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
@@ -83,6 +84,7 @@ export function DataTable<TData, TValue>({
   getRowId,
   enableRowSelection = true,
   getRowClassName,
+  emptyMessage = "No Data Found",
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -152,7 +154,7 @@ export function DataTable<TData, TValue>({
         <TableRow>
           <TableCell colSpan={columns.length} className="h-24">
             <div className="p-2">
-              <NoDataFound />
+              <NoDataFound title={emptyMessage} />
             </div>
           </TableCell>
         </TableRow>
@@ -178,7 +180,7 @@ export function DataTable<TData, TValue>({
         ))}
       </TableRow>
     ));
-  }, [loading, rows, columns, table, rowSelection, getRowClassName]);
+  }, [loading, rows, columns, table, rowSelection, getRowClassName, emptyMessage]);
 
   return (
     <div className="space-y-4">

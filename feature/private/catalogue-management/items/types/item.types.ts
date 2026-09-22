@@ -72,6 +72,8 @@ export interface ItemData {
   status: ItemStatus;
   adminShare: boolean;
   discountAvailability: boolean;
+  /** Perishable items use the shorter pickup notification schedule */
+  isPerishable?: boolean;
 
   countryId: string;
   departmentId: string;
@@ -160,6 +162,7 @@ export interface CreateItemPayload {
   unit?: string;
   discountPercentage?: number;
   status?: ItemStatus;
+  isPerishable?: boolean;
   productImageFile?: File | string | null;
   productInfoImageFile?: File | string | null;
   nutritionInfoImageFile?: File | string | null;

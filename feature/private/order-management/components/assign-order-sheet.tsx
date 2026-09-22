@@ -10,6 +10,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { useGetEmployees } from "@/feature/private/employee-management/hooks/use-get-employees";
 import { useAssignOrder } from "@/feature/private/employee-management/hooks/use-assign-order";
 import { getInitials } from "@/lib/get-initials";
@@ -19,6 +20,7 @@ import { OrderData } from "../types/order.types";
 import { useGetOrders } from "../hooks/use-get-orders";
 import { ORDER_STATUS } from "../utils/order-workflow";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface AssignOrderSheetProps {
   open: boolean;
@@ -28,6 +30,7 @@ interface AssignOrderSheetProps {
 
 export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheetProps) {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+  const [busyConfirmOpen, setBusyConfirmOpen] = useState(false);
 
   const { data: employees, isLoading } = useGetEmployees({
     page: 1,
@@ -35,7 +38,6 @@ export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheet
     status: "ACTIVE",
   });
 
-  // Busy = has Processing orders
   const { data: processingRes } = useGetOrders(
     { page: 1, limit: 100, workflow: "processing" },
     open,
@@ -51,17 +53,43 @@ export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheet
     return map;
   }, [processingRes?.data]);
 
+  const selectedEmployee = useMemo(
+    () => (employees || []).find((e) => e.id === selectedEmployeeId),
+    [employees, selectedEmployeeId],
+  );
+  const selectedBusyCount = selectedEmployeeId
+    ? busyCountByEmployee.get(selectedEmployeeId) || 0
+    : 0;
+  const selectedName = selectedEmployee
+    ? `${selectedEmployee.firstName} ${selectedEmployee.lastName}`.trim()
+    : "this employee";
+
   const { mutateAsync: assignOrder, isPending } = useAssignOrder(selectedEmployeeId || "");
 
-  const handleAssign = async () => {
+  const runAssign = async () => {
     if (!selectedEmployeeId || !order) return;
     try {
       await assignOrder([order.id]);
+      toast.success("Order assigned successfully!");
+      setBusyConfirmOpen(false);
       onOpenChange(false);
       setSelectedEmployeeId(null);
-    } catch {
-      // toast handled in hook
+    } catch (err: any) {
+      const msg = String(err?.response?.data?.message || err?.message || "");
+      if (/already started|started by/i.test(msg)) {
+        toast.error(msg || "Order has already been started by another employee");
+      }
+      // other errors toasted in hook
     }
+  };
+
+  const handleAssignClick = () => {
+    if (!selectedEmployeeId || !order) return;
+    if (selectedBusyCount > 0) {
+      setBusyConfirmOpen(true);
+      return;
+    }
+    void runAssign();
   };
 
   const itemCount =
@@ -69,132 +97,153 @@ export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheet
   const ref = order?.refrenceNumber || order?.id?.substring(0, 8).toUpperCase();
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={(v) => {
-        onOpenChange(v);
-        if (!v) setSelectedEmployeeId(null);
-      }}
-    >
-      <SheetContent side="right" className="w-full sm:max-w-md">
-        <SheetHeader className="border-b border-slate-100 dark:border-slate-800">
-          <SheetTitle className="text-lg font-bold">Assign Order</SheetTitle>
-          <SheetDescription>
-            Manager-only — assigning moves this order to Processing.
-          </SheetDescription>
-        </SheetHeader>
+    <>
+      <Sheet
+        open={open}
+        onOpenChange={(v) => {
+          onOpenChange(v);
+          if (!v) {
+            setSelectedEmployeeId(null);
+            setBusyConfirmOpen(false);
+          }
+        }}
+      >
+        <SheetContent side="right" className="w-full sm:max-w-md">
+          <SheetHeader className="border-b border-slate-100 dark:border-slate-800">
+            <SheetTitle className="text-lg font-bold">Assign Order</SheetTitle>
+            <SheetDescription>
+              Manager-only — assigning moves this order to Processing.
+            </SheetDescription>
+          </SheetHeader>
 
-        {order && (
-          <div className="space-y-4 px-4">
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/50">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-mono font-semibold">#{ref}</span>
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-                  Paid
-                </span>
+          {order && (
+            <div className="space-y-4 px-4">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/50">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono font-semibold">#{ref}</span>
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                    Paid
+                  </span>
+                </div>
+                <p className="mt-2 font-medium text-slate-900 dark:text-white">
+                  {order.recieverName || order.userName || "Customer"}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {order.storeName || "Store"} · {itemCount} items · {order.price || "—"}
+                </p>
               </div>
-              <p className="mt-2 font-medium text-slate-900 dark:text-white">
-                {order.recieverName || order.userName || "Customer"}
-              </p>
-              <p className="text-xs text-slate-500">
-                {order.storeName || "Store"} · {itemCount} items · {order.price || "—"}
-              </p>
-            </div>
 
-            <div>
-              <p className="mb-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                Select an Employee
-              </p>
-              <ScrollArea className="h-[min(50vh,360px)] rounded-xl border border-slate-200 p-2 dark:border-slate-800">
-                {isLoading ? (
-                  <div className="flex h-32 items-center justify-center">
-                    <Loader2 className="size-6 animate-spin text-emerald-500" />
-                  </div>
-                ) : (
-                  <div className="space-y-1.5 px-1">
-                    {(employees || []).map((emp) => {
-                      const name = `${emp.firstName} ${emp.lastName}`.trim();
-                      const busy = busyCountByEmployee.get(emp.id) || 0;
-                      const selected = selectedEmployeeId === emp.id;
-                      return (
-                        <button
-                          key={emp.id}
-                          type="button"
-                          onClick={() => setSelectedEmployeeId(emp.id)}
-                          className={`flex w-full items-center gap-3 rounded-lg border p-2.5 text-left transition-colors ${
-                            selected
-                              ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30"
-                              : "border-transparent bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900"
-                          }`}
-                        >
-                          <span
-                            className={`flex size-4 shrink-0 items-center justify-center rounded-full border-2 ${
-                              selected ? "border-emerald-500" : "border-slate-300"
+              <div>
+                <p className="mb-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                  Select an Employee
+                </p>
+                <ScrollArea className="h-[min(50vh,360px)] rounded-xl border border-slate-200 p-2 dark:border-slate-800">
+                  {isLoading ? (
+                    <div className="flex h-32 items-center justify-center">
+                      <Loader2 className="size-6 animate-spin text-emerald-500" />
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5 px-1">
+                      {(employees || []).map((emp) => {
+                        const name = `${emp.firstName} ${emp.lastName}`.trim();
+                        const busy = busyCountByEmployee.get(emp.id) || 0;
+                        const selected = selectedEmployeeId === emp.id;
+                        return (
+                          <button
+                            key={emp.id}
+                            type="button"
+                            onClick={() => setSelectedEmployeeId(emp.id)}
+                            className={`flex w-full items-center gap-3 rounded-lg border p-2.5 text-left transition-colors ${
+                              selected
+                                ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30"
+                                : "border-transparent bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900"
                             }`}
                           >
-                            {selected && <span className="size-2 rounded-full bg-emerald-500" />}
-                          </span>
-                          {emp.image ? (
-                            <Image
-                              src={emp.image}
-                              height={40}
-                              width={40}
-                              alt=""
-                              className="size-9 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span className="flex size-9 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">
-                              {getInitials(name)}
+                            <span
+                              className={`flex size-4 shrink-0 items-center justify-center rounded-full border-2 ${
+                                selected ? "border-emerald-500" : "border-slate-300"
+                              }`}
+                            >
+                              {selected && <span className="size-2 rounded-full bg-emerald-500" />}
                             </span>
-                          )}
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-semibold">{name}</p>
-                            <p className="flex items-center gap-1.5 text-xs text-slate-500">
-                              <span
-                                className={`size-1.5 rounded-full ${
-                                  busy > 0 ? "bg-amber-500" : "bg-emerald-500"
-                                }`}
+                            {emp.image ? (
+                              <Image
+                                src={emp.image}
+                                height={40}
+                                width={40}
+                                alt=""
+                                className="size-9 rounded-full object-cover"
                               />
-                              {busy > 0
-                                ? `Busy — ${busy} order${busy === 1 ? "" : "s"} in progress`
-                                : "Available"}
-                            </p>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </ScrollArea>
+                            ) : (
+                              <span className="flex size-9 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">
+                                {getInitials(name)}
+                              </span>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-semibold">{name}</p>
+                              <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                                <span
+                                  className={`size-1.5 rounded-full ${
+                                    busy > 0 ? "bg-amber-500" : "bg-emerald-500"
+                                  }`}
+                                />
+                                {busy > 0
+                                  ? `Busy — ${busy} order${busy === 1 ? "" : "s"} in progress`
+                                  : "Available"}
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </ScrollArea>
+              </div>
+
+              <p className="text-xs leading-relaxed text-slate-500">
+                Assigning changes status from Pending to Processing and shows the designated
+                employee on the order.
+              </p>
             </div>
+          )}
 
-            <p className="text-xs leading-relaxed text-slate-500">
-              Assigning changes status from Pending to Processing and shows the designated employee
-              on the order.
-            </p>
-          </div>
-        )}
+          <SheetFooter className="border-t border-slate-100 dark:border-slate-800">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-lg">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAssignClick}
+              disabled={
+                !selectedEmployeeId || isPending || order?.orderStatus !== ORDER_STATUS.PAID
+              }
+              className="rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Assigning…
+                </>
+              ) : (
+                "Assign to Employee"
+              )}
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
-        <SheetFooter className="border-t border-slate-100 dark:border-slate-800">
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-lg">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleAssign}
-            disabled={!selectedEmployeeId || isPending || order?.orderStatus !== ORDER_STATUS.PAID}
-            className="rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
-                Assigning…
-              </>
-            ) : (
-              "Assign to Employee"
-            )}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+      <ConfirmationDialog
+        open={busyConfirmOpen}
+        onOpenChange={setBusyConfirmOpen}
+        title={`${selectedName} is already handling ${selectedBusyCount} order${
+          selectedBusyCount === 1 ? "" : "s"
+        }. Do you still want to assign the order to the selected employee?`}
+        description="There is no assignment limit. You can still assign additional orders to a busy employee if required."
+        confirmLabel="Yes, Assign"
+        cancelLabel="No"
+        variant="default"
+        isLoading={isPending}
+        onConfirm={runAssign}
+      />
+    </>
   );
 }

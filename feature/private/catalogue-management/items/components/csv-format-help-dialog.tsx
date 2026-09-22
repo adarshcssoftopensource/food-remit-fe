@@ -41,6 +41,11 @@ const CSV_COLUMNS = [
   },
   { name: "netWeight", required: false, note: "Required > 0 when stock > 0" },
   { name: "upcCode", required: false, note: "8–12 digits (SKU / barcode)" },
+  {
+    name: "isPerishable",
+    required: false,
+    note: "true/false, yes/no, 1/0 — default false (blank = non-perishable)",
+  },
   { name: "price", required: true, note: "Valid number ≥ 0" },
   {
     name: "departmentName",

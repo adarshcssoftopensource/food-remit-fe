@@ -102,7 +102,7 @@ export function CompleteOrderByReferenceDialog({
                 </DialogTitle>
                 <DialogDescription className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                   {isPickup
-                    ? "Enter the full reference number / scan QR to mark this order as Picked Up. It will automatically close and move to History."
+                    ? "Enter the full order reference number to verify pickup. The order will close and move to History."
                     : "Enter the full reference number to verify and complete this order."}
                 </DialogDescription>
               </div>

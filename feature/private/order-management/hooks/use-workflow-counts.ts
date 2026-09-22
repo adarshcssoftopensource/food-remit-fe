@@ -6,11 +6,15 @@ import { useQuery } from "@tanstack/react-query";
 export interface WorkflowCounts {
   all: number;
   pending: number;
+  unassigned?: number;
   processing: number;
+  assigned?: number;
   completed: number;
   history: number;
   pickedUp: number;
   abandoned: number;
+  availableEmployees?: number;
+  busyEmployees?: number;
 }
 
 export function useWorkflowCounts(enabled = true) {

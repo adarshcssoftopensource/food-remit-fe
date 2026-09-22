@@ -23,6 +23,8 @@ import { useWorkflowCounts } from "./hooks/use-workflow-counts";
 import { useProfile } from "@/components/providers/profile-provider";
 import { OrderInfoBanner } from "./components/order-info-banner";
 import { AssignEmployeeDialog } from "./components/assign-employee-dialog";
+import { ManagerAssignmentSummaryCards } from "./components/manager-assignment-summary-cards";
+import { WorkflowSummaryCards } from "./components/workflow-summary-cards";
 import { HistorySubFilter, isPendingOrder } from "./utils/order-workflow";
 import { getOrderActorRole } from "./utils/order-roles";
 import { OrderData } from "./types/order.types";
@@ -39,8 +41,8 @@ export function OrdersManagementPage() {
   const [bulkAssignOpen, setBulkAssignOpen] = useState(false);
 
   const { profile } = useProfile();
-  const { isStoreManager, isElevated } = getOrderActorRole(profile);
-  const canBulkAssign = isStoreManager || isElevated;
+  const { canAssign, isStoreManager } = getOrderActorRole(profile);
+  const canBulkAssign = canAssign;
 
   const { data: counts } = useWorkflowCounts();
 
@@ -113,6 +115,26 @@ export function OrdersManagementPage() {
         title="Orders"
         description="View and handle incoming store orders. Start preparing orders and update their status."
       />
+
+      {isStoreManager ? (
+        <ManagerAssignmentSummaryCards
+          counts={counts}
+          activeTab={activeTab}
+          onSelect={(tab) => {
+            setActiveTab(tab);
+            setRowSelection({});
+          }}
+        />
+      ) : (
+        <WorkflowSummaryCards
+          counts={counts}
+          activeTab={activeTab}
+          onSelect={(tab) => {
+            setActiveTab(tab);
+            setRowSelection({});
+          }}
+        />
+      )}
 
       <ModuleFilters
         title="Filter Orders"
@@ -254,6 +276,13 @@ export function OrdersManagementPage() {
                   onRowSelectionChange={showSelectColumn ? setRowSelection : undefined}
                   enableRowSelection={
                     showSelectColumn ? (row) => isPendingOrder(row.original) : undefined
+                  }
+                  emptyMessage={
+                    activeTab === "history"
+                      ? historyFilter === "all"
+                        ? "No Available Orders"
+                        : "No matching orders were found"
+                      : "No Available Orders For This Store"
                   }
                 />
               </CardContent>

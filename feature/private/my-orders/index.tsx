@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { myOrderColumns } from "@/feature/private/order-management/columns/my-order-columns";
 import { OrderInfoBanner } from "@/feature/private/order-management/components/order-info-banner";
+import { WorkflowSummaryCards } from "@/feature/private/order-management/components/workflow-summary-cards";
 import { useOrderManagement } from "@/feature/private/order-management/hooks/use-order-management";
 import { useWorkflowCounts } from "@/feature/private/order-management/hooks/use-workflow-counts";
 import { OrderData } from "@/feature/private/order-management/types/order.types";
@@ -17,7 +18,7 @@ import { OrderSectionKey } from "@/constants/order-management";
 import { cn } from "@/lib/utils";
 
 const EMPLOYEE_TABS: { label: string; value: OrderSectionKey }[] = [
-  { label: "All", value: "all" },
+  { label: "All Orders", value: "all" },
   { label: "Pending", value: "pending" },
   { label: "Processing", value: "processing" },
   { label: "Completed", value: "completed" },
@@ -69,6 +70,8 @@ export function OrdersManagementPage() {
         welcomeMessage={welcomeMessage}
         description="Start pending store orders, prepare them, then mark ready for pickup."
       />
+
+      <WorkflowSummaryCards counts={counts} activeTab={activeTab} onSelect={setActiveTab} />
 
       <ModuleFilters
         title="Filter Orders"
@@ -128,7 +131,7 @@ export function OrdersManagementPage() {
             <Card className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
               <CardHeader className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                 <CardTitle className="text-base font-bold text-slate-900 dark:text-white">
-                  {tab.label === "All" ? "Store Orders" : tab.label}
+                  {tab.label === "All Orders" ? "Store Orders" : tab.label}
                   <span className="ml-2 text-sm font-normal text-slate-500">
                     ({pagination?.total || 0})
                   </span>
@@ -162,6 +165,11 @@ export function OrdersManagementPage() {
                   manualSorting
                   manualFiltering
                   getRowId={(row: OrderData) => row.id}
+                  emptyMessage={
+                    tab.value === "history"
+                      ? "No Available Orders"
+                      : "No Available Orders For This Store"
+                  }
                 />
               </CardContent>
             </Card>

@@ -28,12 +28,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CompleteOrderByReferenceDialog } from "./components/complete-order-by-reference-dialog";
 import { EmployeeOrderFinancials } from "./components/employee-order-financials";
+import { StartOrderConfirmDialog } from "@/feature/private/order-management/components/start-order-confirm-dialog";
 
 export function EmployeeOrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
   const { data: order, isLoading } = useGetOrder(id);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [pickupOpen, setPickupOpen] = useState(false);
+  const [startOpen, setStartOpen] = useState(false);
   const { mutateAsync: startOrder, isPending: starting } = useStartOrder();
   const { mutateAsync: markCompleted, isPending: completing } = useMarkOrderCompleted();
 
@@ -46,6 +48,8 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
   const handlerName = order.startedByName || order.assignedEmployeeName;
   const itemCount =
     order.items?.reduce((s, i) => s + (i.quantity || 0), 0) || order.items?.length || 0;
+  const orderRef = order.refrenceNumber || order.id.substring(0, 8).toUpperCase();
+  const customerName = order.recieverName || order.userName || "the customer";
 
   return (
     <div className="space-y-5">
@@ -83,11 +87,7 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
             <Button
               className="h-11 rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
               disabled={starting}
-              onClick={async () => {
-                try {
-                  await startOrder(order.id);
-                } catch {}
-              }}
+              onClick={() => setStartOpen(true)}
             >
               {starting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
               Start Order
@@ -189,8 +189,8 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
           </div>
 
           <p className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] leading-relaxed text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
-            Employees cannot abandon orders. If a customer never picks up, a store manager or admin
-            must mark it Abandoned.
+            Employees cannot abandon orders. If a customer never picks up, a store manager must mark
+            it Abandoned.
           </p>
         </aside>
       </div>
@@ -200,6 +200,20 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
         open={pickupOpen}
         onOpenChange={setPickupOpen}
         mode="pickup"
+      />
+
+      <StartOrderConfirmDialog
+        open={startOpen}
+        onOpenChange={setStartOpen}
+        orderRef={orderRef}
+        customerName={customerName}
+        isLoading={starting}
+        onConfirm={async () => {
+          try {
+            await startOrder(order.id);
+            setStartOpen(false);
+          } catch {}
+        }}
       />
 
       <ImageLightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />

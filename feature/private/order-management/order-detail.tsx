@@ -33,6 +33,7 @@ import { getOrderReference } from "./utils/mask-order-reference";
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { getInitials } from "@/lib/get-initials";
 import { getOrderActorRole } from "./utils/order-roles";
+import { StartOrderConfirmDialog } from "./components/start-order-confirm-dialog";
 
 export function OrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
@@ -41,12 +42,13 @@ export function OrderDetailPage({ id }: { id: string }) {
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [pickupOpen, setPickupOpen] = useState(false);
   const [abandonOpen, setAbandonOpen] = useState(false);
+  const [startOpen, setStartOpen] = useState(false);
 
   const { mutateAsync: startOrder, isPending: starting } = useStartOrder();
   const { mutateAsync: markCompleted, isPending: completing } = useMarkOrderCompleted();
   const { mutateAsync: markAbandoned, isPending: abandoning } = useMarkOrderAbandoned();
 
-  const { canAbandon } = getOrderActorRole(profile);
+  const { canAbandon, canMarkPickedUp, isEmployee, canAssign } = getOrderActorRole(profile);
 
   if (isLoading) return <OrderDetailSkeleton />;
   if (!order) return <OrderNotFound onBack={() => router.back()} />;
@@ -55,6 +57,8 @@ export function OrderDetailPage({ id }: { id: string }) {
   const processing = isProcessingOrder(order);
   const completed = order.orderStatus === ORDER_STATUS.COMPLETED;
   const handlerName = order.startedByName || order.assignedEmployeeName;
+  const orderRef = order.refrenceNumber || order.id.substring(0, 8).toUpperCase();
+  const customerName = order.recieverName || order.userName || "the customer";
 
   return (
     <div className="space-y-6">
@@ -137,19 +141,21 @@ export function OrderDetailPage({ id }: { id: string }) {
           </div>
 
           <div className="space-y-2">
-            {pending && (
+            {pending && isEmployee && (
               <Button
                 className="w-full rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
                 disabled={starting}
-                onClick={async () => {
-                  try {
-                    await startOrder(order.id);
-                  } catch {}
-                }}
+                onClick={() => setStartOpen(true)}
               >
                 {starting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
                 Start Order
               </Button>
+            )}
+
+            {pending && !isEmployee && canAssign && (
+              <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+                Managers assign orders to employees. Use Assign from the orders list (or ⋮ menu).
+              </p>
             )}
 
             {processing && (
@@ -174,15 +180,17 @@ export function OrderDetailPage({ id }: { id: string }) {
               </Button>
             )}
 
-            {completed && (
+            {completed && (canMarkPickedUp || canAbandon) && (
               <>
-                <Button
-                  className="w-full rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
-                  onClick={() => setPickupOpen(true)}
-                >
-                  <PackageCheck className="mr-2 size-4" />
-                  Mark as Picked Up
-                </Button>
+                {canMarkPickedUp && (
+                  <Button
+                    className="w-full rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
+                    onClick={() => setPickupOpen(true)}
+                  >
+                    <PackageCheck className="mr-2 size-4" />
+                    Mark as Picked Up
+                  </Button>
+                )}
                 {canAbandon && (
                   <Button
                     variant="outline"
@@ -207,11 +215,25 @@ export function OrderDetailPage({ id }: { id: string }) {
         mode="pickup"
       />
 
+      <StartOrderConfirmDialog
+        open={startOpen}
+        onOpenChange={setStartOpen}
+        orderRef={orderRef}
+        customerName={customerName}
+        isLoading={starting}
+        onConfirm={async () => {
+          try {
+            await startOrder(order.id);
+            setStartOpen(false);
+          } catch {}
+        }}
+      />
+
       <ConfirmationDialog
         open={abandonOpen}
         onOpenChange={setAbandonOpen}
         title="Mark as Abandoned"
-        description="This will close the order as Abandoned (not collected). Only store managers and admins can do this — employees cannot. Continue?"
+        description="This will close the order as Abandoned (not collected). Only store managers can do this. Continue?"
         confirmLabel="Abandon Order"
         variant="destructive"
         isLoading={abandoning}

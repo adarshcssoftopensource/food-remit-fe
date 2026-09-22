@@ -17,6 +17,7 @@ import { OrderData } from "../types/order.types";
 import { isPendingOrder } from "../utils/order-workflow";
 import { getOrderActorRole } from "../utils/order-roles";
 import { AssignOrderSheet } from "./assign-order-sheet";
+import { StartOrderConfirmDialog } from "./start-order-confirm-dialog";
 
 interface OrderActionsCellProps {
   order: OrderData;
@@ -27,20 +28,25 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
   const { profile } = useProfile();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
+  const [startOpen, setStartOpen] = useState(false);
   const { mutateAsync: deleteOrder, isPending: isDeleting } = useDeleteOrder(order.id);
   const { mutateAsync: startOrder, isPending: isStarting } = useStartOrder();
 
-  const { isStoreManager, isEmployee, isElevated } = getOrderActorRole(profile);
+  const { isEmployee, canAssign: roleCanAssign } = getOrderActorRole(profile);
   const pending = isPendingOrder(order);
-  const canStart = pending && (isEmployee || isStoreManager || isElevated);
-  const canAssign = pending && (isStoreManager || isElevated);
+  const canStart = pending && isEmployee;
+  const canAssign = pending && roleCanAssign;
   const detailPath = isEmployee
     ? ROUTES.ADMIN.MY_ORDER_DETAIL(order.id)
     : `${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}/${order.id}`;
 
+  const orderRef = order.refrenceNumber || order.id.substring(0, 8).toUpperCase();
+  const customerName = order.recieverName || order.userName || "the customer";
+
   const handleStart = async () => {
     try {
       await startOrder(order.id);
+      setStartOpen(false);
       router.push(detailPath);
     } catch {
       /* toast in hook */
@@ -54,9 +60,8 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
     } catch {}
   };
 
-  // Primary CTA only for Start / Assign — View Order lives only under ⋮
   const showStart = canStart;
-  const showAssignPrimary = canAssign && !canStart;
+  const showAssignPrimary = canAssign;
 
   const menuItems: DataTableRowActionItem[] = [
     {
@@ -86,7 +91,7 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
         <Button
           size="sm"
           className="h-8 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white hover:bg-emerald-700"
-          onClick={handleStart}
+          onClick={() => setStartOpen(true)}
           disabled={isStarting}
         >
           {isStarting ? (
@@ -112,6 +117,15 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
       <DataTableRowActions items={menuItems} />
 
       <AssignOrderSheet open={assignOpen} onOpenChange={setAssignOpen} order={order} />
+
+      <StartOrderConfirmDialog
+        open={startOpen}
+        onOpenChange={setStartOpen}
+        orderRef={orderRef}
+        customerName={customerName}
+        isLoading={isStarting}
+        onConfirm={handleStart}
+      />
 
       <ConfirmationDialog
         open={deleteOpen}

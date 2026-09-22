@@ -78,6 +78,11 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           />
           <InfoCard
             icon={<Layers className="h-4 w-4 text-orange-500" />}
+            label="Perishable Item"
+            value={item.isPerishable ? "Yes" : "No"}
+          />
+          <InfoCard
+            icon={<Layers className="h-4 w-4 text-orange-500" />}
             label="Item Quantity"
             value={
               item.stockQuantity !== null && item.stockQuantity !== undefined

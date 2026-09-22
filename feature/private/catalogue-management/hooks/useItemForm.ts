@@ -60,6 +60,7 @@ const itemSchema = z
       .refine((val) => !val || Number(val) >= 0, "Cannot be negative"),
     weightUnit: z.string().optional(),
     unit: z.string().min(1, "Unit is required"),
+    isPerishable: z.boolean(),
     placements: z.array(placementSchema).min(1, "Add at least one country price"),
     productImageFile: z
       .array(z.instanceof(File))
@@ -225,6 +226,7 @@ export function useItemForm(
       netWeight: item?.netWeight?.toString() ?? "",
       weightUnit: item?.weightUnit ?? "",
       unit: item?.unit ?? "",
+      isPerishable: item?.isPerishable ?? false,
       placements: mapItemPlacements(item),
       productImageFile: [],
       productInfoImageFile: [],
@@ -254,6 +256,7 @@ export function useItemForm(
           netWeight: item?.netWeight?.toString() ?? "",
           weightUnit: item?.weightUnit ?? "",
           unit: item?.unit ?? "",
+          isPerishable: item?.isPerishable ?? false,
           placements: mapItemPlacements(item),
           productImageFile: [],
           productInfoImageFile: [],
@@ -314,6 +317,7 @@ export function useItemForm(
       if (values.netWeight) formData.append("netWeight", values.netWeight);
       if (values.weightUnit) formData.append("weightUnit", values.weightUnit);
       formData.append("unit", values.unit);
+      formData.append("isPerishable", values.isPerishable ? "true" : "false");
 
       if (item && values.existingProductImages !== undefined) {
         formData.append("existingProductImages", JSON.stringify(values.existingProductImages));
