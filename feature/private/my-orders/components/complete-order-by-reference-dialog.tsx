@@ -15,7 +15,8 @@ import {
   getCompleteByReferenceErrorMessage,
   useCompleteOrderByReference,
 } from "@/feature/private/order-management/hooks/use-complete-order-by-reference";
-import { CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
+import { useMarkOrderPickedUp } from "@/feature/private/order-management/hooks/use-order-lifecycle";
+import { CheckCircle2, Loader2, PackageCheck, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -24,18 +25,24 @@ interface CompleteOrderByReferenceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   maskedHint?: string;
+  /** pickup = Completed → Closed/Picked Up; complete = legacy Processing → Completed */
+  mode?: "pickup" | "complete";
 }
 
 export function CompleteOrderByReferenceDialog({
   orderId,
   open,
   onOpenChange,
-  maskedHint,
+  mode = "complete",
 }: CompleteOrderByReferenceDialogProps) {
-  const { mutateAsync: completeByReference, isPending } = useCompleteOrderByReference();
+  const { mutateAsync: completeByReference, isPending: completing } = useCompleteOrderByReference();
+  const { mutateAsync: markPickedUp, isPending: pickingUp } = useMarkOrderPickedUp();
+  const isPending = completing || pickingUp;
   const [referenceNumber, setReferenceNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [verified, setVerified] = useState(false);
+
+  const isPickup = mode === "pickup";
 
   const resetForm = () => {
     setReferenceNumber("");
@@ -59,9 +66,14 @@ export function CompleteOrderByReferenceDialog({
 
     setError(null);
     try {
-      await completeByReference({ orderId, referenceNumber: value });
+      if (isPickup) {
+        await markPickedUp({ orderId, referenceNumber: value });
+        toast.success("Order picked up and closed.");
+      } else {
+        await completeByReference({ orderId, referenceNumber: value });
+        toast.success("Order completed successfully.");
+      }
       setVerified(true);
-      toast.success("Order completed successfully.");
       window.setTimeout(() => {
         resetForm();
         onOpenChange(false);
@@ -78,14 +90,20 @@ export function CompleteOrderByReferenceDialog({
           <DialogHeader className="gap-3 text-left">
             <div className="flex items-start gap-3">
               <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 ring-1 ring-emerald-500/20">
-                <ShieldCheck className="size-5" />
+                {isPickup ? (
+                  <PackageCheck className="size-5" />
+                ) : (
+                  <ShieldCheck className="size-5" />
+                )}
               </div>
               <div className="space-y-1">
                 <DialogTitle className="text-lg font-bold tracking-tight">
-                  Complete Order
+                  {isPickup ? "Verify Pickup" : "Complete Order"}
                 </DialogTitle>
                 <DialogDescription className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                  Enter the full reference number to verify and complete this order.
+                  {isPickup
+                    ? "Enter the full reference number / scan QR to mark this order as Picked Up. It will automatically close and move to History."
+                    : "Enter the full reference number to verify and complete this order."}
                 </DialogDescription>
               </div>
             </div>
@@ -123,9 +141,7 @@ export function CompleteOrderByReferenceDialog({
                 <p className="text-xs font-medium text-red-600 dark:text-red-400" role="alert">
                   {error}
                 </p>
-              ) : (
-                <p className="text-xs text-slate-500"></p>
-              )}
+              ) : null}
             </div>
           )}
 
@@ -146,10 +162,12 @@ export function CompleteOrderByReferenceDialog({
             >
               {isPending ? (
                 <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : isPickup ? (
+                <PackageCheck className="mr-2 size-4" />
               ) : (
                 <ShieldCheck className="mr-2 size-4" />
               )}
-              Verify & Complete
+              {isPickup ? "Verify & Mark Picked Up" : "Verify & Complete"}
             </Button>
           </DialogFooter>
         </form>

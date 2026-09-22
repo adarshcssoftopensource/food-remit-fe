@@ -11,6 +11,8 @@ interface GetOrdersParams {
   status?: string;
   excludeStatus?: string;
   type?: number | string;
+  workflow?: string;
+  finalStatus?: number;
   fromDate?: string;
   toDate?: string;
   country?: string;

@@ -96,4 +96,17 @@ export interface OrderData {
   identityProf?: string;
   assignedEmployeeId?: string | null;
   assignedEmployeeName?: string | null;
+  assignedEmployeeImage?: string | null;
+  startedById?: string | null;
+  startedByName?: string | null;
+  startedByImage?: string | null;
+  startedAt?: string | null;
+  assignedAt?: string | null;
+  assignedById?: string | null;
+  completedAt?: string | null;
+  pickedUpAt?: string | null;
+  abandonedAt?: string | null;
+  closedAt?: string | null;
+  /** 1 = Picked Up, 2 = Abandoned */
+  finalStatus?: number | null;
 }

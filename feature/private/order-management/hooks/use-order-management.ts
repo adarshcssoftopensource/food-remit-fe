@@ -3,8 +3,13 @@ import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { useState } from "react";
 import { useGetOrders } from "./use-get-orders";
+import { HistorySubFilter } from "../utils/order-workflow";
+import { FINAL_STATUS } from "../utils/order-workflow";
 
-export function useOrderManagement(section?: OrderSectionKey) {
+export function useOrderManagement(
+  section?: OrderSectionKey,
+  historyFilter: HistorySubFilter = "all",
+) {
   const {
     page,
     limit,
@@ -37,7 +42,7 @@ export function useOrderManagement(section?: OrderSectionKey) {
     applyBaseFilters();
     setAppliedCountry(country);
     setAppliedCity(city);
-    refetch(); // if refetch was previously used here
+    refetch();
   };
 
   const cancelAllFilters = () => {
@@ -46,26 +51,41 @@ export function useOrderManagement(section?: OrderSectionKey) {
     setCity(appliedCity);
   };
 
-  let status: string | undefined = undefined;
-  let excludeStatus: string | undefined = undefined;
-  let type: string | number | undefined = undefined;
+  let workflow: string | undefined;
+  let status: string | undefined;
+  let excludeStatus: string | undefined;
+  let type: string | number | undefined;
+  let finalStatus: number | undefined;
 
-  if (section === "all-orders") {
-    // no specific filter, show all
+  const normalized =
+    section === "all-orders"
+      ? "all"
+      : section === "completed-orders"
+        ? "completed"
+        : section === "preparing"
+          ? "processing"
+          : section;
+
+  if (normalized === "all") {
+    workflow = "active";
+  } else if (normalized === "pending") {
+    workflow = "pending";
+  } else if (normalized === "processing") {
+    workflow = "processing";
+  } else if (normalized === "completed") {
+    workflow = "completed";
+  } else if (normalized === "history") {
+    workflow = "history";
+    if (historyFilter === "picked-up") finalStatus = FINAL_STATUS.PICKED_UP;
+    if (historyFilter === "abandoned") finalStatus = FINAL_STATUS.ABANDONED;
   } else if (section === "sent-orders") {
     type = 1;
-    excludeStatus = "2,5,6,9";
+    excludeStatus = "2,5,6,9,11";
   } else if (section === "requested-orders") {
     type = 2;
-    excludeStatus = "2,5,6,9";
-  } else if (section === "preparing") {
-    status = "2"; // 2 represents preparing
-  } else if (section === "processing") {
-    status = "5";
+    excludeStatus = "2,5,6,9,11";
   } else if (section === "partial-orders") {
-    status = "9"; // 9 represents partial
-  } else if (section === "completed-orders") {
-    status = "6"; // 6 represents completed
+    status = "9";
   }
 
   const {
@@ -81,6 +101,8 @@ export function useOrderManagement(section?: OrderSectionKey) {
     status,
     excludeStatus,
     type,
+    workflow,
+    finalStatus,
     fromDate: formattedFromDate,
     toDate: formattedToDate,
     country: appliedCountry !== "all" && appliedCountry !== "All" ? appliedCountry : undefined,

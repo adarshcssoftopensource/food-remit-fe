@@ -49,7 +49,7 @@ export function SettingsPage() {
       },
       {
         value: "markup",
-        label: "Markup (%)",
+        label: "Markup",
         component: <MarkupManagement />,
         icon: <Percent className="size-4" />,
       },

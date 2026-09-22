@@ -1,200 +1,202 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  DataTableRowActionItem,
+  DataTableRowActions,
+} from "@/components/common/data-table/data-table-row-actions";
 import { ROUTES } from "@/config/routes";
 import { formatDate } from "@/lib/date";
+import { getInitials } from "@/lib/get-initials";
 import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2, Clock3, Eye, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Eye, Loader2, PackageCheck, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CompleteOrderByReferenceDialog } from "../../my-orders/components/complete-order-by-reference-dialog";
-import { PrepareOrderDialog } from "../../my-orders/components/prepare-order-dialog";
 import { OrderStatusBadge } from "../components/order-status-badge";
-import { MaskedReferenceBadge } from "../components/masked-reference-badge";
+import { useMarkOrderCompleted, useStartOrder } from "../hooks/use-order-lifecycle";
 import { OrderData } from "../types/order.types";
-import { getOrderReference } from "../utils/mask-order-reference";
+import {
+  formatRelativeTime,
+  isPendingOrder,
+  isProcessingOrder,
+  ORDER_STATUS,
+} from "../utils/order-workflow";
 
-function MyOrderActionsCell({
-  orderId,
-  orderStatus,
-  referenceHint,
-}: {
-  orderId: string;
-  orderStatus: number;
-  referenceHint?: string;
-}) {
+function MyOrderActionsCell({ order }: { order: OrderData }) {
   const router = useRouter();
-  const [prepareOpen, setPrepareOpen] = useState(false);
-  const [completeOpen, setCompleteOpen] = useState(false);
+  const [pickupOpen, setPickupOpen] = useState(false);
+  const { mutateAsync: startOrder, isPending: starting } = useStartOrder();
+  const { mutateAsync: markCompleted, isPending: completing } = useMarkOrderCompleted();
 
-  const canStartPreparing = orderStatus === 4 || orderStatus === 5 || orderStatus === 8;
-  const canMarkComplete = orderStatus === 2; // After Preparing
+  const pending = isPendingOrder(order);
+  const processing = isProcessingOrder(order);
+  const completed = order.orderStatus === ORDER_STATUS.COMPLETED;
+  const detail = ROUTES.ADMIN.MY_ORDER_DETAIL(order.id);
+
+  const menuItems: DataTableRowActionItem[] = [
+    {
+      label: "View Order",
+      icon: <Eye className="size-4" />,
+      onClick: () => router.push(detail),
+    },
+  ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button
-        size="sm"
-        variant="outline"
-        className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950/20 dark:text-slate-300"
-        onClick={() => router.push(ROUTES.ADMIN.MY_ORDER_DETAIL(orderId))}
-      >
-        <Eye className="mr-1.5 size-3.5" />
-        View
-      </Button>
-
-      {canStartPreparing && (
-        <>
-          <Button
-            size="sm"
-            variant={"secondary"}
-            className="h-8 rounded-lg bg-amber-600! px-3 text-xs font-semibold text-white shadow-sm transition-all hover:bg-amber-700"
-            onClick={() => setPrepareOpen(true)}
-          >
-            <Clock3 className="mr-1.5 size-3.5" />
-            Mark as Preparing
-          </Button>
-          <PrepareOrderDialog orderId={orderId} open={prepareOpen} onOpenChange={setPrepareOpen} />
-        </>
+    <div className="flex items-center justify-end gap-2">
+      {pending && (
+        <Button
+          size="sm"
+          className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700"
+          disabled={starting}
+          onClick={async () => {
+            try {
+              await startOrder(order.id);
+              router.push(detail);
+            } catch {
+              /* toast in hook */
+            }
+          }}
+        >
+          {starting ? (
+            <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+          ) : (
+            <Play className="mr-1.5 size-3.5 fill-current" />
+          )}
+          Start Order
+        </Button>
       )}
 
-      {canMarkComplete && (
+      {processing && (
+        <Button
+          size="sm"
+          className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white hover:bg-emerald-700"
+          disabled={completing}
+          onClick={async () => {
+            try {
+              await markCompleted(order.id);
+            } catch {
+              /* toast in hook */
+            }
+          }}
+        >
+          {completing ? (
+            <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+          ) : (
+            <CheckCircle2 className="mr-1.5 size-3.5" />
+          )}
+          Mark Completed
+        </Button>
+      )}
+
+      {completed && (
         <>
           <Button
             size="sm"
-            className="h-8 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-sm transition-all hover:bg-emerald-700"
-            onClick={() => setCompleteOpen(true)}
+            className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white hover:bg-emerald-700"
+            onClick={() => setPickupOpen(true)}
           >
-            <ShieldCheck className="mr-1.5 size-3.5" />
-            Mark as Complete
+            <PackageCheck className="mr-1.5 size-3.5" />
+            Mark Picked Up
           </Button>
           <CompleteOrderByReferenceDialog
-            orderId={orderId}
-            open={completeOpen}
-            onOpenChange={setCompleteOpen}
-            maskedHint={referenceHint}
+            orderId={order.id}
+            open={pickupOpen}
+            onOpenChange={setPickupOpen}
+            mode="pickup"
           />
         </>
       )}
 
-      {orderStatus === 6 && (
-        <Button
-          variant={"outline"}
-          className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-300"
-        >
-          <CheckCircle2 className="size-3.5" />
-          Completed
-        </Button>
-      )}
+      <DataTableRowActions items={menuItems} />
+    </div>
+  );
+}
+
+function AssignedByCell({ order }: { order: OrderData }) {
+  const name = order.startedByName || order.assignedEmployeeName;
+  if (!name) return <span className="text-slate-400">—</span>;
+  return (
+    <div className="flex items-center gap-2">
+      <span className="flex size-7 items-center justify-center rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-700">
+        {getInitials(name)}
+      </span>
+      <div className="min-w-0">
+        <p className="truncate text-sm font-medium text-slate-800">{name}</p>
+        <p className="text-[11px] text-slate-500">
+          Started {formatRelativeTime(order.startedAt || order.assignedAt) || "—"}
+        </p>
+      </div>
     </div>
   );
 }
 
 export const myOrderColumns: ColumnDef<OrderData>[] = [
   {
-    id: "sno",
-    header: "S.No",
-    cell: ({ row, table }) => (
-      <span className="pl-2 font-mono text-xs text-slate-500">
-        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
-          row.index +
-          1}
-      </span>
-    ),
-  },
-  {
-    id: "refrenceNumber",
-    header: "Reference Number",
-    cell: ({ row }) => <MaskedReferenceBadge reference={getOrderReference(row.original)} />,
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Order Date",
+    accessorKey: "refrenceNumber",
+    header: "Order ID",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-600 dark:text-slate-400">
-        {formatDate(row.original.createdAt)} •{" "}
-        {row.original.createdAt
-          ? new Date(row.original.createdAt).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "N/A"}
+      <span className="font-mono text-xs font-bold text-slate-800">
+        #{row.original.refrenceNumber || row.original.id.substring(0, 8).toUpperCase()}
       </span>
     ),
   },
   {
-    accessorKey: "userName",
-    header: "Sender",
+    id: "customer",
+    header: "Customer",
     cell: ({ row }) => (
-      <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
-        {row.original.userName || "N/A"}
-      </span>
+      <div>
+        <p className="text-sm font-medium text-slate-800">
+          {row.original.recieverName || row.original.userName || "N/A"}
+        </p>
+        <p className="text-xs text-slate-500">{row.original.storeName || "—"}</p>
+      </div>
     ),
   },
   {
-    accessorKey: "recieverName",
-    header: "Receiver",
-    cell: ({ row }) => (
-      <span className="text-sm text-slate-700 dark:text-slate-300">
-        {row.original.recieverName || "N/A"}
-      </span>
-    ),
+    id: "items",
+    header: "Items",
+    cell: ({ row }) => {
+      const count =
+        row.original.items?.reduce((s, i) => s + (i.quantity || 0), 0) ||
+        row.original.items?.length ||
+        0;
+      return <span className="text-sm text-slate-600">{count} items</span>;
+    },
   },
   {
     accessorKey: "price",
     header: "Amount",
-    cell: ({ row }) => {
-      const originalPrice = row.original.price || "$0.00";
-      const cp = row.original.customerPayment;
-      const isCompletedRefund =
-        cp?.refundStatus === "Completed" && Boolean(cp?.actualRetainedAmount);
-      const isPendingRefund = cp?.refundStatus === "Pending";
-
-      if (isCompletedRefund) {
-        return (
-          <div className="flex flex-col">
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-              {cp?.actualRetainedAmount}
-            </span>
-            <span className="text-muted-foreground text-[11px] line-through">{originalPrice}</span>
-            <span className="text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
-              {cp?.refundAmount ? `(-${cp.refundAmount} refunded)` : "Refunded"}
-            </span>
-          </div>
-        );
-      }
-
-      if (isPendingRefund && cp?.refundAmount) {
-        return (
-          <div className="flex flex-col">
-            <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {originalPrice}
-            </span>
-            <span className="text-[10px] font-medium text-amber-600 dark:text-amber-400">
-              Refund Pending: {cp.refundAmount}
-            </span>
-          </div>
-        );
-      }
-
-      return (
-        <span className="font-semibold text-slate-900 dark:text-slate-100">{originalPrice}</span>
-      );
-    },
+    cell: ({ row }) => (
+      <span className="font-semibold text-slate-900">{row.original.price || "—"}</span>
+    ),
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Placed",
+    cell: ({ row }) => (
+      <span className="text-xs text-slate-600">{formatDate(row.original.createdAt)}</span>
+    ),
   },
   {
     id: "orderStatus",
     header: "Status",
-    cell: ({ row }) => <OrderStatusBadge status={row.original.orderStatus} />,
+    cell: ({ row }) => (
+      <OrderStatusBadge
+        status={row.original.orderStatus}
+        assignedEmployeeId={row.original.assignedEmployeeId}
+        finalStatus={row.original.finalStatus}
+      />
+    ),
+  },
+  {
+    id: "startedBy",
+    header: "Started By",
+    cell: ({ row }) => <AssignedByCell order={row.original} />,
   },
   {
     id: "actions",
     header: "Action",
-    cell: ({ row }) => (
-      <MyOrderActionsCell
-        orderId={row.original.id}
-        orderStatus={row.original.orderStatus}
-        referenceHint={getOrderReference(row.original)}
-      />
-    ),
+    cell: ({ row }) => <MyOrderActionsCell order={row.original} />,
   },
 ];
