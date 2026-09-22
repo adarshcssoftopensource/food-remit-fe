@@ -3,9 +3,26 @@ import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import apiClient from "@/lib/api/client";
 import { ORDER_ENDPOINTS } from "@/lib/api/endpoints/order.endpoints";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  const axiosError = error as AxiosError<{ message?: string | string[] }>;
+  const message = axiosError?.response?.data?.message;
+  if (Array.isArray(message) && message[0]) return message[0];
+  if (typeof message === "string" && message.trim()) return message;
+  return fallback;
+}
+
+function useInvalidateOrders() {
+  const queryClient = useQueryClient();
+  return () => {
+    void queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ORDERS });
+  };
+}
 
 export function useStartOrder() {
-  const queryClient = useQueryClient();
+  const invalidateOrders = useInvalidateOrders();
+
   return useMutation({
     mutationFn: async (orderId: string) => {
       const { data } = await apiClient.post(ORDER_ENDPOINTS.START(orderId));
@@ -13,19 +30,19 @@ export function useStartOrder() {
     },
     onSuccess: () => {
       successToast({ description: "Order started — now Processing" });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ORDERS });
+      invalidateOrders();
     },
-    onError: (err: any) => {
+    onError: (error: unknown) => {
       errorToast({
-        description:
-          err?.response?.data?.message || "Failed to start order. It may already be taken.",
+        description: getErrorMessage(error, "Failed to start order. It may already be taken."),
       });
     },
   });
 }
 
 export function useMarkOrderCompleted() {
-  const queryClient = useQueryClient();
+  const invalidateOrders = useInvalidateOrders();
+
   return useMutation({
     mutationFn: async (orderId: string) => {
       const { data } = await apiClient.post(ORDER_ENDPOINTS.MARK_COMPLETED(orderId));
@@ -33,18 +50,19 @@ export function useMarkOrderCompleted() {
     },
     onSuccess: () => {
       successToast({ description: "Order marked as Completed — ready for pickup" });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ORDERS });
+      invalidateOrders();
     },
-    onError: (err: any) => {
+    onError: (error: unknown) => {
       errorToast({
-        description: err?.response?.data?.message || "Failed to mark order as completed",
+        description: getErrorMessage(error, "Failed to mark order as completed"),
       });
     },
   });
 }
 
 export function useMarkOrderPickedUp() {
-  const queryClient = useQueryClient();
+  const invalidateOrders = useInvalidateOrders();
+
   return useMutation({
     mutationFn: async ({
       orderId,
@@ -60,19 +78,19 @@ export function useMarkOrderPickedUp() {
     },
     onSuccess: () => {
       successToast({ description: "Order picked up and closed" });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ORDERS });
+      invalidateOrders();
     },
-    onError: (err: any) => {
+    onError: (error: unknown) => {
       errorToast({
-        description:
-          err?.response?.data?.message || "Invalid reference or failed to mark as picked up",
+        description: getErrorMessage(error, "Invalid reference or failed to mark as picked up"),
       });
     },
   });
 }
 
 export function useMarkOrderAbandoned() {
-  const queryClient = useQueryClient();
+  const invalidateOrders = useInvalidateOrders();
+
   return useMutation({
     mutationFn: async ({ orderId, reason }: { orderId: string; reason?: string }) => {
       const { data } = await apiClient.post(ORDER_ENDPOINTS.MARK_ABANDONED(orderId), {
@@ -82,11 +100,11 @@ export function useMarkOrderAbandoned() {
     },
     onSuccess: () => {
       successToast({ description: "Order abandoned and closed" });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ORDERS });
+      invalidateOrders();
     },
-    onError: (err: any) => {
+    onError: (error: unknown) => {
       errorToast({
-        description: err?.response?.data?.message || "Failed to abandon order",
+        description: getErrorMessage(error, "Failed to abandon order"),
       });
     },
   });

@@ -111,7 +111,7 @@ export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheet
                   </div>
                 ) : (
                   <div className="space-y-1.5">
-                    {(employees || []).map((emp: any) => {
+                    {(employees || []).map((emp) => {
                       const name = `${emp.firstName} ${emp.lastName}`.trim();
                       const busy = busyCountByEmployee.get(emp.id) || 0;
                       const selected = selectedEmployeeId === emp.id;

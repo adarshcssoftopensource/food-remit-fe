@@ -29,10 +29,16 @@ function formatStamp(iso?: string | null) {
   });
 }
 
+function getCurrentStep(order: OrderData): StepKey {
+  if (isPendingOrder(order)) return "pending";
+  if (isProcessingOrder(order)) return "processing";
+  if (order.orderStatus === ORDER_STATUS.COMPLETED) return "completed";
+  if (order.orderStatus === ORDER_STATUS.CLOSED) return "closed";
+  return "pending";
+}
+
 export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
-  const pendingDone =
-    !isPendingOrder(order) || order.orderStatus !== ORDER_STATUS.PAID || !!order.assignedEmployeeId;
-  // Paid itself means pending was reached; payment time ≈ created/paid
+  const current = getCurrentStep(order);
   const hasLeftPending =
     isProcessingOrder(order) ||
     order.orderStatus === ORDER_STATUS.COMPLETED ||
@@ -42,20 +48,10 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
 
   const processingDone =
     order.orderStatus === ORDER_STATUS.COMPLETED || order.orderStatus === ORDER_STATUS.CLOSED;
-  const completedDone = order.orderStatus === ORDER_STATUS.CLOSED || !!order.completedAt;
+  const completedDone =
+    order.orderStatus === ORDER_STATUS.COMPLETED || order.orderStatus === ORDER_STATUS.CLOSED;
   const pickedOrAbandoned = order.orderStatus === ORDER_STATUS.CLOSED;
   const closedDone = order.orderStatus === ORDER_STATUS.CLOSED;
-
-  const current: StepKey = isPendingOrder(order)
-    ? "pending"
-    : isProcessingOrder(order)
-      ? "processing"
-      : order.orderStatus === ORDER_STATUS.COMPLETED
-        ? "completed"
-        : order.orderStatus === ORDER_STATUS.CLOSED
-          ? "closed"
-          : "pending";
-
   const pickupLabel = order.finalStatus === FINAL_STATUS.ABANDONED ? "Abandoned" : "Picked Up";
 
   const steps: {
@@ -78,17 +74,15 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
       done: processingDone,
       current: current === "processing",
       detail: order.startedByName
-        ? `Started by ${order.startedByName}${formatStamp(order.startedAt) ? `, ${formatStamp(order.startedAt)}` : ""}`
+        ? `Started by ${order.startedByName}${
+            formatStamp(order.startedAt) ? `, ${formatStamp(order.startedAt)}` : ""
+          }`
         : formatStamp(order.startedAt) || (current === "processing" ? "In progress" : "Waiting"),
     },
     {
       key: "completed",
       label: "Completed",
-      done:
-        completedDone && order.orderStatus !== ORDER_STATUS.COMPLETED
-          ? true
-          : order.orderStatus === ORDER_STATUS.CLOSED ||
-            order.orderStatus === ORDER_STATUS.COMPLETED,
+      done: completedDone,
       current: current === "completed",
       detail:
         formatStamp(order.completedAt) ||
@@ -111,12 +105,6 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
       detail: formatStamp(order.closedAt) || (closedDone ? "In history" : "Waiting"),
     },
   ];
-
-  // Fix completed.done for active completed state
-  steps[2].done =
-    order.orderStatus === ORDER_STATUS.COMPLETED || order.orderStatus === ORDER_STATUS.CLOSED;
-
-  void pendingDone;
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">

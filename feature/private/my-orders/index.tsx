@@ -12,6 +12,7 @@ import { myOrderColumns } from "@/feature/private/order-management/columns/my-or
 import { OrderInfoBanner } from "@/feature/private/order-management/components/order-info-banner";
 import { useOrderManagement } from "@/feature/private/order-management/hooks/use-order-management";
 import { useWorkflowCounts } from "@/feature/private/order-management/hooks/use-workflow-counts";
+import { OrderData } from "@/feature/private/order-management/types/order.types";
 import { OrderSectionKey } from "@/constants/order-management";
 import { cn } from "@/lib/utils";
 
@@ -160,7 +161,7 @@ export function OrdersManagementPage() {
                   loading={isLoading}
                   manualSorting
                   manualFiltering
-                  getRowId={(row: any) => row.id}
+                  getRowId={(row: OrderData) => row.id}
                 />
               </CardContent>
             </Card>

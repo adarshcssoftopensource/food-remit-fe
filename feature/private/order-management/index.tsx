@@ -21,6 +21,7 @@ import { useProfile } from "@/components/providers/profile-provider";
 import { WorkflowSummaryCards } from "./components/workflow-summary-cards";
 import { OrderInfoBanner } from "./components/order-info-banner";
 import { HistorySubFilter } from "./utils/order-workflow";
+import { OrderData } from "./types/order.types";
 import { cn } from "@/lib/utils";
 
 export function OrdersManagementPage() {
@@ -155,15 +156,11 @@ export function OrdersManagementPage() {
           </TabsList>
         </div>
 
-        {/* {activeTab !== "history" && (
+        {activeTab !== "history" && (
           <div className="mt-4">
-            <WorkflowSummaryCards
-              counts={counts}
-              activeTab={activeTab}
-              onSelect={setActiveTab}
-            />
+            <WorkflowSummaryCards counts={counts} activeTab={activeTab} onSelect={setActiveTab} />
           </div>
-        )} */}
+        )}
 
         {activeTab === "history" && counts && (
           <div className="mt-4 space-y-4">
@@ -228,7 +225,7 @@ export function OrdersManagementPage() {
                   loading={isLoading}
                   manualSorting
                   manualFiltering
-                  getRowId={(row: any) => row.id}
+                  getRowId={(row: OrderData) => row.id}
                 />
               </CardContent>
             </Card>
