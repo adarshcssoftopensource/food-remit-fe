@@ -156,11 +156,11 @@ export function OrdersManagementPage() {
           </TabsList>
         </div>
 
-        {activeTab !== "history" && (
+        {/* {activeTab !== "history" && (
           <div className="mt-4">
             <WorkflowSummaryCards counts={counts} activeTab={activeTab} onSelect={setActiveTab} />
           </div>
-        )}
+        )} */}
 
         {activeTab === "history" && counts && (
           <div className="mt-4 space-y-4">
