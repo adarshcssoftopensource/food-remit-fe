@@ -18,6 +18,20 @@ import {
   DataTableRowActionItem,
   DataTableRowActions,
 } from "@/components/common/data-table/data-table-row-actions";
+import { maskOrderReference } from "../utils/mask-order-reference";
+
+function formatTimePlaced(iso?: string) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  if (sameDay) return `Today, ${time}`;
+  return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${time}`;
+}
 
 function MyOrderActionsCell({ order }: { order: OrderData }) {
   const router = useRouter();
@@ -42,11 +56,11 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
   ];
 
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className="flex items-center justify-start gap-2">
       {pending && (
         <Button
           size="sm"
-          className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700"
+          className="h-9 w-36 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700"
           disabled={starting}
           onClick={() => setStartOpen(true)}
         >
@@ -62,7 +76,7 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
       {processing && (
         <Button
           size="sm"
-          className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white hover:bg-emerald-700"
+          className="h-9 w-36 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white hover:bg-emerald-700"
           disabled={completing}
           onClick={async () => {
             try {
@@ -85,7 +99,7 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
         <>
           <Button
             size="sm"
-            className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white hover:bg-emerald-700"
+            className="h-9 w-36 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white hover:bg-emerald-700"
             onClick={() => setPickupOpen(true)}
           >
             <PackageCheck className="mr-1.5 size-3.5" />
@@ -128,7 +142,7 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
     header: "Order ID",
     cell: ({ row }) => (
       <span className="font-mono text-xs font-bold text-slate-800">
-        #{row.original.refrenceNumber || row.original.id.substring(0, 8).toUpperCase()}
+        #{maskOrderReference(row.original.refrenceNumber || row.original.id)}
       </span>
     ),
   },
@@ -164,9 +178,9 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Placed",
+    header: "Time Placed",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-600">{formatDate(row.original.createdAt)}</span>
+      <span className="text-xs text-slate-600">{formatTimePlaced(row.original.createdAt)}</span>
     ),
   },
   {

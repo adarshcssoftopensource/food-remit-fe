@@ -112,14 +112,16 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
         {steps.map((step, index) => (
           <div key={step.key} className="flex flex-1 flex-col items-center text-center">
             <div className="flex w-full items-center">
-              {index > 0 && (
-                <div
-                  className={cn(
-                    "h-0.5 flex-1",
-                    steps[index - 1].done ? "bg-emerald-500" : "bg-slate-200",
-                  )}
-                />
-              )}
+              <div
+                className={cn(
+                  "h-0.5 flex-1",
+                  index > 0
+                    ? steps[index - 1].done
+                      ? "bg-emerald-500"
+                      : "bg-slate-200"
+                    : "bg-transparent",
+                )}
+              />
               <div
                 className={cn(
                   "flex size-8 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold",
@@ -130,11 +132,16 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
               >
                 {step.done && !step.current ? <Check className="size-4" /> : index + 1}
               </div>
-              {index < steps.length - 1 && (
-                <div
-                  className={cn("h-0.5 flex-1", step.done ? "bg-emerald-500" : "bg-slate-200")}
-                />
-              )}
+              <div
+                className={cn(
+                  "h-0.5 flex-1",
+                  index < steps.length - 1
+                    ? step.done
+                      ? "bg-emerald-500"
+                      : "bg-slate-200"
+                    : "bg-transparent",
+                )}
+              />
             </div>
             <p
               className={cn(

@@ -29,6 +29,10 @@ import { useState } from "react";
 import { CompleteOrderByReferenceDialog } from "./components/complete-order-by-reference-dialog";
 import { EmployeeOrderFinancials } from "./components/employee-order-financials";
 import { StartOrderConfirmDialog } from "@/feature/private/order-management/components/start-order-confirm-dialog";
+import {
+  getOrderReference,
+  maskOrderReference,
+} from "@/feature/private/order-management/utils/mask-order-reference";
 
 export function EmployeeOrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
@@ -48,7 +52,7 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
   const handlerName = order.startedByName || order.assignedEmployeeName;
   const itemCount =
     order.items?.reduce((s, i) => s + (i.quantity || 0), 0) || order.items?.length || 0;
-  const orderRef = order.refrenceNumber || order.id.substring(0, 8).toUpperCase();
+  const orderRef = getOrderReference(order);
   const customerName = order.recieverName || order.userName || "the customer";
 
   return (
@@ -64,7 +68,7 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
             <ArrowLeft className="size-3.5" /> Back to My Orders
           </Button>
           <PageHeader
-            title={`Order #${order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}`}
+            title={`Order #${maskOrderReference(orderRef)}`}
             description={
               pending
                 ? "This order is paid and waiting to be started."
