@@ -18,6 +18,7 @@ import { useMemo, useState } from "react";
 import { OrderData } from "../types/order.types";
 import { useGetOrders } from "../hooks/use-get-orders";
 import { ORDER_STATUS } from "../utils/order-workflow";
+import Image from "next/image";
 
 interface AssignOrderSheetProps {
   open: boolean;
@@ -110,7 +111,7 @@ export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheet
                     <Loader2 className="size-6 animate-spin text-emerald-500" />
                   </div>
                 ) : (
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 px-1">
                     {(employees || []).map((emp) => {
                       const name = `${emp.firstName} ${emp.lastName}`.trim();
                       const busy = busyCountByEmployee.get(emp.id) || 0;
@@ -134,8 +135,10 @@ export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheet
                             {selected && <span className="size-2 rounded-full bg-emerald-500" />}
                           </span>
                           {emp.image ? (
-                            <img
+                            <Image
                               src={emp.image}
+                              height={40}
+                              width={40}
                               alt=""
                               className="size-9 rounded-full object-cover"
                             />

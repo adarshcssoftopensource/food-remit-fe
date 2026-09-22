@@ -30,11 +30,11 @@ export const isTerminalLeadStatus = (status?: string | null) =>
   !!status && (TERMINAL_LEAD_STATUSES as readonly string[]).includes(status);
 
 export type PartnerLeadPipelineTab = {
-  value: "pending" | "approved" | "rejected";
+  value: "all" | "pending" | "approved" | "rejected";
   label: string;
   description: string;
   Icon: LucideIcon;
-  countKey: "pendingBucket" | "approved" | "rejectedBucket";
+  countKey: "total" | "pendingBucket" | "approved" | "rejectedBucket";
   /** Soft surface when selected */
   activePanel: string;
   /** Icon chip colors */
@@ -47,6 +47,19 @@ export type PartnerLeadPipelineTab = {
 };
 
 export const PARTNER_LEAD_PIPELINE_TABS: PartnerLeadPipelineTab[] = [
+  {
+    value: "all",
+    label: "Total Leads",
+    description: "All inquiries across all statuses",
+    Icon: Users,
+    countKey: "total",
+    activePanel:
+      "border-slate-300 bg-slate-50 ring-1 ring-slate-200/80 dark:border-slate-500/40 dark:bg-slate-500/10 dark:ring-slate-500/20",
+    iconWrap: "bg-slate-100 dark:bg-slate-500/20",
+    iconColor: "text-slate-700 dark:text-slate-400",
+    badge: "bg-slate-600 text-white",
+    accent: "bg-slate-600",
+  },
   {
     value: "pending",
     label: "Pending",
@@ -95,6 +108,7 @@ export const STATS_CONFIG = [
     Icon: Users,
     color: "text-slate-700",
     bg: "bg-slate-100",
+    pipeline: "all" as const,
   },
   {
     key: "pendingBucket",

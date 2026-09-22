@@ -12,7 +12,7 @@ export const PARTNER_LEAD_ENDPOINTS = {
     status?: string,
     kycStatus?: string,
     bankStatus?: string,
-    pipeline?: "pending" | "approved" | "rejected",
+    pipeline?: "pending" | "approved" | "rejected" | "all",
   ) => {
     const params = new URLSearchParams();
     if (search) params.append("search", search);

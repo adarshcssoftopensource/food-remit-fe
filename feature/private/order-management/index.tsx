@@ -2,10 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { RowSelectionState } from "@tanstack/react-table";
+import { UserPlus } from "lucide-react";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -18,9 +21,10 @@ import { historyOrderColumns, orderColumns } from "./columns/order-columns";
 import { useOrderManagement } from "./hooks/use-order-management";
 import { useWorkflowCounts } from "./hooks/use-workflow-counts";
 import { useProfile } from "@/components/providers/profile-provider";
-import { WorkflowSummaryCards } from "./components/workflow-summary-cards";
 import { OrderInfoBanner } from "./components/order-info-banner";
-import { HistorySubFilter } from "./utils/order-workflow";
+import { AssignEmployeeDialog } from "./components/assign-employee-dialog";
+import { HistorySubFilter, isPendingOrder } from "./utils/order-workflow";
+import { getOrderActorRole } from "./utils/order-roles";
 import { OrderData } from "./types/order.types";
 import { cn } from "@/lib/utils";
 
@@ -31,12 +35,12 @@ export function OrdersManagementPage() {
 
   const [activeTab, setActiveTab] = useState<OrderSectionKey>(initialTab);
   const [historyFilter, setHistoryFilter] = useState<HistorySubFilter>("all");
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [bulkAssignOpen, setBulkAssignOpen] = useState(false);
 
   const { profile } = useProfile();
-  const isStoreManager =
-    profile?.role === "STORE_MANAGER" ||
-    profile?.roleCode === "STORE_MANAGER" ||
-    profile?.role === "store_manager";
+  const { isStoreManager, isElevated } = getOrderActorRole(profile);
+  const canBulkAssign = isStoreManager || isElevated;
 
   const { data: counts } = useWorkflowCounts();
 
@@ -73,6 +77,11 @@ export function OrdersManagementPage() {
     return count;
   }, [fromDate, toDate, country, city]);
 
+  const selectedOrders = useMemo(() => {
+    const ids = Object.keys(rowSelection).filter((id) => rowSelection[id]);
+    return filteredData.filter((o) => ids.includes(o.id) && isPendingOrder(o));
+  }, [filteredData, rowSelection]);
+
   const tabCounts: Record<string, number | undefined> = {
     all: counts?.all,
     pending: counts?.pending,
@@ -86,11 +95,17 @@ export function OrdersManagementPage() {
       ? "history"
       : activeTab === "processing"
         ? "processing"
-        : isStoreManager
+        : canBulkAssign
           ? "manager-assign"
           : "employee-start";
 
-  const columns = activeTab === "history" ? historyOrderColumns : orderColumns;
+  const showSelectColumn = canBulkAssign && activeTab !== "history";
+  const columns =
+    activeTab === "history"
+      ? historyOrderColumns
+      : showSelectColumn
+        ? orderColumns
+        : orderColumns.filter((c) => c.id !== "select");
 
   return (
     <div className="space-y-6">
@@ -127,6 +142,7 @@ export function OrdersManagementPage() {
         value={activeTab}
         onValueChange={(v) => {
           setActiveTab(v as OrderSectionKey);
+          setRowSelection({});
           if (v !== "history") setHistoryFilter("all");
         }}
       >
@@ -155,12 +171,6 @@ export function OrdersManagementPage() {
             ))}
           </TabsList>
         </div>
-
-        {/* {activeTab !== "history" && (
-          <div className="mt-4">
-            <WorkflowSummaryCards counts={counts} activeTab={activeTab} onSelect={setActiveTab} />
-          </div>
-        )} */}
 
         {activeTab === "history" && counts && (
           <div className="mt-4 space-y-4">
@@ -199,15 +209,29 @@ export function OrdersManagementPage() {
           <TabsContent key={tab.value} value={tab.value} className="m-0 mt-4 border-0 p-0">
             <Card className="rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
               <CardHeader className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-                <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                  {ORDER_SECTION_META[tab.value].title}
-                  <span className="ml-2 text-sm font-normal text-slate-500">
-                    ({pagination?.total || 0})
-                  </span>
-                </CardTitle>
-                <p className="text-muted-foreground text-xs">
-                  {ORDER_SECTION_META[tab.value].description}
-                </p>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                      {ORDER_SECTION_META[tab.value].title}
+                      <span className="ml-2 text-sm font-normal text-slate-500">
+                        ({pagination?.total || 0})
+                      </span>
+                    </CardTitle>
+                    <p className="text-muted-foreground text-xs">
+                      {ORDER_SECTION_META[tab.value].description}
+                    </p>
+                  </div>
+                  {canBulkAssign && selectedOrders.length > 0 && (
+                    <Button
+                      className="bg-emerald-600 text-white hover:bg-emerald-700"
+                      onClick={() => setBulkAssignOpen(true)}
+                    >
+                      <UserPlus className="mr-2 size-4" />
+                      Assign {selectedOrders.length}{" "}
+                      {selectedOrders.length === 1 ? "Order" : "Orders"}
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="p-4">
                 <DataTable
@@ -226,12 +250,28 @@ export function OrdersManagementPage() {
                   manualSorting
                   manualFiltering
                   getRowId={(row: OrderData) => row.id}
+                  rowSelection={showSelectColumn ? rowSelection : undefined}
+                  onRowSelectionChange={showSelectColumn ? setRowSelection : undefined}
+                  enableRowSelection={
+                    showSelectColumn ? (row) => isPendingOrder(row.original) : undefined
+                  }
                 />
               </CardContent>
             </Card>
           </TabsContent>
         ))}
       </Tabs>
+
+      {bulkAssignOpen && (
+        <AssignEmployeeDialog
+          open={bulkAssignOpen}
+          onOpenChange={(open) => {
+            setBulkAssignOpen(open);
+            if (!open) setRowSelection({});
+          }}
+          orders={selectedOrders}
+        />
+      )}
     </div>
   );
 }

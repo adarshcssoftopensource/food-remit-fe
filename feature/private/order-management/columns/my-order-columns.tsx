@@ -1,27 +1,22 @@
 "use client";
 
+import { CompleteOrderByReferenceDialog } from "../../my-orders/components/complete-order-by-reference-dialog";
+import { OrderHandlerCell } from "../components/order-handler-cell";
+import { OrderStatusBadge } from "../components/order-status-badge";
+import { useMarkOrderCompleted, useStartOrder } from "../hooks/use-order-lifecycle";
+import { OrderData } from "../types/order.types";
+import { isPendingOrder, isProcessingOrder, ORDER_STATUS } from "../utils/order-workflow";
+import { ROUTES } from "@/config/routes";
+import { formatDate } from "@/lib/date";
+import { ColumnDef } from "@tanstack/react-table";
+import { CheckCircle2, Eye, Loader2, PackageCheck, Play } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DataTableRowActionItem,
   DataTableRowActions,
 } from "@/components/common/data-table/data-table-row-actions";
-import { ROUTES } from "@/config/routes";
-import { formatDate } from "@/lib/date";
-import { getInitials } from "@/lib/get-initials";
-import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2, Eye, Loader2, PackageCheck, Play } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { CompleteOrderByReferenceDialog } from "../../my-orders/components/complete-order-by-reference-dialog";
-import { OrderStatusBadge } from "../components/order-status-badge";
-import { useMarkOrderCompleted, useStartOrder } from "../hooks/use-order-lifecycle";
-import { OrderData } from "../types/order.types";
-import {
-  formatRelativeTime,
-  isPendingOrder,
-  isProcessingOrder,
-  ORDER_STATUS,
-} from "../utils/order-workflow";
 
 function MyOrderActionsCell({ order }: { order: OrderData }) {
   const router = useRouter();
@@ -113,24 +108,6 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
   );
 }
 
-function AssignedByCell({ order }: { order: OrderData }) {
-  const name = order.startedByName || order.assignedEmployeeName;
-  if (!name) return <span className="text-slate-400">—</span>;
-  return (
-    <div className="flex items-center gap-2">
-      <span className="flex size-7 items-center justify-center rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-700">
-        {getInitials(name)}
-      </span>
-      <div className="min-w-0">
-        <p className="truncate text-sm font-medium text-slate-800">{name}</p>
-        <p className="text-[11px] text-slate-500">
-          Started {formatRelativeTime(order.startedAt || order.assignedAt) || "—"}
-        </p>
-      </div>
-    </div>
-  );
-}
-
 export const myOrderColumns: ColumnDef<OrderData>[] = [
   {
     accessorKey: "refrenceNumber",
@@ -192,7 +169,7 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
   {
     id: "startedBy",
     header: "Started By",
-    cell: ({ row }) => <AssignedByCell order={row.original} />,
+    cell: ({ row }) => <OrderHandlerCell order={row.original} />,
   },
   {
     id: "actions",

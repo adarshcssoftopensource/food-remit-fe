@@ -16,11 +16,14 @@ interface RawGetPartnerLeadsResponse {
   };
 }
 
-export type PartnerLeadPipeline = "pending" | "approved" | "rejected";
+export type PartnerLeadPipeline = "pending" | "approved" | "rejected" | "all";
 
 const TERMINAL = new Set(["APPROVED", "REJECTED", "NOT_QUALIFIED"]);
 
 function filterLeadsByPipeline(leads: PartnerLeadData[], pipeline: PartnerLeadPipeline) {
+  if (pipeline === "all") {
+    return leads;
+  }
   if (pipeline === "approved") {
     return leads.filter((l) => l.status === "APPROVED");
   }

@@ -1,11 +1,14 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { UserCheck } from "lucide-react";
 import { OrderData } from "../types/order.types";
 import { OrderActionsCell } from "../components/order-actions-cell";
 import { OrderStatusBadge } from "../components/order-status-badge";
-import { formatRelativeTime, ORDER_STATUS } from "../utils/order-workflow";
-import { getInitials } from "@/lib/get-initials";
+import { OrderHandlerCell } from "../components/order-handler-cell";
+import { isPendingOrder } from "../utils/order-workflow";
 
 function formatTimePlaced(iso?: string) {
   if (!iso) return "—";
@@ -20,45 +23,56 @@ function formatTimePlaced(iso?: string) {
   return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${time}`;
 }
 
-function AssignedCell({ order }: { order: OrderData }) {
-  const name = order.startedByName || order.assignedEmployeeName;
-  if (!name) {
-    return <span className="text-slate-400">—</span>;
-  }
+const selectColumn: ColumnDef<OrderData> = {
+  id: "select",
+  header: ({ table }) => (
+    <Checkbox
+      checked={
+        (table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")) as boolean
+      }
+      onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+      disabled={!table.getRowModel().rows.some((row) => row.getCanSelect())}
+      aria-label="Select all"
+      className="translate-y-0.5"
+    />
+  ),
+  cell: ({ row }) => {
+    if (!isPendingOrder(row.original)) {
+      return (
+        <TooltipProvider delay={200}>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="inline-flex cursor-not-allowed items-center opacity-40">
+                <Checkbox checked={false} disabled aria-label="Not assignable" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <span className="flex items-center gap-1.5 font-medium">
+                <UserCheck className="size-3.5 text-emerald-400" />
+                Only Pending orders can be assigned
+              </span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
 
-  const image = order.startedByImage || order.assignedEmployeeImage;
-  const when = order.startedAt || order.assignedAt;
-  const relative = formatRelativeTime(when);
-  const isCompleted =
-    order.orderStatus === ORDER_STATUS.COMPLETED || order.orderStatus === ORDER_STATUS.CLOSED;
-  const verb = isCompleted
-    ? "Completed"
-    : order.assignedAt && !order.startedAt
-      ? "Assigned"
-      : "Started";
-
-  return (
-    <div className="flex items-center gap-2.5">
-      {image ? (
-        <img src={image} alt="" className="size-8 rounded-full object-cover" />
-      ) : (
-        <span className="flex size-8 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-600">
-          {getInitials(name)}
-        </span>
-      )}
-      <div className="min-w-0">
-        <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{name}</p>
-        {relative && (
-          <p className="text-[11px] text-slate-500">
-            {verb} {relative}
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
+    return (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    );
+  },
+  enableSorting: false,
+  enableHiding: false,
+};
 
 export const orderColumns: ColumnDef<OrderData>[] = [
+  selectColumn,
   {
     accessorKey: "refrenceNumber",
     header: "Order ID",
@@ -127,7 +141,7 @@ export const orderColumns: ColumnDef<OrderData>[] = [
   {
     id: "assigned",
     header: "Assigned / Started By",
-    cell: ({ row }) => <AssignedCell order={row.original} />,
+    cell: ({ row }) => <OrderHandlerCell order={row.original} />,
   },
   {
     id: "actions",
