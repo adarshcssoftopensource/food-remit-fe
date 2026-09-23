@@ -93,7 +93,8 @@ export function usePartnerLeads(
     (apiStats?.CONTACTED ?? 0) +
     (apiStats?.QUALIFIED ?? 0) +
     (apiStats?.REGISTRATION_INVITED ?? 0) +
-    (apiStats?.REGISTRATION_STARTED ?? 0);
+    (apiStats?.REGISTRATION_STARTED ?? 0) +
+    (apiStats?.REQUEST_MORE_INFO ?? 0);
   const rejected = (apiStats?.REJECTED ?? 0) + (apiStats?.NOT_QUALIFIED ?? 0);
   const approved = apiStats?.APPROVED ?? 0;
 

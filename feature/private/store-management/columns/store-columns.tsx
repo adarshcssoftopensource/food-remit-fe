@@ -19,6 +19,31 @@ function CommissionCell({ value }: { value: number }) {
   );
 }
 
+function AdminBadge({
+  admin,
+  fallback = "—",
+}: {
+  admin?: StoreData["approvedByAdmin"];
+  fallback?: string;
+}) {
+  if (!admin) return <span className="text-xs text-slate-400">{fallback}</span>;
+
+  const name = admin.firstName ? `${admin.firstName} ${admin.lastName || ""}`.trim() : admin.name;
+  let roleText = admin.userType;
+  if (roleText === "SUPER_ADMIN") roleText = "Super Admin";
+  if (roleText === "SUB_ADMIN") roleText = "Sub Admin";
+  if (roleText === "CO_ADMIN") roleText = "Co Admin";
+
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{name}</span>
+      <span className="inline-flex w-fit items-center rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 ring-1 ring-blue-700/10 ring-inset dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20">
+        {roleText}
+      </span>
+    </div>
+  );
+}
+
 export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<StoreData>[] => [
   {
     accessorKey: "id",
@@ -51,7 +76,7 @@ export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<
     header: "Store Address",
     cell: ({ row }) => (
       <TruncatedTextCell
-        maxWords={4}
+        maxWords={1}
         text={`${row.original.storeAddress}${row.original.address2 ? `, ${row.original.address2}` : ""}`}
         className="max-w-45 cursor-default text-sm"
       />
@@ -85,6 +110,16 @@ export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => <StatusBadge status={row.original.status} />,
+  },
+  {
+    id: "approvedBy",
+    header: "Approved By",
+    cell: ({ row }) => <AdminBadge admin={row.original.approvedByAdmin} />,
+  },
+  {
+    id: "statusChangedBy",
+    header: "Status Changed By",
+    cell: ({ row }) => <AdminBadge admin={row.original.statusUpdatedByAdmin} />,
   },
   {
     id: "actions",

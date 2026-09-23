@@ -17,7 +17,7 @@ import { AddressAutocompleteInput } from "@/components/common/address-autocomple
 import { CountryCityFields } from "@/feature/private/store-management/components/country-city-fields";
 
 import { KycVerificationCard } from "@/feature/private/partner-leads/components/cards/kyc-verification-card";
-import { BankVerificationCard } from "@/feature/private/partner-leads/components/cards/bank-verification-card";
+import { ProfileBankVerification } from "@/feature/private/profile/components/profile-bank-verification";
 import { LocationDetailsCard } from "@/feature/private/partner-leads/components/cards/location-details-card";
 import { AdditionalDocumentsCard } from "@/feature/private/partner-leads/components/cards/additional-documents-card";
 
@@ -42,7 +42,7 @@ const storeInfoSchema = z.object({
 type StoreInfoValues = z.infer<typeof storeInfoSchema>;
 
 export function StoreInformation() {
-  const { profile } = useProfile();
+  const { profile, needsBankVerification } = useProfile();
   const storeId = profile?.stores?.[0]?.id;
   const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
 
@@ -114,6 +114,13 @@ export function StoreInformation() {
 
   const onSubmit = async (values: StoreInfoValues) => {
     if (!storeId) return;
+    if (needsBankVerification) {
+      successToast({
+        title: "Bank Verification Required",
+        description: "Please verify your bank account before editing store details.",
+      });
+      return;
+    }
 
     try {
       const formData = new FormData();
@@ -328,7 +335,7 @@ export function StoreInformation() {
             <div className="flex justify-end border-t border-slate-100 pt-6 dark:border-slate-800">
               <Button
                 type="submit"
-                disabled={updateStoreMutation.isPending}
+                disabled={updateStoreMutation.isPending || needsBankVerification}
                 className="h-12 w-full rounded-xl bg-[#1B3A8C] px-8 text-sm font-bold text-white shadow-md transition-all hover:bg-[#1B3A8C]/90 hover:shadow-lg sm:w-auto dark:bg-indigo-600 dark:hover:bg-indigo-700"
               >
                 {updateStoreMutation.isPending ? "Saving changes..." : "Save Store Changes"}
@@ -340,8 +347,8 @@ export function StoreInformation() {
 
       {partnerLead && (
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <ProfileBankVerification />
           <KycVerificationCard lead={partnerLead} />
-          <BankVerificationCard lead={partnerLead} />
           <AdditionalDocumentsCard lead={partnerLead} />
           <LocationDetailsCard lead={partnerLead} />
         </div>

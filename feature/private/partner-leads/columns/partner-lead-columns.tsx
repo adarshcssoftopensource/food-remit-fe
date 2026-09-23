@@ -110,6 +110,23 @@ export const getPartnerLeadColumns = (
           </span>
         );
       }
+      if (bankStatus === "SKIPPED" || bankStatus === "PENDING") {
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400">
+                  <Clock className="size-3 text-amber-600" />
+                  Pending Verification
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                Bank account verification skipped — pending completion after approval
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      }
       return (
         <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
           <Landmark className="size-3 text-slate-400" />
@@ -121,11 +138,20 @@ export const getPartnerLeadColumns = (
   {
     accessorKey: "createdAt",
     header: "Date Applied",
-    cell: ({ row }) => (
-      <div className="text-xs text-slate-600 dark:text-slate-400">
-        {format(new Date(row.getValue("createdAt") as string), "MMM dd, yyyy")}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt") as string);
+      return (
+        <div className="flex flex-col">
+          <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+            {format(date, "MMM dd, yyyy")}
+          </span>
+          <span className="text-[10px] text-slate-400 dark:text-slate-500">
+            {format(date, "hh:mm a")}
+          </span>
+        </div>
+      );
+    },
+    enableSorting: true,
   },
   {
     accessorKey: "status",
@@ -138,6 +164,56 @@ export const getPartnerLeadColumns = (
         >
           {status.replace(/_/g, " ")}
         </span>
+      );
+    },
+  },
+  {
+    id: "approvedBy",
+    header: "Approved By",
+    cell: ({ row }) => {
+      const admin = row.original.approvedByAdmin;
+      if (!admin) return <span className="text-xs text-slate-400">—</span>;
+      const name = admin.firstName
+        ? `${admin.firstName} ${admin.lastName || ""}`.trim()
+        : admin.name;
+      const roleMap: Record<string, string> = {
+        SUPER_ADMIN: "Super Admin",
+        SUB_ADMIN: "Sub Admin",
+        CO_ADMIN: "Co Admin",
+      };
+      const roleText = roleMap[admin.userType] || admin.userType;
+      return (
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{name}</span>
+          <span className="inline-flex w-fit items-center rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-700/10 ring-inset dark:bg-emerald-900/30 dark:text-emerald-400 dark:ring-emerald-400/20">
+            {roleText}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    id: "statusChangedBy",
+    header: "Status Changed By",
+    cell: ({ row }) => {
+      const admin = row.original.statusUpdatedByAdmin;
+      if (!admin) return <span className="text-xs text-slate-400">—</span>;
+      const name = admin.firstName
+        ? `${admin.firstName} ${admin.lastName || ""}`.trim()
+        : admin.name;
+      const roleMap: Record<string, string> = {
+        SUPER_ADMIN: "Super Admin",
+        SUB_ADMIN: "Sub Admin",
+        CO_ADMIN: "Co Admin",
+      };
+      const roleText = roleMap[admin.userType] || admin.userType;
+      return (
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{name}</span>
+          <span className="inline-flex w-fit items-center rounded-md bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700 ring-1 ring-violet-700/10 ring-inset dark:bg-violet-900/30 dark:text-violet-400 dark:ring-violet-400/20">
+            {roleText}
+          </span>
+        </div>
       );
     },
   },

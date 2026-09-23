@@ -3,6 +3,7 @@
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { errorToast, successToast } from "@/components/toaster";
 import { Switch } from "@/components/ui/switch";
+import { useProfile } from "@/components/providers/profile-provider";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useDeleteItem } from "../hooks/use-delete-item";
@@ -23,6 +24,8 @@ interface ItemActionsCellProps {
 export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const { mutateAsync: deleteItem, isPending: isDeleting } = useDeleteItem(item.id);
+  const { needsBankVerification } = useProfile();
+  const canWrite = !needsBankVerification;
 
   const handleDelete = async () => {
     try {
@@ -45,6 +48,7 @@ export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) 
       label: "Edit Item",
       icon: <Pencil className="size-4" />,
       onClick: () => onEdit(item),
+      hidden: !canWrite,
     },
     {
       label: "Delete Item",
@@ -52,6 +56,7 @@ export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) 
       onClick: () => setDeleteOpen(true),
       variant: "destructive",
       disabled: isDeleting,
+      hidden: !canWrite,
     },
   ];
 
@@ -76,10 +81,12 @@ export function ItemActionsCell({ item, onEdit, onView }: ItemActionsCellProps) 
 export function ItemAvailabilityCell({ item }: { item: ItemData }) {
   const [pendingActive, setPendingActive] = useState<boolean | null>(null);
   const { mutate: updateStatus, isPending } = useUpdateItemStatus(item.id);
+  const { needsBankVerification } = useProfile();
 
   const isActive = pendingActive !== null ? pendingActive : item.status === "ACTIVE";
 
   const handleToggle = (checked: boolean) => {
+    if (needsBankVerification) return;
     if (checked && (!item.stockQuantity || Number(item.stockQuantity) <= 0)) {
       errorToast({ description: "Cannot enable availability when stock quantity is 0" });
       return;
@@ -107,7 +114,7 @@ export function ItemAvailabilityCell({ item }: { item: ItemData }) {
     <Switch
       checked={isActive}
       onCheckedChange={handleToggle}
-      disabled={isPending}
+      disabled={isPending || needsBankVerification}
       className="data-[state=checked]:bg-green-500"
       title={isActive ? "Active" : "Inactive"}
     />
@@ -157,10 +164,12 @@ export function ItemAdminShareCell({
 export function ItemDiscountAvailabilityCell({ item }: { item: ItemData }) {
   const [pendingActive, setPendingActive] = useState<boolean | null>(null);
   const { mutate: updateStatus, isPending } = useUpdateItemStatus(item.id);
+  const { needsBankVerification } = useProfile();
 
   const isActive = pendingActive !== null ? pendingActive : !!item.discountAvailability;
 
   const handleToggle = (checked: boolean) => {
+    if (needsBankVerification) return;
     setPendingActive(checked);
     updateStatus(
       { type: "DISCOUNT_AVAILABILITY", discountAvailability: checked },
@@ -180,7 +189,7 @@ export function ItemDiscountAvailabilityCell({ item }: { item: ItemData }) {
     <Switch
       checked={isActive}
       onCheckedChange={handleToggle}
-      disabled={isPending}
+      disabled={isPending || needsBankVerification}
       className="data-[state=checked]:bg-green-500"
       title={isActive ? "Active" : "Inactive"}
     />

@@ -7,7 +7,8 @@ export type PartnerLeadStatus =
   | "REGISTRATION_STARTED"
   | "APPROVED"
   | "REJECTED"
-  | "NOT_QUALIFIED";
+  | "NOT_QUALIFIED"
+  | "REQUEST_MORE_INFO";
 
 export interface KycPerson {
   firstName?: string;
@@ -107,4 +108,25 @@ export interface PartnerLeadData {
     mimeType?: string;
     uploadedAt?: string;
   }>;
+  approvedByAdmin?: {
+    id: string;
+    name: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    userType: string;
+  } | null;
+  statusUpdatedByAdmin?: {
+    id: string;
+    name: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    userType: string;
+  } | null;
+  deletedByAdmin?: {
+    id: string;
+    name: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    userType: string;
+  } | null;
 }

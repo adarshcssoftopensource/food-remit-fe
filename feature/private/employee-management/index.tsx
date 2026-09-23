@@ -4,6 +4,7 @@ import { DataTable } from "@/components/common/data-table/data-table";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { StatusTabs } from "@/components/common/status-tabs";
+import { useProfile } from "@/components/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/config/routes";
@@ -15,6 +16,8 @@ import { EmployeeDialog } from "./components/employee-dialog";
 import { useGetEmployees } from "./hooks/use-get-employees";
 
 export function EmployeeManagementFeature() {
+  const { needsBankVerification } = useProfile();
+  const canWrite = !needsBankVerification;
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
   const [search, setSearch] = useState("");
@@ -54,14 +57,16 @@ export function EmployeeManagementFeature() {
         description="Manage your store employees here."
         breadcrumbs={breadcrumbs}
         action={
-          <EmployeeDialog
-            trigger={
-              <Button className="rounded-full px-6">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Employee
-              </Button>
-            }
-          />
+          canWrite ? (
+            <EmployeeDialog
+              trigger={
+                <Button className="rounded-full px-6">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Employee
+                </Button>
+              }
+            />
+          ) : undefined
         }
       />
 

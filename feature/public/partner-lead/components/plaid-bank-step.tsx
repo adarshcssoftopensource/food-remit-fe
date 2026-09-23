@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Landmark, Lock } from "lucide-react";
+import { Landmark, Lock, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { successToast } from "@/components/toaster";
 import { useCreatePlaidLinkToken } from "../hooks/use-create-plaid-link-token";
@@ -40,6 +40,8 @@ interface PlaidBankStepProps {
   institutionName?: string;
   accountName?: string;
   accountMask?: string;
+  partnerLeadId?: string;
+  allowSkip?: boolean;
   onBankUpdated: (data: {
     plaidItemId: string;
     plaidAccountId?: string;
@@ -49,6 +51,7 @@ interface PlaidBankStepProps {
     bankAccountMask: string;
   }) => void;
   onContinue: () => void;
+  onSkip?: () => void;
 }
 
 export function PlaidBankStep({
@@ -58,7 +61,10 @@ export function PlaidBankStep({
   institutionName: initialInstitutionName,
   accountName: initialAccountName,
   accountMask: initialAccountMask,
+  partnerLeadId,
+  allowSkip = false,
   onBankUpdated,
+  onSkip,
 }: PlaidBankStepProps) {
   const [isOpeningPlaid, setIsOpeningPlaid] = useState(false);
   const [userResetBank, setUserResetBank] = useState(false);
@@ -77,12 +83,10 @@ export function PlaidBankStep({
     accountMask: initialAccountMask,
   };
 
-  // Custom API hooks
   useGetPlaidConfig();
   const createLinkTokenMutation = useCreatePlaidLinkToken();
   const exchangeTokenMutation = useExchangePlaidToken();
 
-  // Pre-load Plaid official Link SDK script into DOM on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -95,7 +99,6 @@ export function PlaidBankStep({
     }
   }, []);
 
-  // Ensure Plaid CDN script is ready
   async function ensurePlaidScript(): Promise<void> {
     if (typeof window !== "undefined" && window.Plaid) {
       return;
@@ -128,15 +131,12 @@ export function PlaidBankStep({
     });
   }
 
-  // Single button click handler: fetches token & launches Plaid official popup
   async function handleOpenPlaid() {
     try {
       setIsOpeningPlaid(true);
 
-      // 1. Ensure Plaid script is loaded
       await ensurePlaidScript();
 
-      // 2. Fetch Link token from backend using API mutation hook
       const res = await createLinkTokenMutation.mutateAsync({
         firstName: applicant.firstName || "Partner",
         lastName: applicant.lastName || "Applicant",
@@ -154,7 +154,6 @@ export function PlaidBankStep({
         return;
       }
 
-      // 3. Initialize Plaid handler & open official popup
       const handler = window.Plaid.create({
         token,
         onSuccess: async (
@@ -168,12 +167,12 @@ export function PlaidBankStep({
             const primaryAccount = metadata.accounts?.[0];
             const institution = metadata.institution;
 
-            // Exchange token with backend using API mutation hook
             const exchangeRes = await exchangeTokenMutation.mutateAsync({
               publicToken,
               institutionId: institution?.institution_id || "ins_default",
               institutionName: institution?.name || "Verified Bank",
               accounts: metadata.accounts,
+              ...(partnerLeadId ? { partnerLeadId } : {}),
             });
 
             const bankData = exchangeRes.data;
@@ -219,12 +218,29 @@ export function PlaidBankStep({
   }
 
   const isVerified = bankStatus === "VERIFIED" || bankStatus === "verified";
+  const isSkipped = (bankStatus || "").toUpperCase() === "SKIPPED";
   const isBusy =
     isOpeningPlaid || createLinkTokenMutation.isPending || exchangeTokenMutation.isPending;
 
+  function handleSkip() {
+    onBankUpdated({
+      plaidItemId: "",
+      plaidAccountId: "",
+      bankStatus: "SKIPPED",
+      bankInstitutionName: "",
+      bankAccountName: "",
+      bankAccountMask: "",
+    });
+    successToast({
+      title: "Bank Verification Skipped",
+      description:
+        "You can complete bank account verification later from your profile after approval.",
+    });
+    onSkip?.();
+  }
+
   return (
     <div className="flex flex-col gap-5">
-      {/* Step Header */}
       <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
         <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
           <Landmark className="size-5" />
@@ -238,7 +254,6 @@ export function PlaidBankStep({
         </div>
       </div>
 
-      {/* Verified Bank Card */}
       {isVerified ? (
         <VerifiedBankCard
           verifiedBank={verifiedBank}
@@ -247,8 +262,42 @@ export function PlaidBankStep({
             setCustomBankInfo(null);
           }}
         />
+      ) : isSkipped ? (
+        <div className="rounded-2xl border border-amber-200/80 bg-amber-50/60 p-5 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <span className="text-[11px] font-bold tracking-wider text-amber-700 uppercase">
+                Skipped for now
+              </span>
+              <h3 className="text-sm font-bold text-slate-900 sm:text-base">
+                Bank verification pending
+              </h3>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                You skipped bank account verification. After your application is approved, you must
+                complete verification from your profile before creating or editing store content.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setUserResetBank(true);
+                onBankUpdated({
+                  plaidItemId: "",
+                  plaidAccountId: "",
+                  bankStatus: "NOT_STARTED",
+                  bankInstitutionName: "",
+                  bankAccountName: "",
+                  bankAccountMask: "",
+                });
+              }}
+              className="h-10 shrink-0 rounded-xl border-amber-300 text-xs font-semibold text-amber-800 hover:bg-amber-100"
+            >
+              Connect Bank Instead
+            </Button>
+          </div>
+        </div>
       ) : (
-        /* Primary Verification Action Card — EXACTLY ONE BUTTON */
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
@@ -273,8 +322,7 @@ export function PlaidBankStep({
 
             <PlaidFeaturesGrid />
 
-            {/* ONLY ONE BUTTON: Launches Plaid Official SDK Modal */}
-            <div className="pt-2">
+            <div className="flex flex-col gap-2.5 pt-2">
               <Button
                 type="button"
                 onClick={handleOpenPlaid}
@@ -285,6 +333,19 @@ export function PlaidBankStep({
                 <Landmark className="mr-2 size-4.5" />
                 Connect Bank Account with Plaid
               </Button>
+
+              {allowSkip && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleSkip}
+                  disabled={isBusy}
+                  className="h-11 w-full rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                >
+                  <SkipForward className="mr-2 size-4" />
+                  Skip for now — verify later
+                </Button>
+              )}
             </div>
           </div>
         </div>

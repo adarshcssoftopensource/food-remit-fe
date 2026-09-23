@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROUTES } from "@/config/routes";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ChangePassword } from "./components/change-password";
 import { ProfileForm } from "./components/profile-form";
 import { ProfileHeader } from "./components/profile-header";
@@ -14,10 +15,20 @@ import { ProfilePermissions } from "./components/profile-permissions";
 import { StoreInformation } from "./components/store-information";
 
 export function ProfilePage() {
-  const { profile } = useProfile();
+  const { profile, needsBankVerification } = useProfile();
+  const searchParams = useSearchParams();
   const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
 
   const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
+  const tabParam = searchParams.get("tab");
+  const defaultTab =
+    needsBankVerification && isStoreManager
+      ? "store"
+      : tabParam === "store" && isStoreManager
+        ? "store"
+        : tabParam === "security"
+          ? "security"
+          : "general";
 
   return (
     <div className="w-full space-y-6">
@@ -41,7 +52,7 @@ export function ProfilePage() {
 
       <ProfileHeader />
 
-      <Tabs defaultValue="general" className="w-full">
+      <Tabs defaultValue={defaultTab} key={defaultTab} className="w-full">
         <TabsList
           className={`mb-4 grid h-auto w-full gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl sm:mb-6 dark:border-slate-800/80 dark:bg-slate-900/60 ${isStoreManager ? "max-w-2xl grid-cols-3" : "max-w-md grid-cols-2"}`}
         >
@@ -57,6 +68,9 @@ export function ProfilePage() {
               className="h-10 rounded-xl px-3 text-xs font-semibold sm:px-4 sm:text-sm"
             >
               Store Information
+              {needsBankVerification && (
+                <span className="ml-1.5 inline-flex size-2 rounded-full bg-amber-500" />
+              )}
             </TabsTrigger>
           )}
           <TabsTrigger

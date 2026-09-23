@@ -28,10 +28,12 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
   const { mutateAsync: deleteDepartment, isPending: isDeleting } = useDeleteDepartment(
     department.id,
   );
-  const { profile } = useProfile();
+  const { profile, needsBankVerification } = useProfile();
   const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+  const canWrite = !needsBankVerification;
 
   const handleStatusChange = async (checked: boolean) => {
+    if (!canWrite) return;
     setIsActive(checked);
     try {
       await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
@@ -63,6 +65,7 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
       label: "Edit Department",
       icon: <Pencil className="size-4" />,
       onClick: () => onEdit(department),
+      hidden: !canWrite,
     },
     {
       label: "Delete Department",
@@ -70,6 +73,7 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
       onClick: () => setDeleteOpen(true),
       variant: "destructive",
       disabled: isDeleting,
+      hidden: !canWrite,
     },
   ];
 
@@ -78,7 +82,7 @@ export function DepartmentActionsCell({ department, onEdit, onView }: Department
       <Switch
         checked={isActive}
         onCheckedChange={handleStatusChange}
-        disabled={isPending}
+        disabled={isPending || !canWrite}
         className="data-[state=checked]:bg-green-500"
         title={isActive ? "Active" : "Inactive"}
       />

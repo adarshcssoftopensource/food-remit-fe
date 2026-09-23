@@ -205,6 +205,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     "ABANDONED",
   ].includes(normalizedKycStatus);
   const isBankVerified = (bankStatus || "").toUpperCase() === "VERIFIED";
+  const isBankSkipped = (bankStatus || "").toUpperCase() === "SKIPPED";
+  const isBankStepComplete = isBankVerified || isBankSkipped;
 
   const locationsCount = watch("locationsCount");
   const businessType = watch("businessType");
@@ -253,7 +255,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             if (targetStep >= 5 && parsedKyc !== "APPROVED") {
               targetStep = 4;
             }
-            if (targetStep >= 6 && parsedBank !== "VERIFIED") {
+            if (targetStep >= 6 && parsedBank !== "VERIFIED" && parsedBank !== "SKIPPED") {
               targetStep = 5;
             }
             setCurrentStep(targetStep);
@@ -423,11 +425,11 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         return;
       }
     } else if (currentStep === 5) {
-      if (!isBankVerified) {
+      if (!isBankStepComplete) {
         errorToast({
           title: "Bank Verification Required",
           description:
-            "Please connect and verify your commercial bank account with Plaid before proceeding to final review.",
+            "Please connect your bank with Plaid, or skip for now to verify later after approval.",
         });
         return;
       }
@@ -1827,6 +1829,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               institutionName={watch("bankInstitutionName")}
               accountName={watch("bankAccountName")}
               accountMask={watch("bankAccountMask")}
+              allowSkip
               onBankUpdated={(info) => {
                 setValue("plaidItemId", info.plaidItemId, { shouldDirty: true });
                 setValue("plaidAccountId", info.plaidAccountId, { shouldDirty: true });
@@ -1962,6 +1965,11 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       {watch("bankInstitutionName") || "Verified Commercial Bank"} (••••{" "}
                       {watch("bankAccountMask") || "0000"})
                     </span>
+                  ) : (watch("bankStatus") || "").toUpperCase() === "SKIPPED" ? (
+                    <span className="inline-flex items-center gap-1.5 font-semibold text-amber-700">
+                      <Clock className="size-4 text-amber-600" />
+                      Skipped — Pending Verification
+                    </span>
                   ) : (
                     <span className="text-slate-400 italic">Not Verified</span>
                   )}
@@ -2040,7 +2048,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               disabled={
                 (currentStep === 4 && !isKycApproved) ||
                 (currentStep === 5 &&
-                  (!isBankVerified || (watch("additionalDocuments") || []).length < 1))
+                  (!isBankStepComplete || (watch("additionalDocuments") || []).length < 1))
               }
               onClick={(e) => {
                 e.preventDefault();
@@ -2050,7 +2058,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 "h-11 w-full rounded-xl px-6 text-xs font-bold shadow-sm transition-all sm:w-auto",
                 (currentStep === 4 && !isKycApproved) ||
                   (currentStep === 5 &&
-                    (!isBankVerified || (watch("additionalDocuments") || []).length < 1))
+                    (!isBankStepComplete || (watch("additionalDocuments") || []).length < 1))
                   ? "cursor-not-allowed bg-slate-200 text-slate-400 opacity-60 hover:bg-slate-200"
                   : "bg-emerald-700 text-white hover:bg-emerald-800",
               )}
@@ -2072,10 +2080,10 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     Verify Identity to Continue
                   </>
                 )
-              ) : currentStep === 5 && !isBankVerified ? (
+              ) : currentStep === 5 && !isBankStepComplete ? (
                 <>
                   <Lock className="mr-1.5 size-3.5 text-slate-400" />
-                  Verify Bank Account to Continue
+                  Verify or Skip Bank to Continue
                 </>
               ) : currentStep === 5 && (watch("additionalDocuments") || []).length < 1 ? (
                 <>

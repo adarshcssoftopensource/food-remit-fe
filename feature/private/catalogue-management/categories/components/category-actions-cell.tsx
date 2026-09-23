@@ -25,10 +25,12 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
   const [deleteOpen, setDeleteOpen] = useState(false);
   const { mutateAsync: updateStatus, isPending } = useUpdateCategoryStatus(category.id);
   const { mutateAsync: deleteCategory, isPending: isDeleting } = useDeleteCategory(category.id);
-  const { profile } = useProfile();
+  const { profile, needsBankVerification } = useProfile();
   const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+  const canWrite = !needsBankVerification;
 
   const handleStatusChange = async (checked: boolean) => {
+    if (!canWrite) return;
     setIsActive(checked);
     try {
       await updateStatus({ status: checked ? "ACTIVE" : "INACTIVE" });
@@ -60,6 +62,7 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
       label: "Edit Category",
       icon: <Pencil className="size-4" />,
       onClick: () => onEdit(category),
+      hidden: !canWrite,
     },
     {
       label: "Delete Category",
@@ -67,6 +70,7 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
       onClick: () => setDeleteOpen(true),
       variant: "destructive",
       disabled: isDeleting,
+      hidden: !canWrite,
     },
   ];
 
@@ -75,7 +79,7 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
       <Switch
         checked={isActive}
         onCheckedChange={handleStatusChange}
-        disabled={isPending}
+        disabled={isPending || !canWrite}
         className="data-[state=checked]:bg-green-500"
         title={isActive ? "Active" : "Inactive"}
       />

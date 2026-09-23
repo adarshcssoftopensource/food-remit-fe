@@ -30,8 +30,28 @@ export type StoreData = {
   managerCity: string;
   managerZipCode: string;
   partnerLead?: any;
+  approvedByAdmin?: {
+    id: string;
+    name: string;
+    firstName?: string;
+    lastName?: string;
+    userType: string;
+  };
+  statusUpdatedByAdmin?: {
+    id: string;
+    name: string;
+    firstName?: string;
+    lastName?: string;
+    userType: string;
+  };
+  deletedByAdmin?: {
+    id: string;
+    name: string;
+    firstName?: string;
+    lastName?: string;
+    userType: string;
+  };
 };
-
 export interface CreateStoreManagerPayload {
   firstName: string;
   lastName: string;
@@ -90,6 +110,14 @@ export interface RawStoreManager {
   zipCode?: string;
 }
 
+export interface StoreAdminInfo {
+  id: string;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  userType: string;
+}
+
 export interface RawStore {
   id: string;
   storeImage?: string;
@@ -112,6 +140,9 @@ export interface RawStore {
   cityManager?: RawStoreManager | null;
   storeManager?: RawStoreManager;
   partnerLead?: any;
+  approvedByAdmin?: StoreAdminInfo | null;
+  statusUpdatedByAdmin?: StoreAdminInfo | null;
+  deletedByAdmin?: StoreAdminInfo | null;
 }
 
 export interface StoreStats {
