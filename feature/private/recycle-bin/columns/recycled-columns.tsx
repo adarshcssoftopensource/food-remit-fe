@@ -6,9 +6,10 @@ import { format } from "date-fns";
 import { getStatusColor } from "@/constants/partner.leads";
 import { RecycleEntityType } from "../hooks/use-get-recycled-data";
 import { RecycledEntityActionsCell } from "../components/recycled-entity-actions-cell";
-import { usersColumns } from "./recycled-users-columns";
+import { withDeletedByColumn } from "../components/deleted-by-cell";
+import { usersColumns as rawUsersColumns } from "./recycled-users-columns";
 
-export { usersColumns };
+export const usersColumns = withDeletedByColumn(rawUsersColumns as ColumnDef<any>[], true);
 
 // Helper to create checkbox column
 const createSelectColumn = (): ColumnDef<any> => ({
@@ -90,31 +91,6 @@ export const storesColumns: ColumnDef<any>[] = [
         displayLabel={row.original.status === "ACTIVE" ? "Active" : "Inactive"}
       />
     ),
-  },
-  {
-    id: "deletedBy",
-    header: "Deleted By",
-    cell: ({ row }) => {
-      const admin = row.original.deletedByAdmin;
-      if (!admin) return <span className="text-xs text-slate-400">—</span>;
-
-      const name = admin.firstName
-        ? `${admin.firstName} ${admin.lastName || ""}`.trim()
-        : admin.name;
-      let roleText = admin.userType;
-      if (roleText === "SUPER_ADMIN") roleText = "Super Admin";
-      if (roleText === "SUB_ADMIN") roleText = "Sub Admin";
-      if (roleText === "CO_ADMIN") roleText = "Co Admin";
-
-      return (
-        <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{name}</span>
-          <span className="inline-flex w-fit items-center rounded-md bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 ring-1 ring-rose-700/10 ring-inset dark:bg-rose-900/30 dark:text-rose-400 dark:ring-rose-400/20">
-            {roleText}
-          </span>
-        </div>
-      );
-    },
   },
   {
     id: "actions",
@@ -383,127 +359,135 @@ export const countryManagersColumns: ColumnDef<any>[] = [
 ];
 
 export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
-  users: usersColumns as ColumnDef<any>[],
-  stores: storesColumns,
-  items: itemsColumns,
-  departments: departmentsColumns,
-  categories: categoriesColumns,
-  "city-managers": cityManagersColumns,
-  "country-managers": countryManagersColumns,
-  employees: [
-    createSNoColumn(),
-    createSelectColumn(),
-    {
-      accessorKey: "firstName",
-      header: "Name",
-      cell: ({ row }) => (
-        <ImageNameCell
-          name={`${row.original.firstName} ${row.original.lastName}`}
-          image={row.original.image || undefined}
-          type="profile"
-        />
-      ),
-    },
-    {
-      accessorKey: "email",
-      header: "Email",
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => <RecycledEntityActionsCell entityType="employees" entity={row.original} />,
-    },
-  ],
-  "partner-leads": [
-    createSNoColumn(),
-    createSelectColumn(),
-    {
-      accessorKey: "referenceNumber",
-      header: "Ref No.",
-      enableSorting: true,
-      cell: ({ row }) => (
-        <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
-          {row.original.referenceNumber}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "businessName",
-      header: "Business Name",
-      enableSorting: true,
-      cell: ({ row }) => (
-        <div>
-          <p className="font-semibold text-slate-900 capitalize dark:text-white">
-            {row.original.businessName}
-          </p>
-          <p className="max-w-xs truncate text-xs text-slate-400">
-            {row.original.businessType || "N/A"}{" "}
-            {row.original.businessCity ? `• ${row.original.businessCity}` : ""}
-          </p>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "contact",
-      header: "Contact",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (
-          <div className="flex flex-col text-sm">
-            <span className="font-medium text-slate-900 dark:text-slate-100">
-              {data.firstName} {data.lastName}
-            </span>
-            <span className="text-muted-foreground text-xs">{data.businessEmail}</span>
-          </div>
-        );
+  users: usersColumns,
+  stores: withDeletedByColumn(storesColumns, true),
+  items: withDeletedByColumn(itemsColumns, true),
+  departments: withDeletedByColumn(departmentsColumns, true),
+  categories: withDeletedByColumn(categoriesColumns, true),
+  "city-managers": withDeletedByColumn(cityManagersColumns, true),
+  "country-managers": withDeletedByColumn(countryManagersColumns, true),
+  employees: withDeletedByColumn(
+    [
+      createSNoColumn(),
+      createSelectColumn(),
+      {
+        accessorKey: "firstName",
+        header: "Name",
+        cell: ({ row }) => (
+          <ImageNameCell
+            name={`${row.original.firstName} ${row.original.lastName}`}
+            image={row.original.image || undefined}
+            type="profile"
+          />
+        ),
       },
-    },
-    {
-      accessorKey: "phoneNumber",
-      header: "Phone",
-      cell: ({ row }) => (
-        <span className="text-xs text-slate-600 dark:text-slate-400">
-          {row.original.phoneNumber || "N/A"}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "createdAt",
-      header: "Date Applied",
-      enableSorting: true,
-      cell: ({ row }) => {
-        const date = row.original.createdAt ? new Date(row.original.createdAt) : null;
-        return (
-          <div className="text-xs text-slate-600 dark:text-slate-400">
-            {date && !isNaN(date.getTime()) ? format(date, "MMM dd, yyyy") : "N/A"}
-          </div>
-        );
+      {
+        accessorKey: "email",
+        header: "Email",
       },
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const status = row.original.status as string;
-        return (
-          <span
-            className={`focus:ring-ring inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors ${getStatusColor(status)}`}
-          >
-            {status?.replace(/_/g, " ") || "N/A"}
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <RecycledEntityActionsCell entityType="employees" entity={row.original} />
+        ),
+      },
+    ],
+    true,
+  ),
+  "partner-leads": withDeletedByColumn(
+    [
+      createSNoColumn(),
+      createSelectColumn(),
+      {
+        accessorKey: "referenceNumber",
+        header: "Ref No.",
+        enableSorting: true,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
+            {row.original.referenceNumber}
           </span>
-        );
+        ),
       },
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => (
-        <RecycledEntityActionsCell
-          entityType="partner-leads"
-          entity={row.original}
-          entityNameField="businessName"
-        />
-      ),
-    },
-  ],
+      {
+        accessorKey: "businessName",
+        header: "Business Name",
+        enableSorting: true,
+        cell: ({ row }) => (
+          <div>
+            <p className="font-semibold text-slate-900 capitalize dark:text-white">
+              {row.original.businessName}
+            </p>
+            <p className="max-w-xs truncate text-xs text-slate-400">
+              {row.original.businessType || "N/A"}{" "}
+              {row.original.businessCity ? `• ${row.original.businessCity}` : ""}
+            </p>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "contact",
+        header: "Contact",
+        cell: ({ row }) => {
+          const data = row.original;
+          return (
+            <div className="flex flex-col text-sm">
+              <span className="font-medium text-slate-900 dark:text-slate-100">
+                {data.firstName} {data.lastName}
+              </span>
+              <span className="text-muted-foreground text-xs">{data.businessEmail}</span>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "phoneNumber",
+        header: "Phone",
+        cell: ({ row }) => (
+          <span className="text-xs text-slate-600 dark:text-slate-400">
+            {row.original.phoneNumber || "N/A"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Date Applied",
+        enableSorting: true,
+        cell: ({ row }) => {
+          const date = row.original.createdAt ? new Date(row.original.createdAt) : null;
+          return (
+            <div className="text-xs text-slate-600 dark:text-slate-400">
+              {date && !isNaN(date.getTime()) ? format(date, "MMM dd, yyyy") : "N/A"}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          const status = row.original.status as string;
+          return (
+            <span
+              className={`focus:ring-ring inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors ${getStatusColor(status)}`}
+            >
+              {status?.replace(/_/g, " ") || "N/A"}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <RecycledEntityActionsCell
+            entityType="partner-leads"
+            entity={row.original}
+            entityNameField="businessName"
+          />
+        ),
+      },
+    ],
+    true,
+  ),
 };

@@ -39,5 +39,6 @@ export function normalizeUser(item: Record<string, unknown>): UserData {
     address: String(item.address),
     userStatus: isActive ? "ACTIVE" : "INACTIVE",
     profileImage: item.profileImage ? String(item.profileImage) : undefined,
+    deletedByAdmin: (item.deletedByAdmin as UserData["deletedByAdmin"]) ?? undefined,
   };
 }

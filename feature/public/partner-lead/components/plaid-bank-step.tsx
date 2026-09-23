@@ -277,7 +277,7 @@ export function PlaidBankStep({
                 complete verification from your profile before creating or editing store content.
               </p>
             </div>
-            <Button
+            {/* <Button
               type="button"
               variant="outline"
               onClick={() => {
@@ -294,7 +294,7 @@ export function PlaidBankStep({
               className="h-10 shrink-0 rounded-xl border-amber-300 text-xs font-semibold text-amber-800 hover:bg-amber-100"
             >
               Connect Bank Instead
-            </Button>
+            </Button> */}
           </div>
         </div>
       ) : (
@@ -337,10 +337,10 @@ export function PlaidBankStep({
               {allowSkip && (
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="secondary"
                   onClick={handleSkip}
                   disabled={isBusy}
-                  className="h-11 w-full rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  className="h-11 w-full rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-300 hover:text-slate-900"
                 >
                   <SkipForward className="mr-2 size-4" />
                   Skip for now — verify later

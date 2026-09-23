@@ -14,6 +14,13 @@ export type UserData = {
   state: string;
   city: string;
   address: string;
+  deletedByAdmin?: {
+    id?: string;
+    name?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    userType?: string | null;
+  } | null;
 };
 
 export interface UserStats {

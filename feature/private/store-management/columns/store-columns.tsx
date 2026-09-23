@@ -116,11 +116,11 @@ export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<
     header: "Approved By",
     cell: ({ row }) => <AdminBadge admin={row.original.approvedByAdmin} />,
   },
-  {
-    id: "statusChangedBy",
-    header: "Status Changed By",
-    cell: ({ row }) => <AdminBadge admin={row.original.statusUpdatedByAdmin} />,
-  },
+  // {
+  //   id: "statusChangedBy",
+  //   header: "Status Changed By",
+  //   cell: ({ row }) => <AdminBadge admin={row.original.statusUpdatedByAdmin} />,
+  // },
   {
     id: "actions",
     header: "Actions",

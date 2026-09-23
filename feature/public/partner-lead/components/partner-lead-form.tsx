@@ -188,11 +188,15 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   }, [debouncedBusinessEmail, setError]);
 
   useEffect(() => {
-    if (errors.businessEmail?.type === "manual" && businessEmail !== debouncedBusinessEmail) {
-      clearErrors("businessEmail");
+    if (businessEmail !== debouncedBusinessEmail) {
+      if (errors.businessEmail?.type === "manual") {
+        clearErrors("businessEmail");
+      }
+      // Always reset the last checked email when the user starts typing again
+      // so it properly re-verifies if they clear and re-enter the same email
       lastCheckedEmail.current = null;
     }
-  }, [businessEmail, debouncedBusinessEmail, clearErrors]); // Omit errors.businessEmail to prevent loops
+  }, [businessEmail, debouncedBusinessEmail, clearErrors, errors.businessEmail?.type]);
 
   const normalizedKycStatus = (kycStatus || "").toUpperCase();
   const isKycApproved = normalizedKycStatus === "APPROVED";
@@ -211,8 +215,6 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   const locationsCount = watch("locationsCount");
   const businessType = watch("businessType");
   const isOtherBusinessType = businessType === "Other";
-  const isSingleLocation = locationsCount === "1 Location";
-  const multipleLocationsOption = "Add multiple store locations";
   const workPreferences = watch("workPreferences") || [];
   const hasOtherWorkPreference = workPreferences.includes("Other");
 
@@ -340,19 +342,6 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       setValue("otherWorkPreference", "");
     }
   }, [hasOtherWorkPreference, getValues, setValue]);
-
-  // WEB-0004: keep Step 3 preference in sync with Step 1 location count
-  useEffect(() => {
-    if (!isSingleLocation) return;
-    const current = getValues("workPreferences") || [];
-    if (current.includes(multipleLocationsOption)) {
-      setValue(
-        "workPreferences",
-        current.filter((v) => v !== multipleLocationsOption),
-        { shouldValidate: true },
-      );
-    }
-  }, [isSingleLocation, getValues, setValue]);
 
   // Auto-detect Currency logic
   const selectedCountryName = watch("country");
@@ -1608,7 +1597,6 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 render={({ field }) => {
                   const values = field.value || [];
                   const toggleValue = (option: string) => {
-                    if (option === multipleLocationsOption && isSingleLocation) return;
                     if (values.includes(option)) {
                       field.onChange(values.filter((v) => v !== option));
                     } else {
@@ -1624,29 +1612,19 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
                       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                         {WORK_PREFERENCES_OPTIONS.map((opt) => {
-                          const isMultipleLocationsOption = opt === multipleLocationsOption;
-                          const isDisabled = isMultipleLocationsOption && isSingleLocation;
                           const isChecked = values.includes(opt);
                           return (
                             <label
                               key={opt}
                               className={cn(
                                 "flex min-h-16 items-center gap-3 rounded-xl border px-3 py-2.5 shadow-sm transition-colors",
-                                isDisabled
-                                  ? "cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400 opacity-70"
-                                  : isChecked
-                                    ? "cursor-pointer border-emerald-500 bg-emerald-50 font-medium text-emerald-950 shadow-emerald-100"
-                                    : "cursor-pointer border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30",
+                                isChecked
+                                  ? "cursor-pointer border-emerald-500 bg-emerald-50 font-medium text-emerald-950 shadow-emerald-100"
+                                  : "cursor-pointer border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30",
                               )}
-                              title={
-                                isDisabled
-                                  ? "Not available when Number of Locations is set to 1 Location"
-                                  : undefined
-                              }
                             >
                               <Checkbox
                                 checked={isChecked}
-                                disabled={isDisabled}
                                 onCheckedChange={() => toggleValue(opt)}
                                 className="size-4 rounded"
                               />
@@ -1655,12 +1633,6 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           );
                         })}
                       </div>
-                      {isSingleLocation && (
-                        <p className="text-[11px] text-slate-400">
-                          &quot;Add multiple store locations&quot; is disabled because you selected
-                          1 Location in Step 1.
-                        </p>
-                      )}
 
                       {hasOtherWorkPreference && (
                         <Controller

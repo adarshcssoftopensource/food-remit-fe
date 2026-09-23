@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RotateCcw, Trash2, Trash2Icon } from "lucide-react";
 import { COLUMNS_BY_ENTITY } from "../columns/recycled-columns";
 import { RecycleBinTableProps } from "../types/recycle-bin.types";
+import { useProfile } from "@/components/providers/profile-provider";
+import { useMemo } from "react";
 
 const ENTITY_TITLES: Record<string, string> = {
   users: "Deleted Users",
@@ -15,6 +17,8 @@ const ENTITY_TITLES: Record<string, string> = {
   categories: "Deleted Categories",
   "city-managers": "Deleted City Managers",
   "country-managers": "Deleted Country Managers",
+  employees: "Deleted Employees",
+  "partner-leads": "Deleted Partner Leads",
 };
 
 export function RecycleBinTable({
@@ -35,7 +39,13 @@ export function RecycleBinTable({
   onBulkRestoreClick,
   onBulkPermanentDeleteClick,
 }: RecycleBinTableProps) {
-  const columns = COLUMNS_BY_ENTITY[entityType] || COLUMNS_BY_ENTITY.users;
+  const { isSuperAdmin } = useProfile();
+  const columns = useMemo(() => {
+    const base = COLUMNS_BY_ENTITY[entityType] || COLUMNS_BY_ENTITY.users;
+    // Column is baked into every entity; hide for non–super-admin
+    if (isSuperAdmin) return base;
+    return base.filter((c) => c.id !== "deletedBy");
+  }, [entityType, isSuperAdmin]);
   const title = ENTITY_TITLES[entityType] || "Recycled Items";
 
   return (

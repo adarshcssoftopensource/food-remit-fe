@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { History as HistoryIcon, Trash2 } from "lucide-react";
 import { HISTORY_COLUMNS_BY_ENTITY } from "../columns/history-columns";
 import { HistoryTableProps } from "../types/history.types";
+import { useProfile } from "@/components/providers/profile-provider";
+import { useMemo } from "react";
 
 const ENTITY_TITLES: Record<string, string> = {
   "partner-leads": "Archived Partner Leads",
@@ -29,8 +31,13 @@ export function HistoryTable({
   onRowSelectionChange,
   onBulkPermanentDeleteClick,
 }: HistoryTableProps) {
-  const columns =
-    HISTORY_COLUMNS_BY_ENTITY[entityType] || HISTORY_COLUMNS_BY_ENTITY["partner-leads"];
+  const { isSuperAdmin } = useProfile();
+  const columns = useMemo(() => {
+    const base =
+      HISTORY_COLUMNS_BY_ENTITY[entityType] || HISTORY_COLUMNS_BY_ENTITY["partner-leads"];
+    if (isSuperAdmin) return base;
+    return base.filter((c) => c.id !== "deletedBy");
+  }, [entityType, isSuperAdmin]);
   const title = ENTITY_TITLES[entityType] || "History Records";
 
   return (

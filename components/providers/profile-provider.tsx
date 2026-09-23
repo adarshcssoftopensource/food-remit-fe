@@ -83,6 +83,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
   const isSuperAdmin =
     profileData?.roleCode === "SUPER_ADMIN" ||
+    profileData?.roleCode === "CO_ADMIN" ||
     profileData?.role === "super_admin" ||
     profileData?.role === "co_admin";
 

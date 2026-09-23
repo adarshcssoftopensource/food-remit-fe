@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { getStatusColor } from "@/constants/partner.leads";
 import { HistoryEntityType } from "../hooks/use-get-history-data";
 import { HistoryEntityActionsCell } from "../components/history-entity-actions-cell";
+import { withDeletedByColumn } from "../../recycle-bin/components/deleted-by-cell";
 
 // Helper to create checkbox column
 const createSelectColumn = (): ColumnDef<any> => ({
@@ -220,6 +221,6 @@ export const historyPartnerLeadsColumns: ColumnDef<any>[] = [
 ];
 
 export const HISTORY_COLUMNS_BY_ENTITY: Record<HistoryEntityType, ColumnDef<any>[]> = {
-  "partner-leads": historyPartnerLeadsColumns,
-  stores: historyStoresColumns,
+  "partner-leads": withDeletedByColumn(historyPartnerLeadsColumns, true),
+  stores: withDeletedByColumn(historyStoresColumns, true),
 };
