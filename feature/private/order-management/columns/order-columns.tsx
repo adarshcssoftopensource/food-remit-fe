@@ -10,7 +10,7 @@ import { OrderStatusBadge } from "../components/order-status-badge";
 import { OrderHandlerCell } from "../components/order-handler-cell";
 import { isPendingOrder } from "../utils/order-workflow";
 import { parseAbandonRemark, SystemAbandonBadge } from "../components/abandon-remark-badge";
-
+import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 function formatTimePlaced(iso?: string) {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -217,11 +217,13 @@ export const historyOrderColumns: ColumnDef<OrderData>[] = [
       if (!raw) return <span className="text-xs text-slate-400">—</span>;
       const { isSystem, remark } = parseAbandonRemark(raw);
       return (
-        <div className="max-w-[240px] space-y-1.5">
+        <div className="flex max-w-60 space-y-1.5">
           <SystemAbandonBadge isSystem={isSystem} />
-          <p className="line-clamp-2 text-xs font-medium text-slate-700 dark:text-slate-300">
-            {remark || "—"}
-          </p>
+          <TruncatedTextCell
+            text={remark}
+            maxWords={2}
+            className="ml-2 block text-xs font-medium text-slate-700 dark:text-slate-300"
+          />
         </div>
       );
     },
