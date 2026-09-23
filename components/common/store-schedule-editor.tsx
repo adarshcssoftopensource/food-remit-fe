@@ -47,6 +47,7 @@ export function formatScheduleSummary(schedule: DailyScheduleItem[]): string {
     (d) =>
       d.isOpen && d.openTime && d.closeTime && d.openTime !== "00:00" && d.closeTime !== "00:00",
   );
+
   if (openDays.length === 0) return "";
 
   // If some open days are still not selected, do not show incomplete summary
@@ -261,7 +262,7 @@ export function AnalogTimePicker({
           "group flex h-10 w-full cursor-pointer items-center justify-between gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium transition-all hover:border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm",
           invalid && "border-red-400 bg-red-50/20 text-red-600",
           !isSelected && !invalid && "font-normal text-slate-400",
-          isSelected && "font-medium text-slate-800",
+          isSelected && !invalid && "font-medium text-slate-800",
         )}
       >
         <span className="flex items-center gap-1.5 truncate">
@@ -432,7 +433,7 @@ export function StoreScheduleEditor({
   error,
   disabled = false,
 }: StoreScheduleEditorProps) {
-  const [copiedDay, setCopiedDay] = React.useState<string | null>(null);
+  const [isCopied, setIsCopied] = React.useState(false);
 
   // Initialize internal state from dailySchedule or fallback to defaults
   const scheduleItems = React.useMemo<DailyScheduleItem[]>(() => {
@@ -491,30 +492,34 @@ export function StoreScheduleEditor({
     updateSchedule(next);
   };
 
-  // Copy one day's opening and closing hours to all other open days
-  const handleCopyHoursToAllOpen = (sourceDay: DailyScheduleItem) => {
-    if (
-      disabled ||
-      !sourceDay.openTime ||
-      sourceDay.openTime === "00:00" ||
-      !sourceDay.closeTime ||
-      sourceDay.closeTime === "00:00"
-    ) {
-      return;
-    }
+  // Find first open day with valid opening and closing hours
+  const sourceDayWithHours = scheduleItems.find(
+    (item) =>
+      item.isOpen &&
+      item.openTime &&
+      item.openTime !== "00:00" &&
+      item.closeTime &&
+      item.closeTime !== "00:00",
+  );
+
+  const canCopyToAll = Boolean(sourceDayWithHours);
+
+  // Copy configured day hours to all other open days
+  const handleCopyHoursToAllOpen = () => {
+    if (disabled || !sourceDayWithHours) return;
     const next = scheduleItems.map((item) => {
       if (item.isOpen) {
         return {
           ...item,
-          openTime: sourceDay.openTime,
-          closeTime: sourceDay.closeTime,
+          openTime: sourceDayWithHours.openTime,
+          closeTime: sourceDayWithHours.closeTime,
         };
       }
       return item;
     });
     updateSchedule(next);
-    setCopiedDay(sourceDay.day);
-    setTimeout(() => setCopiedDay(null), 1800);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
   };
 
   // Preset button actions
@@ -543,11 +548,10 @@ export function StoreScheduleEditor({
 
   const allOpenDaysConfigured = React.useMemo(() => {
     const openItems = scheduleItems.filter((i) => i.isOpen);
-    return (
-      openItems.length > 0 &&
-      openItems.every(
-        (i) => i.openTime && i.closeTime && i.openTime !== "00:00" && i.closeTime !== "00:00",
-      )
+    if (openItems.length === 0) return false;
+    return openItems.every(
+      (item) =>
+        item.openTime && item.closeTime && item.openTime !== "00:00" && item.closeTime !== "00:00",
     );
   }, [scheduleItems]);
 
@@ -555,7 +559,7 @@ export function StoreScheduleEditor({
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Quick Presets Toolbar */}
+      {/* Quick Presets Toolbar with unified Copy to all button */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 pb-3">
         <div className="flex items-center gap-1.5">
           <Calendar className="h-4 w-4 text-emerald-600" />
@@ -564,7 +568,7 @@ export function StoreScheduleEditor({
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
             onClick={() => applyPreset("all")}
@@ -592,14 +596,46 @@ export function StoreScheduleEditor({
             <Moon className="h-3 w-3 text-indigo-500" />
             Sat – Sun
           </button>
+
+          {/* Unified Copy to All button next to Sat – Sun */}
+          <button
+            type="button"
+            onClick={handleCopyHoursToAllOpen}
+            disabled={disabled || !canCopyToAll}
+            title={
+              canCopyToAll
+                ? `Copy ${sourceDayWithHours?.day}'s hours to all open days`
+                : "Set opening & closing hours for at least one day first"
+            }
+            className={cn(
+              "inline-flex cursor-pointer items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all",
+              isCopied
+                ? "border-emerald-500 bg-emerald-50 font-semibold text-emerald-700 shadow-xs"
+                : canCopyToAll
+                  ? "border-emerald-200 bg-emerald-50/70 text-emerald-700 hover:border-emerald-300 hover:bg-emerald-100"
+                  : "cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400 opacity-60",
+            )}
+          >
+            {isCopied ? (
+              <>
+                <Check className="h-3 w-3 text-emerald-600" />
+                <span>Copied to all!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3 text-emerald-600" />
+                <span>Copy to all</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Days Rows */}
+      {/* Days Rows (clean layout without duplicate copy buttons) */}
       <div className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white shadow-xs">
         {scheduleItems.map((item) => {
-          const isCopied = copiedDay === item.day;
           const isDayOpen = item.isOpen;
+
           const isOpenInvalid = Boolean(
             displayError && isDayOpen && (!item.openTime || item.openTime === "00:00"),
           );
@@ -612,7 +648,7 @@ export function StoreScheduleEditor({
               key={item.day}
               className={cn(
                 "flex flex-col gap-2.5 p-3 transition-colors sm:flex-row sm:items-center sm:justify-between sm:gap-4",
-                isDayOpen ? "bg-white hover:bg-slate-50/40" : "bg-slate-50/60 text-slate-400",
+                isDayOpen ? "hover:bg-slate-50/40" : "bg-slate-50/60 text-slate-400",
               )}
             >
               {/* Left: Day Abbr & Open/Closed Status Toggle */}
@@ -682,42 +718,6 @@ export function StoreScheduleEditor({
                   </div>
                 )}
               </div>
-
-              {/* Right: Quick Copy to all days */}
-              {isDayOpen && (
-                <div className="flex sm:w-28 sm:shrink-0 sm:justify-end">
-                  <button
-                    type="button"
-                    onClick={() => handleCopyHoursToAllOpen(item)}
-                    disabled={
-                      disabled ||
-                      !item.openTime ||
-                      item.openTime === "00:00" ||
-                      !item.closeTime ||
-                      item.closeTime === "00:00"
-                    }
-                    title="Apply these hours to all open days"
-                    className={cn(
-                      "inline-flex cursor-pointer items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-all disabled:cursor-not-allowed disabled:opacity-40",
-                      isCopied
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                        : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-800",
-                    )}
-                  >
-                    {isCopied ? (
-                      <>
-                        <Check className="h-3 w-3 text-emerald-600" />
-                        <span>Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3 w-3" />
-                        <span>Copy to all</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
             </div>
           );
         })}
