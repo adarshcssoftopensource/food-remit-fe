@@ -9,6 +9,7 @@ import { OrderActionsCell } from "../components/order-actions-cell";
 import { OrderStatusBadge } from "../components/order-status-badge";
 import { OrderHandlerCell } from "../components/order-handler-cell";
 import { isPendingOrder } from "../utils/order-workflow";
+import { parseAbandonRemark, SystemAbandonBadge } from "../components/abandon-remark-badge";
 
 function formatTimePlaced(iso?: string) {
   if (!iso) return "—";
@@ -209,11 +210,21 @@ export const historyOrderColumns: ColumnDef<OrderData>[] = [
     ),
   },
   {
-    id: "orderStatus",
-    header: "Order Status",
-    cell: ({ row }) => (
-      <OrderStatusBadge status={row.original.orderStatus} finalStatus={row.original.finalStatus} />
-    ),
+    id: "abandonRemark",
+    header: "Abandon Remark",
+    cell: ({ row }) => {
+      const raw = row.original.abandonRemark?.trim();
+      if (!raw) return <span className="text-xs text-slate-400">—</span>;
+      const { isSystem, remark } = parseAbandonRemark(raw);
+      return (
+        <div className="max-w-[240px] space-y-1.5">
+          <SystemAbandonBadge isSystem={isSystem} />
+          <p className="line-clamp-2 text-xs font-medium text-slate-700 dark:text-slate-300">
+            {remark || "—"}
+          </p>
+        </div>
+      );
+    },
   },
   {
     id: "closedAt",

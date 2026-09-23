@@ -107,6 +107,8 @@ export interface OrderData {
   pickedUpAt?: string | null;
   abandonedAt?: string | null;
   closedAt?: string | null;
-  /** 1 = Picked Up, 2 = Abandoned */
+  /** Remark when abandoned (manual or auto) */
+  abandonRemark?: string | null;
+  /** 1 = Closed after collect, 2 = Abandoned */
   finalStatus?: number | null;
 }

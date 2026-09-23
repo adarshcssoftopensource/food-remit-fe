@@ -12,18 +12,25 @@ import { OrderItemsTable } from "@/feature/private/order-management/components/o
 import { OrderStatusBadge } from "@/feature/private/order-management/components/order-status-badge";
 import { OrderInfoBanner } from "@/feature/private/order-management/components/order-info-banner";
 import { OrderProgressTimeline } from "@/feature/private/order-management/components/order-progress-timeline";
+import { OrderAbandonRemarkCard } from "@/feature/private/order-management/components/order-abandon-remark-card";
+import {
+  OrderLifecycleActionCard,
+  OrderLifecycleActionsHint,
+  OrderWaitingBadge,
+} from "@/feature/private/order-management/components/order-lifecycle-actions";
 import {
   useMarkOrderCompleted,
   useStartOrder,
 } from "@/feature/private/order-management/hooks/use-order-lifecycle";
 import {
+  FINAL_STATUS,
   formatRelativeTime,
   isPendingOrder,
   isProcessingOrder,
   ORDER_STATUS,
 } from "@/feature/private/order-management/utils/order-workflow";
 import { getInitials } from "@/lib/get-initials";
-import { ArrowLeft, CheckCircle2, Loader2, PackageCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CompleteOrderByReferenceDialog } from "./components/complete-order-by-reference-dialog";
@@ -38,7 +45,7 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
   const { data: order, isLoading } = useGetOrder(id);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-  const [pickupOpen, setPickupOpen] = useState(false);
+  const [closeOpen, setCloseOpen] = useState(false);
   const [startOpen, setStartOpen] = useState(false);
   const { mutateAsync: startOrder, isPending: starting } = useStartOrder();
   const { mutateAsync: markCompleted, isPending: completing } = useMarkOrderCompleted();
@@ -48,7 +55,9 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
 
   const pending = isPendingOrder(order);
   const processing = isProcessingOrder(order);
-  const completed = order.orderStatus === ORDER_STATUS.COMPLETED;
+  const pickedUp = order.orderStatus === ORDER_STATUS.COMPLETED;
+  const closed = order.orderStatus === ORDER_STATUS.CLOSED;
+  const abandoned = closed && order.finalStatus === FINAL_STATUS.ABANDONED;
   const handlerName = order.startedByName || order.assignedEmployeeName;
   const itemCount =
     order.items?.reduce((s, i) => s + (i.quantity || 0), 0) || order.items?.length || 0;
@@ -59,98 +68,59 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
     <div className="space-y-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
-          <Button
-            type="button"
-            variant={"outline"}
-            onClick={() => router.back()}
-            className="inline-flex items-center gap-1 text-xs font-medium"
-          >
-            <ArrowLeft className="size-3.5" /> Back to My Orders
-          </Button>
           <PageHeader
             title={`Order #${maskOrderReference(orderRef)}`}
             description={
               pending
-                ? "This order is paid and waiting to be started."
+                ? "Paid and waiting to be started."
                 : processing
                   ? "You are preparing this order."
-                  : completed
-                    ? "Ready for customer pickup."
-                    : "Order details"
+                  : pickedUp
+                    ? "Picked Up — Close with customer reference when collected."
+                    : abandoned
+                      ? "This order was abandoned."
+                      : "Order details"
             }
           />
-          <OrderStatusBadge
-            status={order.orderStatus}
-            assignedEmployeeId={order.assignedEmployeeId}
-            finalStatus={order.finalStatus}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <OrderStatusBadge
+              status={order.orderStatus}
+              assignedEmployeeId={order.assignedEmployeeId}
+              finalStatus={order.finalStatus}
+              showFinal={closed}
+            />
+            {pickedUp && <OrderWaitingBadge label="Awaiting Close" />}
+          </div>
         </div>
-
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
-          {pending && (
-            <Button
-              className="h-11 rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
-              disabled={starting}
-              onClick={() => setStartOpen(true)}
-            >
-              {starting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-              Start Order
-            </Button>
-          )}
-          {processing && (
-            <Button
-              className="h-11 rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
-              disabled={completing}
-              onClick={async () => {
-                try {
-                  await markCompleted(order.id);
-                } catch {}
-              }}
-            >
-              {completing ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
-              ) : (
-                <CheckCircle2 className="mr-2 size-4" />
-              )}
-              Mark as Completed
-            </Button>
-          )}
-          {completed && (
-            <Button
-              className="h-11 rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
-              onClick={() => setPickupOpen(true)}
-            >
-              <PackageCheck className="mr-2 size-4" />
-              Mark as Picked Up
-            </Button>
-          )}
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-1 text-xs font-medium"
+        >
+          <ArrowLeft className="size-3.5" /> Back to My Orders
+        </Button>
       </div>
 
       {pending && (
         <OrderInfoBanner
           variant="employee-start"
-          message="Start this order to claim it. Your name will be recorded and status becomes Processing. Other employees will not be able to start it."
+          message="Start this order to claim it. Status becomes Processing and other employees cannot start it."
         />
       )}
       {processing && handlerName && (
         <OrderInfoBanner
           variant="processing"
-          message={`In Processing · started by ${handlerName}${
-            order.startedAt ? ` (${formatRelativeTime(order.startedAt)})` : ""
-          }. Start Order is locked for others.`}
-        />
-      )}
-      {completed && (
-        <OrderInfoBanner
-          variant="employee-start"
-          message="Order is ready for pickup. Verify the customer's reference to mark Picked Up — it will close and move to History."
+          message={`In Processing · ${handlerName}${
+            order.startedAt ? ` · ${formatRelativeTime(order.startedAt)}` : ""
+          }`}
         />
       )}
 
+      <OrderAbandonRemarkCard order={order} />
       <OrderProgressTimeline order={order} />
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
+      <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
         <div className="space-y-5">
           <OrderSummaryCard order={order} hideQrCode maskReference />
           <EmployeeOrderFinancials order={order} />
@@ -158,10 +128,10 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
           <OrderItemsTable items={order.items ?? []} onImageClick={setLightboxImage} hideQrCode />
         </div>
 
-        <aside className="space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-emerald-50/80 to-white p-4 dark:border-slate-800 dark:from-emerald-950/20 dark:to-slate-900">
-            <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
-              Order Ownership
+        <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+          <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-emerald-50/80 to-white p-4 shadow-xs dark:border-slate-800 dark:from-emerald-950/20 dark:to-slate-900">
+            <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              Order ownership
             </p>
             {handlerName ? (
               <div className="mt-3 flex items-center gap-3">
@@ -192,17 +162,51 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
             </div>
           </div>
 
-          <p className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] leading-relaxed text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
-            Employees cannot abandon orders. If a customer never picks up, a store manager must mark
-            it Abandoned.
-          </p>
+          <div className="space-y-3">
+            <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Actions</p>
+            {pending && (
+              <OrderLifecycleActionCard
+                variant="start"
+                title="Start Order"
+                description="Claim this order and move it to Processing."
+                loading={starting}
+                onClick={() => setStartOpen(true)}
+              />
+            )}
+            {processing && (
+              <OrderLifecycleActionCard
+                variant="complete"
+                title="Mark as Completed"
+                description="Finishes prep and auto-moves to Picked Up."
+                loading={completing}
+                onClick={async () => {
+                  try {
+                    await markCompleted(order.id);
+                  } catch {}
+                }}
+              />
+            )}
+            {pickedUp && (
+              <OrderLifecycleActionCard
+                variant="close"
+                title="Close Order"
+                description="Customer collected — enter the full reference ID."
+                onClick={() => setCloseOpen(true)}
+              />
+            )}
+            {pickedUp && (
+              <OrderLifecycleActionsHint>
+                You can only Close. Store admin abandons with a remark if nobody collects.
+              </OrderLifecycleActionsHint>
+            )}
+          </div>
         </aside>
       </div>
 
       <CompleteOrderByReferenceDialog
         orderId={order.id}
-        open={pickupOpen}
-        onOpenChange={setPickupOpen}
+        open={closeOpen}
+        onOpenChange={setCloseOpen}
         mode="pickup"
       />
 

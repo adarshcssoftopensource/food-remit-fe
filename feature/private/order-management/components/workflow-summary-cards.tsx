@@ -49,8 +49,8 @@ const CARDS: {
   },
   {
     key: "completed",
-    label: "Completed",
-    description: "Ready for pickup",
+    label: "Picked Up",
+    description: "Waiting for Close or Abandon",
     icon: CheckCircle2,
     countKey: "completed",
     accent: "text-emerald-700",

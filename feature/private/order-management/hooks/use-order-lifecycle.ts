@@ -49,7 +49,7 @@ export function useMarkOrderCompleted() {
       return data;
     },
     onSuccess: () => {
-      successToast({ description: "Order marked as Completed — ready for pickup" });
+      successToast({ description: "Order completed — now Picked Up (waiting for Close)" });
       invalidateOrders();
     },
     onError: (error: unknown) => {
@@ -77,12 +77,12 @@ export function useMarkOrderPickedUp() {
       return data;
     },
     onSuccess: () => {
-      successToast({ description: "Order picked up and closed" });
+      successToast({ description: "Order closed successfully" });
       invalidateOrders();
     },
     onError: (error: unknown) => {
       errorToast({
-        description: getErrorMessage(error, "Invalid reference or failed to mark as picked up"),
+        description: getErrorMessage(error, "Invalid reference or failed to close order"),
       });
     },
   });
@@ -92,14 +92,14 @@ export function useMarkOrderAbandoned() {
   const invalidateOrders = useInvalidateOrders();
 
   return useMutation({
-    mutationFn: async ({ orderId, reason }: { orderId: string; reason?: string }) => {
+    mutationFn: async ({ orderId, reason }: { orderId: string; reason: string }) => {
       const { data } = await apiClient.post(ORDER_ENDPOINTS.MARK_ABANDONED(orderId), {
         reason,
       });
       return data;
     },
     onSuccess: () => {
-      successToast({ description: "Order abandoned and closed" });
+      successToast({ description: "Order abandoned — emails sent to sender and receiver" });
       invalidateOrders();
     },
     onError: (error: unknown) => {

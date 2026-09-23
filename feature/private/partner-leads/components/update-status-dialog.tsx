@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { getStatusColor } from "@/constants/partner.leads";
 import { ROUTES } from "@/config/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, MessageSquarePlus, Send } from "lucide-react";
+import { CheckCircle2, Info, MessageSquarePlus, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -57,10 +57,8 @@ export function UpdateStatusDialog({
   });
 
   const isApprovedStatus = watchStatus === "APPROVED";
-  const isRejectedStatus =
-    watchStatus === "REJECTED" ||
-    watchStatus === "NOT_QUALIFIED" ||
-    watchStatus === "REQUEST_MORE_INFO";
+  const isRequestMoreInfo = watchStatus === "REQUEST_MORE_INFO";
+  const isRejectedStatus = watchStatus === "REJECTED" || watchStatus === "NOT_QUALIFIED";
   const isSubmitting = isUpdatingStatus || isApproving;
 
   const onSubmit = async (data: UpdateLeadStatusValues) => {
@@ -109,11 +107,15 @@ export function UpdateStatusDialog({
                     ? "border-emerald-200 bg-emerald-100/60"
                     : isRejectedStatus
                       ? "border-rose-200 bg-rose-100/60"
-                      : "border-blue-200 bg-blue-100/50"
+                      : isRequestMoreInfo
+                        ? "border-amber-200 bg-amber-100/60"
+                        : "border-blue-200 bg-blue-100/50"
                 }`}
               >
                 {isApprovedStatus ? (
                   <CheckCircle2 className="h-5 w-5 text-emerald-700" />
+                ) : isRequestMoreInfo ? (
+                  <Info className="h-5 w-5 text-amber-700" />
                 ) : (
                   <MessageSquarePlus
                     className={`h-5 w-5 ${isRejectedStatus ? "text-rose-700" : "text-blue-700"}`}
@@ -122,9 +124,11 @@ export function UpdateStatusDialog({
               </div>
               {isApprovedStatus
                 ? "Approve Partner Lead"
-                : isRejectedStatus
-                  ? "Reject Partner Lead"
-                  : "Update Lead Status"}
+                : isRequestMoreInfo
+                  ? "Request More Information"
+                  : isRejectedStatus
+                    ? "Reject Partner Lead"
+                    : "Update Lead Status"}
             </DialogTitle>
             <DialogDescription className="mt-3 text-sm leading-relaxed font-medium text-slate-500">
               {isApprovedStatus ? (
@@ -135,6 +139,12 @@ export function UpdateStatusDialog({
                     included in the welcome email
                   </strong>{" "}
                   sent to the partner.
+                </>
+              ) : isRequestMoreInfo ? (
+                <>
+                  You are requesting more information from this partner. The lead will move to the{" "}
+                  <strong className="text-amber-700">Request More Info</strong> status so they can
+                  provide the details you need.
                 </>
               ) : isRejectedStatus ? (
                 <>
@@ -170,7 +180,7 @@ export function UpdateStatusDialog({
                       <span>
                         {isApprovedStatus
                           ? "Approval Description / Remark"
-                          : watchStatus === "REQUEST_MORE_INFO"
+                          : isRequestMoreInfo
                             ? "Information Requested"
                             : isRejectedStatus
                               ? "Rejection Remark"
@@ -189,7 +199,7 @@ export function UpdateStatusDialog({
                       placeholder={
                         isApprovedStatus
                           ? "E.g. Congratulations! Your partnership application has been approved. Welcome to Food Remit..."
-                          : watchStatus === "REQUEST_MORE_INFO"
+                          : isRequestMoreInfo
                             ? "E.g. Please provide your business registration document..."
                             : isRejectedStatus
                               ? "E.g. Application does not meet current partnership requirements..."
@@ -199,9 +209,11 @@ export function UpdateStatusDialog({
                       className={`min-h-30 resize-none rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium transition-colors duration-300 placeholder:text-slate-400 hover:border-slate-300 hover:bg-slate-50 ${
                         isApprovedStatus
                           ? "focus-visible:border-emerald-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(16,185,129,0.1)] focus-visible:ring-emerald-600/20"
-                          : isRejectedStatus
-                            ? "focus-visible:border-rose-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(225,29,72,0.1)] focus-visible:ring-rose-600/20"
-                            : "focus-visible:border-blue-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(37,99,235,0.1)] focus-visible:ring-blue-600/20"
+                          : isRequestMoreInfo
+                            ? "focus-visible:border-amber-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(217,119,6,0.1)] focus-visible:ring-amber-600/20"
+                            : isRejectedStatus
+                              ? "focus-visible:border-rose-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(225,29,72,0.1)] focus-visible:ring-rose-600/20"
+                              : "focus-visible:border-blue-600 focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(37,99,235,0.1)] focus-visible:ring-blue-600/20"
                       } ${
                         errors.remark
                           ? "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15"
@@ -234,9 +246,11 @@ export function UpdateStatusDialog({
               className={`h-12 rounded-xl px-6 font-bold text-white shadow-md transition-colors hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 ${
                 isApprovedStatus
                   ? "bg-emerald-600 shadow-emerald-600/20 hover:bg-emerald-700"
-                  : isRejectedStatus
-                    ? "bg-rose-600 shadow-rose-600/20 hover:bg-rose-700"
-                    : "bg-blue-600 hover:bg-blue-700"
+                  : isRequestMoreInfo
+                    ? "bg-amber-600 shadow-amber-600/20 hover:bg-amber-700"
+                    : isRejectedStatus
+                      ? "bg-rose-600 shadow-rose-600/20 hover:bg-rose-700"
+                      : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
               {isSubmitting ? (
@@ -246,6 +260,8 @@ export function UpdateStatusDialog({
                   <Send className="size-4" />
                   Approve & Send Email
                 </span>
+              ) : isRequestMoreInfo ? (
+                "Request Information"
               ) : isRejectedStatus ? (
                 "Reject Lead"
               ) : (

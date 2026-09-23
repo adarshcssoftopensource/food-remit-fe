@@ -63,7 +63,7 @@ export function getDisplayStatus(order: {
   if (isPendingOrder(order)) return { label: "Pending", tone: "pending" };
   if (isProcessingOrder(order)) return { label: "Processing", tone: "processing" };
   if (order.orderStatus === ORDER_STATUS.COMPLETED) {
-    return { label: "Completed", tone: "completed" };
+    return { label: "Picked Up", tone: "picked-up" };
   }
   if (order.orderStatus === ORDER_STATUS.PAID) return { label: "Pending", tone: "pending" };
   if (order.orderStatus === ORDER_STATUS.PARTIAL) return { label: "Partial", tone: "other" };
@@ -74,7 +74,7 @@ export function getDisplayStatus(order: {
 }
 
 export function getFinalStatusLabel(finalStatus?: number | null): string | null {
-  if (finalStatus === FINAL_STATUS.PICKED_UP) return "Picked Up";
+  if (finalStatus === FINAL_STATUS.PICKED_UP) return "Closed (Collected)";
   if (finalStatus === FINAL_STATUS.ABANDONED) return "Abandoned";
   return null;
 }

@@ -13,20 +13,21 @@ import { useUpdateStore } from "../../store-management/hooks/use-update-store";
 import { useUpdateProfile } from "../hooks/use-update-profile";
 
 export function ProfileHeader() {
-  const { profile } = useProfile();
+  const { profile, needsBankVerification } = useProfile();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const updateProfileMutation = useUpdateProfile();
   const queryClient = useQueryClient();
 
   const storeFileInputRef = useRef<HTMLInputElement>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const canEditImages = !needsBankVerification;
 
   const storeId = profile?.stores?.[0]?.id || "";
   const updateStoreMutation = useUpdateStore(storeId);
 
   const handleStoreImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !storeId) return;
+    if (!file || !storeId || !canEditImages) return;
 
     try {
       const formData = new FormData();
@@ -51,7 +52,7 @@ export function ProfileHeader() {
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || !canEditImages) return;
 
     try {
       const formData = new FormData();
@@ -104,21 +105,23 @@ export function ProfileHeader() {
                 <Maximize2 className="h-5 w-5" />
               </button>
             )}
-            <label className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-white/30">
-              {updateStoreMutation.isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Camera className="h-5 w-5" />
-              )}
-              <input
-                type="file"
-                ref={storeFileInputRef}
-                accept="image/png,image/jpeg,image/webp"
-                className="hidden"
-                onChange={handleStoreImageChange}
-                disabled={updateStoreMutation.isPending}
-              />
-            </label>
+            {canEditImages && (
+              <label className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-white/30">
+                {updateStoreMutation.isPending ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Camera className="h-5 w-5" />
+                )}
+                <input
+                  type="file"
+                  ref={storeFileInputRef}
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={handleStoreImageChange}
+                  disabled={updateStoreMutation.isPending}
+                />
+              </label>
+            )}
           </div>
         </div>
       ) : (
@@ -138,21 +141,23 @@ export function ProfileHeader() {
             </AvatarFallback>
           </Avatar>
 
-          <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-            {updateProfileMutation.isPending ? (
-              <Loader2 className="h-5 w-5 animate-spin text-white sm:h-6 sm:w-6" />
-            ) : (
-              <Camera className="h-5 w-5 text-white sm:h-6 sm:w-6" />
-            )}
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/png,image/jpeg,image/webp"
-              className="hidden"
-              onChange={handleImageChange}
-              disabled={updateProfileMutation.isPending}
-            />
-          </label>
+          {canEditImages && (
+            <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+              {updateProfileMutation.isPending ? (
+                <Loader2 className="h-5 w-5 animate-spin text-white sm:h-6 sm:w-6" />
+              ) : (
+                <Camera className="h-5 w-5 text-white sm:h-6 sm:w-6" />
+              )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={handleImageChange}
+                disabled={updateProfileMutation.isPending}
+              />
+            </label>
+          )}
         </div>
 
         <div className="flex-1 space-y-1 sm:mb-2">

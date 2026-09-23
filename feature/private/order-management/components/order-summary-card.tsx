@@ -53,12 +53,6 @@ export function OrderSummaryCard({ order, hideQrCode }: OrderSummaryCardProps) {
           {/* Left: Details */}
           <div className="flex-1 p-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <div>
-                <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                  Order ID
-                </p>
-                <div className="text-slate-600 dark:text-slate-300">{order.id}</div>
-              </div>
               <InfoField
                 label="Date & Time"
                 icon={<Calendar className="mr-1 size-3" />}

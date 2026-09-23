@@ -101,11 +101,11 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
         <>
           <Button
             size="sm"
-            className="h-9 w-36 rounded-xl bg-emerald-600 px-4 text-xs font-semibold text-white hover:bg-emerald-700"
+            className="h-9 min-w-[8.5rem] rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white shadow-sm shadow-emerald-600/20 hover:bg-emerald-700"
             onClick={() => setPickupOpen(true)}
           >
             <PackageCheck className="mr-1.5 size-3.5" />
-            Mark Picked Up
+            Close Order
           </Button>
           <CompleteOrderByReferenceDialog
             orderId={order.id}

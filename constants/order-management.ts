@@ -26,12 +26,12 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
     description: "Orders being prepared by employees.",
   },
   completed: {
-    title: "Completed",
-    description: "Orders ready for customer pickup.",
+    title: "Picked Up",
+    description: "Orders ready at the store — Close when collected, or Abandon if not.",
   },
   history: {
     title: "Order History",
-    description: "Closed orders (Picked Up or Abandoned).",
+    description: "Closed orders (collected or Abandoned).",
   },
   "all-orders": {
     title: "All Orders",
@@ -63,7 +63,7 @@ export const ORDER_TABS: { label: string; value: OrderSectionKey }[] = [
   { label: "All Orders", value: "all" },
   { label: "Pending", value: "pending" },
   { label: "Processing", value: "processing" },
-  { label: "Completed", value: "completed" },
+  { label: "Picked Up", value: "completed" },
   { label: "History", value: "history" },
 ];
 
