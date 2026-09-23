@@ -7,75 +7,70 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { findWorldCity, getWorldCitiesByCountryAndState } from "@/lib/world-locations";
+import {
+  findWorldState,
+  getWorldStatesByCountryIso,
+  type WorldStateOption,
+} from "@/lib/world-locations";
 
-const LARGE_CITY_LIST_THRESHOLD = 150;
+const LARGE_STATE_LIST_THRESHOLD = 80;
 const SEARCH_RESULT_LIMIT = 100;
 
-export type WorldCitySelectProps = {
+export type WorldStateSelectProps = {
   countryIsoCode?: string;
-  stateCode?: string;
   value?: string;
-  onValueChange: (cityName: string) => void;
+  onValueChange: (stateName: string, stateOption?: WorldStateOption) => void;
   disabled?: boolean;
   invalid?: boolean;
   className?: string;
   id?: string;
   placeholder?: string;
-  excludeNames?: string[];
   allowCustom?: boolean;
 };
 
-export function WorldCitySelect({
+export function WorldStateSelect({
   countryIsoCode = "",
-  stateCode,
   value = "",
   onValueChange,
   disabled,
   invalid,
   className,
   id,
-  placeholder = "Select a city",
-  excludeNames = [],
-  allowCustom = false,
-}: WorldCitySelectProps) {
+  placeholder = "Select state or region",
+  allowCustom = true,
+}: WorldStateSelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const excluded = useMemo(
-    () => new Set(excludeNames.map((name) => name.trim().toLowerCase())),
-    [excludeNames],
-  );
+  const allStates = useMemo(() => {
+    return getWorldStatesByCountryIso(countryIsoCode);
+  }, [countryIsoCode]);
 
-  const allCities = useMemo(() => {
-    return getWorldCitiesByCountryAndState(countryIsoCode, stateCode).filter(
-      (city) => !excluded.has(city.name.toLowerCase()),
-    );
-  }, [countryIsoCode, stateCode, excluded]);
+  const isLargeList = allStates.length > LARGE_STATE_LIST_THRESHOLD;
 
-  const isLargeList = allCities.length > LARGE_CITY_LIST_THRESHOLD;
-
-  const selectedCity = useMemo(() => {
+  const selectedState = useMemo(() => {
     if (!value) return null;
     return (
-      findWorldCity(countryIsoCode, value, stateCode) ?? {
+      findWorldState(countryIsoCode, value) ?? {
         name: value,
-        stateCode: stateCode ?? "",
+        isoCode: "",
         countryCode: countryIsoCode,
       }
     );
-  }, [countryIsoCode, stateCode, value]);
+  }, [countryIsoCode, value]);
 
-  const filteredCities = useMemo(() => {
+  const filteredStates = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) {
       if (isLargeList) return [];
-      return allCities.slice(0, SEARCH_RESULT_LIMIT);
+      return allStates.slice(0, SEARCH_RESULT_LIMIT);
     }
-    return allCities
-      .filter((city) => city.name.toLowerCase().includes(q))
+    return allStates
+      .filter(
+        (state) => state.name.toLowerCase().includes(q) || state.isoCode.toLowerCase().includes(q),
+      )
       .slice(0, SEARCH_RESULT_LIMIT);
-  }, [allCities, query, isLargeList]);
+  }, [allStates, query, isLargeList]);
 
   const isDisabled = disabled || !countryIsoCode;
 
@@ -91,7 +86,7 @@ export function WorldCitySelect({
             aria-invalid={invalid}
             className={cn(
               "h-11! w-full justify-between rounded-xl border-slate-200 bg-white px-3 text-sm font-normal text-slate-900 hover:bg-slate-50",
-              !selectedCity && "text-slate-500",
+              !selectedState && "text-slate-500",
               invalid && "border-red-400 bg-red-50/30",
               className,
             )}
@@ -99,7 +94,7 @@ export function WorldCitySelect({
             <span className="flex min-w-0 items-center gap-2">
               <MapPin className="size-4 shrink-0 text-slate-400" />
               <span className="truncate">
-                {!countryIsoCode ? "Select country first" : (selectedCity?.name ?? placeholder)}
+                {!countryIsoCode ? "Select country first" : (selectedState?.name ?? placeholder)}
               </span>
             </span>
             <ChevronDown
@@ -123,14 +118,14 @@ export function WorldCitySelect({
             autoFocus
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search city..."
+            placeholder="Search state..."
             className="h-9 border-slate-200 pl-9 text-sm"
           />
         </div>
 
         {isLargeList && !query.trim() && (
           <p className="px-1 text-xs text-slate-500">
-            Type to search from {allCities.length} cities
+            Type to search from {allStates.length} states
           </p>
         )}
 
@@ -139,14 +134,14 @@ export function WorldCitySelect({
           onWheel={(event) => event.stopPropagation()}
           onTouchMove={(event) => event.stopPropagation()}
         >
-          {filteredCities.length === 0 ? (
+          {filteredStates.length === 0 ? (
             <div className="py-2 text-center text-sm text-slate-500">
               <p className="px-2 py-3 text-sm text-slate-500">
                 {!countryIsoCode
                   ? "Select a country first"
-                  : isLargeList && !query.trim()
-                    ? "Start typing to search cities"
-                    : "No cities found"}
+                  : allStates.length === 0
+                    ? "No states found for this country"
+                    : "No matching states found"}
               </p>
               {allowCustom && query.trim() && (
                 <Button
@@ -165,16 +160,16 @@ export function WorldCitySelect({
               )}
             </div>
           ) : (
-            filteredCities.map((city) => {
-              const isSelected = value.toLowerCase() === city.name.toLowerCase();
+            filteredStates.map((state) => {
+              const isSelected = value.toLowerCase() === state.name.toLowerCase();
 
               return (
                 <Button
-                  key={`${city.name}-${city.stateCode}`}
+                  key={`${state.name}-${state.isoCode}`}
                   type="button"
                   variant="ghost"
                   onClick={() => {
-                    onValueChange(city.name);
+                    onValueChange(state.name, state);
                     setOpen(false);
                     setQuery("");
                   }}
@@ -184,9 +179,9 @@ export function WorldCitySelect({
                   )}
                 >
                   <MapPin className="size-4 shrink-0 text-slate-400" />
-                  <span className="min-w-0 flex-1 truncate">{city.name}</span>
-                  {city.stateCode ? (
-                    <span className="shrink-0 text-xs text-slate-400">{city.stateCode}</span>
+                  <span className="min-w-0 flex-1 truncate">{state.name}</span>
+                  {state.isoCode ? (
+                    <span className="shrink-0 text-xs text-slate-400">{state.isoCode}</span>
                   ) : null}
                   {isSelected && <Check className="size-4 shrink-0 text-emerald-600" />}
                 </Button>
