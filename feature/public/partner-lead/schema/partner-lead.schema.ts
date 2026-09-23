@@ -18,21 +18,59 @@ export const partnerLeadSchema = z
     locationsCount: z.string().optional(),
     locations: z
       .array(
-        z.object({
-          address: z.string().min(1, "Address is required"),
-          daysOpen: z.array(z.string()).min(1, "At least one day must be selected"),
-          hoursOfOperation: z
-            .string()
-            .trim()
-            .min(1, "Hours of operation are required")
-            .refine(
-              (val) => {
-                const parts = val.split(" - ");
-                return parts.length === 2 && parts[0].trim() !== "" && parts[1].trim() !== "";
-              },
-              { message: "Both open and close times are required" },
-            ),
-        }),
+        z
+          .object({
+            address: z.string().min(1, "Address is required"),
+            daysOpen: z.array(z.string()).min(1, "At least one day must be selected"),
+            hoursOfOperation: z.string().optional().or(z.literal("")),
+            dailySchedule: z
+              .array(
+                z.object({
+                  day: z.string(),
+                  isOpen: z.boolean(),
+                  openTime: z.string(),
+                  closeTime: z.string(),
+                }),
+              )
+              .optional(),
+          })
+          .superRefine((loc, ctx) => {
+            if (loc.dailySchedule && loc.dailySchedule.length > 0) {
+              const openDays = loc.dailySchedule.filter((d) => d.isOpen);
+              if (openDays.length === 0) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  path: ["daysOpen"],
+                  message: "At least one day must be marked as open",
+                });
+                return;
+              }
+              const invalidDays = openDays.filter(
+                (d) =>
+                  !d.openTime?.trim() ||
+                  !d.closeTime?.trim() ||
+                  d.openTime === "00:00" ||
+                  d.closeTime === "00:00",
+              );
+              if (invalidDays.length > 0) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  path: ["hoursOfOperation"],
+                  message:
+                    invalidDays.length === 1
+                      ? `Please select opening and closing times for ${invalidDays[0].day}`
+                      : `Please select opening and closing times for all open days`,
+                });
+                return;
+              }
+            } else if (!loc.hoursOfOperation?.trim()) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ["hoursOfOperation"],
+                message: "Please select opening and closing times",
+              });
+            }
+          }),
       )
       .optional(),
     hasBusinessAccount: z.boolean().optional(),
