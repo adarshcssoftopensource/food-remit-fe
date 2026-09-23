@@ -7,12 +7,13 @@ import { CountriesManagement } from "./components/countries-management";
 import { EmailNotificationsSettings } from "./components/email-notifications-settings";
 import { GovtTaxManagement } from "./components/govt-tax-management";
 import { MarkupManagement } from "./components/markup-management";
+import { OrderAbandonSettings } from "./components/order-abandon-settings";
 import { ProcessingFee } from "./components/processing-fee";
 
 import { useProfile } from "@/components/providers/profile-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMemo } from "react";
-import { Globe, Mail, MapPin, Percent, Receipt, ShieldCheck } from "lucide-react";
+import { Clock3, Globe, Mail, MapPin, Percent, Receipt, ShieldCheck } from "lucide-react";
 
 export function SettingsPage() {
   const { hasPermission, profile } = useProfile();
@@ -60,6 +61,12 @@ export function SettingsPage() {
               label: "Govt Tax",
               component: <GovtTaxManagement />,
               icon: <ShieldCheck className="size-4" />,
+            },
+            {
+              value: "order-abandon",
+              label: "Auto Abandon",
+              component: <OrderAbandonSettings />,
+              icon: <Clock3 className="size-4" />,
             },
           ]
         : []),

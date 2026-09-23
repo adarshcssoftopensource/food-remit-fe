@@ -23,16 +23,18 @@ export function getOrderActorRole(
   const canAssign = isStoreManager;
 
   /**
-   * Abandon / Mark Abandoned = Store Manager only.
-   * Super Admin cannot abandon.
+   * Close Order (reference verify) = Store Manager or Employee (own orders).
+   * Super Admin cannot close.
+   */
+  const canClose = isStoreManager || isEmployee;
+
+  /**
+   * Abandon = Store Manager only (requires remark).
    */
   const canAbandon = isStoreManager;
 
-  /**
-   * Manual Mark as Picked Up = Store Manager or Employee (own orders).
-   * Super Admin cannot mark picked up.
-   */
-  const canMarkPickedUp = isStoreManager || isEmployee;
+  /** @deprecated use canClose — kept for older call sites */
+  const canMarkPickedUp = canClose;
 
   /** Can complete Processing orders (employee own / manager any). SA may still complete. */
   const canOverrideLifecycle = isElevated || isStoreManager;
@@ -45,6 +47,7 @@ export function getOrderActorRole(
     isElevated,
     canAssign,
     canAbandon,
+    canClose,
     canMarkPickedUp,
     canOverrideLifecycle,
   };

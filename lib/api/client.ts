@@ -87,11 +87,8 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       }
 
       if (getNeedsBankVerification() && !isBankVerificationExemptUrl(config.url)) {
-        return Promise.reject(
-          new Error(
-            "Please complete Bank Account Verification from your profile before making changes.",
-          ),
-        );
+        // Banner already shows the message — reject silently (no toast).
+        return Promise.reject(new Error("BANK_VERIFICATION_REQUIRED"));
       }
     }
   }
@@ -176,6 +173,11 @@ axiosInstance.interceptors.response.use(
       errorToast({
         description: "You are in View Only mode. Actions are disabled.",
       });
+      return Promise.reject(error);
+    }
+
+    // Top banner already explains this — do not show a second toast.
+    if (error.message === "BANK_VERIFICATION_REQUIRED") {
       return Promise.reject(error);
     }
 

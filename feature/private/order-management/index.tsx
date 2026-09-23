@@ -201,7 +201,7 @@ export function OrdersManagementPage() {
               {(
                 [
                   { key: "all", label: "All History", count: counts.history },
-                  { key: "picked-up", label: "Picked Up", count: counts.pickedUp },
+                  { key: "picked-up", label: "Collected", count: counts.pickedUp },
                   { key: "abandoned", label: "Abandoned", count: counts.abandoned },
                 ] as const
               ).map((f) => (
@@ -313,16 +313,20 @@ function OrderHistoryFlowDiagram() {
       color: "border-blue-300 bg-blue-50 text-blue-700",
     },
     {
-      label: "Completed",
-      sub: "Ready for pickup",
+      label: "Picked Up",
+      sub: "Auto after Complete — waiting at store",
       color: "border-emerald-300 bg-emerald-50 text-emerald-700",
     },
     {
-      label: "Picked Up",
-      sub: "Collected by customer",
-      color: "border-emerald-300 bg-emerald-50 text-emerald-700",
+      label: "Close",
+      sub: "Collected (reference ID)",
+      color: "border-teal-300 bg-teal-50 text-teal-700",
     },
-    { label: "Abandoned", sub: "Not collected", color: "border-red-300 bg-red-50 text-red-700" },
+    {
+      label: "Abandoned",
+      sub: "Not collected + remark",
+      color: "border-red-300 bg-red-50 text-red-700",
+    },
     {
       label: "Closed",
       sub: "Moved to history",
@@ -335,7 +339,7 @@ function OrderHistoryFlowDiagram() {
       <p className="mb-3 text-xs font-semibold tracking-wide text-slate-500 uppercase">
         Order lifecycle (after preparation)
       </p>
-      <div className="flex min-w-[640px] items-stretch gap-2">
+      <div className="flex min-w-[720px] items-stretch gap-2">
         {stages.map((s, i) => (
           <div key={s.label} className="flex flex-1 items-center gap-2">
             <div className={`flex-1 rounded-xl border px-3 py-2 ${s.color}`}>
@@ -351,7 +355,8 @@ function OrderHistoryFlowDiagram() {
         ))}
       </div>
       <p className="mt-2 text-[11px] text-slate-500">
-        Completed → Picked Up → Closed &nbsp;|&nbsp; Completed → Abandoned → Closed
+        Processing → Complete → Picked Up (auto) → Close (employee/manager) &nbsp;|&nbsp; Picked Up
+        → Abandoned (manager + remark / auto after store days)
       </p>
     </div>
   );

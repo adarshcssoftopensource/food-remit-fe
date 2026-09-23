@@ -68,7 +68,7 @@ export function CompleteOrderByReferenceDialog({
     try {
       if (isPickup) {
         await markPickedUp({ orderId, referenceNumber: value });
-        toast.success("Order picked up and closed.");
+        toast.success("Order closed successfully.");
       } else {
         await completeByReference({ orderId, referenceNumber: value });
         toast.success("Order completed successfully.");
@@ -98,11 +98,11 @@ export function CompleteOrderByReferenceDialog({
               </div>
               <div className="space-y-1">
                 <DialogTitle className="text-lg font-bold tracking-tight">
-                  {isPickup ? "Verify Pickup" : "Complete Order"}
+                  {isPickup ? "Close Order" : "Complete Order"}
                 </DialogTitle>
                 <DialogDescription className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                   {isPickup
-                    ? "Enter the full order reference number to verify pickup. The order will close and move to History."
+                    ? "Enter the full order reference number to close this order after the customer collects it. It will move to History."
                     : "Enter the full reference number to verify and complete this order."}
                 </DialogDescription>
               </div>
@@ -167,7 +167,7 @@ export function CompleteOrderByReferenceDialog({
               ) : (
                 <ShieldCheck className="mr-2 size-4" />
               )}
-              {isPickup ? "Verify & Mark Picked Up" : "Verify & Complete"}
+              {isPickup ? "Verify & Close Order" : "Verify & Complete"}
             </Button>
           </DialogFooter>
         </form>

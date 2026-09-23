@@ -4,7 +4,7 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/components/providers/profile-provider";
-import { ArrowLeft, CheckCircle2, Loader2, PackageCheck, Undo2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useGetOrder } from "./hooks/use-get-order";
@@ -17,12 +17,16 @@ import { OrderItemsTable } from "./components/order-items-table";
 import { OrderStatusBadge } from "./components/order-status-badge";
 import { OrderInfoBanner } from "./components/order-info-banner";
 import { OrderProgressTimeline } from "./components/order-progress-timeline";
+import { OrderAbandonRemarkCard } from "./components/order-abandon-remark-card";
 import {
-  useMarkOrderAbandoned,
-  useMarkOrderCompleted,
-  useStartOrder,
-} from "./hooks/use-order-lifecycle";
+  OrderLifecycleActionCard,
+  OrderLifecycleActionsHint,
+  OrderWaitingBadge,
+} from "./components/order-lifecycle-actions";
+import { AbandonOrderDialog } from "./components/abandon-order-dialog";
+import { useMarkOrderCompleted, useStartOrder } from "./hooks/use-order-lifecycle";
 import {
+  FINAL_STATUS,
   formatRelativeTime,
   isPendingOrder,
   isProcessingOrder,
@@ -30,7 +34,6 @@ import {
 } from "./utils/order-workflow";
 import { CompleteOrderByReferenceDialog } from "@/feature/private/my-orders/components/complete-order-by-reference-dialog";
 import { getOrderReference } from "./utils/mask-order-reference";
-import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { getInitials } from "@/lib/get-initials";
 import { getOrderActorRole } from "./utils/order-roles";
 import { StartOrderConfirmDialog } from "./components/start-order-confirm-dialog";
@@ -40,22 +43,23 @@ export function OrderDetailPage({ id }: { id: string }) {
   const { profile } = useProfile();
   const { data: order, isLoading } = useGetOrder(id);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-  const [pickupOpen, setPickupOpen] = useState(false);
+  const [closeOpen, setCloseOpen] = useState(false);
   const [abandonOpen, setAbandonOpen] = useState(false);
   const [startOpen, setStartOpen] = useState(false);
 
   const { mutateAsync: startOrder, isPending: starting } = useStartOrder();
   const { mutateAsync: markCompleted, isPending: completing } = useMarkOrderCompleted();
-  const { mutateAsync: markAbandoned, isPending: abandoning } = useMarkOrderAbandoned();
 
-  const { canAbandon, canMarkPickedUp, isEmployee, canAssign } = getOrderActorRole(profile);
+  const { canAbandon, canClose, isEmployee, canAssign } = getOrderActorRole(profile);
 
   if (isLoading) return <OrderDetailSkeleton />;
   if (!order) return <OrderNotFound onBack={() => router.back()} />;
 
   const pending = isPendingOrder(order);
   const processing = isProcessingOrder(order);
-  const completed = order.orderStatus === ORDER_STATUS.COMPLETED;
+  const pickedUp = order.orderStatus === ORDER_STATUS.COMPLETED;
+  const closed = order.orderStatus === ORDER_STATUS.CLOSED;
+  const abandoned = closed && order.finalStatus === FINAL_STATUS.ABANDONED;
   const handlerName = order.startedByName || order.assignedEmployeeName;
   const orderRef = order.refrenceNumber || order.id.substring(0, 8).toUpperCase();
   const customerName = order.recieverName || order.userName || "the customer";
@@ -65,21 +69,31 @@ export function OrderDetailPage({ id }: { id: string }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
           <p className="text-xs text-slate-500">
-            Orders / All Orders / #{order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}
+            Orders / #{order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}
           </p>
           <PageHeader
             title="Order Details"
             description={
-              processing
-                ? "This order is currently being processed."
-                : "View order information and items."
+              pending
+                ? "Paid and waiting to start."
+                : processing
+                  ? "Currently being prepared."
+                  : pickedUp
+                    ? "Picked Up — Close when collected, or Abandon with remark."
+                    : abandoned
+                      ? "This order was abandoned."
+                      : "View order information and journey."
             }
           />
-          <OrderStatusBadge
-            status={order.orderStatus}
-            assignedEmployeeId={order.assignedEmployeeId}
-            finalStatus={order.finalStatus}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <OrderStatusBadge
+              status={order.orderStatus}
+              assignedEmployeeId={order.assignedEmployeeId}
+              finalStatus={order.finalStatus}
+              showFinal={closed}
+            />
+            {pickedUp && <OrderWaitingBadge label="Awaiting Close or Abandon" />}
+          </div>
         </div>
         <Button variant="outline" onClick={() => router.back()} className="rounded-full shadow-sm">
           <ArrowLeft className="mr-2 size-4" /> Back to Orders
@@ -89,15 +103,16 @@ export function OrderDetailPage({ id }: { id: string }) {
       {processing && handlerName && (
         <OrderInfoBanner
           variant="processing"
-          message={`This order is in Processing state. It was started by ${handlerName}${
-            order.startedAt ? ` on ${new Date(order.startedAt).toLocaleString()}` : ""
-          }. Start Order can no longer be clicked once an order is Processing.`}
+          message={`Processing · started by ${handlerName}${
+            order.startedAt ? ` · ${new Date(order.startedAt).toLocaleString("en-IN")}` : ""
+          }`}
         />
       )}
 
+      <OrderAbandonRemarkCard order={order} />
       <OrderProgressTimeline order={order} />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
         <div className="space-y-6">
           <OrderSummaryCard order={order} />
           <OrderFinancials order={order} />
@@ -105,10 +120,10 @@ export function OrderDetailPage({ id }: { id: string }) {
           <OrderItemsTable items={order.items ?? []} onImageClick={setLightboxImage} />
         </div>
 
-        <aside className="space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-              Order Ownership
+        <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              Order ownership
             </p>
             {handlerName ? (
               <div className="mt-3 flex items-center gap-3">
@@ -124,7 +139,7 @@ export function OrderDetailPage({ id }: { id: string }) {
                   </span>
                 )}
                 <div>
-                  <p className="text-sm font-medium">{handlerName}</p>
+                  <p className="text-sm font-semibold">{handlerName}</p>
                   <p className="text-xs text-slate-500">
                     Started {formatRelativeTime(order.startedAt || order.assignedAt) || "—"}
                   </p>
@@ -133,75 +148,71 @@ export function OrderDetailPage({ id }: { id: string }) {
             ) : (
               <p className="mt-2 text-sm text-slate-500">Not yet started or assigned.</p>
             )}
-            {processing && (
-              <p className="mt-3 rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
-                Start Order is locked while this order is in Processing.
-              </p>
-            )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
+            <p className="px-0.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              Actions
+            </p>
+
             {pending && isEmployee && (
-              <Button
-                className="w-full rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
-                disabled={starting}
+              <OrderLifecycleActionCard
+                variant="start"
+                title="Start Order"
+                description="Claim this order and move it to Processing."
+                loading={starting}
                 onClick={() => setStartOpen(true)}
-              >
-                {starting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-                Start Order
-              </Button>
+              />
             )}
 
             {pending && !isEmployee && canAssign && (
-              <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
-                Managers assign orders to employees. Use Assign from the orders list (or ⋮ menu).
-              </p>
+              <OrderLifecycleActionsHint>
+                Managers assign orders to employees from the orders list (⋮ menu).
+              </OrderLifecycleActionsHint>
             )}
 
             {processing && (
-              <Button
-                className="w-full rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
-                disabled={completing}
+              <OrderLifecycleActionCard
+                variant="complete"
+                title="Mark as Completed"
+                description="Finishes preparation and auto-moves the order to Picked Up."
+                loading={completing}
                 onClick={async () => {
                   try {
                     await markCompleted(order.id);
                   } catch {}
                 }}
-              >
-                {completing ? (
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                ) : (
-                  <CheckCircle2 className="mr-2 size-4" />
-                )}
-                Mark as Completed
-                <span className="mt-0.5 block w-full text-[10px] font-normal opacity-90">
-                  All items are ready for pickup
-                </span>
-              </Button>
+              />
             )}
 
-            {completed && (canMarkPickedUp || canAbandon) && (
-              <>
-                {canMarkPickedUp && (
-                  <Button
-                    className="w-full rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700"
-                    onClick={() => setPickupOpen(true)}
-                  >
-                    <PackageCheck className="mr-2 size-4" />
-                    Mark as Picked Up
-                  </Button>
-                )}
-                {canAbandon && (
-                  <Button
-                    variant="outline"
-                    className="w-full rounded-xl border-red-200 text-red-700 hover:bg-red-50"
-                    onClick={() => setAbandonOpen(true)}
-                  >
-                    <Undo2 className="mr-2 size-4" />
-                    Mark as Abandoned
-                  </Button>
-                )}
-              </>
+            {pickedUp && canClose && (
+              <OrderLifecycleActionCard
+                variant="close"
+                title="Close Order"
+                description="Customer collected the order. Verify with full reference ID."
+                onClick={() => setCloseOpen(true)}
+              />
+            )}
+
+            {pickedUp && canAbandon && (
+              <OrderLifecycleActionCard
+                variant="abandon"
+                title="Abandon Order"
+                description="Not collected. Remark is required — sender & receiver get email."
+                onClick={() => setAbandonOpen(true)}
+              />
+            )}
+
+            {pickedUp && isEmployee && !canAbandon && (
+              <OrderLifecycleActionsHint>
+                Employees can only Close with a reference. Store admin abandons with a remark.
+              </OrderLifecycleActionsHint>
+            )}
+
+            {closed && (
+              <OrderLifecycleActionsHint>
+                This order is closed and moved to History. No further actions available.
+              </OrderLifecycleActionsHint>
             )}
           </div>
         </aside>
@@ -209,8 +220,8 @@ export function OrderDetailPage({ id }: { id: string }) {
 
       <CompleteOrderByReferenceDialog
         orderId={order.id}
-        open={pickupOpen}
-        onOpenChange={setPickupOpen}
+        open={closeOpen}
+        onOpenChange={setCloseOpen}
         maskedHint={getOrderReference(order)}
         mode="pickup"
       />
@@ -229,20 +240,11 @@ export function OrderDetailPage({ id }: { id: string }) {
         }}
       />
 
-      <ConfirmationDialog
+      <AbandonOrderDialog
+        orderId={order.id}
         open={abandonOpen}
         onOpenChange={setAbandonOpen}
-        title="Mark as Abandoned"
-        description="This will close the order as Abandoned (not collected). Only store managers can do this. Continue?"
-        confirmLabel="Abandon Order"
-        variant="destructive"
-        isLoading={abandoning}
-        onConfirm={async () => {
-          try {
-            await markAbandoned({ orderId: order.id });
-            setAbandonOpen(false);
-          } catch {}
-        }}
+        orderRef={orderRef}
       />
 
       <ImageLightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />

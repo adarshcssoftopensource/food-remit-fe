@@ -12,15 +12,16 @@ export function getNeedsBankVerification() {
   return needsBankVerification;
 }
 
-/** Endpoints allowed while bank verification is incomplete */
+/** Endpoints allowed while bank verification is incomplete (writes). */
 export function isBankVerificationExemptUrl(url?: string): boolean {
   if (!url) return false;
   const path = url.toLowerCase();
+  // Profile photo / store updates are NOT exempt — view-only until bank verified.
+  // Only auth, password, plaid, and notifications may mutate.
   return (
     path.includes("/plaid/") ||
     path.includes("plaid/") ||
     path.includes("/admin/auth/") ||
-    path.includes("admin/profile") ||
     path.includes("admin/change-password") ||
     path.includes("admin/logout") ||
     path.includes("admin/refresh") ||

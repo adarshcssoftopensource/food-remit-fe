@@ -14,6 +14,8 @@ export type StoreData = {
   storePhoneNumber: string;
   storeTax: number;
   foodRemitCommission: number;
+  autoAbandonDays?: number | null;
+  autoAbandonRemark?: string | null;
   assignedCityManager?: string | null;
   status: StoreStatus;
   createdAt: string;
@@ -79,6 +81,8 @@ export interface CreateStorePayload {
   city?: string;
   storeTax?: number;
   foodRemitCommission?: number;
+  autoAbandonDays?: number;
+  autoAbandonRemark?: string;
   status?: string;
   assignedStoreManager?: string;
 }
@@ -134,6 +138,8 @@ export interface RawStore {
   storePhoneNumber?: string;
   storeTax?: number;
   foodRemitCommission?: number;
+  autoAbandonDays?: number | null;
+  autoAbandonRemark?: string | null;
   status?: string;
   addedOn?: string;
   assignedCityManager?: string | null;

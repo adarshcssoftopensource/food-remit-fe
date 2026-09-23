@@ -37,10 +37,11 @@ function buildProfileContactNumber(
 }
 
 export function ProfileForm() {
-  const { profile } = useProfile();
+  const { profile, needsBankVerification } = useProfile();
   const queryClient = useQueryClient();
   const updateProfileMutation = useUpdateProfile();
   const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+  const isViewOnly = isEmployee || needsBankVerification;
   const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
 
   const nameParts = (profile?.name || "").trim().split(" ");
@@ -87,6 +88,7 @@ export function ProfileForm() {
   const isSubmitting = updateProfileMutation.isPending;
 
   const onSubmit = async (data: ProfileDetailsValues) => {
+    if (needsBankVerification) return;
     try {
       const formData = new FormData();
       formData.append("firstName", data.firstName);
@@ -132,312 +134,321 @@ export function ProfileForm() {
 
       <CardContent className="p-4 sm:p-8">
         <form onSubmit={handleSubmit(onSubmit)} noValidate suppressHydrationWarning>
-          <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
-            <Controller
-              name="firstName"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1.5">
-                  <FieldLabel htmlFor="firstName" className="text-sm font-semibold">
-                    First Name
-                  </FieldLabel>
-                  <div className="relative">
-                    <User className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
-                    <Input
-                      {...field}
-                      id="firstName"
-                      placeholder="Enter your first name"
-                      aria-invalid={!!errors.firstName}
-                      className={cn(
-                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
-                        "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
-                        errors.firstName &&
-                          "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
-                      )}
-                    />
-                  </div>
-                  {errors.firstName && (
-                    <p className="text-xs font-medium text-red-500">{errors.firstName.message}</p>
-                  )}
-                </div>
-              )}
-            />
-
-            <Controller
-              name="lastName"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1.5">
-                  <FieldLabel htmlFor="lastName" className="text-sm font-semibold">
-                    Last Name
-                  </FieldLabel>
-                  <div className="relative">
-                    <User className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
-                    <Input
-                      {...field}
-                      id="lastName"
-                      placeholder="Enter your last name"
-                      aria-invalid={!!errors.lastName}
-                      className={cn(
-                        "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
-
-                        "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
-                        errors.lastName &&
-                          "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
-                      )}
-                    />
-                  </div>
-                  {errors.lastName && (
-                    <p className="text-xs font-medium text-red-500">{errors.lastName.message}</p>
-                  )}
-                </div>
-              )}
-            />
-
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1.5">
-                  <FieldLabel htmlFor="email" className="text-sm font-semibold">
-                    Email Address
-                  </FieldLabel>
-                  <div className="relative">
-                    <Mail className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-gray-400" />
-                    <Input
-                      {...field}
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      disabled={isEmployee}
-                      className="h-12 rounded-xl border-gray-200/50 bg-gray-50/50 pl-10 text-sm focus-visible:border-[#1B3A8C] focus-visible:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-                    />
-                  </div>
-                </div>
-              )}
-            />
-
-            <Controller
-              name="contactNumber"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1.5">
-                  <FieldLabel htmlFor="contactNumber" className="text-sm font-semibold">
-                    Contact Number
-                  </FieldLabel>
-                  <PhoneInputComponent
-                    value={field.value}
-                    onChange={(value, data) => {
-                      if (data?.countryCode) setPhoneIso(data.countryCode);
-                      field.onChange(value);
-                    }}
-                    onBlur={field.onBlur}
-                    error={!!errors.contactNumber}
-                    defaultCountry={
-                      phoneIso ||
-                      (profile as any)?.countryCode ||
-                      resolvedCountry ||
-                      (profile as any)?.country ||
-                      "US"
-                    }
-                  />
-                  {errors.contactNumber && (
-                    <p className="text-xs font-medium text-red-500">
-                      {errors.contactNumber.message}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
-
-            {isEmployee ? (
-              <div className="md:col-span-2">
-                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800">
-                  <div className="flex items-center gap-3 border-b border-slate-100 bg-linear-to-r from-violet-50/80 to-transparent px-5 py-4 dark:border-slate-800 dark:from-violet-950/30">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-950/50">
-                      <MapPin className="size-5 text-violet-600 dark:text-violet-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-base font-bold text-slate-800 dark:text-white">
-                        Location
-                      </h3>
-                      <p className="text-xs text-slate-500">Your residential address details</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
-                    <Controller
-                      name="address"
-                      control={control}
-                      render={({ field }) => (
-                        <div className="flex flex-col gap-1.5">
-                          <FieldLabel htmlFor="address" className="text-sm font-semibold">
-                            Address
-                          </FieldLabel>
-                          <AddressAutocompleteInput
-                            id="address"
-                            value={field.value || ""}
-                            onChange={(val) => field.onChange(val)}
-                            onPlaceSelect={(place) => {
-                              setValue("address", place.streetAddress || place.name || "", {
-                                shouldDirty: true,
-                              });
-                              setValue("city", place.city || "", { shouldDirty: true });
-                              setValue("state", place.state || "", { shouldDirty: true });
-                              setValue("zipCode", place.postalCode || "", { shouldDirty: true });
-                            }}
-                            addressFormat="full"
-                            placeholder="Search address..."
-                            invalid={!!errors.address}
-                          />
-                          {errors.address && (
-                            <p className="text-xs font-medium text-red-500">
-                              {errors.address.message}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    />
-                    <Controller
-                      name="city"
-                      control={control}
-                      render={({ field }) => (
-                        <div className="flex flex-col gap-1.5">
-                          <FieldLabel className="text-sm font-semibold">City</FieldLabel>
-                          <Input
-                            {...field}
-                            value={field.value || ""}
-                            placeholder="City"
-                            className="h-11 rounded-xl border-slate-200 bg-slate-50"
-                          />
-                        </div>
-                      )}
-                    />
-                    <Controller
-                      name="state"
-                      control={control}
-                      render={({ field }) => (
-                        <div className="flex flex-col gap-1.5">
-                          <FieldLabel className="text-sm font-semibold">State</FieldLabel>
-                          <Input
-                            {...field}
-                            value={field.value || ""}
-                            placeholder="State"
-                            className="h-11 rounded-xl border-slate-200 bg-slate-50"
-                          />
-                        </div>
-                      )}
-                    />
-                    <Controller
-                      name="zipCode"
-                      control={control}
-                      render={({ field }) => (
-                        <div className="flex flex-col gap-1.5">
-                          <FieldLabel className="text-sm font-semibold">Zip Code</FieldLabel>
-                          <Input
-                            {...field}
-                            value={field.value || ""}
-                            placeholder="Zip Code"
-                            className="h-11 rounded-xl border-slate-200 bg-slate-50"
-                          />
-                        </div>
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
-            ) : (
+          <fieldset
+            disabled={needsBankVerification}
+            className="min-w-0 border-0 p-0 disabled:opacity-90"
+          >
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
               <Controller
-                name="address"
+                name="firstName"
                 control={control}
                 render={({ field }) => (
-                  <div className="flex flex-col gap-1.5 md:col-span-2">
-                    <FieldLabel htmlFor="address" className="text-sm font-semibold">
-                      Address
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel htmlFor="firstName" className="text-sm font-semibold">
+                      First Name
                     </FieldLabel>
-                    <AddressAutocompleteInput
-                      id="address"
-                      value={field.value || ""}
-                      onChange={(val) => field.onChange(val)}
-                      addressFormat="full"
-                      placeholder="Search address..."
-                      invalid={!!errors.address}
-                    />
-                    {errors.address && (
-                      <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
+                    <div className="relative">
+                      <User className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
+                      <Input
+                        {...field}
+                        id="firstName"
+                        placeholder="Enter your first name"
+                        aria-invalid={!!errors.firstName}
+                        className={cn(
+                          "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
+                          "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
+                          errors.firstName &&
+                            "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
+                        )}
+                      />
+                    </div>
+                    {errors.firstName && (
+                      <p className="text-xs font-medium text-red-500">{errors.firstName.message}</p>
                     )}
                   </div>
                 )}
               />
-            )}
 
-            {profile?.roleCode === "STORE_MANAGER" && (
-              <>
-                <Controller
-                  name="country"
-                  control={control}
-                  render={({ field: cField }) => (
-                    <Controller
-                      name="state"
-                      control={control}
-                      render={({ field: sField }) => (
-                        <Controller
-                          name="city"
-                          control={control}
-                          render={({ field: cityField }) => (
-                            <ManagerLocationFields
-                              countryValue={cField.value || ""}
-                              onCountryChange={cField.onChange}
-                              stateValue={sField.value || ""}
-                              onStateChange={sField.onChange}
-                              cityValue={cityField.value || ""}
-                              onCityChange={cityField.onChange}
-                              countryError={errors.country?.message}
-                              stateError={errors.state?.message}
-                              cityError={errors.city?.message}
-                            />
-                          )}
-                        />
-                      )}
+              <Controller
+                name="lastName"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel htmlFor="lastName" className="text-sm font-semibold">
+                      Last Name
+                    </FieldLabel>
+                    <div className="relative">
+                      <User className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
+                      <Input
+                        {...field}
+                        id="lastName"
+                        placeholder="Enter your last name"
+                        aria-invalid={!!errors.lastName}
+                        className={cn(
+                          "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
+
+                          "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
+                          errors.lastName &&
+                            "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
+                        )}
+                      />
+                    </div>
+                    {errors.lastName && (
+                      <p className="text-xs font-medium text-red-500">{errors.lastName.message}</p>
+                    )}
+                  </div>
+                )}
+              />
+
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel htmlFor="email" className="text-sm font-semibold">
+                      Email Address
+                    </FieldLabel>
+                    <div className="relative">
+                      <Mail className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-gray-400" />
+                      <Input
+                        {...field}
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        disabled={isViewOnly}
+                        className="h-12 rounded-xl border-gray-200/50 bg-gray-50/50 pl-10 text-sm focus-visible:border-[#1B3A8C] focus-visible:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                      />
+                    </div>
+                  </div>
+                )}
+              />
+
+              <Controller
+                name="contactNumber"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel htmlFor="contactNumber" className="text-sm font-semibold">
+                      Contact Number
+                    </FieldLabel>
+                    <PhoneInputComponent
+                      value={field.value}
+                      onChange={(value, data) => {
+                        if (data?.countryCode) setPhoneIso(data.countryCode);
+                        field.onChange(value);
+                      }}
+                      onBlur={field.onBlur}
+                      error={!!errors.contactNumber}
+                      defaultCountry={
+                        phoneIso ||
+                        (profile as any)?.countryCode ||
+                        resolvedCountry ||
+                        (profile as any)?.country ||
+                        "US"
+                      }
                     />
-                  )}
-                />
+                    {errors.contactNumber && (
+                      <p className="text-xs font-medium text-red-500">
+                        {errors.contactNumber.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
 
+              {isEmployee ? (
+                <div className="md:col-span-2">
+                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800">
+                    <div className="flex items-center gap-3 border-b border-slate-100 bg-linear-to-r from-violet-50/80 to-transparent px-5 py-4 dark:border-slate-800 dark:from-violet-950/30">
+                      <div className="flex size-9 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-950/50">
+                        <MapPin className="size-5 text-violet-600 dark:text-violet-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-bold text-slate-800 dark:text-white">
+                          Location
+                        </h3>
+                        <p className="text-xs text-slate-500">Your residential address details</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+                      <Controller
+                        name="address"
+                        control={control}
+                        render={({ field }) => (
+                          <div className="flex flex-col gap-1.5">
+                            <FieldLabel htmlFor="address" className="text-sm font-semibold">
+                              Address
+                            </FieldLabel>
+                            <AddressAutocompleteInput
+                              id="address"
+                              value={field.value || ""}
+                              onChange={(val) => field.onChange(val)}
+                              onPlaceSelect={(place) => {
+                                setValue("address", place.streetAddress || place.name || "", {
+                                  shouldDirty: true,
+                                });
+                                setValue("city", place.city || "", { shouldDirty: true });
+                                setValue("state", place.state || "", { shouldDirty: true });
+                                setValue("zipCode", place.postalCode || "", { shouldDirty: true });
+                              }}
+                              addressFormat="full"
+                              placeholder="Search address..."
+                              invalid={!!errors.address}
+                            />
+                            {errors.address && (
+                              <p className="text-xs font-medium text-red-500">
+                                {errors.address.message}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      />
+                      <Controller
+                        name="city"
+                        control={control}
+                        render={({ field }) => (
+                          <div className="flex flex-col gap-1.5">
+                            <FieldLabel className="text-sm font-semibold">City</FieldLabel>
+                            <Input
+                              {...field}
+                              value={field.value || ""}
+                              placeholder="City"
+                              className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                            />
+                          </div>
+                        )}
+                      />
+                      <Controller
+                        name="state"
+                        control={control}
+                        render={({ field }) => (
+                          <div className="flex flex-col gap-1.5">
+                            <FieldLabel className="text-sm font-semibold">State</FieldLabel>
+                            <Input
+                              {...field}
+                              value={field.value || ""}
+                              placeholder="State"
+                              className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                            />
+                          </div>
+                        )}
+                      />
+                      <Controller
+                        name="zipCode"
+                        control={control}
+                        render={({ field }) => (
+                          <div className="flex flex-col gap-1.5">
+                            <FieldLabel className="text-sm font-semibold">Zip Code</FieldLabel>
+                            <Input
+                              {...field}
+                              value={field.value || ""}
+                              placeholder="Zip Code"
+                              className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                            />
+                          </div>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
                 <Controller
-                  name="zipCode"
+                  name="address"
                   control={control}
                   render={({ field }) => (
                     <div className="flex flex-col gap-1.5 md:col-span-2">
-                      <FieldLabel htmlFor="zipCode" className="text-sm font-semibold">
-                        Zipcode
+                      <FieldLabel htmlFor="address" className="text-sm font-semibold">
+                        Address
                       </FieldLabel>
-                      <Input
-                        {...field}
+                      <AddressAutocompleteInput
+                        id="address"
                         value={field.value || ""}
-                        id="zipCode"
-                        placeholder="Enter Zipcode"
-                        className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                        onChange={(val) => field.onChange(val)}
+                        addressFormat="full"
+                        placeholder="Search address..."
+                        invalid={!!errors.address}
                       />
-                      {errors.zipCode && (
-                        <p className="text-xs font-medium text-red-500">{errors.zipCode.message}</p>
+                      {errors.address && (
+                        <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
                       )}
                     </div>
                   )}
                 />
-              </>
-            )}
-          </div>
+              )}
 
-          <div className="mt-8 flex justify-end">
-            <Button
-              type="submit"
-              disabled={!isDirty || isSubmitting}
-              isLoading={isSubmitting}
-              className="h-14 w-full rounded-xl text-base font-bold shadow-sm transition-colors sm:w-auto sm:px-10"
-            >
-              <Check className="mr-2 h-5 w-5" />
-              Save Changes
-            </Button>
-          </div>
+              {profile?.roleCode === "STORE_MANAGER" && (
+                <>
+                  <Controller
+                    name="country"
+                    control={control}
+                    render={({ field: cField }) => (
+                      <Controller
+                        name="state"
+                        control={control}
+                        render={({ field: sField }) => (
+                          <Controller
+                            name="city"
+                            control={control}
+                            render={({ field: cityField }) => (
+                              <ManagerLocationFields
+                                countryValue={cField.value || ""}
+                                onCountryChange={cField.onChange}
+                                stateValue={sField.value || ""}
+                                onStateChange={sField.onChange}
+                                cityValue={cityField.value || ""}
+                                onCityChange={cityField.onChange}
+                                countryError={errors.country?.message}
+                                stateError={errors.state?.message}
+                                cityError={errors.city?.message}
+                              />
+                            )}
+                          />
+                        )}
+                      />
+                    )}
+                  />
+
+                  <Controller
+                    name="zipCode"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="flex flex-col gap-1.5 md:col-span-2">
+                        <FieldLabel htmlFor="zipCode" className="text-sm font-semibold">
+                          Zipcode
+                        </FieldLabel>
+                        <Input
+                          {...field}
+                          value={field.value || ""}
+                          id="zipCode"
+                          placeholder="Enter Zipcode"
+                          className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                        />
+                        {errors.zipCode && (
+                          <p className="text-xs font-medium text-red-500">
+                            {errors.zipCode.message}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  />
+                </>
+              )}
+            </div>
+
+            {!needsBankVerification && (
+              <div className="mt-8 flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={!isDirty || isSubmitting}
+                  isLoading={isSubmitting}
+                  className="h-14 w-full rounded-xl text-base font-bold shadow-sm transition-colors sm:w-auto sm:px-10"
+                >
+                  <Check className="mr-2 h-5 w-5" />
+                  Save Changes
+                </Button>
+              </div>
+            )}
+          </fieldset>
         </form>
       </CardContent>
     </Card>

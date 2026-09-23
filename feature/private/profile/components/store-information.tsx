@@ -113,14 +113,7 @@ export function StoreInformation() {
   }, [storeData, reset]);
 
   const onSubmit = async (values: StoreInfoValues) => {
-    if (!storeId) return;
-    if (needsBankVerification) {
-      successToast({
-        title: "Bank Verification Required",
-        description: "Please verify your bank account before editing store details.",
-      });
-      return;
-    }
+    if (!storeId || needsBankVerification) return;
 
     try {
       const formData = new FormData();
@@ -201,6 +194,7 @@ export function StoreInformation() {
                     label="Upload store image"
                     hint="PNG, JPG or WEBP"
                     accept="image/jpeg,image/png,image/webp"
+                    disabled={needsBankVerification}
                   />
                   {errors.storeImage && (
                     <p className="text-xs font-medium text-red-500">
@@ -223,9 +217,11 @@ export function StoreInformation() {
                     <Input
                       {...field}
                       placeholder="Enter Store Name"
+                      disabled={needsBankVerification}
                       className={cn(
                         "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 text-sm",
                         "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
+                        "disabled:cursor-not-allowed disabled:opacity-60",
                         errors.storeName &&
                           "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:ring-red-400/15",
                       )}
@@ -253,6 +249,7 @@ export function StoreInformation() {
                           valueMode="national"
                           defaultCountry={phoneIso || "US"}
                           value={field.value || ""}
+                          disabled={needsBankVerification}
                           onChange={(val, data) => {
                             if (data) {
                               setPhoneIso(data.countryCode);
@@ -297,6 +294,7 @@ export function StoreInformation() {
                         onCityChange={cityField.onChange}
                         countryError={errors.storeCountry?.message}
                         cityError={errors.storeCity?.message}
+                        disabled={needsBankVerification}
                       />
                     )}
                   />
@@ -321,6 +319,7 @@ export function StoreInformation() {
                       }}
                       placeholder="Enter Address"
                       invalid={!!errors.storeAddress}
+                      disabled={needsBankVerification}
                     />
                     {errors.storeAddress && (
                       <p className="text-xs font-medium text-red-500">
@@ -332,15 +331,17 @@ export function StoreInformation() {
               />
             </div>
 
-            <div className="flex justify-end border-t border-slate-100 pt-6 dark:border-slate-800">
-              <Button
-                type="submit"
-                disabled={updateStoreMutation.isPending || needsBankVerification}
-                className="h-12 w-full rounded-xl bg-[#1B3A8C] px-8 text-sm font-bold text-white shadow-md transition-all hover:bg-[#1B3A8C]/90 hover:shadow-lg sm:w-auto dark:bg-indigo-600 dark:hover:bg-indigo-700"
-              >
-                {updateStoreMutation.isPending ? "Saving changes..." : "Save Store Changes"}
-              </Button>
-            </div>
+            {!needsBankVerification && (
+              <div className="flex justify-end border-t border-slate-100 pt-6 dark:border-slate-800">
+                <Button
+                  type="submit"
+                  disabled={updateStoreMutation.isPending}
+                  className="h-12 w-full rounded-xl bg-[#1B3A8C] px-8 text-sm font-bold text-white shadow-md transition-all hover:bg-[#1B3A8C]/90 hover:shadow-lg sm:w-auto dark:bg-indigo-600 dark:hover:bg-indigo-700"
+                >
+                  {updateStoreMutation.isPending ? "Saving changes..." : "Save Store Changes"}
+                </Button>
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>
