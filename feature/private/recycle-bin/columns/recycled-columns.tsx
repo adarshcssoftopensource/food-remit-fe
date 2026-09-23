@@ -121,7 +121,7 @@ export const itemsColumns: ColumnDef<any>[] = [
     header: "Department",
     cell: ({ row }) => (
       <span className="text-xs font-medium text-slate-600">
-        {row.original.departmentName || "N/A"}
+        {row.original.department?.departmentName || row.original.departmentDisplayName || "N/A"}
       </span>
     ),
   },
