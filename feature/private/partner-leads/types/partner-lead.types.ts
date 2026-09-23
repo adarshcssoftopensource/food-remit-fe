@@ -69,7 +69,12 @@ export interface PartnerLeadData {
   storeLogo?: string | null;
   profileImage?: string | null;
   locationsCount: string;
-  locations: { address: string; daysOpen: string[]; hoursOfOperation: string }[];
+  locations: {
+    address: string;
+    daysOpen: string[];
+    hoursOfOperation: string;
+    dailySchedule?: { day: string; isOpen: boolean; openTime: string; closeTime: string }[];
+  }[];
   languages: string[];
   businessCity: string | null;
   stateProvince: string | null;

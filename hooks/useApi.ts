@@ -33,6 +33,7 @@ export async function fetcher<TResponse, TBody = unknown>({
     data: body,
     timeout,
     skipErrorToast,
+    headers: skipErrorToast ? { "x-skip-error-toast": "true" } : undefined,
   } as unknown as AxiosRequestConfig);
   return response.data as TResponse;
 }
@@ -58,17 +59,22 @@ export function useApiQuery<TResponse>(
 export function useApiMutation<TResponse, TBody = unknown>(
   method: "post" | "put" | "patch" | "delete",
   url: string | ((body: TBody) => string),
-  options?: UseMutationOptions<TResponse, Error, TBody>,
+  options?: UseMutationOptions<TResponse, Error, TBody> & {
+    timeout?: number;
+    skipErrorToast?: boolean;
+  },
 ) {
+  const { timeout = 120000, skipErrorToast, ...mutationOptions } = options || {};
   return useMutation<TResponse, Error, TBody>({
     mutationFn: (body: TBody) =>
       fetcher<TResponse, TBody>({
         method,
         url: typeof url === "function" ? url(body) : url,
         body,
-        timeout: 120000,
+        timeout,
+        skipErrorToast,
       }),
 
-    ...options,
+    ...mutationOptions,
   });
 }

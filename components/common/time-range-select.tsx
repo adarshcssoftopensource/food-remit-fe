@@ -143,25 +143,23 @@ function AnalogTimePicker({
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
-      <PopoverTrigger className={"w-full"}>
-        <button
-          type="button"
+      <PopoverTrigger
+        type="button"
+        className={cn(
+          "flex h-11 w-full cursor-pointer items-center rounded-xl border border-slate-200 bg-white px-3 transition-colors focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none",
+          invalid && "border-red-400 bg-red-50/30",
+          !value && "text-slate-400",
+        )}
+      >
+        <Clock className="mr-2 h-4 w-4 shrink-0 text-slate-500" />
+        <span
           className={cn(
-            "flex h-11 w-full items-center rounded-xl border border-slate-200 bg-white px-3 transition-colors focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none",
-            invalid && "border-red-400 bg-red-50/30",
-            !value && "text-slate-400",
+            "flex-1 text-left text-sm",
+            value ? "font-medium text-slate-900" : "text-slate-400",
           )}
         >
-          <Clock className="mr-2 h-4 w-4 shrink-0 text-slate-500" />
-          <span
-            className={cn(
-              "flex-1 text-left text-sm",
-              value ? "font-medium text-slate-900" : "text-slate-400",
-            )}
-          >
-            {value || placeholder}
-          </span>
-        </button>
+          {value || placeholder}
+        </span>
       </PopoverTrigger>
       <PopoverContent
         className="w-85 rounded-3xl border-slate-200 bg-white p-6 shadow-2xl"

@@ -17,7 +17,6 @@ import {
   Store,
   Upload,
   User,
-  Trash2,
   Home,
   X,
 } from "lucide-react";
@@ -26,13 +25,17 @@ import Link from "next/link";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Country } from "country-state-city";
-import { CitySelect } from "@/components/common/city-select";
+import { WorldCitySelect } from "@/components/common/world-city-select";
+import { WorldStateSelect } from "@/components/common/world-state-select";
+import { getWorldStatesByCountryIso } from "@/lib/world-locations";
 import { useDebounce } from "@/lib/debounce";
 import { CountrySelect } from "@/components/common/country-select";
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { MultiLanguageSelect } from "@/components/common/multi-language-select";
-import { DaysOpenSelect } from "@/components/common/days-open-select";
-import { TimeRangeSelect } from "@/components/common/time-range-select";
+import {
+  StoreScheduleEditor,
+  DEFAULT_WEEKLY_SCHEDULE,
+} from "@/components/common/store-schedule-editor";
 import { errorToast, successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -111,7 +114,14 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       storeLogo: undefined,
       profileImage: undefined,
       locationsCount: "1",
-      locations: [{ address: "", daysOpen: [], hoursOfOperation: "" }],
+      locations: [
+        {
+          address: "",
+          daysOpen: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          hoursOfOperation: "",
+          dailySchedule: DEFAULT_WEEKLY_SCHEDULE,
+        },
+      ],
       hasBusinessAccount: undefined,
       country: "",
       businessCity: "",
@@ -212,9 +222,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   const isBankSkipped = (bankStatus || "").toUpperCase() === "SKIPPED";
   const isBankStepComplete = isBankVerified || isBankSkipped;
 
-  const locationsCount = watch("locationsCount");
   const businessType = watch("businessType");
   const isOtherBusinessType = businessType === "Other";
+
   const workPreferences = watch("workPreferences") || [];
   const hasOtherWorkPreference = workPreferences.includes("Other");
 
@@ -299,7 +309,14 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       businessType: "",
       otherBusinessType: "",
       locationsCount: "1",
-      locations: [{ address: "", daysOpen: [], hoursOfOperation: "" }],
+      locations: [
+        {
+          address: "",
+          daysOpen: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          hoursOfOperation: "",
+          dailySchedule: DEFAULT_WEEKLY_SCHEDULE,
+        },
+      ],
       hasBusinessAccount: undefined,
       country: "",
       currency: "",
@@ -377,17 +394,27 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     return found?.isoCode;
   }, [selectedCountryName]);
 
+  const selectedStateName = watch("stateProvinceRegion");
+  const selectedStateIsoCode = useMemo(() => {
+    if (!selectedCountryIsoCode || !selectedStateName) return undefined;
+    const clean = selectedStateName.trim().toLowerCase();
+    const states = getWorldStatesByCountryIso(selectedCountryIsoCode);
+    const found = states.find(
+      (s) => s.name.toLowerCase() === clean || s.isoCode.toLowerCase() === clean,
+    );
+    return found?.isoCode;
+  }, [selectedCountryIsoCode, selectedStateName]);
+
   async function handleNextStep() {
     let fieldsToValidate: (keyof PartnerLeadFormValues)[] = [];
     if (currentStep === 1) {
       fieldsToValidate = [
         "businessName",
         "businessType",
-        "locationsCount",
-        "locations",
         "country",
         "businessCity",
         "stateProvinceRegion",
+        "locations",
       ];
       if (getValues("businessType") === "Other") {
         fieldsToValidate.push("otherBusinessType");
@@ -964,8 +991,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     Provide the primary country, state, and city for your business.
                   </p>
                 </div>
-              </div>
-
+              </div>{" "}
               <div className="grid min-w-0 gap-3 sm:grid-cols-2">
                 <Controller
                   name="country"
@@ -981,7 +1007,18 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
                       <CountrySelect
                         value={field.value}
-                        onValueChange={field.onChange}
+                        onValueChange={(val) => {
+                          field.onChange(val);
+                          setValue("stateProvinceRegion", "");
+                          setValue("businessCity", "");
+                          setValue("locations.0.address" as const, "");
+                          clearErrors([
+                            "country",
+                            "stateProvinceRegion",
+                            "businessCity",
+                            "locations",
+                          ]);
+                        }}
                         id="country"
                         invalid={Boolean(errors.country)}
                         valueKey="name"
@@ -989,73 +1026,6 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
                       {errors.country && (
                         <p className="text-xs font-medium text-red-500">{errors.country.message}</p>
-                      )}
-                    </div>
-                  )}
-                />
-
-                <Controller
-                  name="stateProvinceRegion"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="flex flex-col gap-1.5">
-                      <FieldLabel
-                        htmlFor="stateProvinceRegion"
-                        className="text-xs font-semibold text-slate-700"
-                      >
-                        State / Province / Region{" "}
-                        <span className="font-normal text-slate-400">(Optional)</span>
-                      </FieldLabel>
-
-                      <Input
-                        {...field}
-                        id="stateProvinceRegion"
-                        placeholder="Enter state or region"
-                        aria-invalid={!!errors.stateProvinceRegion}
-                        className={cn(
-                          "h-11 rounded-xl border-slate-200 bg-white text-sm transition-colors focus-visible:border-emerald-600 focus-visible:ring-emerald-600/20",
-                          errors.stateProvinceRegion && "border-red-400 bg-red-50/30",
-                        )}
-                      />
-
-                      {errors.stateProvinceRegion && (
-                        <p className="text-xs font-medium text-red-500">
-                          {errors.stateProvinceRegion.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                />
-
-                <Controller
-                  name="businessCity"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="flex flex-col gap-1.5">
-                      <FieldLabel
-                        htmlFor="businessCity"
-                        className="text-xs font-semibold text-slate-700"
-                      >
-                        Business City <span className="text-red-500">*</span>
-                      </FieldLabel>
-
-                      <CitySelect
-                        countryId={watch("country")}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={!watch("country")}
-                        invalid={Boolean(errors.businessCity)}
-                        className={errors.businessCity ? "border-red-400 bg-red-50/30" : ""}
-                        id="businessCity"
-                        placeholder="Select city"
-                        includeAll={false}
-                        valueKey="name"
-                      />
-
-                      {errors.businessCity && (
-                        <p className="text-xs font-medium text-red-500">
-                          {errors.businessCity.message}
-                        </p>
                       )}
                     </div>
                   )}
@@ -1084,6 +1054,160 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     </div>
                   )}
                 />
+
+                <Controller
+                  name={"locations.0.address" as const}
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                      <FieldLabel
+                        htmlFor="storeAddress"
+                        className="text-xs font-semibold text-slate-700"
+                      >
+                        Store Address <span className="text-red-500">*</span>
+                      </FieldLabel>
+                      <AddressAutocompleteInput
+                        id="storeAddress"
+                        value={field.value}
+                        onChange={(val) => {
+                          field.onChange(val);
+                          clearErrors("locations");
+                        }}
+                        onPlaceSelect={(details) => {
+                          // 1. Auto-fill State
+                          if (details.state || details.stateCode) {
+                            const states = selectedCountryIsoCode
+                              ? getWorldStatesByCountryIso(selectedCountryIsoCode)
+                              : [];
+                            const cleanState = details.state?.trim().toLowerCase() || "";
+                            const cleanCode = details.stateCode?.trim().toLowerCase() || "";
+                            const matchedState = states.find(
+                              (s) =>
+                                (cleanState && s.name.toLowerCase() === cleanState) ||
+                                (cleanCode && s.isoCode.toLowerCase() === cleanCode),
+                            );
+                            const stateVal = matchedState
+                              ? matchedState.name
+                              : details.state?.trim() || "";
+                            if (stateVal) {
+                              setValue("stateProvinceRegion", stateVal, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
+                              clearErrors("stateProvinceRegion");
+                            }
+                          }
+
+                          // 2. Auto-fill City
+                          if (details.city) {
+                            setValue("businessCity", details.city.trim(), {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            });
+                            clearErrors("businessCity");
+                          }
+
+                          clearErrors("locations");
+                        }}
+                        addressFormat="full"
+                        countryCode={selectedCountryIsoCode}
+                        disabled={!selectedCountryIsoCode}
+                        placeholder={
+                          selectedCountryIsoCode
+                            ? "Enter store address"
+                            : "Select country to enter address"
+                        }
+                        className={cn(
+                          "h-11! w-full rounded-xl border-slate-200 bg-white text-sm",
+                          (fieldState.error || errors.locations?.[0]?.address) &&
+                            "border-red-400 bg-red-50/30",
+                        )}
+                      />
+                      {(fieldState.error || errors.locations?.[0]?.address) && (
+                        <p className="text-xs font-medium text-red-500">
+                          {fieldState.error?.message || errors.locations?.[0]?.address?.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                />
+
+                <Controller
+                  name="stateProvinceRegion"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1.5">
+                      <FieldLabel
+                        htmlFor="stateProvinceRegion"
+                        className="text-xs font-semibold text-slate-700"
+                      >
+                        State / Province / Region{" "}
+                        <span className="font-normal text-slate-400">(Optional)</span>
+                      </FieldLabel>
+
+                      <WorldStateSelect
+                        id="stateProvinceRegion"
+                        countryIsoCode={selectedCountryIsoCode}
+                        value={field.value}
+                        onValueChange={(stateName) => {
+                          field.onChange(stateName);
+                          setValue("businessCity", "");
+                          clearErrors(["stateProvinceRegion", "businessCity"]);
+                        }}
+                        disabled={!selectedCountryIsoCode}
+                        invalid={Boolean(errors.stateProvinceRegion)}
+                        placeholder={
+                          selectedCountryIsoCode ? "Select state or region" : "Select country first"
+                        }
+                        allowCustom
+                      />
+
+                      {errors.stateProvinceRegion && (
+                        <p className="text-xs font-medium text-red-500">
+                          {errors.stateProvinceRegion.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                />
+
+                <Controller
+                  name="businessCity"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1.5">
+                      <FieldLabel
+                        htmlFor="businessCity"
+                        className="text-xs font-semibold text-slate-700"
+                      >
+                        Business City <span className="text-red-500">*</span>
+                      </FieldLabel>
+
+                      <WorldCitySelect
+                        id="businessCity"
+                        countryIsoCode={selectedCountryIsoCode}
+                        stateCode={selectedStateIsoCode}
+                        value={field.value}
+                        onValueChange={(cityName) => {
+                          field.onChange(cityName);
+                          clearErrors("businessCity");
+                        }}
+                        disabled={!selectedCountryIsoCode}
+                        invalid={Boolean(errors.businessCity)}
+                        placeholder={
+                          selectedCountryIsoCode ? "Select city" : "Select country first"
+                        }
+                        allowCustom
+                      />
+
+                      {errors.businessCity && (
+                        <p className="text-xs font-medium text-red-500">
+                          {errors.businessCity.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                />
               </div>
             </div>
 
@@ -1091,188 +1215,50 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               <div className="flex items-center gap-2 border-b border-slate-200/60 pb-2">
                 <Store className="size-4.5 text-emerald-600" />
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Locations Setup</h3>
+                  <h3 className="text-sm font-bold text-slate-900">Store Schedule & Hours</h3>
                   <p className="text-xs text-slate-500">
-                    Configure addresses for your business locations.
+                    Configure opening days and business operating hours for each day of the week.
                   </p>
                 </div>
               </div>
 
-              <div className="grid min-w-0 gap-3 sm:grid-cols-2">
-                <div className="flex flex-col gap-1.5 sm:col-span-2">
-                  <FieldLabel
-                    htmlFor="locationsCount"
-                    className="text-xs font-semibold text-slate-700"
-                  >
-                    Number of Locations <span className="text-red-500">*</span>
-                  </FieldLabel>
-                  <div className="flex gap-2">
-                    <Controller
-                      name="locationsCount"
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          id="locationsCount"
-                          type="number"
-                          min="1"
-                          max="100"
-                          placeholder="e.g., 3"
-                          className={cn(
-                            "h-11! w-full rounded-xl border-slate-200 bg-white text-sm",
-                            errors.locationsCount && "border-red-400 bg-red-50/30",
-                          )}
-                          {...field}
-                        />
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      className="h-11 rounded-xl"
-                      onClick={() => {
-                        let count = parseInt(getValues("locationsCount") || "1", 10);
-                        if (count > 100) count = 100;
-                        if (count < 1) count = 1;
-                        setValue("locationsCount", count.toString());
+              <StoreScheduleEditor
+                daysOpen={watch("locations.0.daysOpen") || []}
+                hoursOfOperation={watch("locations.0.hoursOfOperation") || ""}
+                dailySchedule={watch("locations.0.dailySchedule" as any)}
+                onChange={({ daysOpen, hoursOfOperation, dailySchedule }) => {
+                  setValue("locations.0.dailySchedule" as any, dailySchedule);
+                  setValue("locations.0.daysOpen" as const, daysOpen);
+                  setValue("locations.0.hoursOfOperation" as const, hoursOfOperation);
 
-                        const currentLocations = getValues("locations") || [];
-                        if (count > currentLocations.length) {
-                          const newLocations = [...currentLocations];
-                          for (let i = currentLocations.length; i < count; i++) {
-                            newLocations.push({ address: "", daysOpen: [], hoursOfOperation: "" });
-                          }
-                          setValue("locations", newLocations);
-                        } else if (count > 0 && count < currentLocations.length) {
-                          setValue("locations", currentLocations.slice(0, count));
-                        }
-                      }}
-                    >
-                      Set
-                    </Button>
-                  </div>
-                  {errors.locationsCount && (
-                    <p className="text-xs font-medium text-red-500">
-                      {errors.locationsCount.message}
-                    </p>
-                  )}
-                </div>
+                  const isComplete =
+                    dailySchedule.filter((d) => d.isOpen).length > 0 &&
+                    dailySchedule
+                      .filter((d) => d.isOpen)
+                      .every(
+                        (d) =>
+                          d.openTime &&
+                          d.closeTime &&
+                          d.openTime !== "00:00" &&
+                          d.closeTime !== "00:00",
+                      );
 
-                <div className="sm:col-span-2">
-                  <div
-                    className={cn(
-                      "flex flex-col gap-3",
-                      (watch("locations")?.length || 0) > 2
-                        ? "custom-scrollbar max-h-[170px] overflow-y-auto pr-2"
-                        : "",
-                    )}
-                  >
-                    {watch("locations")?.map((_, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4"
-                      >
-                        <div className="flex flex-col gap-1.5">
-                          <FieldLabel className="text-xs font-semibold text-slate-700">
-                            Location {index + 1} Address <span className="text-red-500">*</span>
-                          </FieldLabel>
-                          <div className="flex gap-2">
-                            <div className="flex-1">
-                              <Controller
-                                name={`locations.${index}.address` as const}
-                                control={control}
-                                render={({ field, fieldState }) => (
-                                  <>
-                                    <AddressAutocompleteInput
-                                      value={field.value}
-                                      onChange={(val) => field.onChange(val)}
-                                      countryCode={selectedCountryIsoCode}
-                                      disabled={!selectedCountryIsoCode}
-                                      placeholder={`Enter address for location ${index + 1}`}
-                                      className={cn(
-                                        "h-11! w-full rounded-xl border-slate-200 bg-white text-sm",
-                                        fieldState.error && "border-red-400 bg-red-50/30",
-                                      )}
-                                    />
-                                    {fieldState.error && (
-                                      <p className="mt-1 text-xs font-medium text-red-500">
-                                        {fieldState.error.message}
-                                      </p>
-                                    )}
-                                  </>
-                                )}
-                              />
-                            </div>
-                            {watch("locations")!.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                className="h-11 w-11 shrink-0 rounded-xl text-slate-400 hover:bg-red-50 hover:text-red-500"
-                                onClick={() => {
-                                  const currentLocations = getValues("locations") || [];
-                                  const newLocations = currentLocations.filter(
-                                    (_, i) => i !== index,
-                                  );
-                                  setValue("locations", newLocations);
-                                  setValue("locationsCount", newLocations.length.toString());
-                                  trigger("locations");
-                                }}
-                              >
-                                <Trash2 className="size-4.5" />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Location-specific Days Open and Hours */}
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          <Controller
-                            name={`locations.${index}.daysOpen` as const}
-                            control={control}
-                            render={({ field, fieldState }) => (
-                              <div className="flex flex-col gap-1.5 sm:col-span-2">
-                                <FieldLabel className="text-xs font-semibold text-slate-700">
-                                  Days Open <span className="text-red-500">*</span>
-                                </FieldLabel>
-                                <DaysOpenSelect
-                                  selected={field.value || []}
-                                  onChange={field.onChange}
-                                  invalid={!!fieldState.error}
-                                />
-                                {fieldState.error && (
-                                  <p className="text-xs font-medium text-red-500">
-                                    {fieldState.error.message}
-                                  </p>
-                                )}
-                              </div>
-                            )}
-                          />
-
-                          <Controller
-                            name={`locations.${index}.hoursOfOperation` as const}
-                            control={control}
-                            render={({ field, fieldState }) => (
-                              <div className="flex flex-col gap-1.5 sm:col-span-2">
-                                <FieldLabel className="text-xs font-semibold text-slate-700">
-                                  Hours of Operation <span className="text-red-500">*</span>
-                                </FieldLabel>
-                                <TimeRangeSelect
-                                  value={field.value || ""}
-                                  onChange={field.onChange}
-                                  invalid={!!fieldState.error}
-                                />
-                                {fieldState.error && (
-                                  <p className="text-xs font-medium text-red-500">
-                                    {fieldState.error.message}
-                                  </p>
-                                )}
-                              </div>
-                            )}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                  if (isComplete) {
+                    clearErrors([
+                      "locations",
+                      "locations.0",
+                      "locations.0.hoursOfOperation",
+                      "locations.0.daysOpen",
+                    ] as any);
+                    trigger("locations");
+                  }
+                }}
+                error={
+                  errors.locations?.[0]?.daysOpen?.message ||
+                  errors.locations?.[0]?.hoursOfOperation?.message ||
+                  (errors.locations as any)?.[0]?.message
+                }
+              />
             </div>
           </div>
         )}

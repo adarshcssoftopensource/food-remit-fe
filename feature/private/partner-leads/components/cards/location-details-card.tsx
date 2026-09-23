@@ -7,7 +7,12 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
   const cleanedLocations = useMemo(() => {
     if (!lead.locations || !Array.isArray(lead.locations)) return [];
 
-    const list: Array<{ address: string; daysOpen: string[]; hoursOfOperation: string }> = [];
+    const list: Array<{
+      address: string;
+      daysOpen: string[];
+      hoursOfOperation: string;
+      dailySchedule?: { day: string; isOpen: boolean; openTime: string; closeTime: string }[];
+    }> = [];
 
     lead.locations.forEach((loc: any) => {
       if (typeof loc === "object" && loc !== null && "address" in loc) {
@@ -142,9 +147,33 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                         <span className="mb-1 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                           Hours
                         </span>
-                        <span className="font-semibold text-slate-700">
-                          {loc.hoursOfOperation || "N/A"}
-                        </span>
+                        {loc.dailySchedule && loc.dailySchedule.length > 0 ? (
+                          <div className="mt-1 flex flex-col gap-1 text-xs">
+                            {loc.dailySchedule.map((ds) => (
+                              <div
+                                key={ds.day}
+                                className="flex items-center justify-between gap-3 border-b border-slate-50 pb-0.5"
+                              >
+                                <span className="font-semibold text-slate-600">
+                                  {ds.day.slice(0, 3)}:
+                                </span>
+                                <span
+                                  className={
+                                    ds.isOpen
+                                      ? "font-medium text-slate-800"
+                                      : "text-slate-400 italic"
+                                  }
+                                >
+                                  {ds.isOpen ? `${ds.openTime} - ${ds.closeTime}` : "Closed"}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="font-semibold text-slate-700">
+                            {loc.hoursOfOperation || "N/A"}
+                          </span>
+                        )}
                       </div>
                     </div>
                   )}
