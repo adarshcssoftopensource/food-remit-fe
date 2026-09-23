@@ -34,13 +34,14 @@ import { uploadItemCsvFile } from "./hooks/use-upload-item-csv";
 import { ItemData } from "./types/item.types";
 
 export function ItemsManagement() {
-  const { profile } = useProfile();
+  const { profile, needsBankVerification } = useProfile();
   const queryClient = useQueryClient();
   const isStoreManager =
     profile?.role === "store_manager" ||
     profile?.roleCode === "STORE_MANAGER" ||
     profile?.role === "store_admin" ||
     profile?.roleCode === "STORE_ADMIN";
+  const canWrite = !needsBankVerification;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploadingCsv, setIsUploadingCsv] = useState(false);
   const [csvFormatOpen, setCsvFormatOpen] = useState(false);
@@ -330,49 +331,51 @@ export function ItemsManagement() {
         title="Items"
         description="Manage all catalogue items across categories, departments, and countries."
         action={
-          <div className="flex flex-wrap items-center gap-2">
-            {isStoreManager && (
-              <>
-                <Button
-                  onClick={() => setCsvFormatOpen(true)}
-                  variant="outline"
-                  className="gap-2 rounded-xl"
-                >
-                  <Download className="h-4 w-4" />
-                  Format
-                </Button>
-                <Button
-                  onClick={() => fileInputRef.current?.click()}
-                  variant="outline"
-                  className="gap-2 rounded-xl"
-                  disabled={isUploadingCsv}
-                >
-                  <Upload className="h-4 w-4" />
-                  {isUploadingCsv ? "Importing..." : "Import CSV"}
-                </Button>
-                <Button
-                  onClick={() =>
-                    router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS}/upload-images`)
-                  }
-                  variant="outline"
-                  className="gap-2 rounded-xl"
-                >
-                  <ImageIcon className="h-4 w-4" />
-                  Upload Images
-                </Button>
-              </>
-            )}
-            <Button
-              onClick={() => {
-                setEditingItem(null);
-                setDialogOpen(true);
-              }}
-              className="gap-2 rounded-xl"
-            >
-              <Plus className="h-4 w-4" />
-              Add Item
-            </Button>
-          </div>
+          canWrite ? (
+            <div className="flex flex-wrap items-center gap-2">
+              {isStoreManager && (
+                <>
+                  <Button
+                    onClick={() => setCsvFormatOpen(true)}
+                    variant="outline"
+                    className="gap-2 rounded-xl"
+                  >
+                    <Download className="h-4 w-4" />
+                    Format
+                  </Button>
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    variant="outline"
+                    className="gap-2 rounded-xl"
+                    disabled={isUploadingCsv}
+                  >
+                    <Upload className="h-4 w-4" />
+                    {isUploadingCsv ? "Importing..." : "Import CSV"}
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS}/upload-images`)
+                    }
+                    variant="outline"
+                    className="gap-2 rounded-xl"
+                  >
+                    <ImageIcon className="h-4 w-4" />
+                    Upload Images
+                  </Button>
+                </>
+              )}
+              <Button
+                onClick={() => {
+                  setEditingItem(null);
+                  setDialogOpen(true);
+                }}
+                className="gap-2 rounded-xl"
+              >
+                <Plus className="h-4 w-4" />
+                Add Item
+              </Button>
+            </div>
+          ) : undefined
         }
       />
 

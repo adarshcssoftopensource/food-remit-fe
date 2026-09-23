@@ -24,7 +24,7 @@ interface SalesOrder {
 const salesColumns: ColumnDef<SalesOrder>[] = [
   {
     accessorKey: "referenceNumber",
-    header: "Reference Number",
+    header: "Order ID",
     cell: ({ row }) => (
       <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
         {row.getValue("referenceNumber")}

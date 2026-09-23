@@ -24,12 +24,13 @@ import { useProfile } from "@/components/providers/profile-provider";
 import type { CategoryData } from "./types/category.types";
 
 export function CategoriesManagement() {
-  const { profile } = useProfile();
+  const { profile, needsBankVerification } = useProfile();
   const isStoreManager =
     profile?.role === "store_manager" ||
     profile?.roleCode === "STORE_MANAGER" ||
     profile?.role === "store_admin" ||
     profile?.roleCode === "STORE_ADMIN";
+  const canWrite = !needsBankVerification;
   const {
     fromDate,
     setFromDate,
@@ -187,16 +188,18 @@ export function CategoriesManagement() {
         title="Categories"
         description="Manage all catalogue categories across countries, departments, and stores."
         action={
-          <Button
-            onClick={() => {
-              setEditingCategory(null);
-              setDialogOpen(true);
-            }}
-            className="gap-2 rounded-xl"
-          >
-            <Plus className="h-4 w-4" />
-            Add Category
-          </Button>
+          canWrite ? (
+            <Button
+              onClick={() => {
+                setEditingCategory(null);
+                setDialogOpen(true);
+              }}
+              className="gap-2 rounded-xl"
+            >
+              <Plus className="h-4 w-4" />
+              Add Category
+            </Button>
+          ) : undefined
         }
       />
 

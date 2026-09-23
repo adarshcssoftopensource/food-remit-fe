@@ -10,6 +10,7 @@ export const PARTNER_LEAD_STATUSES = [
   "APPROVED",
   "REJECTED",
   "NOT_QUALIFIED",
+  "REQUEST_MORE_INFO",
 ] as const;
 
 /** Statuses that can still move through the pending/general-inquiry pipeline */
@@ -22,6 +23,7 @@ export const PARTNER_LEAD_MUTABLE_STATUSES = [
   "REGISTRATION_STARTED",
   "APPROVED",
   "REJECTED",
+  "REQUEST_MORE_INFO",
 ] as const;
 
 export const TERMINAL_LEAD_STATUSES = ["APPROVED", "REJECTED", "NOT_QUALIFIED"] as const;
@@ -152,6 +154,8 @@ export const getStatusColor = (status: string) => {
       return "bg-cyan-50 text-cyan-800 border-cyan-200 hover:bg-cyan-100";
     case "APPROVED":
       return "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100";
+    case "REQUEST_MORE_INFO":
+      return "bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100";
     case "REJECTED":
     case "NOT_QUALIFIED":
       return "bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100";

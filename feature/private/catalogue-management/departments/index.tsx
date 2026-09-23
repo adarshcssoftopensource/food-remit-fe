@@ -154,13 +154,14 @@ export function DepartmentsManagement() {
     setLightboxSrc(image);
   }, []);
 
-  const { profile } = useProfile();
+  const { profile, needsBankVerification } = useProfile();
   const isStoreManager =
     profile?.role === "store_manager" ||
     profile?.roleCode === "STORE_MANAGER" ||
     profile?.role === "store_admin" ||
     profile?.roleCode === "STORE_ADMIN";
   const isStoreScoped = isStoreManager;
+  const canWrite = !needsBankVerification;
 
   const columns = useMemo(
     () => getDepartmentColumns(handleEdit, handleViewDetails, handleImageClick, isStoreScoped),
@@ -175,16 +176,18 @@ export function DepartmentsManagement() {
         title="Departments"
         description="Manage all catalogue departments across countries and stores."
         action={
-          <Button
-            onClick={() => {
-              setEditingDepartment(null);
-              setDialogOpen(true);
-            }}
-            className="gap-2 rounded-xl"
-          >
-            <Plus className="h-4 w-4" />
-            Add Department
-          </Button>
+          canWrite ? (
+            <Button
+              onClick={() => {
+                setEditingDepartment(null);
+                setDialogOpen(true);
+              }}
+              className="gap-2 rounded-xl"
+            >
+              <Plus className="h-4 w-4" />
+              Add Department
+            </Button>
+          ) : undefined
         }
       />
 

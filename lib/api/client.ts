@@ -2,6 +2,10 @@ import { errorToast } from "@/components/toaster";
 import { AUTH_TOKEN_COOKIE } from "@/config/cookie";
 import { ROUTES } from "@/config/routes";
 import { clearAuthSession, setAuthSession } from "@/lib/auth-client";
+import {
+  getNeedsBankVerification,
+  isBankVerificationExemptUrl,
+} from "@/lib/bank-verification-gate";
 import type {
   AxiosError,
   AxiosInstance,
@@ -80,6 +84,14 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
         }
       } catch {
         // Ignore decode error
+      }
+
+      if (getNeedsBankVerification() && !isBankVerificationExemptUrl(config.url)) {
+        return Promise.reject(
+          new Error(
+            "Please complete Bank Account Verification from your profile before making changes.",
+          ),
+        );
       }
     }
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { Switch } from "@/components/ui/switch";
+import { useProfile } from "@/components/providers/profile-provider";
 import { ROUTES } from "@/config/routes";
 import { type Employee } from "@/feature/private/employee-management/types/employee-management";
 import { Edit, Eye, Trash2 } from "lucide-react";
@@ -23,11 +24,14 @@ export function EmployeeActionsCell({ employee }: EmployeeActionsCellProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const router = useRouter();
+  const { needsBankVerification } = useProfile();
+  const canWrite = !needsBankVerification;
   const { mutate: updateStatus, isPending } = useUpdateEmployeeStatus();
   const { mutateAsync: deleteEmployee, isPending: isDeleting } = useDeleteEmployee(employee.id);
   const [isActive, setIsActive] = useState(employee.accountStatus === "ACTIVE");
 
   const handleToggle = (checked: boolean) => {
+    if (!canWrite) return;
     setIsActive(checked);
     updateStatus(
       {
@@ -57,6 +61,7 @@ export function EmployeeActionsCell({ employee }: EmployeeActionsCellProps) {
       label: "Edit Employee",
       icon: <Edit className="size-4" />,
       onClick: () => setIsEditOpen(true),
+      hidden: !canWrite,
     },
     {
       label: "Delete Employee",
@@ -64,6 +69,7 @@ export function EmployeeActionsCell({ employee }: EmployeeActionsCellProps) {
       onClick: () => setDeleteOpen(true),
       variant: "destructive",
       disabled: isDeleting,
+      hidden: !canWrite,
     },
   ];
 
@@ -74,14 +80,16 @@ export function EmployeeActionsCell({ employee }: EmployeeActionsCellProps) {
           checked={isActive}
           title={isActive ? "Active" : "Inactive"}
           onCheckedChange={handleToggle}
-          disabled={isPending}
+          disabled={isPending || !canWrite}
           className="data-[state=checked]:bg-green-500"
         />
 
         <DataTableRowActions items={actionItems} />
       </div>
 
-      <EmployeeDialog open={isEditOpen} onOpenChange={setIsEditOpen} employee={employee} />
+      {canWrite && (
+        <EmployeeDialog open={isEditOpen} onOpenChange={setIsEditOpen} employee={employee} />
+      )}
 
       <ConfirmationDialog
         open={deleteOpen}

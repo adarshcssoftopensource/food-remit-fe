@@ -64,6 +64,11 @@ export function BankVerificationCard({ lead }: BankVerificationCardProps) {
                 <CheckCircle2 className="size-3.5 text-emerald-600" />
                 Verified
               </span>
+            ) : bankStatus === "SKIPPED" || bankStatus === "PENDING" ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
+                <Clock className="size-3.5 text-amber-600" />
+                Pending Verification
+              </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
                 <Clock className="size-3.5 text-slate-400" />
@@ -160,10 +165,14 @@ export function BankVerificationCard({ lead }: BankVerificationCardProps) {
               <Landmark className="size-6" />
             </div>
             <h4 className="mt-3 text-sm font-bold text-slate-800 dark:text-slate-200">
-              No Bank Account Verified
+              {bankStatus === "SKIPPED" || bankStatus === "PENDING"
+                ? "Bank Account Verification Pending"
+                : "No Bank Account Verified"}
             </h4>
             <p className="mx-auto mt-1 max-w-md text-xs text-slate-500 dark:text-slate-400">
-              The applicant has not connected a verified commercial bank account via Plaid yet.
+              {bankStatus === "SKIPPED" || bankStatus === "PENDING"
+                ? "The applicant skipped bank verification during onboarding. They must complete it after approval before managing their store."
+                : "The applicant has not connected a verified commercial bank account via Plaid yet."}
             </p>
           </div>
         )}

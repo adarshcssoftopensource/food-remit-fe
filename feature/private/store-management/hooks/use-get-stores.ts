@@ -66,6 +66,9 @@ export function useGetStores(args?: UseGetStoresArgs) {
       managerCity: item.storeManager?.city ?? "",
       managerZipCode: item.storeManager?.zipCode ?? "",
       partnerLead: item.partnerLead,
+      approvedByAdmin: item.approvedByAdmin ?? undefined,
+      statusUpdatedByAdmin: item.statusUpdatedByAdmin ?? undefined,
+      deletedByAdmin: item.deletedByAdmin ?? undefined,
     }));
   }, [data]);
 
@@ -122,6 +125,9 @@ export function useGetStore(id: string) {
       managerCity: item.storeManager?.city ?? "",
       managerZipCode: item.storeManager?.zipCode ?? "",
       partnerLead: item.partnerLead,
+      approvedByAdmin: item.approvedByAdmin ?? undefined,
+      statusUpdatedByAdmin: item.statusUpdatedByAdmin ?? undefined,
+      deletedByAdmin: item.deletedByAdmin ?? undefined,
     };
   }, [data]);
 

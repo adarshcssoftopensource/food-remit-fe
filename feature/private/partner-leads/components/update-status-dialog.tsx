@@ -57,7 +57,10 @@ export function UpdateStatusDialog({
   });
 
   const isApprovedStatus = watchStatus === "APPROVED";
-  const isRejectedStatus = watchStatus === "REJECTED" || watchStatus === "NOT_QUALIFIED";
+  const isRejectedStatus =
+    watchStatus === "REJECTED" ||
+    watchStatus === "NOT_QUALIFIED" ||
+    watchStatus === "REQUEST_MORE_INFO";
   const isSubmitting = isUpdatingStatus || isApproving;
 
   const onSubmit = async (data: UpdateLeadStatusValues) => {
@@ -77,7 +80,11 @@ export function UpdateStatusDialog({
       await updateLeadStatus(leadId, data.status, data.remark);
       onOpenChange(false);
       reset();
-      if (data.status === "REJECTED" || data.status === "NOT_QUALIFIED") {
+      if (
+        data.status === "REJECTED" ||
+        data.status === "NOT_QUALIFIED" ||
+        data.status === "REQUEST_MORE_INFO"
+      ) {
         router.push(ROUTES.ADMIN.PARTNER_LEADS);
       }
     }
@@ -163,9 +170,11 @@ export function UpdateStatusDialog({
                       <span>
                         {isApprovedStatus
                           ? "Approval Description / Remark"
-                          : isRejectedStatus
-                            ? "Rejection Remark"
-                            : "Status Remark"}{" "}
+                          : watchStatus === "REQUEST_MORE_INFO"
+                            ? "Information Requested"
+                            : isRejectedStatus
+                              ? "Rejection Remark"
+                              : "Status Remark"}{" "}
                         <span className="text-red-500">*</span>
                       </span>
                       {isApprovedStatus && (
@@ -180,9 +189,11 @@ export function UpdateStatusDialog({
                       placeholder={
                         isApprovedStatus
                           ? "E.g. Congratulations! Your partnership application has been approved. Welcome to Food Remit..."
-                          : isRejectedStatus
-                            ? "E.g. Application does not meet current partnership requirements..."
-                            : "E.g. Spoke with the owner, they are ready for registration..."
+                          : watchStatus === "REQUEST_MORE_INFO"
+                            ? "E.g. Please provide your business registration document..."
+                            : isRejectedStatus
+                              ? "E.g. Application does not meet current partnership requirements..."
+                              : "E.g. Spoke with the owner, they are ready for registration..."
                       }
                       aria-invalid={!!errors.remark}
                       className={`min-h-30 resize-none rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium transition-colors duration-300 placeholder:text-slate-400 hover:border-slate-300 hover:bg-slate-50 ${
@@ -220,7 +231,7 @@ export function UpdateStatusDialog({
             <Button
               type="submit"
               disabled={isSubmitting || !isValid}
-              className={`h-12 rounded-xl px-6 font-bold text-white shadow-md transition-colors transition-shadow transition-transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 ${
+              className={`h-12 rounded-xl px-6 font-bold text-white shadow-md transition-colors hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 ${
                 isApprovedStatus
                   ? "bg-emerald-600 shadow-emerald-600/20 hover:bg-emerald-700"
                   : isRejectedStatus
@@ -238,7 +249,7 @@ export function UpdateStatusDialog({
               ) : isRejectedStatus ? (
                 "Reject Lead"
               ) : (
-                "Save Status"
+                "Send Update"
               )}
             </Button>
           </DialogFooter>

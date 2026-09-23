@@ -92,6 +92,31 @@ export const storesColumns: ColumnDef<any>[] = [
     ),
   },
   {
+    id: "deletedBy",
+    header: "Deleted By",
+    cell: ({ row }) => {
+      const admin = row.original.deletedByAdmin;
+      if (!admin) return <span className="text-xs text-slate-400">—</span>;
+
+      const name = admin.firstName
+        ? `${admin.firstName} ${admin.lastName || ""}`.trim()
+        : admin.name;
+      let roleText = admin.userType;
+      if (roleText === "SUPER_ADMIN") roleText = "Super Admin";
+      if (roleText === "SUB_ADMIN") roleText = "Sub Admin";
+      if (roleText === "CO_ADMIN") roleText = "Co Admin";
+
+      return (
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{name}</span>
+          <span className="inline-flex w-fit items-center rounded-md bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 ring-1 ring-rose-700/10 ring-inset dark:bg-rose-900/30 dark:text-rose-400 dark:ring-rose-400/20">
+            {roleText}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => (
@@ -121,7 +146,7 @@ export const itemsColumns: ColumnDef<any>[] = [
     header: "Department",
     cell: ({ row }) => (
       <span className="text-xs font-medium text-slate-600">
-        {row.original.departmentName || "N/A"}
+        {row.original.department?.departmentName || row.original.departmentDisplayName || "N/A"}
       </span>
     ),
   },

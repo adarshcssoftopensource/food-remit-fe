@@ -9,14 +9,18 @@ import { TruncatedTextCell } from "@/components/common/data-table/truncated-text
 
 export const placedOrdersColumns: ColumnDef<DashboardRecentlyPlacedOrder>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "referenceNumber",
     header: "Order ID",
     enableSorting: false,
-    cell: ({ row }) => (
-      <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold whitespace-nowrap text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-        {row.getValue("id")}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const ref = row.getValue("referenceNumber") as string;
+      const displayRef = ref || `#ORD-${(row.original.id || "").slice(0, 8)}`;
+      return (
+        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold whitespace-nowrap text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+          {displayRef}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "customerName",

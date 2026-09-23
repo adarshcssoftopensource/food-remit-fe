@@ -81,6 +81,7 @@ export interface DashboardOrderRequested {
 
 export interface DashboardRecentlyPlacedOrder {
   id: string;
+  referenceNumber?: string;
   customerName: string;
   location: string;
   status: string;

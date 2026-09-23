@@ -7,9 +7,14 @@ import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";
 import { fetcher } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
+import {
+  isBankStatusVerified,
+  resolvePartnerBankStatus,
+  setNeedsBankVerification,
+} from "@/lib/bank-verification-gate";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
@@ -50,6 +55,8 @@ interface ProfileContextType {
   isSuperAdmin: boolean;
   hasPermission: (permissionKey: keyof ProfilePermissions | string) => boolean;
   isReadOnly: boolean;
+  needsBankVerification: boolean;
+  refetchProfile: () => void;
 }
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
@@ -71,7 +78,6 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         url: AUTH_ENDPOINTS.PROFILE,
       });
     },
-    // Keep this explicit so the profile request also remains a single attempt.
     retry: false,
   });
 
@@ -79,6 +85,18 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     profileData?.roleCode === "SUPER_ADMIN" ||
     profileData?.role === "super_admin" ||
     profileData?.role === "co_admin";
+
+  const isStoreManager =
+    profileData?.roleCode === "STORE_MANAGER" || profileData?.role === "store_manager";
+
+  const bankStatus = resolvePartnerBankStatus(profileData?.partnerLead);
+  const needsBankVerification =
+    !!isStoreManager && !!profileData?.partnerLead && !isBankStatusVerified(bankStatus);
+
+  useEffect(() => {
+    setNeedsBankVerification(needsBankVerification);
+    return () => setNeedsBankVerification(false);
+  }, [needsBankVerification]);
 
   const hasPermission = (permissionKey: keyof ProfilePermissions | string): boolean => {
     if (isSuperAdmin) return true;
@@ -126,6 +144,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         isSuperAdmin,
         hasPermission,
         isReadOnly: profileData.isReadOnly || false,
+        needsBankVerification,
+        refetchProfile: () => {
+          void refetch();
+        },
       }}
     >
       {children}
