@@ -42,7 +42,6 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col justify-between gap-5 p-5">
-        {/* Top Info Grid */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <InfoCard
             icon={<MapPin className="h-4 w-4 text-orange-500" />}
@@ -87,7 +86,7 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
             value={
               item.stockQuantity !== null && item.stockQuantity !== undefined
                 ? item.unit
-                  ? `${item.stockQuantity} ${item.unit}`
+                  ? `${item.stockQuantity} `
                   : String(item.stockQuantity)
                 : "-"
             }

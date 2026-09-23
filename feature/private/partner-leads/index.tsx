@@ -56,7 +56,7 @@ const PIPELINE_META: Record<
 
 export function PartnerLeadsManagement() {
   const router = useRouter();
-  const [pipeline, setPipeline] = useState<PartnerLeadPipeline>("pending");
+  const [pipeline, setPipeline] = useState<PartnerLeadPipeline>("all");
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearch = useDebounce(searchValue, 500);
   const [sorting, setSorting] = useState<SortingState>([]);

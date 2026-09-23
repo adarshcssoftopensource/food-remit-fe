@@ -23,7 +23,7 @@ export const NUMBER_OF_LOCATIONS_OPTIONS = [
 
 export const WORK_PREFERENCES_OPTIONS = [
   "Sell products through the Food Remit marketplace",
-  "Receive customer orders for pickup",
+  // "Receive customer orders for pickup",
   "Receive customer orders for delivery",
   "Add multiple store locations",
   "Integrate our existing product catalog or POS system",
