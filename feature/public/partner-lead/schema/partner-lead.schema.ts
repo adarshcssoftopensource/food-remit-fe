@@ -23,6 +23,8 @@ export const partnerLeadSchema = z
             address: z.string().min(1, "Address is required"),
             daysOpen: z.array(z.string()).min(1, "At least one day must be selected"),
             hoursOfOperation: z.string().optional().or(z.literal("")),
+            phone: z.string().optional(),
+            storePhoneNumber: z.string().optional(),
             dailySchedule: z
               .array(
                 z.object({
@@ -92,6 +94,15 @@ export const partnerLeadSchema = z
       })
       .optional()
       .or(z.literal("")),
+    storePhoneNumber: z
+      .string()
+      .min(1, "Store phone number is required")
+      .superRefine((value, ctx) => {
+        const error = getFullPhoneError(value);
+        if (error) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: error });
+        }
+      }),
 
     firstName: z
       .string()

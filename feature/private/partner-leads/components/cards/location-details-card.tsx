@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Calendar, CheckCircle2, Store } from "lucide-react";
+import { MapPin, Clock, Calendar, CheckCircle2, Store, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
@@ -23,6 +23,8 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
       address: string;
       daysOpen: string[];
       hoursOfOperation: string;
+      phone?: string;
+      storePhoneNumber?: string;
       dailySchedule?: { day: string; isOpen: boolean; openTime: string; closeTime: string }[];
     }> = [];
 
@@ -118,6 +120,8 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                   : loc.daysOpen || [];
 
                 const openDaysCount = openDaysList.length;
+                const storePhone =
+                  loc.storePhoneNumber || loc.phone || (idx === 0 ? lead.storePhoneNumber : null);
 
                 return (
                   <div
@@ -137,6 +141,12 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                           <p className="mt-0.5 text-sm leading-snug font-bold text-slate-900">
                             {loc.address}
                           </p>
+                          {storePhone && (
+                            <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                              <Phone className="h-3 w-3 text-emerald-600" />
+                              <span>Store Phone: {storePhone}</span>
+                            </p>
+                          )}
                         </div>
                       </div>
 

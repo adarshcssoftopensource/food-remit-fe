@@ -73,6 +73,8 @@ export interface PartnerLeadData {
     address: string;
     daysOpen: string[];
     hoursOfOperation: string;
+    phone?: string;
+    storePhoneNumber?: string;
     dailySchedule?: { day: string; isOpen: boolean; openTime: string; closeTime: string }[];
   }[];
   languages: string[];
@@ -84,6 +86,7 @@ export interface PartnerLeadData {
   jobTitle: string | null;
   businessEmail: string;
   phoneNumber: string;
+  storePhoneNumber?: string | null;
   workPreferences: string[];
   inventoryManagement: string | null;
   website: string | null;

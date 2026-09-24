@@ -126,6 +126,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       country: "",
       businessCity: "",
       stateProvinceRegion: "",
+      storePhoneNumber: "",
       firstName: "",
       lastName: "",
       jobTitle: "",
@@ -238,6 +239,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       vals.lastName?.trim() ||
       vals.businessEmail?.trim() ||
       vals.phoneNumber?.trim() ||
+      vals.storePhoneNumber?.trim() ||
       vals.websiteOrSocial?.trim() ||
       vals.additionalNotes?.trim() ||
       vals.jobTitle?.trim() ||
@@ -322,6 +324,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       currency: "",
       businessCity: "",
       stateProvinceRegion: "",
+      storePhoneNumber: "",
       firstName: "",
       lastName: "",
       jobTitle: "",
@@ -415,6 +418,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         "businessCity",
         "stateProvinceRegion",
         "locations",
+        "storePhoneNumber",
       ];
       if (getValues("businessType") === "Other") {
         fieldsToValidate.push("otherBusinessType");
@@ -513,8 +517,21 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       if (data.locations && data.locations.length > 0) {
         const cleanLocations = data.locations.filter((loc) => loc.address.trim() !== "");
         if (cleanLocations.length > 0) {
-          formData.append("locations", JSON.stringify(cleanLocations));
+          const locsToSave = cleanLocations.map((loc, idx) => {
+            if (idx === 0) {
+              return {
+                ...loc,
+                phone: data.storePhoneNumber?.trim() || "",
+                storePhoneNumber: data.storePhoneNumber?.trim() || "",
+              };
+            }
+            return loc;
+          });
+          formData.append("locations", JSON.stringify(locsToSave));
         }
+      }
+      if (data.storePhoneNumber?.trim()) {
+        formData.append("storePhoneNumber", data.storePhoneNumber.trim());
       }
       formData.append("country", data.country || "");
       if (data.businessCity?.trim()) formData.append("businessCity", data.businessCity.trim());
@@ -1012,11 +1029,13 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           setValue("stateProvinceRegion", "");
                           setValue("businessCity", "");
                           setValue("locations.0.address" as const, "");
+                          setValue("storePhoneNumber", "");
                           clearErrors([
                             "country",
                             "stateProvinceRegion",
                             "businessCity",
                             "locations",
+                            "storePhoneNumber",
                           ]);
                         }}
                         id="country"
@@ -1203,6 +1222,37 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       {errors.businessCity && (
                         <p className="text-xs font-medium text-red-500">
                           {errors.businessCity.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                />
+
+                <Controller
+                  name="storePhoneNumber"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                      <FieldLabel
+                        htmlFor="storePhoneNumber"
+                        className="text-xs font-semibold text-slate-700"
+                      >
+                        Store Phone Number <span className="text-red-500">*</span>
+                      </FieldLabel>
+                      <PhoneInputComponent
+                        value={field.value}
+                        onChange={(value) => {
+                          field.onChange(value);
+                          clearErrors("storePhoneNumber");
+                        }}
+                        onBlur={field.onBlur}
+                        error={!!errors.storePhoneNumber}
+                        disabled={!selectedCountryIsoCode}
+                        defaultCountry={selectedCountryIsoCode || selectedCountryName || "US"}
+                      />
+                      {errors.storePhoneNumber && (
+                        <p className="text-xs font-medium text-red-500">
+                          {errors.storePhoneNumber.message}
                         </p>
                       )}
                     </div>
