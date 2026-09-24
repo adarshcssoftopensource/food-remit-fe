@@ -12,9 +12,12 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
-import iso6391 from "iso-639-1";
+import isoLangs from "@cospired/i18n-iso-languages";
+import enLocale from "@cospired/i18n-iso-languages/langs/en.json";
 import * as countryLanguage from "country-language";
 import { Country } from "country-state-city";
+
+isoLangs.registerLocale(enLocale);
 
 // Maps ISO 639-1 language code to ISO 3166-1 alpha-2 country code
 const languageToCountry: Record<string, string> = {
@@ -153,7 +156,8 @@ export function MultiLanguageSelect({
   const [open, setOpen] = React.useState(false);
 
   const languages = React.useMemo(() => {
-    let codes = iso6391.getAllCodes();
+    const allLangs = isoLangs.getNames("en");
+    let codes = Object.keys(allLangs);
 
     if (countryName) {
       const countries = Country.getAllCountries();
@@ -179,10 +183,11 @@ export function MultiLanguageSelect({
       .map((code) => {
         const countryCode = languageToCountry[code];
         const flag = countryCode ? getFlagEmoji(countryCode) : "🌐";
+        const langName = allLangs[code];
         return {
-          value: iso6391.getName(code),
-          label: `${flag} ${iso6391.getName(code)}`,
-          name: iso6391.getName(code),
+          value: langName,
+          label: `${flag} ${langName}`,
+          name: langName,
         };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -235,12 +240,12 @@ export function MultiLanguageSelect({
         }
       />
       <PopoverContent
-        className="w-[300px] rounded-xl border-slate-200 p-0 shadow-xl sm:w-[400px]"
+        className="w-75 rounded-xl border-slate-200 p-0 shadow-xl sm:w-100"
         align="start"
       >
         <Command>
           <CommandInput placeholder="Search language..." />
-          <CommandList className="custom-scrollbar max-h-[250px] overflow-y-auto">
+          <CommandList className="custom-scrollbar max-h-62.5 overflow-y-auto">
             <CommandEmpty>No language found.</CommandEmpty>
             <CommandGroup>
               {languages.map((language) => (

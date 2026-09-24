@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronDown, Loader2, Search, Store, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -141,7 +141,7 @@ export function StoreSelect({
       <PopoverContent
         align="start"
         side="bottom"
-        className="z-200 flex w-(--anchor-width) max-w-[var(--anchor-width)] min-w-(--anchor-width) flex-col gap-2 overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-2.5 shadow-2xl dark:border-slate-800 dark:bg-slate-900"
+        className="z-200 flex w-(--anchor-width) max-w-(--anchor-width) min-w-(--anchor-width) flex-col gap-2 overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-2.5 shadow-2xl dark:border-slate-800 dark:bg-slate-900"
         style={{ width: "var(--anchor-width)", minWidth: "var(--anchor-width)" }}
       >
         {/* Search Header */}

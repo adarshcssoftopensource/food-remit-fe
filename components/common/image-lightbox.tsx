@@ -104,7 +104,7 @@ export function ImageLightbox({
         )}
 
         {/* Image Container */}
-        <div className="flex min-h-[240px] items-center justify-center p-2">
+        <div className="flex min-h-60 items-center justify-center p-2">
           <Image
             src={src}
             alt={alt}

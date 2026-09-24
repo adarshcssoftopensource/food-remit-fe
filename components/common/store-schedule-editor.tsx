@@ -352,10 +352,10 @@ export function AnalogTimePicker({
               onTouchMove={handleDrag}
               onTouchEnd={handleMouseUp}
             >
-              <div className="absolute top-1/2 left-1/2 z-20 -mt-[4px] -ml-[4px] h-2 w-2 rounded-full bg-emerald-600"></div>
+              <div className="absolute top-1/2 left-1/2 z-20 -mt-1 -ml-1 h-2 w-2 rounded-full bg-emerald-600"></div>
 
               <div
-                className="absolute bottom-1/2 left-1/2 z-10 w-[2px] origin-bottom rounded-t-full bg-emerald-500 transition-transform duration-300 ease-out"
+                className="absolute bottom-1/2 left-1/2 z-10 w-0.5 origin-bottom rounded-t-full bg-emerald-500 transition-transform duration-300 ease-out"
                 style={{
                   height: "90px",
                   transform: `translateX(-50%) rotate(${getHandRotation()}deg)`,

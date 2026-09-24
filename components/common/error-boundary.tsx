@@ -39,7 +39,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="border-destructive/20 bg-destructive/5 flex min-h-[350px] w-full flex-col items-center justify-center rounded-2xl border p-6 text-center shadow-sm">
+        <div className="border-destructive/20 bg-destructive/5 flex min-h-87.5 w-full flex-col items-center justify-center rounded-2xl border p-6 text-center shadow-sm">
           <div className="bg-destructive/10 text-destructive mb-4 flex h-14 w-14 items-center justify-center rounded-full">
             <AlertTriangle className="h-7 w-7" />
           </div>
@@ -50,7 +50,7 @@ export class ErrorBoundary extends Component<Props, State> {
             An unexpected error occurred while loading this view. You can reload or try again.
           </p>
           {this.state.error?.message && (
-            <p className="bg-muted/60 text-muted-foreground mt-2 max-w-md rounded px-3 py-1.5 font-mono text-xs break-words">
+            <p className="bg-muted/60 text-muted-foreground mt-2 max-w-md rounded px-3 py-1.5 font-mono text-xs wrap-break-word">
               {this.state.error.message}
             </p>
           )}
