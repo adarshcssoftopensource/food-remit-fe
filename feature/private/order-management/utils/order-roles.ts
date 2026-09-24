@@ -23,12 +23,6 @@ export function getOrderActorRole(
   const canAssign = isStoreManager;
 
   /**
-   * Accept / Reject food requests = Store Manager or elevated admins.
-   * Employees cannot respond to requests.
-   */
-  const canRespondToRequest = isStoreManager || isElevated;
-
-  /**
    * Close Order (reference verify) = Store Manager or Employee (own orders).
    * Super Admin cannot close.
    */
@@ -52,7 +46,6 @@ export function getOrderActorRole(
     isSuperAdmin,
     isElevated,
     canAssign,
-    canRespondToRequest,
     canAbandon,
     canClose,
     canMarkPickedUp,

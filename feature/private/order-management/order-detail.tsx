@@ -1,6 +1,5 @@
 "use client";
 
-import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
@@ -25,12 +24,7 @@ import {
   OrderWaitingBadge,
 } from "./components/order-lifecycle-actions";
 import { AbandonOrderDialog } from "./components/abandon-order-dialog";
-import {
-  useAcceptOrder,
-  useMarkOrderCompleted,
-  useRejectOrder,
-  useStartOrder,
-} from "./hooks/use-order-lifecycle";
+import { useMarkOrderCompleted, useStartOrder } from "./hooks/use-order-lifecycle";
 import {
   FINAL_STATUS,
   formatRelativeTime,
@@ -55,15 +49,11 @@ export function OrderDetailPage({ id }: { id: string }) {
   const [closeOpen, setCloseOpen] = useState(false);
   const [abandonOpen, setAbandonOpen] = useState(false);
   const [startOpen, setStartOpen] = useState(false);
-  const [rejectOpen, setRejectOpen] = useState(false);
 
   const { mutateAsync: startOrder, isPending: starting } = useStartOrder();
   const { mutateAsync: markCompleted, isPending: completing } = useMarkOrderCompleted();
-  const { mutateAsync: acceptOrder, isPending: accepting } = useAcceptOrder();
-  const { mutateAsync: rejectOrder, isPending: rejecting } = useRejectOrder();
 
-  const { canAbandon, canClose, isEmployee, canAssign, canRespondToRequest } =
-    getOrderActorRole(profile);
+  const { canAbandon, canClose, isEmployee, canAssign } = getOrderActorRole(profile);
 
   if (isLoading) return <OrderDetailSkeleton />;
   if (!order) return <OrderNotFound onBack={() => router.back()} />;
@@ -79,15 +69,13 @@ export function OrderDetailPage({ id }: { id: string }) {
   const handlerName = order.startedByName || order.assignedEmployeeName;
   const orderRef = order.refrenceNumber || order.id.substring(0, 8).toUpperCase();
   const customerName = order.recieverName || order.userName || "the customer";
-  const canAccept = canRespondToRequest && pureRequested;
-  const canReject = canRespondToRequest && (pureRequested || accepted);
 
   const pageDescription = pureRequested
-    ? "Food request awaiting Accept or Reject."
+    ? "Food request — Accept/Reject happens on mobile. Status shown here."
     : accepted
-      ? "Accepted — awaiting customer payment. Stays in Requested until paid."
+      ? "Accepted on mobile — awaiting customer payment. Stays in Requested until paid."
       : rejected
-        ? "This request was rejected."
+        ? "This request was rejected on mobile."
         : pending
           ? "Paid and waiting to start."
           : processing
@@ -113,7 +101,7 @@ export function OrderDetailPage({ id }: { id: string }) {
               finalStatus={order.finalStatus}
               showFinal={closed}
             />
-            {pureRequested && <OrderWaitingBadge label="Awaiting Accept / Reject" />}
+            {pureRequested && <OrderWaitingBadge label="Awaiting mobile response" />}
             {accepted && <OrderWaitingBadge label="Awaiting Payment" />}
             {pickedUp && <OrderWaitingBadge label="Awaiting Close or Abandon" />}
           </div>
@@ -126,13 +114,19 @@ export function OrderDetailPage({ id }: { id: string }) {
       {pureRequested && (
         <OrderInfoBanner
           variant="requested"
-          message="Accept this request to wait for payment, or Reject it. Both stay visible in Requested and All Orders."
+          message="Accept/Reject is done on the mobile app. This panel only shows the current status."
         />
       )}
       {accepted && (
         <OrderInfoBanner
           variant="requested"
-          message="Request accepted. After the customer pays, this order moves to Pending for assign/start."
+          message="Accepted on mobile. After the customer pays, this order moves to Pending for assign/start."
+        />
+      )}
+      {rejected && (
+        <OrderInfoBanner
+          variant="requested"
+          message="Rejected on mobile. Order stays visible in Requested and All with Rejected status."
         />
       )}
       {processing && handlerName && (
@@ -183,11 +177,11 @@ export function OrderDetailPage({ id }: { id: string }) {
             ) : (
               <p className="mt-2 text-sm text-slate-500">
                 {pureRequested
-                  ? "Awaiting Accept or Reject."
+                  ? "Awaiting Accept/Reject on mobile."
                   : accepted
-                    ? "Accepted — waiting for payment."
+                    ? "Accepted on mobile — waiting for payment."
                     : rejected
-                      ? "Request rejected — no preparation."
+                      ? "Rejected on mobile — no preparation."
                       : "Not yet started or assigned."}
               </p>
             )}
@@ -198,39 +192,13 @@ export function OrderDetailPage({ id }: { id: string }) {
               Actions
             </p>
 
-            {canAccept && (
-              <OrderLifecycleActionCard
-                variant="accept"
-                title="Accept Request"
-                description="Status becomes Accepted. Stays in Requested until the customer pays."
-                loading={accepting}
-                onClick={async () => {
-                  try {
-                    await acceptOrder(order.id);
-                  } catch {}
-                }}
-              />
-            )}
-
-            {canReject && (
-              <OrderLifecycleActionCard
-                variant="reject"
-                title="Reject Request"
-                description="Status becomes Rejected. Order remains visible in Requested and All."
-                loading={rejecting}
-                onClick={() => setRejectOpen(true)}
-              />
-            )}
-
-            {accepted && !canReject && (
+            {(pureRequested || accepted || rejected) && (
               <OrderLifecycleActionsHint>
-                Waiting for customer payment. After payment this moves to Pending.
-              </OrderLifecycleActionsHint>
-            )}
-
-            {rejected && (
-              <OrderLifecycleActionsHint>
-                This request was rejected. No further actions available.
+                {pureRequested
+                  ? "No store actions yet. Accept/Reject happens on the mobile app — status updates here automatically."
+                  : accepted
+                    ? "Waiting for customer payment. After payment this moves to Pending."
+                    : "This request was rejected on mobile. No further actions available."}
               </OrderLifecycleActionsHint>
             )}
 
@@ -317,22 +285,6 @@ export function OrderDetailPage({ id }: { id: string }) {
             setStartOpen(false);
           } catch {}
         }}
-      />
-
-      <ConfirmationDialog
-        open={rejectOpen}
-        onOpenChange={setRejectOpen}
-        title="Reject Request"
-        description={`Reject food request #${orderRef}? It will stay in Requested with Rejected status.`}
-        confirmLabel="Reject Request"
-        onConfirm={async () => {
-          try {
-            await rejectOrder(order.id);
-            setRejectOpen(false);
-          } catch {}
-        }}
-        isLoading={rejecting}
-        variant="destructive"
       />
 
       <AbandonOrderDialog

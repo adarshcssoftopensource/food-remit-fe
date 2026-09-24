@@ -21,7 +21,7 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
   requested: {
     title: "Requested Orders",
     description:
-      "Food requests — Accept or Reject. Accepted stay here until paid, then move to Pending.",
+      "Food requests from mobile. Status shows Requested, Accepted, or Rejected. After payment, Accepted moves to Pending.",
   },
   pending: {
     title: "Pending",

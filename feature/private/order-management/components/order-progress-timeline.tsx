@@ -110,10 +110,10 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
       key: "response",
       label: rejected ? "Rejected" : accepted || paymentDone ? "Accepted" : "Accept / Reject",
       subtitle: rejected
-        ? "Request was rejected — remains in Requested tab"
+        ? "Rejected on mobile — remains in Requested tab"
         : pureRequested
-          ? "Respond to this food request"
-          : "Request accepted — waiting for payment",
+          ? "Accept/Reject is done on the mobile app"
+          : "Accepted on mobile — waiting for payment",
       stamp: createdStamp,
       state: responseState,
       Icon: rejected ? X : ThumbsUp,
@@ -194,7 +194,7 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
         <div>
           <p className="text-sm font-bold text-slate-900 dark:text-white">Order journey</p>
           <p className="text-[11px] text-slate-500">
-            Accept/Reject → Payment → Pending → Processing → Picked Up → Close
+            Mobile Accept/Reject → Payment → Pending → Processing → Picked Up → Close
           </p>
         </div>
         {pureRequested ? (

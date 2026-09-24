@@ -9,7 +9,7 @@ interface OrderInfoBannerProps {
 
 const DEFAULTS: Record<NonNullable<OrderInfoBannerProps["variant"]>, string> = {
   requested:
-    "Accept or Reject food requests here. Accepted orders stay in Requested until payment, then move to Pending for assign/start. Rejected orders stay visible with Rejected status.",
+    "Food requests are accepted or rejected on the mobile app. Here you only track status — Requested, Accepted (awaiting payment), or Rejected. After payment, Accepted orders move to Pending.",
   "employee-start":
     "Pending orders can be started by any employee. Once you start an order, it will be marked as Processing and your name will be recorded.",
   "manager-assign":
