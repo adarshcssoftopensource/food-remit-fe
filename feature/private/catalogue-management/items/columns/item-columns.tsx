@@ -17,7 +17,7 @@ export function getItemColumns(
   onView: (item: ItemData) => void,
   onImageClick?: (image: string) => void,
   isStoreScoped?: boolean,
-  isSuperAdmin?: boolean,
+  canManageMarkup?: boolean,
 ): ColumnDef<ItemData>[] {
   const columns: ColumnDef<ItemData>[] = [
     {
@@ -137,7 +137,7 @@ export function getItemColumns(
       header: () => <div className="text-center">Automated Markup</div>,
       cell: ({ row }) => (
         <div className="flex justify-center">
-          <ItemAdminShareCell item={row.original} isSuperAdmin={!!isSuperAdmin} />
+          <ItemAdminShareCell item={row.original} isSuperAdmin={!!canManageMarkup} />
         </div>
       ),
     },
@@ -157,10 +157,10 @@ export function getItemColumns(
     },
   ];
 
-  return isStoreScoped
-    ? columns.filter((col) => {
-        const colId = col.id || (col as any).accessorKey;
-        return colId !== "createdBy" && colId !== "storeName";
-      })
-    : columns;
+  return columns.filter((col) => {
+    const colId = col.id || (col as any).accessorKey;
+    if (!canManageMarkup && colId === "adminShare") return false;
+    if (isStoreScoped && (colId === "createdBy" || colId === "storeName")) return false;
+    return true;
+  });
 }

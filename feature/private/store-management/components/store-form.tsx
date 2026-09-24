@@ -54,6 +54,7 @@ export function StoreForm({
   isSubmitting = false,
   mode = "add",
 }: StoreFormProps) {
+  const { canViewPlatformFees, isSuperAdmin } = useProfile();
   const {
     control,
     handleSubmit,
@@ -91,7 +92,6 @@ export function StoreForm({
     mode: "onBlur",
   });
 
-  const { isSuperAdmin } = useProfile();
   const isNonCommissionDisabled = isSuperAdmin && mode === "edit";
 
   const { countries: apiCountries } = useGetCountriesDropdown();
@@ -298,49 +298,51 @@ export function StoreForm({
                 )}
               />
 
-              <Controller
-                name="foodRemitCommission"
-                control={control}
-                render={({ field }) => (
-                  <FormField
-                    label="Food Remit Store Commission %"
-                    error={errors.foodRemitCommission?.message}
-                  >
-                    <Input
-                      {...field}
-                      id="foodRemitCommission"
-                      type="number"
-                      min={0}
-                      max={100}
-                      step={0.01}
-                      placeholder="Enter Commission %"
-                      className="h-11 rounded-xl border-slate-200"
-                      value={field.value ?? ""}
-                      onFocus={(e) => {
-                        e.target.select();
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
-                          e.preventDefault();
-                        }
-                      }}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val === "") {
-                          field.onChange("");
-                          return;
-                        }
-                        const num = Number(val);
-                        if (!isNaN(num) && num > 100) {
-                          field.onChange(100);
-                          return;
-                        }
-                        field.onChange(val);
-                      }}
-                    />
-                  </FormField>
-                )}
-              />
+              {canViewPlatformFees && (
+                <Controller
+                  name="foodRemitCommission"
+                  control={control}
+                  render={({ field }) => (
+                    <FormField
+                      label="Food Remit Store Commission %"
+                      error={errors.foodRemitCommission?.message}
+                    >
+                      <Input
+                        {...field}
+                        id="foodRemitCommission"
+                        type="number"
+                        min={0}
+                        max={100}
+                        step={0.01}
+                        placeholder="Enter Commission %"
+                        className="h-11 rounded-xl border-slate-200"
+                        value={field.value ?? ""}
+                        onFocus={(e) => {
+                          e.target.select();
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
+                            e.preventDefault();
+                          }
+                        }}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            field.onChange("");
+                            return;
+                          }
+                          const num = Number(val);
+                          if (!isNaN(num) && num > 100) {
+                            field.onChange(100);
+                            return;
+                          }
+                          field.onChange(val);
+                        }}
+                      />
+                    </FormField>
+                  )}
+                />
+              )}
             </div>
           </div>
 

@@ -15,6 +15,7 @@ import { Building2, Expand, Mail, MapPin, Phone, UserCircle } from "lucide-react
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { use, useState } from "react";
+import { useProfile } from "@/components/providers/profile-provider";
 import StoreScaltonLoading from "./store-scalton-loading";
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -31,6 +32,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 export default function StoreViewPage({ params }: StoreViewPageProps) {
   const router = useRouter();
   const { id } = use(params);
+  const { canViewPlatformFees } = useProfile();
 
   const { data: store, isLoading } = useGetStore(id);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -150,14 +152,16 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                   <span className="font-semibold text-slate-700">{store.storeTax.toFixed(2)}%</span>
                 }
               />
-              <InfoRow
-                label="Commission"
-                value={
-                  <span className="bg-primary/10 text-primary rounded-lg px-3 py-1 text-sm font-bold">
-                    {store.foodRemitCommission.toFixed(2)}%
-                  </span>
-                }
-              />
+              {canViewPlatformFees && (
+                <InfoRow
+                  label="Commission"
+                  value={
+                    <span className="bg-primary/10 text-primary rounded-lg px-3 py-1 text-sm font-bold">
+                      {store.foodRemitCommission.toFixed(2)}%
+                    </span>
+                  }
+                />
+              )}
               <InfoRow label="Country" value={store.storeCountryName} />
               <InfoRow label="City" value={store.storeCityName} />
             </div>

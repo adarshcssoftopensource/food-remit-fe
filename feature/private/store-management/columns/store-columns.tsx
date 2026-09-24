@@ -44,87 +44,98 @@ function AdminBadge({
   );
 }
 
-export const storeColumns = (onImageClick?: (image: string) => void): ColumnDef<StoreData>[] => [
-  {
-    accessorKey: "id",
-    header: "S No.",
-    cell: ({ row, table }) => (
-      <span className="pl-2 font-mono text-xs font-medium text-slate-400">
-        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
-          row.index +
-          1}
-      </span>
-    ),
-    enableSorting: false,
-  },
-  {
-    accessorKey: "storeName",
-    header: "Store Name",
-    cell: ({ row }) => (
-      <ImageNameCell
-        name={row.original.storeName}
-        image={row.original.storeImage || "/default-store.svg"}
-        type="profile"
-        onImageClick={onImageClick}
-        enableZoom={!!onImageClick}
-      />
-    ),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "storeAddress",
-    header: "Store Address",
-    cell: ({ row }) => (
-      <TruncatedTextCell
-        maxWords={1}
-        text={`${row.original.storeAddress}${row.original.address2 ? `, ${row.original.address2}` : ""}`}
-        className="max-w-45 cursor-default text-sm"
-      />
-    ),
-  },
-  {
-    accessorKey: "storeCountry",
-    header: "Country",
-    cell: ({ row }) => (
-      <span className="text-sm font-medium text-blue-600">{row.original.storeCountryName}</span>
-    ),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "storeCity",
-    header: "City",
-    cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.storeCityName}</span>,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "storeTax",
-    header: "Government Store Tax",
-    cell: ({ row }) => <TaxCell value={row.original.storeTax} />,
-  },
-  {
-    accessorKey: "foodRemitCommission",
-    header: "Food Remit Commission",
-    cell: ({ row }) => <CommissionCell value={row.original.foodRemitCommission} />,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <StatusBadge status={row.original.status} />,
-  },
-  {
-    id: "approvedBy",
-    header: "Approved By",
-    cell: ({ row }) => <AdminBadge admin={row.original.approvedByAdmin} />,
-  },
-  // {
-  //   id: "statusChangedBy",
-  //   header: "Status Changed By",
-  //   cell: ({ row }) => <AdminBadge admin={row.original.statusUpdatedByAdmin} />,
-  // },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => <StoreActionsCell store={row.original} />,
-    enableSorting: false,
-  },
-];
+export const storeColumns = (
+  onImageClick?: (image: string) => void,
+  options?: { showPlatformFees?: boolean },
+): ColumnDef<StoreData>[] => {
+  const showPlatformFees = !!options?.showPlatformFees;
+  const columns: ColumnDef<StoreData>[] = [
+    {
+      accessorKey: "id",
+      header: "S No.",
+      cell: ({ row, table }) => (
+        <span className="pl-2 font-mono text-xs font-medium text-slate-400">
+          {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+            row.index +
+            1}
+        </span>
+      ),
+      enableSorting: false,
+    },
+    {
+      accessorKey: "storeName",
+      header: "Store Name",
+      cell: ({ row }) => (
+        <ImageNameCell
+          name={row.original.storeName}
+          image={row.original.storeImage || "/default-store.svg"}
+          type="profile"
+          onImageClick={onImageClick}
+          enableZoom={!!onImageClick}
+        />
+      ),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "storeAddress",
+      header: "Store Address",
+      cell: ({ row }) => (
+        <TruncatedTextCell
+          maxWords={1}
+          text={`${row.original.storeAddress}${row.original.address2 ? `, ${row.original.address2}` : ""}`}
+          className="max-w-45 cursor-default text-sm"
+        />
+      ),
+    },
+    {
+      accessorKey: "storeCountry",
+      header: "Country",
+      cell: ({ row }) => (
+        <span className="text-sm font-medium text-blue-600">{row.original.storeCountryName}</span>
+      ),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "storeCity",
+      header: "City",
+      cell: ({ row }) => (
+        <span className="text-sm text-slate-600">{row.original.storeCityName}</span>
+      ),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "storeTax",
+      header: "Government Store Tax",
+      cell: ({ row }) => <TaxCell value={row.original.storeTax} />,
+    },
+  ];
+
+  if (showPlatformFees) {
+    columns.push({
+      accessorKey: "foodRemitCommission",
+      header: "Food Remit Commission",
+      cell: ({ row }) => <CommissionCell value={row.original.foodRemitCommission} />,
+    });
+  }
+
+  columns.push(
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+    },
+    {
+      id: "approvedBy",
+      header: "Approved By",
+      cell: ({ row }) => <AdminBadge admin={row.original.approvedByAdmin} />,
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => <StoreActionsCell store={row.original} />,
+      enableSorting: false,
+    },
+  );
+
+  return columns;
+};

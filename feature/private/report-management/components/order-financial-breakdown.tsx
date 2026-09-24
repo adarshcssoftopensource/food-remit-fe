@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
+import { useProfile } from "@/components/providers/profile-provider";
 import { BarChart3, CreditCard, Landmark } from "lucide-react";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 
@@ -228,8 +229,9 @@ export function OrderFinancialBreakdown({
   foodRemitEarnings,
   vendorSettlement,
 }: OrderFinancialBreakdownProps) {
+  const { canViewPlatformFees } = useProfile();
   const cp = customerPayment;
-  const fr = foodRemitEarnings;
+  const fr = canViewPlatformFees ? foodRemitEarnings : undefined;
   const vs = vendorSettlement;
 
   const showDiscount =
@@ -258,7 +260,9 @@ export function OrderFinancialBreakdown({
           totalValue={cp?.totalCustomerPaid || "₹0.00"}
           rows={[
             {
-              label: `Item Price (Incl. Markup ${cp?.itemMarkupPercent || "0%"})`,
+              label: canViewPlatformFees
+                ? `Item Price (Incl. Markup ${cp?.itemMarkupPercent || "0%"})`
+                : "Item Price",
               value: cp?.merchandiseSubtotal || "₹0.00",
             },
             ...(showDiscount
@@ -274,7 +278,9 @@ export function OrderFinancialBreakdown({
               label: `Store Govt Tax (${cp?.storeTaxPercent || "0%"})`,
               value: cp?.storeTax || "₹0.00",
             },
-            { label: "Processing Fee", value: cp?.processingFee || "₹0.00" },
+            ...(canViewPlatformFees
+              ? [{ label: "Processing Fee", value: cp?.processingFee || "₹0.00" }]
+              : []),
           ]}
           refundAmount={cp?.refundAmount}
           actualLabel="Actual Retained Amount"
@@ -330,10 +336,14 @@ export function OrderFinancialBreakdown({
             ...(vs?.govtTax
               ? [{ label: `Store Govt Tax (${vs?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
               : []),
-            {
-              label: `Food Remit Commission (${vs?.commissionPercent || "0%"})`,
-              value: vs?.commissionAmount || "₹0.00",
-            },
+            ...(canViewPlatformFees
+              ? [
+                  {
+                    label: `Food Remit Commission (${vs?.commissionPercent || "0%"})`,
+                    value: vs?.commissionAmount || "₹0.00",
+                  },
+                ]
+              : []),
           ]}
           refundDeduction={vs?.refundDeduction}
           actualLabel="Actual Settlement"

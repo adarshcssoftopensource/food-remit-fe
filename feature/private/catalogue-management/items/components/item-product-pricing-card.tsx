@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useProfile } from "@/components/providers/profile-provider";
 import { cn } from "@/lib/utils";
 import { Hash, Info, MapPin, Receipt, Wallet } from "lucide-react";
 import type { ItemData } from "../types/item.types";
@@ -23,6 +24,7 @@ type ReceiptLine = {
 };
 
 export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
+  const { canViewPlatformFees } = useProfile();
   const pricing = item.pricing;
   const currencySymbol = pricing?.currencySymbol || "-";
   const countryLabel = pricing?.countryName || item.pricingCountry?.name || "your location";
@@ -60,11 +62,15 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
               },
             ]
           : []),
-        {
-          label: `Food Remit Markup (${pricing.markupPercent}%)`,
-          value: `+ ${formatMoney(pricing.markupAmount, currencySymbol)}`,
-          addon: true,
-        },
+        ...(canViewPlatformFees
+          ? [
+              {
+                label: `Food Remit Markup (${pricing.markupPercent}%)`,
+                value: `+ ${formatMoney(pricing.markupAmount, currencySymbol)}`,
+                addon: true,
+              },
+            ]
+          : []),
       ]
     : [];
 
@@ -183,31 +189,35 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
                   </p>
                 </div>
                 <p className="text-[11px] text-slate-400 sm:text-xs">
-                  Tax = Set Food Remit Markup Per Item
+                  {canViewPlatformFees
+                    ? "Tax = Set Food Remit Markup Per Item"
+                    : "Store government tax applied on discounted price"}
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-3 rounded-2xl border border-amber-200/80 bg-amber-50/80 p-4 sm:p-5 dark:border-amber-500/20 dark:bg-amber-500/10">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
-                <Wallet className="size-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <p className="text-sm font-semibold text-amber-950 dark:text-amber-100">
-                    Processing Fee (per order)
-                  </p>
-                  <p className="font-mono text-lg font-bold text-amber-900 tabular-nums dark:text-amber-50">
-                    {formatMoney(pricing.processingFeeAmount, currencySymbol)}
+            {canViewPlatformFees && (
+              <div className="flex gap-3 rounded-2xl border border-amber-200/80 bg-amber-50/80 p-4 sm:p-5 dark:border-amber-500/20 dark:bg-amber-500/10">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
+                  <Wallet className="size-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <p className="text-sm font-semibold text-amber-950 dark:text-amber-100">
+                      Processing Fee (per order)
+                    </p>
+                    <p className="font-mono text-lg font-bold text-amber-900 tabular-nums dark:text-amber-50">
+                      {formatMoney(pricing.processingFeeAmount, currencySymbol)}
+                    </p>
+                  </div>
+                  <p className="mt-1 flex items-start gap-1.5 text-xs text-amber-800/90 dark:text-amber-200/80">
+                    <Info className="mt-0.5 size-3.5 shrink-0" />
+                    Added once on the whole order for {countryLabel} — not on each item. Order
+                    payable = sum of item totals + this fee.
                   </p>
                 </div>
-                <p className="mt-1 flex items-start gap-1.5 text-xs text-amber-800/90 dark:text-amber-200/80">
-                  <Info className="mt-0.5 size-3.5 shrink-0" />
-                  Added once on the whole order for {countryLabel} — not on each item. Order payable
-                  = sum of item totals + this fee.
-                </p>
               </div>
-            </div>
+            )}
           </>
         )}
       </CardContent>

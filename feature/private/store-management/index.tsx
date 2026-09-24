@@ -9,12 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { STORE_STAT_CONFIG } from "@/constants/store-management";
 import { Store } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import { useProfile } from "@/components/providers/profile-provider";
 import { storeColumns } from "./columns/store-columns";
 import { AddStoreDialog } from "./components/add-store-dialog";
 import { StoreFilters } from "./components/store-filters";
 import { useStoreFilters } from "./hooks/useStoreFilters";
 
 export function StoreManagement() {
+  const { canViewPlatformFees } = useProfile();
   const {
     fromDate,
     setFromDate,
@@ -49,7 +51,10 @@ export function StoreManagement() {
     setLightboxSrc(image);
   }, []);
 
-  const columns = useMemo(() => storeColumns(handleImageClick), [handleImageClick]);
+  const columns = useMemo(
+    () => storeColumns(handleImageClick, { showPlatformFees: canViewPlatformFees }),
+    [handleImageClick, canViewPlatformFees],
+  );
 
   return (
     <div className="space-y-6">

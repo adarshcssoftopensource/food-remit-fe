@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { BarChart3, CreditCard, Landmark } from "lucide-react";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 import type { OrderData } from "../types/order.types";
+import { useProfile } from "@/components/providers/profile-provider";
 
 interface FinancialRowProps {
   label: string;
@@ -135,6 +136,7 @@ interface OrderFinancialsProps {
 }
 
 export function OrderFinancials({ order }: OrderFinancialsProps) {
+  const { canViewPlatformFees } = useProfile();
   const cp = order.customerPayment;
   const fr = order.foodRemitEarnings;
   const vs = order.vendorSettlement;
@@ -142,8 +144,35 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
   const showDiscount =
     cp?.discountAmount && cp.discountAmount !== "₹0.00" && cp.discountAmount !== "$0.00";
 
+  const customerRows: FinancialRowProps[] = [
+    {
+      label: canViewPlatformFees
+        ? `Item Price (Including Markup ${cp?.itemMarkupPercent || "0%"})`
+        : "Item Price",
+      value: cp?.merchandiseSubtotal || "0.00",
+    },
+    ...(showDiscount
+      ? [
+          {
+            label: "Discount Applied",
+            value: `-${cp!.discountAmount}`,
+            highlight: "green" as const,
+          },
+        ]
+      : []),
+    {
+      label: `Store Govt tax (${cp?.storeTaxPercent || "0%"})`,
+      value: cp?.storeTax || "0.00",
+    },
+    ...(canViewPlatformFees
+      ? [{ label: "Processing Fee", value: cp?.processingFee || "0.00" }]
+      : []),
+  ];
+
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div
+      className={`grid grid-cols-1 gap-6 ${canViewPlatformFees ? "md:grid-cols-3" : "md:grid-cols-2"}`}
+    >
       <FinancialCard
         step={1}
         title="Customer Payment"
@@ -154,26 +183,7 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
         totalLabel="Order Total"
         totalColor="text-blue-600 dark:text-blue-400"
         totalValue={cp?.totalCustomerPaid || "0.00"}
-        rows={[
-          {
-            label: `Item Price (Including Markup ${cp?.itemMarkupPercent || "0%"})`,
-            value: cp?.merchandiseSubtotal || "0.00",
-          },
-          ...(showDiscount
-            ? [
-                {
-                  label: "Discount Applied",
-                  value: `-${cp!.discountAmount}`,
-                  highlight: "green" as const,
-                },
-              ]
-            : []),
-          {
-            label: `Store Govt tax (${cp?.storeTaxPercent || "0%"})`,
-            value: cp?.storeTax || "0.00",
-          },
-          { label: "Processing Fee", value: cp?.processingFee || "0.00" },
-        ]}
+        rows={customerRows}
         refundAmount={cp?.refundAmount}
         actualLabel="Actual Amount Retained"
         actualValue={cp?.actualRetainedAmount}
@@ -181,34 +191,36 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
         paymentStatus={cp?.paymentStatus}
       />
 
-      <FinancialCard
-        step={2}
-        title="Food Remit Earnings"
-        icon={<BarChart3 className="size-4 text-purple-500" />}
-        headerBg="bg-purple-50/30 dark:bg-purple-950/20"
-        headerBorder="border-purple-50/50 dark:border-purple-900/20"
-        borderColor="border-purple-100 dark:border-purple-900/30"
-        totalLabel="Total"
-        totalColor="text-purple-600 dark:text-purple-400"
-        totalValue={fr?.totalFoodRemitRevenue || "0.00"}
-        rows={[
-          {
-            label: `Food Remit Markup(${fr?.markupPercent || "0%"})`,
-            value: fr?.markupAmount || "0.00",
-          },
-          {
-            label: `Food Remit commissions(${fr?.commissionPercent || "0%"})`,
-            value: fr?.commissionAmount || "0.00",
-          },
-          { label: "Processing Fee", value: fr?.processingFee || "0.00" },
-        ]}
-        refundDeduction={fr?.refundDeduction}
-        actualLabel="Actual Revenue"
-        actualValue={fr?.actualRevenue}
-      />
+      {canViewPlatformFees && (
+        <FinancialCard
+          step={2}
+          title="Food Remit Earnings"
+          icon={<BarChart3 className="size-4 text-purple-500" />}
+          headerBg="bg-purple-50/30 dark:bg-purple-950/20"
+          headerBorder="border-purple-50/50 dark:border-purple-900/20"
+          borderColor="border-purple-100 dark:border-purple-900/30"
+          totalLabel="Total"
+          totalColor="text-purple-600 dark:text-purple-400"
+          totalValue={fr?.totalFoodRemitRevenue || "0.00"}
+          rows={[
+            {
+              label: `Food Remit Markup(${fr?.markupPercent || "0%"})`,
+              value: fr?.markupAmount || "0.00",
+            },
+            {
+              label: `Food Remit commissions(${fr?.commissionPercent || "0%"})`,
+              value: fr?.commissionAmount || "0.00",
+            },
+            { label: "Processing Fee", value: fr?.processingFee || "0.00" },
+          ]}
+          refundDeduction={fr?.refundDeduction}
+          actualLabel="Actual Revenue"
+          actualValue={fr?.actualRevenue}
+        />
+      )}
 
       <FinancialCard
-        step={3}
+        step={canViewPlatformFees ? 3 : 2}
         title="Vendor Settlement"
         icon={<Landmark className="size-4 text-emerald-500" />}
         headerBg="bg-emerald-50/30 dark:bg-emerald-950/20"
@@ -229,10 +241,14 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
           ...(vs?.govtTax
             ? [{ label: `Store Govt tax(${cp?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
             : []),
-          {
-            label: `Food Remit Commission(${vs?.commissionPercent || "0%"})`,
-            value: vs?.commissionAmount || "0.00",
-          },
+          ...(canViewPlatformFees
+            ? [
+                {
+                  label: `Food Remit Commission(${vs?.commissionPercent || "0%"})`,
+                  value: vs?.commissionAmount || "0.00",
+                },
+              ]
+            : []),
         ]}
         refundDeduction={vs?.refundDeduction}
         actualLabel="Actual Settlement"

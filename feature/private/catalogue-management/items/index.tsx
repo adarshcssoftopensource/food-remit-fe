@@ -34,7 +34,7 @@ import { uploadItemCsvFile } from "./hooks/use-upload-item-csv";
 import { ItemData } from "./types/item.types";
 
 export function ItemsManagement() {
-  const { profile, needsBankVerification } = useProfile();
+  const { profile, needsBankVerification, canViewPlatformFees } = useProfile();
   const queryClient = useQueryClient();
   const isStoreManager =
     profile?.role === "store_manager" ||
@@ -183,12 +183,16 @@ export function ItemsManagement() {
     profile?.roleCode === "STORE_MANAGER" ||
     profile?.roleCode === "EMPLOYEE";
 
-  const isSuperAdmin = profile?.role === "super_admin" || profile?.roleCode === "SUPER_ADMIN";
-
   const columns = useMemo(
     () =>
-      getItemColumns(handleEdit, handleViewDetails, handleImageClick, isStoreScoped, isSuperAdmin),
-    [handleEdit, handleViewDetails, handleImageClick, isStoreScoped, isSuperAdmin],
+      getItemColumns(
+        handleEdit,
+        handleViewDetails,
+        handleImageClick,
+        isStoreScoped,
+        canViewPlatformFees,
+      ),
+    [handleEdit, handleViewDetails, handleImageClick, isStoreScoped, canViewPlatformFees],
   );
 
   const getRowClassName = useCallback((row: import("@tanstack/react-table").Row<ItemData>) => {

@@ -16,7 +16,7 @@ import { useMemo } from "react";
 import { Clock3, Globe, Mail, MapPin, Percent, Receipt, ShieldCheck } from "lucide-react";
 
 export function SettingsPage() {
-  const { hasPermission, profile } = useProfile();
+  const { hasPermission, profile, canViewPlatformFees } = useProfile();
   const isStoreManager = profile?.roleCode === "STORE_MANAGER";
   const isMobile = useIsMobile();
 
@@ -42,18 +42,22 @@ export function SettingsPage() {
         permission: "cityManagement",
         icon: <MapPin className="size-4" />,
       },
-      {
-        value: "processing-fee",
-        label: "Processing Fee",
-        component: <ProcessingFee />,
-        icon: <Receipt className="size-4" />,
-      },
-      {
-        value: "markup",
-        label: "Markup",
-        component: <MarkupManagement />,
-        icon: <Percent className="size-4" />,
-      },
+      ...(canViewPlatformFees
+        ? [
+            {
+              value: "processing-fee",
+              label: "Processing Fee",
+              component: <ProcessingFee />,
+              icon: <Receipt className="size-4" />,
+            },
+            {
+              value: "markup",
+              label: "Markup",
+              component: <MarkupManagement />,
+              icon: <Percent className="size-4" />,
+            },
+          ]
+        : []),
       ...(isStoreManager
         ? [
             {
@@ -75,7 +79,7 @@ export function SettingsPage() {
     return allTabs.filter(
       (tab) => !("permission" in tab) || !tab.permission || hasPermission(tab.permission),
     );
-  }, [hasPermission, isStoreManager]);
+  }, [hasPermission, isStoreManager, canViewPlatformFees]);
 
   return (
     <div className="space-y-6">

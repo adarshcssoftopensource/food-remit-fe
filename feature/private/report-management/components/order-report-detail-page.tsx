@@ -27,6 +27,7 @@ import { ORDER_ENDPOINTS } from "@/lib/api/endpoints/order.endpoints";
 import { useDebounce } from "@/lib/debounce";
 import { toast } from "sonner";
 import { getCurrencySymbol, cleanCurrencyDisplay } from "@/lib/utils/currency";
+import { useProfile } from "@/components/providers/profile-provider";
 import { OrderStatusBadge } from "./order-status-badge";
 import { OrderPartyCard } from "./order-party-card";
 import { OrderItemsTable, ItemStats, OrderItem } from "./order-items-table";
@@ -123,6 +124,7 @@ interface OrderDetailResponse {
 }
 
 export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPageProps) {
+  const { canViewPlatformFees } = useProfile();
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
@@ -353,39 +355,45 @@ export function OrderReportDetailPage({ orderId, onBack }: OrderReportDetailPage
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden rounded-2xl border border-purple-500/20 bg-purple-500/5 shadow-xs dark:bg-purple-950/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold tracking-wider text-purple-600 uppercase dark:text-purple-400">
-                Markup
-              </p>
-              <div className="flex size-7 items-center justify-center rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400">
-                <BadgeDollarSign className="size-4" />
-              </div>
-            </div>
-            <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
-              {markupDisplay}
-            </h3>
-            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">Food Remit Share</p>
-          </CardContent>
-        </Card>
+        {canViewPlatformFees && (
+          <>
+            <Card className="overflow-hidden rounded-2xl border border-purple-500/20 bg-purple-500/5 shadow-xs dark:bg-purple-950/20">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] font-bold tracking-wider text-purple-600 uppercase dark:text-purple-400">
+                    Markup
+                  </p>
+                  <div className="flex size-7 items-center justify-center rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400">
+                    <BadgeDollarSign className="size-4" />
+                  </div>
+                </div>
+                <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
+                  {markupDisplay}
+                </h3>
+                <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
+                  Food Remit Share
+                </p>
+              </CardContent>
+            </Card>
 
-        <Card className="overflow-hidden rounded-2xl border border-blue-500/20 bg-blue-500/5 shadow-xs dark:bg-blue-950/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold tracking-wider text-blue-600 uppercase dark:text-blue-400">
-                Processing Fee
-              </p>
-              <div className="flex size-7 items-center justify-center rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400">
-                <Receipt className="size-4" />
-              </div>
-            </div>
-            <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
-              {processingFeeDisplay}
-            </h3>
-            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">Platform Fee</p>
-          </CardContent>
-        </Card>
+            <Card className="overflow-hidden rounded-2xl border border-blue-500/20 bg-blue-500/5 shadow-xs dark:bg-blue-950/20">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] font-bold tracking-wider text-blue-600 uppercase dark:text-blue-400">
+                    Processing Fee
+                  </p>
+                  <div className="flex size-7 items-center justify-center rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400">
+                    <Receipt className="size-4" />
+                  </div>
+                </div>
+                <h3 className="mt-2 truncate text-xl font-black text-slate-900 dark:text-white">
+                  {processingFeeDisplay}
+                </h3>
+                <p className="text-muted-foreground mt-0.5 truncate text-[11px]">Platform Fee</p>
+              </CardContent>
+            </Card>
+          </>
+        )}
 
         <Card className="overflow-hidden rounded-2xl border border-indigo-500/20 bg-indigo-500/5 shadow-xs dark:bg-indigo-950/20">
           <CardContent className="p-4">

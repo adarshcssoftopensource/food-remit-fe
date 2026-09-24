@@ -7,6 +7,7 @@ import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";
 import { fetcher } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
+import { isPlatformFeeAdmin } from "@/lib/platform-fee-access";
 import {
   isBankStatusVerified,
   resolvePartnerBankStatus,
@@ -53,6 +54,8 @@ interface ProfileContextType {
   isLoading: boolean;
   isError: boolean;
   isSuperAdmin: boolean;
+  /** Super / Sub / Co Admin — markup + processing fee visibility */
+  canViewPlatformFees: boolean;
   hasPermission: (permissionKey: keyof ProfilePermissions | string) => boolean;
   isReadOnly: boolean;
   needsBankVerification: boolean;
@@ -86,6 +89,8 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     profileData?.roleCode === "CO_ADMIN" ||
     profileData?.role === "super_admin" ||
     profileData?.role === "co_admin";
+
+  const canViewPlatformFees = isPlatformFeeAdmin(profileData);
 
   const isStoreManager =
     profileData?.roleCode === "STORE_MANAGER" || profileData?.role === "store_manager";
@@ -143,6 +148,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         isLoading: false,
         isError: false,
         isSuperAdmin,
+        canViewPlatformFees,
         hasPermission,
         isReadOnly: profileData.isReadOnly || false,
         needsBankVerification,
