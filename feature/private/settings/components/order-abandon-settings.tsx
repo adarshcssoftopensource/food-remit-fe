@@ -132,7 +132,7 @@ export function OrderAbandonSettings() {
               These settings are <strong>global for all stores</strong>. When an order is{" "}
               <strong>Picked Up</strong> and nobody <strong>Closes</strong> it within the set days,
               the system auto-<strong>Abandons</strong> it everywhere, stores this remark with a{" "}
-              <code>[System]</code> tag, and emails sender &amp; receiver.
+              <code>System </code> tag, and emails sender &amp; receiver.
             </p>
           </div>
 
