@@ -13,6 +13,8 @@ export const SETTINGS_ENDPOINTS = {
   DELETE_CITY: (id: string) => `${ADMIN}/cities/${id}`,
   GET_MARKUP: `${ADMIN}/settings/markup`,
   UPDATE_MARKUP: `${ADMIN}/settings/markup`,
+  GET_AUTO_ABANDON: `${ADMIN}/settings/auto-abandon`,
+  UPDATE_AUTO_ABANDON: `${ADMIN}/settings/auto-abandon`,
   GET_PROCESSING_FEES: `${ADMIN}/settings/processing-fees`,
   UPDATE_PROCESSING_FEE: (countryId: string) => `${ADMIN}/settings/processing-fees/${countryId}`,
   GET_EMAIL_NOTIFICATIONS: `${ADMIN}/settings/email-notifications`,

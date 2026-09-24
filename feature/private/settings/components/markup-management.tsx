@@ -19,10 +19,13 @@ import { MarkupFormValues, markupSchema } from "../schema/markup.schema";
 import { useProfile } from "@/components/providers/profile-provider";
 import { Switch } from "@/components/ui/switch";
 
-export function MarkupManagement() {
+export function MarkupManagement({ readOnly: readOnlyProp = false }: { readOnly?: boolean }) {
   const { profile, isSuperAdmin } = useProfile();
   const isStoreManager =
-    profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager" || !isSuperAdmin;
+    readOnlyProp ||
+    profile?.roleCode === "STORE_MANAGER" ||
+    profile?.role === "store_manager" ||
+    !isSuperAdmin;
 
   const { data: markupData, isLoading } = useGetMarkup();
   const { mutateAsync: updateMarkup, isPending } = useUpdateMarkup();
@@ -85,7 +88,7 @@ export function MarkupManagement() {
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-slate-100 bg-linear-to-br from-slate-50 to-white p-4">
           <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
-            Current Tax (Markup)
+            Current Markup
           </p>
           <div className="mt-1 flex items-end gap-1">
             <p className="text-3xl font-black text-slate-700">
@@ -115,8 +118,8 @@ export function MarkupManagement() {
       <div className="flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
         <p className="text-xs text-rose-700">
-          This <span className="font-semibold">Tax</span> % (Set Markup) is an add-on - product base
-          price does not change. Applied on every item in the country currency. Set between
+          Markup Percentage is an add-on - product base price does not change. Applied on every item
+          in the country currency. Set between
           <span className="font-semibold"> 0% - 100%</span>.
         </p>
       </div>
@@ -128,7 +131,9 @@ export function MarkupManagement() {
               <TrendingUp className="h-4 w-4 text-rose-600" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-800">Set Tax (Markup) & Refund Policy</p>
+              <p className="text-sm font-bold text-slate-800">
+                Food Remit Markup / Platform Markup & Refund Policy
+              </p>
               <p className="text-xs text-slate-500">
                 Add-on tax % on every item & cancellation fee refundability toggle
               </p>

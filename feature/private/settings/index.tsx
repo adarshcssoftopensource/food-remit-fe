@@ -20,6 +20,18 @@ export function SettingsPage() {
   const isStoreManager = profile?.roleCode === "STORE_MANAGER";
   const isMobile = useIsMobile();
 
+  const roleCode = String(profile?.roleCode || "").toUpperCase();
+  const role = String(profile?.role || "").toLowerCase();
+  const isPureSuperAdmin = roleCode === "SUPER_ADMIN" || role === "super_admin";
+  const isSubOrCo =
+    roleCode === "SUB_ADMIN" ||
+    roleCode === "CO_ADMIN" ||
+    role === "sub_admin" ||
+    role === "co_admin";
+  // Super Admin always; Sub/Co Admin only when orderManagement permission is enabled
+  const canViewAutoAbandon =
+    isPureSuperAdmin || (isSubOrCo && profile?.permissions?.orderManagement === 1);
+
   const tabs = useMemo(() => {
     const allTabs = [
       {
@@ -58,14 +70,8 @@ export function SettingsPage() {
             },
           ]
         : []),
-      ...(isStoreManager
+      ...(canViewAutoAbandon
         ? [
-            {
-              value: "govt-tax",
-              label: "Govt Tax",
-              component: <GovtTaxManagement />,
-              icon: <ShieldCheck className="size-4" />,
-            },
             {
               value: "order-abandon",
               label: "Auto Abandon",
@@ -74,12 +80,28 @@ export function SettingsPage() {
             },
           ]
         : []),
+      ...(isStoreManager
+        ? [
+            {
+              value: "markup",
+              label: "Markup",
+              component: <MarkupManagement readOnly />,
+              icon: <Percent className="size-4" />,
+            },
+            {
+              value: "govt-tax",
+              label: "Govt Tax",
+              component: <GovtTaxManagement />,
+              icon: <ShieldCheck className="size-4" />,
+            },
+          ]
+        : []),
     ];
 
     return allTabs.filter(
       (tab) => !("permission" in tab) || !tab.permission || hasPermission(tab.permission),
     );
-  }, [hasPermission, isStoreManager, canViewPlatformFees]);
+  }, [hasPermission, isStoreManager, canViewPlatformFees, canViewAutoAbandon]);
 
   return (
     <div className="space-y-6">

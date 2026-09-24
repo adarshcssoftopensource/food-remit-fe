@@ -21,6 +21,7 @@ export const API_CACHE_KEYS = {
   SETTINGS_CITIES: ["settings-cities"],
   SETTINGS_CITIES_DROPDOWN: ["settings-cities-dropdown"],
   SETTINGS_MARKUP: ["settings-markup"],
+  SETTINGS_AUTO_ABANDON: ["settings-auto-abandon"],
   SETTINGS_PROCESSING_FEES: ["settings-processing-fees"],
   SETTINGS_EMAIL_NOTIFICATIONS: ["settings-email-notifications"],
 
