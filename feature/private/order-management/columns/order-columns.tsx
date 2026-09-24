@@ -51,7 +51,7 @@ const selectColumn: ColumnDef<OrderData> = {
             <TooltipContent side="right">
               <span className="flex items-center gap-1.5 font-medium">
                 <UserCheck className="size-3.5 text-emerald-400" />
-                Only Pending orders can be assigned
+                Only paid Pending orders can be assigned
               </span>
             </TooltipContent>
           </Tooltip>

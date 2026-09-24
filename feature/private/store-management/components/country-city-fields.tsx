@@ -12,6 +12,7 @@ export function CountryCityFields({
   countryError,
   cityError,
   disabled = false,
+  countryDisabled = false,
 }: {
   countryValue: string;
   onCountryChange: (v: string, country?: CountryDropdownItem) => void;
@@ -24,6 +25,7 @@ export function CountryCityFields({
   onStateChange?: (v: string) => void;
   stateError?: string;
   disabled?: boolean;
+  countryDisabled?: boolean;
 }) {
   return (
     <>
@@ -39,7 +41,7 @@ export function CountryCityFields({
           }}
           placeholder="Select Country"
           includeAll={false}
-          disabled={disabled}
+          disabled={disabled || countryDisabled}
           invalid={!!countryError}
           className={countryError ? "border-red-500 bg-red-50" : ""}
         />

@@ -1,5 +1,6 @@
 export type OrderSectionKey =
   | "all"
+  | "requested"
   | "pending"
   | "processing"
   | "completed"
@@ -16,6 +17,10 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
   all: {
     title: "All Orders",
     description: "View and handle incoming store orders.",
+  },
+  requested: {
+    title: "Requested Orders",
+    description: "Unpaid food requests. They move to Pending once payment is completed.",
   },
   pending: {
     title: "Pending",
@@ -43,7 +48,7 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
   },
   "requested-orders": {
     title: "Requested Orders",
-    description: "Track requested orders awaiting fulfillment.",
+    description: "Unpaid food requests awaiting payment.",
   },
   preparing: {
     title: "Preparing",
@@ -61,6 +66,7 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
 
 export const ORDER_TABS: { label: string; value: OrderSectionKey }[] = [
   { label: "All Orders", value: "all" },
+  { label: "Requested", value: "requested" },
   { label: "Pending", value: "pending" },
   { label: "Processing", value: "processing" },
   { label: "Picked Up", value: "completed" },
@@ -73,6 +79,7 @@ export function normalizeOrderTab(tab: string | null): OrderSectionKey {
   if (tab === "all-orders") return "all";
   if (tab === "completed-orders") return "completed";
   if (tab === "preparing" || tab === "processing") return "processing";
+  if (tab === "requested-orders") return "requested";
   if (ORDER_TABS.some((t) => t.value === tab)) return tab as OrderSectionKey;
   return "all";
 }

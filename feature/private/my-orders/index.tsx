@@ -71,7 +71,12 @@ export function OrdersManagementPage() {
         description="Start pending store orders, prepare them, then mark ready for pickup."
       />
 
-      <WorkflowSummaryCards counts={counts} activeTab={activeTab} onSelect={setActiveTab} />
+      <WorkflowSummaryCards
+        counts={counts}
+        activeTab={activeTab}
+        onSelect={setActiveTab}
+        showRequested={false}
+      />
 
       <ModuleFilters
         title="Filter Orders"

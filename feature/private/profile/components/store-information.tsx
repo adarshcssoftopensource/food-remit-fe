@@ -86,7 +86,7 @@ export function StoreInformation() {
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<StoreInfoValues>({
     resolver: zodResolver(storeInfoSchema),
     defaultValues: {
@@ -161,6 +161,7 @@ export function StoreInformation() {
 
       await updateStoreMutation.mutateAsync(formData as any);
       successToast({ title: "Store information updated successfully!" });
+      reset(values);
     } catch {}
   };
 
@@ -328,6 +329,7 @@ export function StoreInformation() {
                         countryError={errors.storeCountry?.message}
                         cityError={errors.storeCity?.message}
                         disabled={needsBankVerification}
+                        countryDisabled={true}
                       />
                     )}
                   />
@@ -368,7 +370,7 @@ export function StoreInformation() {
               <div className="flex justify-end border-t border-slate-100 pt-6 dark:border-slate-800">
                 <Button
                   type="submit"
-                  disabled={updateStoreMutation.isPending}
+                  disabled={!isDirty || updateStoreMutation.isPending}
                   className="h-12 w-full rounded-xl bg-[#1B3A8C] px-8 text-sm font-bold text-white shadow-md transition-all hover:bg-[#1B3A8C]/90 hover:shadow-lg sm:w-auto dark:bg-indigo-600 dark:hover:bg-indigo-700"
                 >
                   {updateStoreMutation.isPending ? "Saving changes..." : "Save Store Changes"}

@@ -27,9 +27,14 @@ export const PROCESSING_STATUSES = [
   ORDER_STATUS.OUT_FOR_DELIVERY_ALT,
 ] as const;
 
-export type OrderWorkflowTab = "all" | "pending" | "processing" | "completed" | "history";
+export type OrderWorkflowTab =
+  "all" | "requested" | "pending" | "processing" | "completed" | "history";
 
 export type HistorySubFilter = "all" | "picked-up" | "abandoned";
+
+export function isRequestedOrder(order: { orderStatus: number }): boolean {
+  return order.orderStatus === ORDER_STATUS.REQUESTED;
+}
 
 export function isPendingOrder(order: {
   orderStatus: number;
@@ -49,7 +54,15 @@ export function getDisplayStatus(order: {
   finalStatus?: number | null;
 }): {
   label: string;
-  tone: "pending" | "processing" | "completed" | "picked-up" | "abandoned" | "closed" | "other";
+  tone:
+    | "requested"
+    | "pending"
+    | "processing"
+    | "completed"
+    | "picked-up"
+    | "abandoned"
+    | "closed"
+    | "other";
 } {
   if (order.orderStatus === ORDER_STATUS.CLOSED) {
     if (order.finalStatus === FINAL_STATUS.PICKED_UP) {
@@ -60,6 +73,7 @@ export function getDisplayStatus(order: {
     }
     return { label: "Closed", tone: "closed" };
   }
+  if (isRequestedOrder(order)) return { label: "Requested", tone: "requested" };
   if (isPendingOrder(order)) return { label: "Pending", tone: "pending" };
   if (isProcessingOrder(order)) return { label: "Processing", tone: "processing" };
   if (order.orderStatus === ORDER_STATUS.COMPLETED) {

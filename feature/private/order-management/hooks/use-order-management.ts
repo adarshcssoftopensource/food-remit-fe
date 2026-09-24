@@ -68,6 +68,8 @@ export function useOrderManagement(
 
   if (normalized === "all") {
     workflow = "active";
+  } else if (normalized === "requested" || section === "requested-orders") {
+    workflow = "requested";
   } else if (normalized === "pending") {
     workflow = "pending";
   } else if (normalized === "processing") {
@@ -80,9 +82,6 @@ export function useOrderManagement(
     if (historyFilter === "abandoned") finalStatus = FINAL_STATUS.ABANDONED;
   } else if (section === "sent-orders") {
     type = 1;
-    excludeStatus = "2,5,6,9,11";
-  } else if (section === "requested-orders") {
-    type = 2;
     excludeStatus = "2,5,6,9,11";
   } else if (section === "partial-orders") {
     status = "9";

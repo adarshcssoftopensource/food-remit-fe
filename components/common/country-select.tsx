@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronDown, Flag, Loader2, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +58,16 @@ export function CountrySelect({
 }: CountrySelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      // Delay slightly to let the popover mount
+      const timer = setTimeout(() => {
+        document.getElementById("country-search-input")?.focus({ preventScroll: true });
+      }, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   const { countries: apiCountries, isLoading } = useGetCountriesDropdown();
 
@@ -159,7 +169,7 @@ export function CountrySelect({
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
           <Input
-            autoFocus
+            id="country-search-input"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search country"

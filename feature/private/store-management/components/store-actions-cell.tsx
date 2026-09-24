@@ -80,7 +80,7 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
       icon: <ExternalLink className="size-4" />,
       onClick: handleImpersonate,
       disabled: impersonate.isPending,
-      hidden: !isSuperAdmin,
+      hidden: !isSuperAdmin || !isActive,
     },
     {
       label: "Delete Store",

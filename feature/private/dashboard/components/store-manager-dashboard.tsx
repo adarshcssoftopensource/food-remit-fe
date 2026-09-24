@@ -25,11 +25,15 @@ const salesColumns: ColumnDef<SalesOrder>[] = [
   {
     accessorKey: "referenceNumber",
     header: "Order ID",
-    cell: ({ row }) => (
-      <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-        {row.getValue("referenceNumber")}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const ref = (row.getValue("referenceNumber") as string) || "";
+      const displayRef = ref ? (ref.startsWith("#") ? ref : `#${ref}`) : "—";
+      return (
+        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+          {displayRef}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "customerName",
@@ -91,7 +95,7 @@ export function StoreManagerDashboard() {
     },
     {
       title: "Total Requested Orders",
-      href: `${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=requested-orders`,
+      href: `${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=requested`,
       icon: HandPlatter,
       accentColor: "cyan" as const,
       iconBgClassName: "bg-cyan-500/10 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400",

@@ -25,7 +25,10 @@ export function ProfileBankVerification() {
   const bankData = partnerLead.bankData || partnerLead.bankVerifications?.[0] || {};
 
   return (
-    <Card className="col-span-1 overflow-hidden rounded-2xl border-slate-200/80 shadow-xs md:col-span-2 dark:border-slate-800">
+    <Card
+      id="bank-verification-section"
+      className="col-span-1 overflow-hidden rounded-2xl border-slate-200/80 shadow-xs md:col-span-2 dark:border-slate-800"
+    >
       <CardHeader className="border-b border-slate-100 bg-slate-50/80 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/40">
         <div className="flex items-center gap-2.5">
           <div className="flex size-8 items-center justify-center rounded-lg bg-slate-200/80 text-slate-700 dark:bg-slate-800 dark:text-slate-300">

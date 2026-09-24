@@ -7,7 +7,7 @@ import { useGetCities } from "@/feature/private/settings/hooks/use-get-cities";
 import type { CityData } from "@/feature/private/settings/types/settings.types";
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown, Loader2, MapPin, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 type CitySelectProps = {
   className?: string;
@@ -38,6 +38,15 @@ export function CitySelect({
 }: CitySelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        document.getElementById("city-search-input")?.focus({ preventScroll: true });
+      }, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   const { data: citiesResponse, isLoading } = useGetCities({
     countryId: countryId && countryId !== "All" && countryId !== "all" ? countryId : undefined,
@@ -120,7 +129,7 @@ export function CitySelect({
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
           <Input
-            autoFocus
+            id="city-search-input"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search city name..."

@@ -40,7 +40,7 @@ export function DataTablesSection({
         }
         action={
           <DashboardActionButton
-            href={`${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=requested-orders`}
+            href={`${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=requested`}
             label="View All"
           />
         }

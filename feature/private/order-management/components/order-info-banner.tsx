@@ -3,11 +3,13 @@
 import { Info } from "lucide-react";
 
 interface OrderInfoBannerProps {
-  variant?: "employee-start" | "manager-assign" | "processing" | "history";
+  variant?: "employee-start" | "manager-assign" | "processing" | "history" | "requested";
   message?: string;
 }
 
 const DEFAULTS: Record<NonNullable<OrderInfoBannerProps["variant"]>, string> = {
+  requested:
+    "Requested orders are unpaid food requests. Once payment is completed they move to Pending, where they can be started or assigned.",
   "employee-start":
     "Pending orders can be started by any employee. Once you start an order, it will be marked as Processing and your name will be recorded.",
   "manager-assign":

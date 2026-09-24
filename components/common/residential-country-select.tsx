@@ -68,6 +68,15 @@ export function ResidentialCountrySelect({
     autoDetectApplied.current = true;
   }, [detectedName, isDetecting, value, onValueChange]);
 
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => {
+        document.getElementById("residential-country-search-input")?.focus({ preventScroll: true });
+      }, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
+
   const selectedCountry = useMemo(() => {
     if (!value) return null;
     const valTrimmed = value.trim().toLowerCase();
@@ -172,7 +181,7 @@ export function ResidentialCountrySelect({
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
           <Input
-            autoFocus
+            id="residential-country-search-input"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search country"

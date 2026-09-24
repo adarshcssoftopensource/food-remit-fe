@@ -5,6 +5,7 @@ import { BarChart3, CreditCard, Landmark } from "lucide-react";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 import type { OrderData } from "../types/order.types";
 import { useProfile } from "@/components/providers/profile-provider";
+import { isRequestedOrder } from "../utils/order-workflow";
 
 interface FinancialRowProps {
   label: string;
@@ -45,6 +46,10 @@ interface FinancialCardProps {
   actualValue?: string;
   paymentMethod?: string;
   paymentStatus?: string;
+  /** Label above the status badge — e.g. "Paid" or "Payment Status" */
+  paymentStatusLabel?: string;
+  /** When true, use amber pending styling instead of green captured */
+  paymentPending?: boolean;
   refundAmount?: string;
 }
 
@@ -64,6 +69,8 @@ function FinancialCard({
   actualValue,
   paymentMethod,
   paymentStatus,
+  paymentStatusLabel = "Paid",
+  paymentPending = false,
   refundAmount,
 }: FinancialCardProps) {
   return (
@@ -118,8 +125,14 @@ function FinancialCard({
             )}
             {paymentStatus && (
               <>
-                <p className="mt-2 text-[10px] font-medium text-slate-400">Paid</p>
-                <span className="mt-1 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                <p className="mt-2 text-[10px] font-medium text-slate-400">{paymentStatusLabel}</p>
+                <span
+                  className={
+                    paymentPending
+                      ? "mt-1 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400"
+                      : "mt-1 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
+                  }
+                >
                   {paymentStatus}
                 </span>
               </>
@@ -140,6 +153,7 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
   const cp = order.customerPayment;
   const fr = order.foodRemitEarnings;
   const vs = order.vendorSettlement;
+  const awaitingPayment = isRequestedOrder(order);
 
   const showDiscount =
     cp?.discountAmount && cp.discountAmount !== "₹0.00" && cp.discountAmount !== "$0.00";
@@ -180,15 +194,17 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
         headerBg="bg-blue-50/30 dark:bg-blue-950/20"
         headerBorder="border-blue-50/50 dark:border-blue-900/20"
         borderColor="border-blue-100 dark:border-blue-900/30"
-        totalLabel="Order Total"
+        totalLabel={awaitingPayment ? "Estimated Total" : "Order Total"}
         totalColor="text-blue-600 dark:text-blue-400"
         totalValue={cp?.totalCustomerPaid || "0.00"}
         rows={customerRows}
-        refundAmount={cp?.refundAmount}
-        actualLabel="Actual Amount Retained"
-        actualValue={cp?.actualRetainedAmount}
-        paymentMethod={cp?.paymentMethod}
-        paymentStatus={cp?.paymentStatus}
+        refundAmount={awaitingPayment ? undefined : cp?.refundAmount}
+        actualLabel={awaitingPayment ? undefined : "Actual Amount Retained"}
+        actualValue={awaitingPayment ? undefined : cp?.actualRetainedAmount}
+        paymentMethod={awaitingPayment ? "Awaiting customer payment" : cp?.paymentMethod}
+        paymentStatus={awaitingPayment ? "Pending Payment" : cp?.paymentStatus}
+        paymentStatusLabel={awaitingPayment ? "Payment Status" : "Paid"}
+        paymentPending={awaitingPayment}
       />
 
       {canViewPlatformFees && (

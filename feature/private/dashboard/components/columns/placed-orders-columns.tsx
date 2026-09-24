@@ -13,8 +13,11 @@ export const placedOrdersColumns: ColumnDef<DashboardRecentlyPlacedOrder>[] = [
     header: "Order ID",
     enableSorting: false,
     cell: ({ row }) => {
-      const ref = row.getValue("referenceNumber") as string;
-      const displayRef = ref || `#ORD-${(row.original.id || "").slice(0, 8)}`;
+      const ref = (row.getValue("referenceNumber") as string) || "";
+      const fallback = row.original.id
+        ? `#${String(row.original.id).replace(/^#/, "").slice(0, 8).toUpperCase()}`
+        : "—";
+      const displayRef = ref ? (ref.startsWith("#") ? ref : `#${ref}`) : fallback;
       return (
         <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold whitespace-nowrap text-slate-800 dark:bg-slate-800 dark:text-slate-200">
           {displayRef}

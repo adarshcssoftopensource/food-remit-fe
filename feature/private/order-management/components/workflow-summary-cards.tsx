@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Clock3, Package, RefreshCw } from "lucide-react";
+import { CheckCircle2, Clock3, HandPlatter, Package, RefreshCw } from "lucide-react";
 import { WorkflowCounts } from "../hooks/use-workflow-counts";
 import { OrderSectionKey } from "@/constants/order-management";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,8 @@ interface WorkflowSummaryCardsProps {
   counts?: WorkflowCounts;
   activeTab: OrderSectionKey;
   onSelect: (tab: OrderSectionKey) => void;
+  /** When false, hides the Requested summary card (e.g. employee My Orders). Default true. */
+  showRequested?: boolean;
 }
 
 const CARDS: {
@@ -28,6 +30,15 @@ const CARDS: {
     countKey: "all",
     accent: "text-slate-700",
     iconBg: "bg-slate-100 text-slate-600",
+  },
+  {
+    key: "requested",
+    label: "Requested",
+    description: "Awaiting payment",
+    icon: HandPlatter,
+    countKey: "requested",
+    accent: "text-sky-700",
+    iconBg: "bg-sky-50 text-sky-600",
   },
   {
     key: "pending",
@@ -58,10 +69,20 @@ const CARDS: {
   },
 ];
 
-export function WorkflowSummaryCards({ counts, activeTab, onSelect }: WorkflowSummaryCardsProps) {
+export function WorkflowSummaryCards({
+  counts,
+  activeTab,
+  onSelect,
+  showRequested = true,
+}: WorkflowSummaryCardsProps) {
+  const cards = showRequested ? CARDS : CARDS.filter((c) => c.key !== "requested");
+  const gridClass = showRequested
+    ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-5"
+    : "grid gap-3 sm:grid-cols-2 xl:grid-cols-4";
+
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-      {CARDS.map((card) => {
+    <div className={gridClass}>
+      {cards.map((card) => {
         const Icon = card.icon;
         const isActive = activeTab === card.key;
         const value = counts?.[card.countKey] ?? 0;

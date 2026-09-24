@@ -27,7 +27,29 @@ export function BankVerificationBanner() {
           </p>
         </div>
       </div>
-      <Link href={`${ROUTES.ADMIN.PROFILE}?tab=store`} className="shrink-0">
+      <Link
+        href={`${ROUTES.ADMIN.PROFILE}?tab=store#bank-verification-section`}
+        className="shrink-0"
+        onClick={(e) => {
+          const element = document.getElementById("bank-verification-section");
+          if (element) {
+            e.preventDefault();
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+          } else {
+            // It might take time to render the tab content, poll for it
+            let attempts = 0;
+            const interval = setInterval(() => {
+              const el = document.getElementById("bank-verification-section");
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+                clearInterval(interval);
+              }
+              attempts++;
+              if (attempts > 10) clearInterval(interval);
+            }, 100);
+          }
+        }}
+      >
         <Button
           size="sm"
           variant={"outline"}

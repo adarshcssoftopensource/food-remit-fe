@@ -72,6 +72,7 @@ export interface DashboardTicketItem {
 
 export interface DashboardOrderRequested {
   orderId: string;
+  referenceNumber?: string;
   customerName: string;
   location: string;
   orderStatus: string;

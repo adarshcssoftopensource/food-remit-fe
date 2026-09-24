@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export interface WorkflowCounts {
   all: number;
+  requested?: number;
   pending: number;
   unassigned?: number;
   processing: number;

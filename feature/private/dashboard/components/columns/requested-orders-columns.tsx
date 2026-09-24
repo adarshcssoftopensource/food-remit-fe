@@ -12,11 +12,15 @@ export const requestedOrdersColumns: ColumnDef<DashboardOrderRequested>[] = [
     accessorKey: "orderId",
     header: "Order ID",
     enableSorting: false,
-    cell: ({ row }) => (
-      <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold whitespace-nowrap text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-        {row.getValue("orderId")}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const orderId = (row.getValue("orderId") as string) || "";
+      const displayId = orderId.startsWith("#") ? orderId : `#${orderId}`;
+      return (
+        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold whitespace-nowrap text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+          {displayId}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "customerName",

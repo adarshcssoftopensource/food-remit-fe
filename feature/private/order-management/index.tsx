@@ -86,6 +86,7 @@ export function OrdersManagementPage() {
 
   const tabCounts: Record<string, number | undefined> = {
     all: counts?.all,
+    requested: counts?.requested,
     pending: counts?.pending,
     processing: counts?.processing,
     completed: counts?.completed,
@@ -95,13 +96,15 @@ export function OrdersManagementPage() {
   const bannerVariant =
     activeTab === "history"
       ? "history"
-      : activeTab === "processing"
-        ? "processing"
-        : canBulkAssign
-          ? "manager-assign"
-          : "employee-start";
+      : activeTab === "requested"
+        ? "requested"
+        : activeTab === "processing"
+          ? "processing"
+          : canBulkAssign
+            ? "manager-assign"
+            : "employee-start";
 
-  const showSelectColumn = canBulkAssign && activeTab !== "history";
+  const showSelectColumn = canBulkAssign && activeTab !== "history" && activeTab !== "requested";
   const columns =
     activeTab === "history"
       ? historyOrderColumns
