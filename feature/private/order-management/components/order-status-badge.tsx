@@ -8,6 +8,16 @@ const TONE_STYLES: Record<string, { colorClass: string; dotClass: string }> = {
       "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-400",
     dotClass: "bg-sky-500",
   },
+  accepted: {
+    colorClass:
+      "border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-500/20 dark:bg-teal-500/10 dark:text-teal-400",
+    dotClass: "bg-teal-500",
+  },
+  rejected: {
+    colorClass:
+      "border-red-200 bg-red-50 text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400",
+    dotClass: "bg-red-500",
+  },
   pending: {
     colorClass:
       "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400",

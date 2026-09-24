@@ -9,7 +9,7 @@ interface OrderInfoBannerProps {
 
 const DEFAULTS: Record<NonNullable<OrderInfoBannerProps["variant"]>, string> = {
   requested:
-    "Requested orders are unpaid food requests. Once payment is completed they move to Pending, where they can be started or assigned.",
+    "Accept or Reject food requests here. Accepted orders stay in Requested until payment, then move to Pending for assign/start. Rejected orders stay visible with Rejected status.",
   "employee-start":
     "Pending orders can be started by any employee. Once you start an order, it will be marked as Processing and your name will be recorded.",
   "manager-assign":

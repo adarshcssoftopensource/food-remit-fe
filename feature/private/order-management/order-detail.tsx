@@ -1,5 +1,6 @@
 "use client";
 
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
@@ -24,12 +25,20 @@ import {
   OrderWaitingBadge,
 } from "./components/order-lifecycle-actions";
 import { AbandonOrderDialog } from "./components/abandon-order-dialog";
-import { useMarkOrderCompleted, useStartOrder } from "./hooks/use-order-lifecycle";
+import {
+  useAcceptOrder,
+  useMarkOrderCompleted,
+  useRejectOrder,
+  useStartOrder,
+} from "./hooks/use-order-lifecycle";
 import {
   FINAL_STATUS,
   formatRelativeTime,
+  isAcceptedRequest,
   isPendingOrder,
   isProcessingOrder,
+  isRejectedRequest,
+  isRequestedOrder,
   ORDER_STATUS,
 } from "./utils/order-workflow";
 import { CompleteOrderByReferenceDialog } from "@/feature/private/my-orders/components/complete-order-by-reference-dialog";
@@ -46,15 +55,22 @@ export function OrderDetailPage({ id }: { id: string }) {
   const [closeOpen, setCloseOpen] = useState(false);
   const [abandonOpen, setAbandonOpen] = useState(false);
   const [startOpen, setStartOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
 
   const { mutateAsync: startOrder, isPending: starting } = useStartOrder();
   const { mutateAsync: markCompleted, isPending: completing } = useMarkOrderCompleted();
+  const { mutateAsync: acceptOrder, isPending: accepting } = useAcceptOrder();
+  const { mutateAsync: rejectOrder, isPending: rejecting } = useRejectOrder();
 
-  const { canAbandon, canClose, isEmployee, canAssign } = getOrderActorRole(profile);
+  const { canAbandon, canClose, isEmployee, canAssign, canRespondToRequest } =
+    getOrderActorRole(profile);
 
   if (isLoading) return <OrderDetailSkeleton />;
   if (!order) return <OrderNotFound onBack={() => router.back()} />;
 
+  const pureRequested = isRequestedOrder(order);
+  const accepted = isAcceptedRequest(order);
+  const rejected = isRejectedRequest(order);
   const pending = isPendingOrder(order);
   const processing = isProcessingOrder(order);
   const pickedUp = order.orderStatus === ORDER_STATUS.COMPLETED;
@@ -63,6 +79,24 @@ export function OrderDetailPage({ id }: { id: string }) {
   const handlerName = order.startedByName || order.assignedEmployeeName;
   const orderRef = order.refrenceNumber || order.id.substring(0, 8).toUpperCase();
   const customerName = order.recieverName || order.userName || "the customer";
+  const canAccept = canRespondToRequest && pureRequested;
+  const canReject = canRespondToRequest && (pureRequested || accepted);
+
+  const pageDescription = pureRequested
+    ? "Food request awaiting Accept or Reject."
+    : accepted
+      ? "Accepted — awaiting customer payment. Stays in Requested until paid."
+      : rejected
+        ? "This request was rejected."
+        : pending
+          ? "Paid and waiting to start."
+          : processing
+            ? "Currently being prepared."
+            : pickedUp
+              ? "Picked Up — Close when collected, or Abandon with remark."
+              : abandoned
+                ? "This order was abandoned."
+                : "View order information and journey.";
 
   return (
     <div className="space-y-6">
@@ -71,20 +105,7 @@ export function OrderDetailPage({ id }: { id: string }) {
           <p className="text-xs text-slate-500">
             Orders / #{order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}
           </p>
-          <PageHeader
-            title="Order Details"
-            description={
-              pending
-                ? "Paid and waiting to start."
-                : processing
-                  ? "Currently being prepared."
-                  : pickedUp
-                    ? "Picked Up — Close when collected, or Abandon with remark."
-                    : abandoned
-                      ? "This order was abandoned."
-                      : "View order information and journey."
-            }
-          />
+          <PageHeader title="Order Details" description={pageDescription} />
           <div className="flex flex-wrap items-center gap-2">
             <OrderStatusBadge
               status={order.orderStatus}
@@ -92,6 +113,8 @@ export function OrderDetailPage({ id }: { id: string }) {
               finalStatus={order.finalStatus}
               showFinal={closed}
             />
+            {pureRequested && <OrderWaitingBadge label="Awaiting Accept / Reject" />}
+            {accepted && <OrderWaitingBadge label="Awaiting Payment" />}
             {pickedUp && <OrderWaitingBadge label="Awaiting Close or Abandon" />}
           </div>
         </div>
@@ -100,6 +123,18 @@ export function OrderDetailPage({ id }: { id: string }) {
         </Button>
       </div>
 
+      {pureRequested && (
+        <OrderInfoBanner
+          variant="requested"
+          message="Accept this request to wait for payment, or Reject it. Both stay visible in Requested and All Orders."
+        />
+      )}
+      {accepted && (
+        <OrderInfoBanner
+          variant="requested"
+          message="Request accepted. After the customer pays, this order moves to Pending for assign/start."
+        />
+      )}
       {processing && handlerName && (
         <OrderInfoBanner
           variant="processing"
@@ -146,7 +181,15 @@ export function OrderDetailPage({ id }: { id: string }) {
                 </div>
               </div>
             ) : (
-              <p className="mt-2 text-sm text-slate-500">Not yet started or assigned.</p>
+              <p className="mt-2 text-sm text-slate-500">
+                {pureRequested
+                  ? "Awaiting Accept or Reject."
+                  : accepted
+                    ? "Accepted — waiting for payment."
+                    : rejected
+                      ? "Request rejected — no preparation."
+                      : "Not yet started or assigned."}
+              </p>
             )}
           </div>
 
@@ -154,6 +197,42 @@ export function OrderDetailPage({ id }: { id: string }) {
             <p className="px-0.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
               Actions
             </p>
+
+            {canAccept && (
+              <OrderLifecycleActionCard
+                variant="accept"
+                title="Accept Request"
+                description="Status becomes Accepted. Stays in Requested until the customer pays."
+                loading={accepting}
+                onClick={async () => {
+                  try {
+                    await acceptOrder(order.id);
+                  } catch {}
+                }}
+              />
+            )}
+
+            {canReject && (
+              <OrderLifecycleActionCard
+                variant="reject"
+                title="Reject Request"
+                description="Status becomes Rejected. Order remains visible in Requested and All."
+                loading={rejecting}
+                onClick={() => setRejectOpen(true)}
+              />
+            )}
+
+            {accepted && !canReject && (
+              <OrderLifecycleActionsHint>
+                Waiting for customer payment. After payment this moves to Pending.
+              </OrderLifecycleActionsHint>
+            )}
+
+            {rejected && (
+              <OrderLifecycleActionsHint>
+                This request was rejected. No further actions available.
+              </OrderLifecycleActionsHint>
+            )}
 
             {pending && isEmployee && (
               <OrderLifecycleActionCard
@@ -238,6 +317,22 @@ export function OrderDetailPage({ id }: { id: string }) {
             setStartOpen(false);
           } catch {}
         }}
+      />
+
+      <ConfirmationDialog
+        open={rejectOpen}
+        onOpenChange={setRejectOpen}
+        title="Reject Request"
+        description={`Reject food request #${orderRef}? It will stay in Requested with Rejected status.`}
+        confirmLabel="Reject Request"
+        onConfirm={async () => {
+          try {
+            await rejectOrder(order.id);
+            setRejectOpen(false);
+          } catch {}
+        }}
+        isLoading={rejecting}
+        variant="destructive"
       />
 
       <AbandonOrderDialog

@@ -112,6 +112,27 @@ export const STATUS_CONFIG_MAP: Record<
     dot: "bg-amber-500",
     label: "Requested",
   },
+  accepted: {
+    bg: "bg-teal-50 dark:bg-teal-950/40",
+    text: "text-teal-700 dark:text-teal-400",
+    border: "border-teal-200/80 dark:border-teal-800/60",
+    dot: "bg-teal-500",
+    label: "Accepted",
+  },
+  rejected: {
+    bg: "bg-rose-50 dark:bg-rose-950/40",
+    text: "text-rose-700 dark:text-rose-400",
+    border: "border-rose-200/80 dark:border-rose-800/60",
+    dot: "bg-rose-500",
+    label: "Rejected",
+  },
+  declined: {
+    bg: "bg-rose-50 dark:bg-rose-950/40",
+    text: "text-rose-700 dark:text-rose-400",
+    border: "border-rose-200/80 dark:border-rose-800/60",
+    dot: "bg-rose-500",
+    label: "Rejected",
+  },
   "in progress": {
     bg: "bg-sky-50 dark:bg-sky-950/40",
     text: "text-sky-700 dark:text-sky-400",

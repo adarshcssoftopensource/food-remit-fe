@@ -3,8 +3,11 @@
 import {
   FINAL_STATUS,
   ORDER_STATUS,
+  isAcceptedRequest,
+  isAwaitingPayment,
   isPendingOrder,
   isProcessingOrder,
+  isRejectedRequest,
   isRequestedOrder,
 } from "../utils/order-workflow";
 import { OrderData } from "../types/order.types";
@@ -18,6 +21,8 @@ import {
   PackageX,
   RefreshCw,
   ShoppingBag,
+  ThumbsUp,
+  X,
 } from "lucide-react";
 import { parseAbandonRemark, SystemAbandonBadge } from "./abandon-remark-badge";
 
@@ -54,25 +59,44 @@ function formatFullStamp(iso?: string | Date | null) {
 type StepState = "done" | "current" | "upcoming" | "failed";
 
 export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
-  const awaitingPayment = isRequestedOrder(order);
+  const pureRequested = isRequestedOrder(order);
+  const accepted = isAcceptedRequest(order);
+  const rejected = isRejectedRequest(order);
+  const awaitingPayment = isAwaitingPayment(order);
   const pending = isPendingOrder(order);
   const processing = isProcessingOrder(order);
   const pickedUp = order.orderStatus === ORDER_STATUS.COMPLETED;
   const closed = order.orderStatus === ORDER_STATUS.CLOSED;
   const abandoned = closed && order.finalStatus === FINAL_STATUS.ABANDONED;
   const collected = closed && order.finalStatus === FINAL_STATUS.PICKED_UP;
-  const paymentDone = !awaitingPayment && order.orderStatus !== ORDER_STATUS.CANCELLED;
+  const paymentDone = !awaitingPayment && !rejected && order.orderStatus !== ORDER_STATUS.CANCELLED;
 
-  const requestedStamp = formatFullStamp(order.createdAt);
-  const pendingStamp = formatFullStamp(paymentDone && !awaitingPayment ? order.createdAt : null);
-  // For paid orders, payment stamp ≈ when order became actionable (createdAt for direct paid;
-  // requested orders keep createdAt as request time — payment time isn't stored separately here)
-  const paymentStamp = awaitingPayment ? requestedStamp : formatFullStamp(order.createdAt);
+  const createdStamp = formatFullStamp(order.createdAt);
+  const pendingStamp = paymentDone ? createdStamp : null;
+  const paymentStamp = awaitingPayment || paymentDone || rejected ? createdStamp : null;
   const processingStamp = formatFullStamp(order.startedAt || order.assignedAt);
   const pickedUpStamp = formatFullStamp(order.pickedUpAt || order.completedAt);
   const closedStamp = formatFullStamp(
     abandoned ? order.abandonedAt || order.closedAt : collected ? order.closedAt : null,
   );
+
+  const responseState: StepState = pureRequested
+    ? "current"
+    : accepted || paymentDone
+      ? "done"
+      : rejected
+        ? "failed"
+        : "upcoming";
+
+  const paymentState: StepState = rejected
+    ? "upcoming"
+    : pureRequested
+      ? "upcoming"
+      : accepted
+        ? "current"
+        : paymentDone
+          ? "done"
+          : "upcoming";
 
   const steps: {
     key: string;
@@ -83,23 +107,47 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
     Icon: typeof ShoppingBag;
   }[] = [
     {
+      key: "response",
+      label: rejected ? "Rejected" : accepted || paymentDone ? "Accepted" : "Accept / Reject",
+      subtitle: rejected
+        ? "Request was rejected — remains in Requested tab"
+        : pureRequested
+          ? "Respond to this food request"
+          : "Request accepted — waiting for payment",
+      stamp: createdStamp,
+      state: responseState,
+      Icon: rejected ? X : ThumbsUp,
+    },
+    {
       key: "payment",
-      label: awaitingPayment ? "Pending Payment" : "Payment Received",
-      subtitle: awaitingPayment
-        ? "Customer has not paid yet — order stays Requested"
-        : "Payment completed — order moved to Pending",
+      label: accepted ? "Pending Payment" : paymentDone ? "Payment Received" : "Pending Payment",
+      subtitle: rejected
+        ? "Payment not applicable after rejection"
+        : pureRequested
+          ? "Available after the request is accepted"
+          : accepted
+            ? "Customer has not paid yet"
+            : "Payment completed — order moved to Pending",
       stamp: paymentStamp,
-      state: awaitingPayment ? "current" : paymentDone ? "done" : "upcoming",
+      state: paymentState,
       Icon: CreditCard,
     },
     {
       key: "pending",
       label: "Order Pending",
-      subtitle: awaitingPayment
-        ? "Starts after payment is completed"
-        : "Paid — waiting to be started or assigned",
-      stamp: awaitingPayment ? null : pendingStamp,
-      state: awaitingPayment ? "upcoming" : pending ? "current" : paymentDone ? "done" : "upcoming",
+      subtitle:
+        awaitingPayment || rejected
+          ? "Starts after payment is completed"
+          : "Paid — waiting to be started or assigned",
+      stamp: pendingStamp,
+      state:
+        awaitingPayment || rejected
+          ? "upcoming"
+          : pending
+            ? "current"
+            : paymentDone
+              ? "done"
+              : "upcoming",
       Icon: ShoppingBag,
     },
     {
@@ -146,15 +194,23 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
         <div>
           <p className="text-sm font-bold text-slate-900 dark:text-white">Order journey</p>
           <p className="text-[11px] text-slate-500">
-            {awaitingPayment
-              ? "Pending Payment → Pending → Processing → Picked Up → Close / Abandon"
-              : "Payment → Pending → Processing → Picked Up → Close / Abandon"}
+            Accept/Reject → Payment → Pending → Processing → Picked Up → Close
           </p>
         </div>
-        {awaitingPayment ? (
+        {pureRequested ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[10px] font-bold tracking-wide text-sky-700 uppercase ring-1 ring-sky-200">
+            <CircleDot className="size-3" />
+            Awaiting response
+          </span>
+        ) : accepted ? (
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold tracking-wide text-amber-700 uppercase ring-1 ring-amber-200">
             <CircleDot className="size-3" />
             Awaiting payment
+          </span>
+        ) : rejected ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-[10px] font-bold tracking-wide text-red-700 uppercase ring-1 ring-red-200">
+            <CircleDot className="size-3" />
+            Rejected
           </span>
         ) : (
           (pickedUp || closed) && (
@@ -179,6 +235,9 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
         <ol className="relative space-y-0">
           {steps.map((step, index) => {
             const isLast = index === steps.length - 1;
+            const isAmberCurrent =
+              step.state === "current" &&
+              (step.key === "payment" || (step.key === "response" && pureRequested));
 
             return (
               <li key={step.key} className="relative flex gap-3.5 pb-6 last:pb-0">
@@ -190,7 +249,7 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
                         ? "bg-slate-200"
                         : steps[index + 1].state === "failed" || step.state === "failed"
                           ? "bg-red-300"
-                          : step.state === "current" && awaitingPayment && step.key === "payment"
+                          : isAmberCurrent
                             ? "bg-amber-300"
                             : "bg-emerald-400",
                     )}
@@ -203,7 +262,7 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
                     "relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border-2",
                     step.state === "done" && "border-emerald-500 bg-emerald-500 text-white",
                     step.state === "current" &&
-                      (awaitingPayment && step.key === "payment"
+                      (isAmberCurrent
                         ? "border-amber-500 bg-white text-amber-600 shadow-[0_0_0_4px_rgba(245,158,11,0.15)]"
                         : "border-emerald-500 bg-white text-emerald-600 shadow-[0_0_0_4px_rgba(16,185,129,0.15)]"),
                     step.state === "failed" && "border-red-500 bg-red-500 text-white",
@@ -226,7 +285,7 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
                           step.state === "failed"
                             ? "text-red-700"
                             : step.state === "current"
-                              ? awaitingPayment && step.key === "payment"
+                              ? isAmberCurrent
                                 ? "text-amber-800"
                                 : "text-emerald-800"
                               : step.state === "done"

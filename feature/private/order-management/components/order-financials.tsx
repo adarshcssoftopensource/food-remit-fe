@@ -5,7 +5,7 @@ import { BarChart3, CreditCard, Landmark } from "lucide-react";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 import type { OrderData } from "../types/order.types";
 import { useProfile } from "@/components/providers/profile-provider";
-import { isRequestedOrder } from "../utils/order-workflow";
+import { isAwaitingPayment, isRejectedRequest } from "../utils/order-workflow";
 
 interface FinancialRowProps {
   label: string;
@@ -128,9 +128,11 @@ function FinancialCard({
                 <p className="mt-2 text-[10px] font-medium text-slate-400">{paymentStatusLabel}</p>
                 <span
                   className={
-                    paymentPending
-                      ? "mt-1 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400"
-                      : "mt-1 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
+                    paymentStatus === "Rejected"
+                      ? "mt-1 inline-flex rounded-full border border-red-200 bg-red-50 px-2.5 py-0.5 text-[10px] font-semibold text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400"
+                      : paymentPending
+                        ? "mt-1 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400"
+                        : "mt-1 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
                   }
                 >
                   {paymentStatus}
@@ -153,7 +155,9 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
   const cp = order.customerPayment;
   const fr = order.foodRemitEarnings;
   const vs = order.vendorSettlement;
-  const awaitingPayment = isRequestedOrder(order);
+  const awaitingPayment = isAwaitingPayment(order);
+  const rejected = isRejectedRequest(order);
+  const unpaidRequest = awaitingPayment || rejected;
 
   const showDiscount =
     cp?.discountAmount && cp.discountAmount !== "₹0.00" && cp.discountAmount !== "$0.00";
@@ -194,17 +198,25 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
         headerBg="bg-blue-50/30 dark:bg-blue-950/20"
         headerBorder="border-blue-50/50 dark:border-blue-900/20"
         borderColor="border-blue-100 dark:border-blue-900/30"
-        totalLabel={awaitingPayment ? "Estimated Total" : "Order Total"}
+        totalLabel={unpaidRequest ? "Estimated Total" : "Order Total"}
         totalColor="text-blue-600 dark:text-blue-400"
         totalValue={cp?.totalCustomerPaid || "0.00"}
         rows={customerRows}
-        refundAmount={awaitingPayment ? undefined : cp?.refundAmount}
-        actualLabel={awaitingPayment ? undefined : "Actual Amount Retained"}
-        actualValue={awaitingPayment ? undefined : cp?.actualRetainedAmount}
-        paymentMethod={awaitingPayment ? "Awaiting customer payment" : cp?.paymentMethod}
-        paymentStatus={awaitingPayment ? "Pending Payment" : cp?.paymentStatus}
-        paymentStatusLabel={awaitingPayment ? "Payment Status" : "Paid"}
-        paymentPending={awaitingPayment}
+        refundAmount={unpaidRequest ? undefined : cp?.refundAmount}
+        actualLabel={unpaidRequest ? undefined : "Actual Amount Retained"}
+        actualValue={unpaidRequest ? undefined : cp?.actualRetainedAmount}
+        paymentMethod={
+          rejected
+            ? "Not applicable"
+            : awaitingPayment
+              ? "Awaiting customer payment"
+              : cp?.paymentMethod
+        }
+        paymentStatus={
+          rejected ? "Rejected" : awaitingPayment ? "Pending Payment" : cp?.paymentStatus
+        }
+        paymentStatusLabel={unpaidRequest ? "Payment Status" : "Paid"}
+        paymentPending={awaitingPayment || rejected}
       />
 
       {canViewPlatformFees && (

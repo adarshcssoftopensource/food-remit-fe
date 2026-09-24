@@ -11,7 +11,7 @@ import {
   Undo2,
 } from "lucide-react";
 
-type ActionVariant = "start" | "complete" | "close" | "abandon";
+type ActionVariant = "start" | "complete" | "close" | "abandon" | "accept" | "reject";
 
 interface OrderLifecycleActionCardProps {
   variant: ActionVariant;
@@ -60,6 +60,20 @@ const VARIANT_STYLES: Record<
     title: "text-red-950",
     btn: "border border-red-200 bg-white text-red-700 hover:bg-red-50",
     Icon: Undo2,
+  },
+  accept: {
+    wrap: "border-teal-200/80 bg-gradient-to-br from-teal-50 via-white to-white",
+    iconWrap: "bg-teal-100 text-teal-700",
+    title: "text-teal-950",
+    btn: "bg-teal-600 text-white hover:bg-teal-700 shadow-sm shadow-teal-600/20",
+    Icon: CheckCircle2,
+  },
+  reject: {
+    wrap: "border-red-200/90 bg-gradient-to-br from-red-50 via-white to-white",
+    iconWrap: "bg-red-100 text-red-700",
+    title: "text-red-950",
+    btn: "border border-red-200 bg-white text-red-700 hover:bg-red-50",
+    Icon: AlertTriangle,
   },
 };
 
