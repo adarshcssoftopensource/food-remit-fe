@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -12,7 +12,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/common/image-upload";
-import { PhoneInputComponent } from "@/components/ui/phone-input";
+import {
+  PhoneInputComponent,
+  findPhoneCountry,
+  resolveFromValue,
+} from "@/components/ui/phone-input";
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { CountryCityFields } from "@/feature/private/store-management/components/country-city-fields";
 
@@ -59,6 +63,22 @@ export function StoreInformation() {
     enabled: !!storeId,
   });
 
+  const detectedTargetCountry = useMemo(() => {
+    if (!storeData) return undefined;
+    return (
+      findPhoneCountry(storeData.countryName) ||
+      findPhoneCountry(storeData.storeCountryCode) ||
+      findPhoneCountry(storeData.country) ||
+      findPhoneCountry(storeData.partnerLead?.country) ||
+      findPhoneCountry(storeData.storeManager?.country) ||
+      (storeData.storePhoneNumber
+        ? resolveFromValue(storeData.storePhoneNumber).country
+        : undefined)
+    );
+  }, [storeData]);
+
+  const activePhoneIso = phoneIso || detectedTargetCountry?.isoCode || "US";
+
   const updateStoreMutation = useUpdateStore(storeId || "");
 
   const {
@@ -82,17 +102,25 @@ export function StoreInformation() {
 
   useEffect(() => {
     if (storeData) {
+      const targetCountry = detectedTargetCountry;
+      const activeCountryCode =
+        storeData.storeCountryCode || (targetCountry ? `+${targetCountry.dialCode}` : "+91");
+
       const cleanPhone = (code?: string | null, num?: string | null) => {
-        if (!code || !num) return num ?? "";
+        if (!num) return "";
         let result = num.trim();
-        if (result.startsWith(code)) {
-          result = result.slice(code.length).trim();
-        } else {
-          const cleanCode = code.replace(/\D/g, "");
-          if (cleanCode && result.startsWith(cleanCode)) {
-            const stripped = result.slice(cleanCode.length).trim();
-            if (stripped.length >= 10) result = stripped;
+        if (code) {
+          if (result.startsWith(code)) {
+            result = result.slice(code.length).trim();
+          } else {
+            const cleanCode = code.replace(/\D/g, "");
+            if (cleanCode && result.startsWith(cleanCode)) {
+              result = result.slice(cleanCode.length).trim();
+            }
           }
+        }
+        if (targetCountry?.dialCode && result.startsWith(targetCountry.dialCode)) {
+          result = result.slice(targetCountry.dialCode.length).trim();
         }
         return result || "";
       };
@@ -100,11 +128,8 @@ export function StoreInformation() {
       reset({
         storeImage: storeData.storeImage,
         storeName: storeData.storeName || "",
-        storePhoneCode: storeData.storeCountryCode || "+91",
-        storePhoneNumber: cleanPhone(
-          storeData.storeCountryCode || "+91",
-          storeData.storePhoneNumber,
-        ),
+        storePhoneCode: activeCountryCode,
+        storePhoneNumber: cleanPhone(activeCountryCode, storeData.storePhoneNumber),
         storeAddress: storeData.storeAddress || "",
         storeCountry: storeData.country || "",
         storeCity: storeData.city || "",
@@ -247,7 +272,7 @@ export function StoreInformation() {
                       render={({ field: codeField }) => (
                         <PhoneInputComponent
                           valueMode="national"
-                          defaultCountry={phoneIso || "US"}
+                          defaultCountry={activePhoneIso}
                           value={field.value || ""}
                           disabled={needsBankVerification}
                           onChange={(val, data) => {
@@ -287,9 +312,17 @@ export function StoreInformation() {
                         prefix="store"
                         countryValue={countryField.value}
                         cityValue={cityField.value}
-                        onCountryChange={(val) => {
+                        onCountryChange={(val, countryObj) => {
                           countryField.onChange(val);
                           cityField.onChange("");
+                          const cName = countryObj?.name || countryObj?.countryName;
+                          if (cName) {
+                            const matched = findPhoneCountry(cName);
+                            if (matched) {
+                              setPhoneIso(matched.isoCode);
+                              setValue("storePhoneCode", `+${matched.dialCode}`);
+                            }
+                          }
                         }}
                         onCityChange={cityField.onChange}
                         countryError={errors.storeCountry?.message}

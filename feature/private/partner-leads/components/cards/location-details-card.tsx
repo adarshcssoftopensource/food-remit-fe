@@ -1,7 +1,19 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Clock, Calendar, CheckCircle2, Store, Phone } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { PartnerLeadData } from "../../types/partner-lead.types";
+
+const ALL_DAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+] as const;
 
 export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
   const cleanedLocations = useMemo(() => {
@@ -11,6 +23,8 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
       address: string;
       daysOpen: string[];
       hoursOfOperation: string;
+      phone?: string;
+      storePhoneNumber?: string;
       dailySchedule?: { day: string; isOpen: boolean; openTime: string; closeTime: string }[];
     }> = [];
 
@@ -42,18 +56,18 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
   return (
     <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
       <CardHeader className="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
-        <CardTitle className="flex items-center gap-2 text-base">
+        <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900">
           <MapPin className="h-5 w-5 text-emerald-600" />
           Location Details
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <dl className="grid grid-cols-3 gap-x-4 gap-y-6">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3">
           <div>
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
               Country
             </dt>
-            <dd className="text-sm font-semibold text-slate-900">{lead.country}</dd>
+            <dd className="text-sm font-semibold text-slate-900">{lead.country || "N/A"}</dd>
           </div>
           <div>
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
@@ -79,107 +93,173 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
               Locations Count
             </dt>
-            <dd className="text-sm font-semibold text-slate-900">{lead.locationsCount}</dd>
+            <dd className="text-sm font-semibold text-slate-900">{lead.locationsCount ?? 1}</dd>
           </div>
         </dl>
 
         {cleanedLocations.length > 0 && (
           <div className="mt-6 border-t border-slate-100 pt-6">
             <div className="mb-3 flex items-center justify-between">
-              <h4 className="text-xs font-bold tracking-wider text-slate-500 uppercase">
-                Addresses
+              <h4 className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <Store className="h-3.5 w-3.5 text-emerald-600" />
+                Store Addresses
               </h4>
-              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
+              <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
                 {cleanedLocations.length} {cleanedLocations.length === 1 ? "Location" : "Locations"}
               </span>
             </div>
-            <ul className="space-y-4">
-              {cleanedLocations.map((loc, idx) => (
-                <li
-                  key={idx}
-                  className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-slate-50/60 p-4 text-sm text-slate-800"
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-xs font-bold text-emerald-700">
-                      {idx + 1}
-                    </span>
-                    <span className="mt-0.5 flex-1 font-medium">{loc.address}</span>
-                  </div>
 
-                  {(loc.daysOpen?.length > 0 || loc.hoursOfOperation) && (
-                    <div className="ml-9 grid grid-cols-2 gap-4 rounded-lg border border-slate-100 bg-white p-3 shadow-sm">
-                      <div>
-                        <span className="mb-1 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                          Days Open
-                        </span>
-                        <span className="font-semibold text-slate-700">
-                          {loc.daysOpen?.length > 0 ? (
-                            <div className="mt-1 flex flex-wrap gap-1.5">
-                              {loc.daysOpen
-                                .slice()
-                                .sort((a, b) => {
-                                  const days = [
-                                    "Monday",
-                                    "Tuesday",
-                                    "Wednesday",
-                                    "Thursday",
-                                    "Friday",
-                                    "Saturday",
-                                    "Sunday",
-                                  ];
-                                  return days.indexOf(a) - days.indexOf(b);
-                                })
-                                .map((day) => (
-                                  <span
-                                    key={day}
-                                    className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20 ring-inset"
-                                  >
-                                    {day.slice(0, 3)}
-                                  </span>
-                                ))}
-                            </div>
-                          ) : (
-                            "N/A"
+            <div className="space-y-4">
+              {cleanedLocations.map((loc, idx) => {
+                // Compute open count from dailySchedule or daysOpen
+                const scheduleItems =
+                  loc.dailySchedule && loc.dailySchedule.length > 0 ? loc.dailySchedule : null;
+
+                const openDaysList = scheduleItems
+                  ? scheduleItems.filter((d) => d.isOpen).map((d) => d.day)
+                  : loc.daysOpen || [];
+
+                const openDaysCount = openDaysList.length;
+                const storePhone =
+                  loc.storePhoneNumber || loc.phone || (idx === 0 ? lead.storePhoneNumber : null);
+
+                return (
+                  <div
+                    key={idx}
+                    className="flex flex-col gap-4 rounded-2xl border border-slate-200/90 bg-white p-4.5 shadow-2xs transition-all hover:border-slate-300 sm:p-5"
+                  >
+                    {/* Location Header */}
+                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shadow-2xs ring-1 ring-emerald-500/20">
+                          <MapPin className="h-4.5 w-4.5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                            Store #{idx + 1}
+                          </span>
+                          <p className="mt-0.5 text-sm leading-snug font-bold text-slate-900">
+                            {loc.address}
+                          </p>
+                          {storePhone && (
+                            <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                              <Phone className="h-3 w-3 text-emerald-600" />
+                              <span>Store Phone: {storePhone}</span>
+                            </p>
                           )}
-                        </span>
+                        </div>
                       </div>
-                      <div>
-                        <span className="mb-1 block text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                          Hours
-                        </span>
-                        {loc.dailySchedule && loc.dailySchedule.length > 0 ? (
-                          <div className="mt-1 flex flex-col gap-1 text-xs">
-                            {loc.dailySchedule.map((ds) => (
-                              <div
-                                key={ds.day}
-                                className="flex items-center justify-between gap-3 border-b border-slate-50 pb-0.5"
+
+                      {loc.hoursOfOperation && (
+                        <div className="shrink-0 self-start sm:self-auto">
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-800">
+                            <Clock className="h-3 w-3 text-emerald-600" />
+                            {loc.hoursOfOperation}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Operational Schedule Box */}
+                    {(scheduleItems || loc.daysOpen?.length > 0 || loc.hoursOfOperation) && (
+                      <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-3.5 sm:p-4">
+                        {/* Subheader */}
+                        <div className="mb-3 flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="h-3.5 w-3.5 text-emerald-600" />
+                            <span className="text-xs font-bold tracking-wider text-slate-700 uppercase">
+                              Weekly Operating Hours
+                            </span>
+                          </div>
+                          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200/80 bg-emerald-100/70 px-2 py-0.5 text-[11px] font-bold text-emerald-800">
+                            <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                            {openDaysCount} of 7 Days Active
+                          </span>
+                        </div>
+
+                        {/* Visual 7-day pill strip */}
+                        <div className="mb-3.5 flex flex-wrap items-center gap-1.5">
+                          {ALL_DAYS.map((day) => {
+                            const isOpen = openDaysList.includes(day);
+                            return (
+                              <span
+                                key={day}
+                                className={cn(
+                                  "flex h-7 min-w-10 items-center justify-center rounded-lg px-2 text-xs font-bold tracking-wider uppercase transition-all",
+                                  isOpen
+                                    ? "border border-emerald-300 bg-emerald-600 text-white shadow-2xs"
+                                    : "line-through/none border border-slate-200/80 bg-white text-slate-400 opacity-60",
+                                )}
                               >
-                                <span className="font-semibold text-slate-600">
-                                  {ds.day.slice(0, 3)}:
-                                </span>
-                                <span
-                                  className={
-                                    ds.isOpen
-                                      ? "font-medium text-slate-800"
-                                      : "text-slate-400 italic"
-                                  }
+                                {day.slice(0, 3)}
+                              </span>
+                            );
+                          })}
+                        </div>
+
+                        {/* Daily breakdown (2-column grid) */}
+                        {scheduleItems && scheduleItems.length > 0 ? (
+                          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                            {scheduleItems.map((ds) => {
+                              const isOpen = ds.isOpen;
+                              return (
+                                <div
+                                  key={ds.day}
+                                  className={cn(
+                                    "flex items-center justify-between rounded-lg border px-3 py-2 text-xs transition-all",
+                                    isOpen
+                                      ? "border-emerald-200/60 bg-white text-slate-900 shadow-2xs"
+                                      : "border-slate-200/50 bg-slate-100/60 text-slate-400",
+                                  )}
                                 >
-                                  {ds.isOpen ? `${ds.openTime} - ${ds.closeTime}` : "Closed"}
-                                </span>
-                              </div>
-                            ))}
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className={cn(
+                                        "h-2 w-2 rounded-full",
+                                        isOpen ? "bg-emerald-500" : "bg-slate-300",
+                                      )}
+                                    />
+                                    <span
+                                      className={cn(
+                                        "font-semibold",
+                                        isOpen ? "text-slate-800" : "text-slate-400",
+                                      )}
+                                    >
+                                      {ds.day}
+                                    </span>
+                                  </div>
+
+                                  <div>
+                                    {isOpen ? (
+                                      <span className="inline-flex items-center gap-1 rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 font-semibold text-slate-800">
+                                        <Clock className="h-3 w-3 text-emerald-600" />
+                                        {ds.openTime} – {ds.closeTime}
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium text-slate-400">
+                                        Closed
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         ) : (
-                          <span className="font-semibold text-slate-700">
-                            {loc.hoursOfOperation || "N/A"}
-                          </span>
+                          /* Fallback if no daily schedule items */
+                          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-3 text-xs">
+                            <Clock className="h-4 w-4 text-emerald-600" />
+                            <span className="font-semibold text-slate-700">
+                              {loc.hoursOfOperation || "Hours not specified"}
+                            </span>
+                          </div>
                         )}
                       </div>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </CardContent>
