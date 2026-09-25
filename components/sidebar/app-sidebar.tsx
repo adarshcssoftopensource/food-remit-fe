@@ -168,12 +168,19 @@ export function AppSidebar() {
             const isStoreManager =
               profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
 
+            const isCityManager =
+              profile?.roleCode === "CITY_MANAGER" || profile?.role === "city_manager";
+
             if (
               isStoreManager &&
               (sub.title === "Store Report" ||
                 sub.title === "Store Reports" ||
                 sub.url === ROUTES.ADMIN.REPORT_MANAGEMENT.STORE_REPORT)
             ) {
+              return false;
+            }
+
+            if (isCityManager && sub.url === ROUTES.ADMIN.STORE_MANAGEMENT.ASSIGN_CITY_MANAGER) {
               return false;
             }
 

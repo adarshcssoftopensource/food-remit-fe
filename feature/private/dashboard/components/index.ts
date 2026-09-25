@@ -19,3 +19,4 @@ export * from "./sales-overview";
 export * from "./store-listings";
 export * from "./trending-orders";
 export * from "./store-manager-dashboard";
+export * from "./city-manager-dashboard";

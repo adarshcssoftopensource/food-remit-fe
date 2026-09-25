@@ -1,4 +1,4 @@
-import { Store, CheckCircle2, TrendingUp, MapPin } from "lucide-react";
+import { Store, CheckCircle2, TrendingUp } from "lucide-react";
 
 export const STORE_STAT_CONFIG = [
   {
@@ -21,12 +21,5 @@ export const STORE_STAT_CONFIG = [
     Icon: TrendingUp,
     color: "text-orange-600",
     bg: "bg-orange-50",
-  },
-  {
-    key: "cities" as const,
-    label: "Cities Covered",
-    Icon: MapPin,
-    color: "text-teal-600",
-    bg: "bg-teal-50",
   },
 ] as const;

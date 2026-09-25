@@ -66,7 +66,7 @@ export function StoreManagement() {
         action={<AddStoreDialog />}
       />
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {STORE_STAT_CONFIG.map(({ key, label, Icon, color, bg }) => (
           <MetricStatCard
             key={key}

@@ -19,6 +19,7 @@ import {
   StoreListings,
   TrendingOrders,
   StoreManagerDashboard,
+  CityManagerDashboard,
 } from "./components";
 import { useDashboardFilters } from "./hooks/use-dashboard-filters";
 import { useGetDashboardStats } from "./hooks/use-get-dashboard-stats";
@@ -37,6 +38,10 @@ export function Dashboard() {
 
   if (profile?.role === "store_manager") {
     return <StoreManagerDashboard />;
+  }
+
+  if (profile?.role === "city_manager") {
+    return <CityManagerDashboard />;
   }
 
   return (
