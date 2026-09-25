@@ -77,7 +77,6 @@ export function useMarkOrderPickedUp() {
       return data;
     },
     onSuccess: () => {
-      successToast({ description: "Order closed successfully" });
       invalidateOrders();
     },
     onError: (error: unknown) => {

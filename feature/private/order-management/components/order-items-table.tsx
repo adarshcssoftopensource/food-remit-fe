@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Expand, QrCode, Receipt, ShoppingBag } from "lucide-react";
@@ -26,6 +28,64 @@ function StockBadge({ inStock }: { inStock?: boolean }) {
       </span>
     );
   return <span className="text-xs text-slate-400 dark:text-slate-500">N/A</span>;
+}
+
+function ProductImageCell({
+  src,
+  alt,
+  onImageClick,
+}: {
+  src?: string;
+  alt: string;
+  onImageClick: (src: string) => void;
+}) {
+  const [hasError, setHasError] = useState(false);
+
+  if (!src || hasError) {
+    return (
+      <div className="relative inline-block">
+        <div className="flex size-16 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 p-3 shadow-xs dark:border-slate-700 dark:bg-slate-800">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="64"
+            height="64"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#94a3b8"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="size-7"
+          >
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+            <circle cx="9" cy="9" r="2" />
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative inline-block">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        className="size-16 rounded-xl border border-slate-200 bg-white object-cover shadow-xs dark:border-slate-700"
+        onError={() => setHasError(true)}
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={() => onImageClick(src)}
+        className="absolute -top-1 -right-1 h-6 w-6 rounded-full border border-white bg-slate-900/80 p-0 text-white shadow-md hover:bg-slate-900"
+      >
+        <Expand className="h-3 w-3" />
+      </Button>
+    </div>
+  );
 }
 
 export function OrderItemsTable({ items, onImageClick, hideQrCode }: OrderItemsTableProps) {
@@ -68,41 +128,16 @@ export function OrderItemsTable({ items, onImageClick, hideQrCode }: OrderItemsT
                       className="transition-colors hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
                     >
                       <td className="px-6 py-4">
-                        <div className="relative inline-block">
-                          {firstPicture ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={firstPicture}
-                              alt={item.itemName || "Product"}
-                              className="size-16 rounded-xl border border-slate-200 object-cover shadow-xs dark:border-slate-700"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = "none";
-                              }}
-                            />
-                          ) : (
-                            <div className="flex size-16 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-slate-800">
-                              <ShoppingBag className="size-7" />
-                            </div>
-                          )}
-                          {firstPicture && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => onImageClick(firstPicture)}
-                              className="absolute -top-1 -right-1 h-6 w-6 rounded-full border border-white bg-slate-900/80 p-0 text-white shadow-md hover:bg-slate-900"
-                            >
-                              <Expand className="h-3 w-3" />
-                            </Button>
-                          )}
-                        </div>
+                        <ProductImageCell
+                          src={firstPicture}
+                          alt={item.itemName || "Product"}
+                          onImageClick={onImageClick}
+                        />
                       </td>
 
                       {/* Name */}
                       <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
-                        <p className="text-base font-semibold">
-                          {item.itemName || "Unknown Product"}
-                        </p>
+                        <p className="text-base font-semibold">{item.itemName || "—"}</p>
                       </td>
 
                       {/* QR */}

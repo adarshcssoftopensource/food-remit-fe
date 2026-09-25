@@ -98,15 +98,17 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
           ? "done"
           : "upcoming";
 
-  const steps: {
+  const baseSteps: {
     key: string;
     label: string;
     subtitle: string;
     stamp: ReturnType<typeof formatFullStamp>;
     state: StepState;
-    Icon: typeof ShoppingBag;
-  }[] = [
-    {
+    Icon: any;
+  }[] = [];
+
+  if (order.orderType === 2) {
+    baseSteps.push({
       key: "response",
       label: rejected ? "Rejected" : accepted || paymentDone ? "Accepted" : "Accept / Reject",
       subtitle: rejected
@@ -117,8 +119,8 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
       stamp: createdStamp,
       state: responseState,
       Icon: rejected ? X : ThumbsUp,
-    },
-    {
+    });
+    baseSteps.push({
       key: "payment",
       label: accepted ? "Pending Payment" : paymentDone ? "Payment Received" : "Pending Payment",
       subtitle: rejected
@@ -131,17 +133,21 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
       stamp: paymentStamp,
       state: paymentState,
       Icon: CreditCard,
-    },
+    });
+  }
+
+  const steps = [
+    ...baseSteps,
     {
       key: "pending",
       label: "Order Pending",
       subtitle:
-        awaitingPayment || rejected
+        order.orderType === 2 && (awaitingPayment || rejected)
           ? "Starts after payment is completed"
           : "Paid — waiting to be started or assigned",
       stamp: pendingStamp,
       state:
-        awaitingPayment || rejected
+        order.orderType === 2 && (awaitingPayment || rejected)
           ? "upcoming"
           : pending
             ? "current"
@@ -194,7 +200,9 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
         <div>
           <p className="text-sm font-bold text-slate-900 dark:text-white">Order journey</p>
           <p className="text-[11px] text-slate-500">
-            Mobile Accept/Reject → Payment → Pending → Processing → Picked Up → Close
+            {order.orderType === 2
+              ? "Mobile Accept/Reject → Payment → Pending → Processing → Picked Up → Close"
+              : "Pending → Processing → Picked Up → Close"}
           </p>
         </div>
         {pureRequested ? (
