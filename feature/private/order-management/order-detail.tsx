@@ -91,7 +91,7 @@ export function OrderDetailPage({ id }: { id: string }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
           <p className="text-xs text-slate-500">
-            Orders / #{order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}
+            Orders #{order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}
           </p>
           <PageHeader title="Order Details" description={pageDescription} />
           <div className="flex flex-wrap items-center gap-2">

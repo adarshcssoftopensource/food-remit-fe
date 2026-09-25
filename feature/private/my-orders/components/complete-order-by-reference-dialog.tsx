@@ -68,10 +68,8 @@ export function CompleteOrderByReferenceDialog({
     try {
       if (isPickup) {
         await markPickedUp({ orderId, referenceNumber: value });
-        toast.success("Order closed successfully.");
       } else {
         await completeByReference({ orderId, referenceNumber: value });
-        toast.success("Order completed successfully.");
       }
       setVerified(true);
       window.setTimeout(() => {

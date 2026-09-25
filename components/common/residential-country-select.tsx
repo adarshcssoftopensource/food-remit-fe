@@ -177,6 +177,7 @@ export function ResidentialCountrySelect({
         align="start"
         className="w-[min(28rem,calc(100vw-2rem))] gap-2 p-2"
         side="bottom"
+        initialFocus={false}
       >
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />

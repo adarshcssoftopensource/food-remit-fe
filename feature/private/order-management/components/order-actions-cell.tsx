@@ -81,7 +81,7 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
       onClick: () => setDeleteOpen(true),
       variant: "destructive",
       disabled: isDeleting,
-      hidden: isEmployee,
+      hidden: isEmployee || order.orderStatus !== 11,
     },
   ];
 
