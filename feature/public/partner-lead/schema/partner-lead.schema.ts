@@ -66,10 +66,11 @@ export const partnerLeadSchema = z
               }
               const invalidDays = openDays.filter(
                 (d) =>
-                  !d.openTime?.trim() ||
-                  !d.closeTime?.trim() ||
-                  d.openTime === "00:00" ||
-                  d.closeTime === "00:00",
+                  d.openTime !== "24H" && // 24H days are always valid
+                  (!d.openTime?.trim() ||
+                    !d.closeTime?.trim() ||
+                    d.openTime === "00:00" ||
+                    d.closeTime === "00:00"),
               );
               if (invalidDays.length > 0) {
                 ctx.addIssue({
@@ -85,6 +86,7 @@ export const partnerLeadSchema = z
 
               const sequencedDays = openDays.filter(
                 (d) =>
+                  d.openTime !== "24H" && // 24H days have no sequence issue
                   parseTimeToMinutes(d.closeTime, true) < parseTimeToMinutes(d.openTime, false),
               );
               if (sequencedDays.length > 0) {

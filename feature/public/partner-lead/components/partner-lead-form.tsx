@@ -1291,12 +1291,13 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       .filter((d) => d.isOpen)
                       .every(
                         (d) =>
-                          d.openTime &&
-                          d.closeTime &&
-                          d.openTime !== "00:00" &&
-                          d.closeTime !== "00:00" &&
-                          parseTimeToMinutes(d.closeTime, true) >=
-                            parseTimeToMinutes(d.openTime, false),
+                          d.openTime === "24H" || // 24-hour days are always complete
+                          (d.openTime &&
+                            d.closeTime &&
+                            d.openTime !== "00:00" &&
+                            d.closeTime !== "00:00" &&
+                            parseTimeToMinutes(d.closeTime, true) >=
+                              parseTimeToMinutes(d.openTime, false)),
                       );
 
                   if (isComplete) {

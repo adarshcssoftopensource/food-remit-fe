@@ -45,7 +45,11 @@ export const DEFAULT_WEEKLY_SCHEDULE: DailyScheduleItem[] = [
 export function formatScheduleSummary(schedule: DailyScheduleItem[]): string {
   const openDays = schedule.filter(
     (d) =>
-      d.isOpen && d.openTime && d.closeTime && d.openTime !== "00:00" && d.closeTime !== "00:00",
+      d.isOpen &&
+      d.openTime &&
+      d.closeTime &&
+      (d.openTime === "24H" || // 24-hour day
+        (d.openTime !== "00:00" && d.closeTime !== "00:00")),
   );
 
   if (openDays.length === 0) return "";
@@ -59,7 +63,8 @@ export function formatScheduleSummary(schedule: DailyScheduleItem[]): string {
   // Group days with identical operating hours
   const groups: { timeKey: string; days: string[] }[] = [];
   for (const item of openDays) {
-    const timeKey = `${item.openTime} - ${item.closeTime}`;
+    const timeKey =
+      item.openTime === "24H" ? "Open 24 Hours" : `${item.openTime} - ${item.closeTime}`;
     const existing = groups.find((g) => g.timeKey === timeKey);
     if (existing) {
       existing.days.push(item.day);
@@ -427,6 +432,7 @@ interface StoreScheduleEditorProps {
 
 export function parseTimeToMinutes(timeStr: string, isCloseTime: boolean = false): number {
   if (!timeStr || timeStr === "00:00") return 0;
+  if (timeStr === "24H") return 1440;
   const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
   if (!match) return 0;
   let hours = parseInt(match[1], 10);
@@ -510,14 +516,32 @@ export function StoreScheduleEditor({
     updateSchedule(next);
   };
 
-  // Find first open day with valid opening and closing hours
+  const handleToggle24Hours = (dayName: string) => {
+    if (disabled) return;
+    const next = scheduleItems.map((item) => {
+      if (item.day === dayName) {
+        const is24H = item.openTime === "24H";
+        return {
+          ...item,
+          openTime: is24H ? "00:00" : "24H",
+          closeTime: is24H ? "00:00" : "24H",
+        };
+      }
+      return item;
+    });
+    updateSchedule(next);
+  };
+
+  // Find first open day with valid opening and closing hours (not 24H)
   const sourceDayWithHours = scheduleItems.find(
     (item) =>
       item.isOpen &&
       item.openTime &&
       item.openTime !== "00:00" &&
+      item.openTime !== "24H" &&
       item.closeTime &&
-      item.closeTime !== "00:00",
+      item.closeTime !== "00:00" &&
+      item.closeTime !== "24H",
   );
 
   const canCopyToAll = Boolean(sourceDayWithHours);
@@ -569,7 +593,11 @@ export function StoreScheduleEditor({
     if (openItems.length === 0) return false;
     return openItems.every(
       (item) =>
-        item.openTime && item.closeTime && item.openTime !== "00:00" && item.closeTime !== "00:00",
+        item.openTime === "24H" || // 24-hour days are always configured
+        (item.openTime &&
+          item.closeTime &&
+          item.openTime !== "00:00" &&
+          item.closeTime !== "00:00"),
     );
   }, [scheduleItems]);
 
@@ -653,17 +681,25 @@ export function StoreScheduleEditor({
       <div className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white shadow-xs">
         {scheduleItems.map((item) => {
           const isDayOpen = item.isOpen;
+          const is24Hours = item.openTime === "24H";
 
           const isOpenInvalid = Boolean(
-            displayError && isDayOpen && (!item.openTime || item.openTime === "00:00"),
+            displayError &&
+            isDayOpen &&
+            !is24Hours &&
+            (!item.openTime || item.openTime === "00:00"),
           );
           let isCloseInvalid = Boolean(
-            displayError && isDayOpen && (!item.closeTime || item.closeTime === "00:00"),
+            displayError &&
+            isDayOpen &&
+            !is24Hours &&
+            (!item.closeTime || item.closeTime === "00:00"),
           );
 
           let timeSequenceInvalid = false;
           if (
             isDayOpen &&
+            !is24Hours &&
             item.openTime &&
             item.closeTime &&
             item.openTime !== "00:00" &&
@@ -700,57 +736,98 @@ export function StoreScheduleEditor({
                   </span>
                 </div>
 
-                {/* Open / Closed Toggle Badge */}
-                <button
-                  type="button"
-                  onClick={() => handleToggleDay(item.day)}
-                  disabled={disabled}
-                  className={cn(
-                    "inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-all",
-                    isDayOpen
-                      ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 hover:bg-emerald-100"
-                      : "bg-slate-200/70 text-slate-600 hover:bg-slate-300/80",
-                  )}
-                >
-                  <span
+                {/* Open / Closed Toggle Button */}
+                <div className="ml-auto flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleToggleDay(item.day)}
+                    disabled={disabled}
                     className={cn(
-                      "h-1.5 w-1.5 rounded-full",
-                      isDayOpen ? "bg-emerald-500" : "bg-slate-400",
+                      "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all active:scale-95 active:shadow-none",
+                      isDayOpen
+                        ? "border-emerald-300 bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-emerald-200"
+                        : "border-slate-300 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+                      disabled && "cursor-not-allowed opacity-50",
                     )}
-                  />
-                  {isDayOpen ? "Open" : "Closed"}
-                </button>
+                  >
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        isDayOpen ? "bg-white" : "bg-slate-400",
+                      )}
+                    />
+                    {isDayOpen ? "Open" : "Closed"}
+                  </button>
+
+                  {/* 24 Hours Toggle */}
+                  {isDayOpen && (
+                    <button
+                      type="button"
+                      onClick={() => handleToggle24Hours(item.day)}
+                      disabled={disabled}
+                      title={is24Hours ? "Switch to custom hours" : "Set as open 24 hours"}
+                      className={cn(
+                        "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all active:scale-95 active:shadow-none",
+                        is24Hours
+                          ? "border-violet-400 bg-violet-500 text-white hover:bg-violet-600"
+                          : "border-slate-300 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+                        disabled && "cursor-not-allowed opacity-50",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "text-[11px] leading-none",
+                          is24Hours ? "text-white" : "text-slate-400",
+                        )}
+                      >
+                        ∞
+                      </span>
+                      24 Hrs
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Middle: Open & Close Time Pickers OR Closed Message */}
               <div className="flex flex-1 items-center gap-2">
                 {isDayOpen ? (
                   <div className="flex w-full flex-col gap-1.5">
-                    <div className="flex w-full items-center gap-2">
-                      <div className="flex-1">
-                        <AnalogTimePicker
-                          value={item.openTime}
-                          onChange={(t) => handleTimeChange(item.day, "openTime", t)}
-                          placeholder="00:00"
-                          disabled={disabled}
-                          invalid={isOpenInvalid || timeSequenceInvalid}
-                        />
+                    {is24Hours ? (
+                      <div className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50/60 px-3 text-xs font-semibold text-indigo-700">
+                        <span className="text-base leading-none">∞</span>
+                        Open 24 Hours — All Day
                       </div>
-                      <span className="text-xs font-semibold text-slate-400 sm:text-sm">to</span>
-                      <div className="flex-1">
-                        <AnalogTimePicker
-                          value={item.closeTime}
-                          onChange={(t) => handleTimeChange(item.day, "closeTime", t)}
-                          placeholder="00:00"
-                          disabled={disabled}
-                          invalid={isCloseInvalid}
-                        />
-                      </div>
-                    </div>
-                    {timeSequenceInvalid && (
-                      <p className="px-1 text-[11px] font-medium text-red-500">
-                        Closing time must be after opening time on the same day.
-                      </p>
+                    ) : (
+                      <>
+                        <div className="flex w-full items-center gap-2">
+                          <div className="flex-1">
+                            <AnalogTimePicker
+                              value={item.openTime}
+                              onChange={(t) => handleTimeChange(item.day, "openTime", t)}
+                              placeholder="00:00"
+                              disabled={disabled}
+                              invalid={isOpenInvalid || timeSequenceInvalid}
+                            />
+                          </div>
+                          <span className="text-xs font-semibold text-slate-400 sm:text-sm">
+                            to
+                          </span>
+                          <div className="flex-1">
+                            <AnalogTimePicker
+                              value={item.closeTime}
+                              onChange={(t) => handleTimeChange(item.day, "closeTime", t)}
+                              placeholder="00:00"
+                              disabled={disabled}
+                              invalid={isCloseInvalid}
+                            />
+                          </div>
+                        </div>
+                        {timeSequenceInvalid && (
+                          <p className="px-1 text-[11px] font-medium text-red-500">
+                            Closing time must be after opening time on the same day.
+                          </p>
+                        )}
+                      </>
                     )}
                   </div>
                 ) : (
