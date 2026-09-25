@@ -1,6 +1,7 @@
 "use client";
 
 import { Country } from "country-state-city";
+import { AsYouType, CountryCode } from "libphonenumber-js";
 import { Check, ChevronDown, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -255,6 +256,12 @@ export function PhoneInputComponent({
     return resolved.nationalNumber.slice(0, maxDigits);
   }, [value, valueMode, selectedCountry.dialCode, resolved.nationalNumber, maxDigits]);
 
+  const formattedNationalNumber = useMemo(() => {
+    if (!nationalNumber) return "";
+    const formatter = new AsYouType(selectedCountry.isoCode as CountryCode);
+    return formatter.input(nationalNumber);
+  }, [nationalNumber, selectedCountry.isoCode]);
+
   const filteredCountries = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return ALL_COUNTRIES;
@@ -398,8 +405,7 @@ export function PhoneInputComponent({
         inputMode="numeric"
         autoComplete="tel-national"
         disabled={disabled}
-        value={nationalNumber}
-        maxLength={maxDigits}
+        value={formattedNationalNumber}
         onChange={(event) => handleNumberChange(event.target.value)}
         onBlur={onBlur}
         placeholder={`${maxDigits}-digit number`}

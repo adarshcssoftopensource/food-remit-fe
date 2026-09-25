@@ -121,22 +121,21 @@ export function SettingsPage() {
       />
 
       <Tabs key={tabParam || "default"} defaultValue={initialTab} className="w-full">
-        <TabsList
-          className="grid h-auto! w-full gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl md:w-auto dark:border-slate-800/80 dark:bg-slate-900/60"
-          style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
-        >
-          {tabs.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              title={tab.label}
-              className="flex h-10 items-center justify-center rounded-xl px-2.5 text-xs font-semibold sm:px-3 md:px-4 md:text-sm"
-            >
-              {tab.icon}
-              {!isMobile && <span className="ml-2 whitespace-nowrap">{tab.label}</span>}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="scrollbar-hide w-full overflow-x-auto pb-2">
+          <TabsList className="inline-flex h-auto w-max min-w-full items-center gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/60">
+            {tabs.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                title={tab.label}
+                className="flex h-10 flex-1 items-center justify-center rounded-xl px-4 text-xs font-semibold sm:text-sm"
+              >
+                {tab.icon}
+                <span className="ml-2 whitespace-nowrap">{tab.label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         {tabs.map((tab) => (
           <TabsContent key={tab.value} value={tab.value} className="mt-4">

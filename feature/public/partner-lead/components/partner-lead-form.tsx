@@ -35,6 +35,7 @@ import { MultiLanguageSelect } from "@/components/common/multi-language-select";
 import {
   StoreScheduleEditor,
   DEFAULT_WEEKLY_SCHEDULE,
+  parseTimeToMinutes,
 } from "@/components/common/store-schedule-editor";
 import { errorToast, successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
@@ -1131,7 +1132,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
                           clearErrors("locations");
                         }}
-                        addressFormat="full"
+                        addressFormat="street-and-zip"
                         countryCode={selectedCountryIsoCode}
                         disabled={!selectedCountryIsoCode}
                         placeholder={
@@ -1293,7 +1294,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           d.openTime &&
                           d.closeTime &&
                           d.openTime !== "00:00" &&
-                          d.closeTime !== "00:00",
+                          d.closeTime !== "00:00" &&
+                          parseTimeToMinutes(d.closeTime, true) >=
+                            parseTimeToMinutes(d.openTime, false),
                       );
 
                   if (isComplete) {
@@ -1884,9 +1887,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             </div>
 
             <div className="space-y-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-4 text-xs">
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 md:flex-row md:items-start md:justify-between md:gap-4">
                 <span className="font-medium text-slate-500">Business:</span>
-                <span className="min-w-0 font-semibold break-words text-slate-900 sm:text-right">
+                <span className="min-w-0 font-semibold break-words text-slate-900 md:text-right">
                   {getValues("businessName") || "N/A"} (
                   {getValues("businessType") === "Other" && getValues("otherBusinessType")
                     ? `Other: ${getValues("otherBusinessType")}`
@@ -1897,39 +1900,39 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                     : ""}
                 </span>
               </div>
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 md:flex-row md:items-start md:justify-between md:gap-4">
                 <span className="font-medium text-slate-500">Locations &amp; Country:</span>
-                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                <span className="min-w-0 font-semibold text-slate-900 md:text-right">
                   {getValues("locationsCount") || "N/A"} • {getValues("country") || "N/A"}
                   {getValues("businessCity") ? ` (${getValues("businessCity")})` : ""}
                 </span>
               </div>
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 md:flex-row md:items-start md:justify-between md:gap-4">
                 <span className="font-medium text-slate-500">Primary Contact:</span>
-                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                <span className="min-w-0 font-semibold text-slate-900 md:text-right">
                   {getValues("firstName")} {getValues("lastName")} (
                   {getValues("jobTitle") || "Owner / Representative"})
                 </span>
               </div>
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 md:flex-row md:items-start md:justify-between md:gap-4">
                 <span className="font-medium text-slate-500">Contact Details:</span>
-                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                <span className="min-w-0 font-semibold text-slate-900 md:text-right">
                   {getValues("businessEmail")} • {getValues("phoneNumber")}
                 </span>
               </div>
               {/* Work Preferences Review Line */}
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 md:flex-row md:items-start md:justify-between md:gap-4">
                 <span className="font-medium text-slate-500">Partnership Interests:</span>
-                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                <span className="min-w-0 font-semibold text-slate-900 md:text-right">
                   {(getValues("workPreferences") || []).length > 0
                     ? (getValues("workPreferences") || []).join(", ")
                     : "None specified"}
                 </span>
               </div>
               {(getValues("inventoryManagement") || getValues("websiteOrSocial")) && (
-                <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 md:flex-row md:items-start md:justify-between md:gap-4">
                   <span className="font-medium text-slate-500">Operations / Web:</span>
-                  <span className="text-left font-semibold break-all text-slate-900 sm:text-right">
+                  <span className="text-left font-semibold break-all text-slate-900 md:text-right">
                     {getValues("inventoryManagement") || "Standard"}
                     {getValues("websiteOrSocial") ? ` • ${getValues("websiteOrSocial")}` : ""}
                   </span>
@@ -1947,9 +1950,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               )}
 
               {/* KYC Review Line */}
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-1 md:flex-row md:items-start md:justify-between md:gap-4">
                 <span className="font-medium text-slate-500">Identity Verification (KYC):</span>
-                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                <span className="min-w-0 font-semibold text-slate-900 md:text-right">
                   {(watch("kycStatus") || "").toUpperCase() === "APPROVED" ? (
                     <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700">
                       <CheckCircle2 className="size-4 text-emerald-600" />
@@ -1967,9 +1970,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
 
               {/* Bank Verification Review Line */}
-              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-1 md:flex-row md:items-start md:justify-between md:gap-4">
                 <span className="font-medium text-slate-500">Bank Account (Plaid):</span>
-                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                <span className="min-w-0 font-semibold text-slate-900 md:text-right">
                   {(watch("bankStatus") || "").toUpperCase() === "VERIFIED" ? (
                     <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700">
                       <CheckCircle2 className="size-4 text-emerald-600" />
@@ -1988,9 +1991,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
 
               {/* Supporting Documents Review Line */}
-              <div className="flex flex-col gap-1 pb-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex flex-col gap-1 pb-1 md:flex-row md:items-start md:justify-between md:gap-4">
                 <span className="font-medium text-slate-500">Supporting Documents:</span>
-                <span className="min-w-0 font-semibold text-slate-900 sm:text-right">
+                <span className="min-w-0 font-semibold text-slate-900 md:text-right">
                   {(watch("additionalDocuments") || []).length > 0 ? (
                     <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700">
                       <CheckCircle2 className="size-4 text-emerald-600" />
@@ -2037,13 +2040,13 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
           </div>
         )}
 
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between sm:pt-5">
+        <div className="flex flex-col-reverse flex-wrap gap-3 border-t border-slate-100 pt-4 md:flex-row md:items-center md:justify-between md:pt-5">
           {currentStep > 1 ? (
             <Button
               type="button"
               variant="outline"
               onClick={handlePrevStep}
-              className="h-11 w-full rounded-xl border-slate-200 px-5 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:w-auto"
+              className="h-11 w-full rounded-xl border-slate-200 px-5 text-xs font-semibold text-slate-700 hover:bg-slate-50 md:w-auto"
             >
               <ArrowLeft className="mr-1.5 size-4" />
               Back
@@ -2066,7 +2069,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 handleNextStep();
               }}
               className={cn(
-                "h-11 w-full rounded-xl px-6 text-xs font-bold shadow-sm transition-all sm:w-auto",
+                "h-11 w-full rounded-xl px-6 text-xs font-bold shadow-sm transition-all md:w-auto",
                 (currentStep === 4 && !isKycApproved) ||
                   (currentStep === 5 &&
                     (!isBankStepComplete || (watch("additionalDocuments") || []).length < 1))
@@ -2119,7 +2122,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 }
               }}
               isLoading={isPending}
-              className="h-12 w-full rounded-xl bg-emerald-700 px-5 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-800 sm:w-auto sm:px-7"
+              className="h-12 w-full rounded-xl bg-emerald-700 px-5 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-800 md:w-auto md:px-7"
             >
               I’m Interested — Join Food Remit
             </Button>

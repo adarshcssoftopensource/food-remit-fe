@@ -16,7 +16,7 @@ import { Loader2, MapPin, Search, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-export type AddressFormat = "street" | "full";
+export type AddressFormat = "street" | "street-and-zip" | "full";
 
 export type AddressAutocompleteInputProps = {
   value?: string;
@@ -134,6 +134,10 @@ export function AddressAutocompleteInput({
     if (addressFormat === "street") {
       const street = details?.streetAddress?.trim() || details?.name?.trim() || prediction.mainText;
       onChange(street);
+    } else if (addressFormat === "street-and-zip") {
+      const street = details?.streetAddress?.trim() || details?.name?.trim() || prediction.mainText;
+      const zip = details?.postalCode?.trim() ? `, ${details.postalCode.trim()}` : "";
+      onChange(`${street}${zip}`);
     } else {
       onChange(details?.formattedAddress?.trim() || prediction.description);
     }

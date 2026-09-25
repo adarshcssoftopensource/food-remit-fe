@@ -97,9 +97,9 @@ export function PartnerLeadSuccess({
         </div>
       </div>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
-        <Link href={ROUTES.ROOT} className="w-full sm:w-auto">
-          <Button className="h-12 w-full rounded-xl bg-emerald-700 px-6 font-semibold text-white shadow-sm hover:bg-emerald-800 sm:w-auto">
+      <div className="mt-8 flex flex-col flex-wrap gap-3 md:flex-row md:items-center md:justify-center">
+        <Link href={ROUTES.ROOT} className="w-full md:w-auto">
+          <Button className="h-12 w-full rounded-xl bg-emerald-700 px-6 font-semibold text-white shadow-sm hover:bg-emerald-800 md:w-auto">
             Learn More About Food Remit
             <ChevronRight className="ml-1 size-4" />
           </Button>
@@ -108,7 +108,7 @@ export function PartnerLeadSuccess({
           <Button
             variant="outline"
             onClick={onReset}
-            className="h-12 w-full rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 sm:w-auto"
+            className="h-12 w-full rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 md:w-auto"
           >
             Submit Another Request
           </Button>

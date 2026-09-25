@@ -191,25 +191,27 @@ export function PartnerLeadsManagement() {
 
       <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-950">
         <Card className="rounded-2xl border border-slate-100 bg-slate-50/40 shadow-none dark:border-slate-800 dark:bg-slate-900/40">
-          <CardHeader className="flex flex-row items-center gap-4 border-b border-slate-100 px-6 py-5 dark:border-slate-800">
-            <div
-              className={cn(
-                "bg-opacity-15 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl",
-                meta.accent.replace("bg-", "text-"),
-                meta.accent.replace("bg-", "bg-").replace("-500", "-100").replace("-600", "-100"), // Simple fallback for light bg
-              )}
-            >
-              <ActiveIcon className="size-6" />
+          <CardHeader className="flex flex-col items-start gap-4 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-center dark:border-slate-800">
+            <div className="flex w-full min-w-0 flex-1 items-center gap-4">
+              <div
+                className={cn(
+                  "bg-opacity-15 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl",
+                  meta.accent.replace("bg-", "text-"),
+                  meta.accent.replace("bg-", "bg-").replace("-500", "-100").replace("-600", "-100"), // Simple fallback for light bg
+                )}
+              >
+                <ActiveIcon className="size-6" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                  {meta.title}
+                </CardTitle>
+                <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+                  {meta.subtitle}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                {meta.title}
-              </CardTitle>
-              <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-                {meta.subtitle}
-              </p>
-            </div>
-            <div className="ml-auto shrink-0">
+            <div className="w-full shrink-0 sm:ml-auto sm:w-auto">
               <ModuleFilters
                 title="Filter Leads Pipeline"
                 description="Filter partnership leads by submission date range"

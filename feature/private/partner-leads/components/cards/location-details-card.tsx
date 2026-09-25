@@ -55,7 +55,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
   }, [lead.locations]);
 
   return (
-    <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+    <Card className="@container overflow-hidden rounded-2xl border-slate-200 shadow-sm">
       <CardHeader className="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
         <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900">
           <MapPin className="h-5 w-5 text-emerald-600" />
@@ -63,7 +63,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-5 @md:grid-cols-3">
           <div>
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
               Country
@@ -86,13 +86,13 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
               <span>{lead.businessCity || "N/A"}</span>
               {lead.cityCoverage &&
                 (!lead.cityCoverage.cityExists ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-800">
-                    <AlertTriangle className="h-3 w-3" />
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-amber-800">
+                    <AlertTriangle className="h-3 w-3 shrink-0" />
                     City Not in System
                   </span>
                 ) : lead.cityCoverage.hasCityManager && lead.cityCoverage.cityManager ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700">
-                    <CheckCircle2 className="h-3 w-3" />
+                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-emerald-700">
+                    <CheckCircle2 className="h-3 w-3 shrink-0" />
                     CM: {lead.cityCoverage.cityManager.name}
                   </span>
                 ) : null)}
@@ -144,7 +144,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                     className="flex flex-col gap-4 rounded-2xl border border-slate-200/90 bg-white p-4.5 shadow-2xs transition-all hover:border-slate-300 sm:p-5"
                   >
                     {/* Location Header */}
-                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex flex-col gap-2.5 @md:flex-row @md:items-start @md:justify-between">
                       <div className="flex items-start gap-3">
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shadow-2xs ring-1 ring-emerald-500/20">
                           <MapPin className="h-4.5 w-4.5" />
@@ -166,10 +166,10 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                       </div>
 
                       {loc.hoursOfOperation && (
-                        <div className="shrink-0 self-start sm:self-auto">
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-800">
-                            <Clock className="h-3 w-3 text-emerald-600" />
-                            {loc.hoursOfOperation}
+                        <div className="shrink-0 self-start @md:self-auto">
+                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50/80 px-3 py-1 text-xs font-semibold whitespace-nowrap text-emerald-800">
+                            <Clock className="h-3 w-3 shrink-0 text-emerald-600" />
+                            <span className="truncate">{loc.hoursOfOperation}</span>
                           </span>
                         </div>
                       )}
@@ -177,7 +177,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
 
                     {/* Operational Schedule Box */}
                     {(scheduleItems || loc.daysOpen?.length > 0 || loc.hoursOfOperation) && (
-                      <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-3.5 sm:p-4">
+                      <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-3.5 @md:p-4">
                         {/* Subheader */}
                         <div className="mb-3 flex items-center justify-between border-b border-slate-200/60 pb-2.5">
                           <div className="flex items-center gap-1.5">
@@ -214,7 +214,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
 
                         {/* Daily breakdown (2-column grid) */}
                         {scheduleItems && scheduleItems.length > 0 ? (
-                          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                          <div className="grid grid-cols-1 gap-1.5 @md:grid-cols-2">
                             {scheduleItems.map((ds) => {
                               const isOpen = ds.isOpen;
                               return (
@@ -246,9 +246,11 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
 
                                   <div>
                                     {isOpen ? (
-                                      <span className="inline-flex items-center gap-1 rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 font-semibold text-slate-800">
-                                        <Clock className="h-3 w-3 text-emerald-600" />
-                                        {ds.openTime} – {ds.closeTime}
+                                      <span className="inline-flex min-w-0 items-center gap-1 rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 font-semibold whitespace-nowrap text-slate-800">
+                                        <Clock className="h-3 w-3 shrink-0 text-emerald-600" />
+                                        <span className="truncate">
+                                          {ds.openTime} – {ds.closeTime}
+                                        </span>
                                       </span>
                                     ) : (
                                       <span className="inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium text-slate-400">

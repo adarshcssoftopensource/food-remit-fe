@@ -425,6 +425,24 @@ interface StoreScheduleEditorProps {
   disabled?: boolean;
 }
 
+export function parseTimeToMinutes(timeStr: string, isCloseTime: boolean = false): number {
+  if (!timeStr || timeStr === "00:00") return 0;
+  const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return 0;
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const ampm = match[3].toUpperCase();
+  if (ampm === "PM" && hours < 12) hours += 12;
+  if (ampm === "AM" && hours === 12) hours = 0;
+
+  const totalMins = hours * 60 + minutes;
+  // If 12:00 AM is selected as the close time, treat it as midnight at the end of the day (1440 mins)
+  if (isCloseTime && totalMins === 0) {
+    return 1440;
+  }
+  return totalMins;
+}
+
 export function StoreScheduleEditor({
   daysOpen = [],
   hoursOfOperation = "",
@@ -639,9 +657,25 @@ export function StoreScheduleEditor({
           const isOpenInvalid = Boolean(
             displayError && isDayOpen && (!item.openTime || item.openTime === "00:00"),
           );
-          const isCloseInvalid = Boolean(
+          let isCloseInvalid = Boolean(
             displayError && isDayOpen && (!item.closeTime || item.closeTime === "00:00"),
           );
+
+          let timeSequenceInvalid = false;
+          if (
+            isDayOpen &&
+            item.openTime &&
+            item.closeTime &&
+            item.openTime !== "00:00" &&
+            item.closeTime !== "00:00"
+          ) {
+            const openMins = parseTimeToMinutes(item.openTime, false);
+            const closeMins = parseTimeToMinutes(item.closeTime, true);
+            if (closeMins < openMins) {
+              timeSequenceInvalid = true;
+              isCloseInvalid = true;
+            }
+          }
 
           return (
             <div
@@ -691,26 +725,33 @@ export function StoreScheduleEditor({
               {/* Middle: Open & Close Time Pickers OR Closed Message */}
               <div className="flex flex-1 items-center gap-2">
                 {isDayOpen ? (
-                  <div className="flex w-full items-center gap-2">
-                    <div className="flex-1">
-                      <AnalogTimePicker
-                        value={item.openTime}
-                        onChange={(t) => handleTimeChange(item.day, "openTime", t)}
-                        placeholder="00:00"
-                        disabled={disabled}
-                        invalid={isOpenInvalid}
-                      />
+                  <div className="flex w-full flex-col gap-1.5">
+                    <div className="flex w-full items-center gap-2">
+                      <div className="flex-1">
+                        <AnalogTimePicker
+                          value={item.openTime}
+                          onChange={(t) => handleTimeChange(item.day, "openTime", t)}
+                          placeholder="00:00"
+                          disabled={disabled}
+                          invalid={isOpenInvalid || timeSequenceInvalid}
+                        />
+                      </div>
+                      <span className="text-xs font-semibold text-slate-400 sm:text-sm">to</span>
+                      <div className="flex-1">
+                        <AnalogTimePicker
+                          value={item.closeTime}
+                          onChange={(t) => handleTimeChange(item.day, "closeTime", t)}
+                          placeholder="00:00"
+                          disabled={disabled}
+                          invalid={isCloseInvalid}
+                        />
+                      </div>
                     </div>
-                    <span className="text-xs font-semibold text-slate-400 sm:text-sm">to</span>
-                    <div className="flex-1">
-                      <AnalogTimePicker
-                        value={item.closeTime}
-                        onChange={(t) => handleTimeChange(item.day, "closeTime", t)}
-                        placeholder="00:00"
-                        disabled={disabled}
-                        invalid={isCloseInvalid}
-                      />
-                    </div>
+                    {timeSequenceInvalid && (
+                      <p className="px-1 text-[11px] font-medium text-red-500">
+                        Closing time must be after opening time on the same day.
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <div className="flex h-10 w-full items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-100/50 px-3 text-xs font-medium text-slate-400">
