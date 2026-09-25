@@ -258,9 +258,23 @@ export function PhoneInputComponent({
 
   const formattedNationalNumber = useMemo(() => {
     if (!nationalNumber) return "";
+
+    // We want the true local format as it appears internationally, which handles
+    // dropped leading zeros correctly (e.g. Afghanistan drops '0', UK drops '0').
+    // By passing the full international number to AsYouType, it figures out the correct spacing.
     const formatter = new AsYouType(selectedCountry.isoCode as CountryCode);
+    const fullIntl = `+${selectedCountry.dialCode}${nationalNumber}`;
+    const formatted = formatter.input(fullIntl);
+
+    // Now strip the dial code (+XX) from the front to leave just the beautifully formatted national part
+    const dialPrefix = `+${selectedCountry.dialCode}`;
+    if (formatted.startsWith(dialPrefix)) {
+      return formatted.slice(dialPrefix.length).trim();
+    }
+
+    // Fallback just in case
     return formatter.input(nationalNumber);
-  }, [nationalNumber, selectedCountry.isoCode]);
+  }, [nationalNumber, selectedCountry.isoCode, selectedCountry.dialCode]);
 
   const filteredCountries = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -293,9 +307,24 @@ export function PhoneInputComponent({
     setSearchQuery("");
   }
 
-  function handleNumberChange(raw: string) {
-    // Digits only — no free junk characters; backspace removes cleanly.
-    const nextNational = toPhoneDigits(raw).slice(0, maxDigits);
+  function handleNumberChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const raw = event.target.value;
+    let nextNational = toPhoneDigits(raw).slice(0, maxDigits);
+
+    // If the user hit backspace on a formatting character (e.g. space or hyphen),
+    // the raw string shrinks but the raw digits remain identical.
+    if (raw.length < formattedNationalNumber.length && nextNational === nationalNumber) {
+      // Find where the cursor is currently located
+      const cursor = event.target.selectionStart ?? raw.length;
+
+      // Isolate the digits before and after the cursor
+      const digitsBeforeCursor = toPhoneDigits(raw.slice(0, cursor));
+      const digitsAfterCursor = toPhoneDigits(raw.slice(cursor));
+
+      // Manually remove the last digit that was immediately before the cursor
+      nextNational = digitsBeforeCursor.slice(0, -1) + digitsAfterCursor;
+    }
+
     emitChange(selectedCountry, nextNational);
   }
 
@@ -406,7 +435,7 @@ export function PhoneInputComponent({
         autoComplete="tel-national"
         disabled={disabled}
         value={formattedNationalNumber}
-        onChange={(event) => handleNumberChange(event.target.value)}
+        onChange={handleNumberChange}
         onBlur={onBlur}
         placeholder={`${maxDigits}-digit number`}
         className={cn(

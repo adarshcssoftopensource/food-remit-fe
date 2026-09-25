@@ -129,6 +129,12 @@ export const partnerLeadSchema = z
       })
       .optional()
       .or(z.literal("")),
+    zipCode: z
+      .string()
+      .trim()
+      .max(20, "Zip code cannot exceed 20 characters")
+      .optional()
+      .or(z.literal("")),
     storePhoneNumber: z
       .string()
       .min(1, "Store phone number is required")

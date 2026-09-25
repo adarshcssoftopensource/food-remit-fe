@@ -100,6 +100,12 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
           </div>
           <div>
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
+              Zip Code
+            </dt>
+            <dd className="text-sm font-semibold text-slate-900">{lead.zipCode || "N/A"}</dd>
+          </div>
+          <div>
+            <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
               Currency
             </dt>
             <dd className="text-sm font-semibold text-slate-900">{lead.currency || "N/A"}</dd>

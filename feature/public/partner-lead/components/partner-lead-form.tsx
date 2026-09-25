@@ -540,6 +540,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         formData.append("stateProvince", data.stateProvinceRegion.trim());
         formData.append("stateProvinceRegion", data.stateProvinceRegion.trim());
       }
+      if (data.zipCode?.trim()) {
+        formData.append("zipCode", data.zipCode.trim());
+      }
       formData.append("firstName", data.firstName || "");
       formData.append("lastName", data.lastName || "");
       if (data.jobTitle?.trim()) formData.append("jobTitle", data.jobTitle.trim());
@@ -1013,12 +1016,12 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   </p>
                 </div>
               </div>{" "}
-              <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
+              <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-6">
                 <Controller
                   name="country"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-col gap-1.5 xl:col-span-3">
                       <FieldLabel
                         htmlFor="country"
                         className="text-xs font-semibold text-slate-700"
@@ -1058,7 +1061,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name="currency"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-col gap-1.5 xl:col-span-3">
                       <FieldLabel
                         htmlFor="currency"
                         className="text-xs font-semibold text-slate-700"
@@ -1082,7 +1085,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name={"locations.0.address" as const}
                   control={control}
                   render={({ field, fieldState }) => (
-                    <div className="flex flex-col gap-1.5 xl:col-span-2">
+                    <div className="flex flex-col gap-1.5 xl:col-span-6">
                       <FieldLabel
                         htmlFor="storeAddress"
                         className="text-xs font-semibold text-slate-700"
@@ -1130,9 +1133,18 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                             clearErrors("businessCity");
                           }
 
+                          // 3. Auto-fill Zip Code
+                          if (details.postalCode) {
+                            setValue("zipCode", details.postalCode.trim(), {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            });
+                            clearErrors("zipCode");
+                          }
+
                           clearErrors("locations");
                         }}
-                        addressFormat="street-and-zip"
+                        addressFormat="street"
                         countryCode={selectedCountryIsoCode}
                         disabled={!selectedCountryIsoCode}
                         placeholder={
@@ -1159,7 +1171,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name="stateProvinceRegion"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-col gap-1.5 xl:col-span-2">
                       <FieldLabel
                         htmlFor="stateProvinceRegion"
                         className="text-xs font-semibold text-slate-700"
@@ -1198,7 +1210,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name="businessCity"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-col gap-1.5 xl:col-span-2">
                       <FieldLabel
                         htmlFor="businessCity"
                         className="text-xs font-semibold text-slate-700"
@@ -1233,10 +1245,38 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 />
 
                 <Controller
-                  name="storePhoneNumber"
+                  name="zipCode"
                   control={control}
                   render={({ field }) => (
                     <div className="flex flex-col gap-1.5 xl:col-span-2">
+                      <FieldLabel
+                        htmlFor="zipCode"
+                        className="text-xs font-semibold text-slate-700"
+                      >
+                        Zip Code <span className="font-normal text-slate-400">(Optional)</span>
+                      </FieldLabel>
+
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        id="zipCode"
+                        placeholder="e.g. 177107"
+                        aria-invalid={Boolean(errors.zipCode)}
+                        className="focus-visible:ring-primary/10 h-11 rounded-xl border-slate-200 bg-white text-sm"
+                      />
+
+                      {errors.zipCode && (
+                        <p className="text-xs font-medium text-red-500">{errors.zipCode.message}</p>
+                      )}
+                    </div>
+                  )}
+                />
+
+                <Controller
+                  name="storePhoneNumber"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-1.5 xl:col-span-6">
                       <FieldLabel
                         htmlFor="storePhoneNumber"
                         className="text-xs font-semibold text-slate-700"

@@ -97,6 +97,7 @@ export interface PartnerLeadData {
   businessCity: string | null;
   stateProvince: string | null;
   country: string;
+  zipCode?: string | null;
   firstName: string;
   lastName: string;
   jobTitle: string | null;
