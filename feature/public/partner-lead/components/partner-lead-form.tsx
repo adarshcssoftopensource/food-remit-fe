@@ -609,7 +609,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   return (
     <div
       className={cn(
-        "relative z-10 mt-auto w-full overflow-visible rounded-[2rem] bg-white p-4 shadow-2xl shadow-black/30 sm:mt-auto sm:rounded-[2.5rem] sm:p-10 md:mt-auto lg:mt-auto",
+        "relative z-10 mt-auto w-full overflow-hidden rounded-[2rem] bg-white px-3 py-4 shadow-2xl shadow-black/30 sm:mt-auto sm:rounded-[2.5rem] sm:p-10 md:mt-auto lg:mt-auto",
         className,
       )}
     >
@@ -1002,7 +1002,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             </div>
 
             {/* Geographical Section Container */}
-            <div className="mt-3 flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 sm:p-5">
+            <div className="mt-3 flex flex-col gap-3 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50/50 p-2.5 sm:p-5">
               <div className="flex items-center gap-2 border-b border-slate-200/60 pb-2">
                 <Globe className="size-4.5 text-emerald-600" />
                 <div>
@@ -1264,7 +1264,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
             </div>
 
-            <div className="mt-3 flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 sm:p-5">
+            <div className="mt-3 flex flex-col gap-3 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50/50 p-2.5 sm:p-5">
               <div className="flex items-center gap-2 border-b border-slate-200/60 pb-2">
                 <Store className="size-4.5 text-emerald-600" />
                 <div>
