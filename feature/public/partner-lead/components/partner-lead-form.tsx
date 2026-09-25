@@ -1293,6 +1293,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         error={!!errors.storePhoneNumber}
                         disabled={!selectedCountryIsoCode}
                         defaultCountry={selectedCountryIsoCode || selectedCountryName || "US"}
+                        disableCountrySelect
                       />
                       {errors.storePhoneNumber && (
                         <p className="text-xs font-medium text-red-500">
@@ -1608,6 +1609,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       onBlur={field.onBlur}
                       error={!!errors.phoneNumber}
                       defaultCountry={selectedCountryIsoCode || selectedCountryName || "US"}
+                      disableCountrySelect
                     />
                     {errors.phoneNumber && (
                       <p className="text-xs font-medium text-red-500">

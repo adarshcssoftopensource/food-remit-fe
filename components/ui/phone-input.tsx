@@ -36,6 +36,7 @@ interface PhoneInputComponentProps {
    * - "national": value is national digits only (e.g. "3322359345") — use with split countryCode fields
    */
   valueMode?: "international" | "national";
+  disableCountrySelect?: boolean;
 }
 
 const DEFAULT_ISO = "IN";
@@ -195,6 +196,7 @@ export function PhoneInputComponent({
   disabled,
   defaultCountry = DEFAULT_ISO,
   valueMode = "international",
+  disableCountrySelect = false,
 }: PhoneInputComponentProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -347,15 +349,15 @@ export function PhoneInputComponent({
         }}
       >
         <PopoverTrigger
-          disabled={disabled}
+          disabled={disabled || disableCountrySelect}
           render={
             <button
               type="button"
-              disabled={disabled}
+              disabled={disabled || disableCountrySelect}
               aria-label="Select country code"
               className={cn(
                 "flex h-full shrink-0 items-center gap-1 border-r border-slate-200/90 px-2.5 text-sm",
-                disabled
+                disabled || disableCountrySelect
                   ? "cursor-not-allowed text-slate-600 hover:bg-transparent"
                   : "text-slate-700 transition-colors hover:bg-slate-50",
                 "focus-visible:ring-2 focus-visible:ring-[#1B3A8C]/25 focus-visible:outline-none",
@@ -365,12 +367,14 @@ export function PhoneInputComponent({
                 {selectedCountry.flag}
               </span>
               <span className="font-semibold tabular-nums">+{selectedCountry.dialCode}</span>
-              <ChevronDown
-                className={cn(
-                  "size-3.5 text-slate-400 transition-transform",
-                  isOpen && "rotate-180",
-                )}
-              />
+              {!disableCountrySelect && (
+                <ChevronDown
+                  className={cn(
+                    "size-3.5 text-slate-400 transition-transform",
+                    isOpen && "rotate-180",
+                  )}
+                />
+              )}
             </button>
           }
         />
