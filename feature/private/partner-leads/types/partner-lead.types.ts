@@ -61,6 +61,22 @@ export interface BankVerificationRecord {
   rawAccounts?: unknown;
 }
 
+export interface CityCoverageInfo {
+  cityExists: boolean;
+  hasCityManager: boolean;
+  cityName: string | null;
+  cityId: string | null;
+  cityManager: {
+    id: string;
+    name: string;
+    email: string;
+    phoneNumber?: string | null;
+    status?: string | null;
+  } | null;
+  warningMessage: string | null;
+  canUpdateStatus: boolean;
+}
+
 export interface PartnerLeadData {
   id: string;
   referenceNumber: string;
@@ -137,4 +153,5 @@ export interface PartnerLeadData {
     lastName?: string | null;
     userType: string;
   } | null;
+  cityCoverage?: CityCoverageInfo | null;
 }

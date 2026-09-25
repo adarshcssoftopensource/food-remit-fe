@@ -206,7 +206,7 @@ export function PartnerLeadsManagement() {
                 {meta.title}
               </CardTitle>
               <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-                {pagination.total} lead{pagination.total !== 1 ? "s" : ""} · {meta.subtitle}
+                {meta.subtitle}
               </p>
             </div>
             <div className="ml-auto shrink-0">

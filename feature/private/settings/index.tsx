@@ -13,10 +13,12 @@ import { ProcessingFee } from "./components/processing-fee";
 import { useProfile } from "@/components/providers/profile-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { Clock3, Globe, Mail, MapPin, Percent, Receipt, ShieldCheck } from "lucide-react";
 
 export function SettingsPage() {
   const { hasPermission, profile, canViewPlatformFees } = useProfile();
+  const searchParams = useSearchParams();
   const isStoreManager = profile?.roleCode === "STORE_MANAGER";
   const isMobile = useIsMobile();
 
@@ -103,6 +105,14 @@ export function SettingsPage() {
     );
   }, [hasPermission, isStoreManager, canViewPlatformFees, canViewAutoAbandon]);
 
+  const tabParam = searchParams.get("tab");
+  const initialTab = useMemo(() => {
+    if (tabParam && tabs.some((t) => t.value === tabParam)) {
+      return tabParam;
+    }
+    return tabs[0]?.value || "email-notifications";
+  }, [tabParam, tabs]);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -110,7 +120,7 @@ export function SettingsPage() {
         description="Manage email notification preferences, locations, fees, and platform policies."
       />
 
-      <Tabs defaultValue={tabs[0]?.value} className="w-full">
+      <Tabs key={tabParam || "default"} defaultValue={initialTab} className="w-full">
         <TabsList
           className="grid h-auto! w-full gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl md:w-auto dark:border-slate-800/80 dark:bg-slate-900/60"
           style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}

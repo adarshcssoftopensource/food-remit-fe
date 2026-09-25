@@ -16,7 +16,7 @@ import { FieldLabel } from "@/components/ui/field";
 import { resolveWorldCountryIsoCode } from "@/lib/world-locations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit3, Loader2, MapPin, Plus, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useCreateCity } from "../hooks/use-create-city";
 import { useGetCities } from "../hooks/use-get-cities";
@@ -31,6 +31,7 @@ interface AddCityDialogProps {
   onOpenChange?: (open: boolean) => void;
   city?: CityData | null;
   defaultCountryId?: string;
+  defaultCityName?: string;
 }
 
 export function AddCityDialog({
@@ -39,6 +40,7 @@ export function AddCityDialog({
   onOpenChange: controlledOnOpenChange,
   city = null,
   defaultCountryId = "",
+  defaultCityName = "",
 }: AddCityDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
 
@@ -87,18 +89,35 @@ export function AddCityDialog({
     return existing.map((item) => item.cityName || item.name);
   }, [existingCitiesResponse?.data, mode, city]);
 
+  const findCountry = useCallback(
+    (identifier?: string | null) => {
+      if (!identifier) return null;
+      const trimmed = identifier.trim();
+      const lower = trimmed.toLowerCase();
+      return (
+        countries.find(
+          (c) =>
+            c.id === trimmed ||
+            c.name.toLowerCase() === lower ||
+            c.countryCode?.toLowerCase() === lower,
+        ) ?? null
+      );
+    },
+    [countries],
+  );
+
   const resolvedCountryIso = useMemo(() => {
     if (selectedCountryIsoCode) return selectedCountryIsoCode;
-    const selected = countries.find((item) => item.id === selectedCountryId);
+    const selected = findCountry(selectedCountryId);
     return resolveWorldCountryIsoCode(selected?.name, selected?.countryCode) ?? "";
-  }, [countries, selectedCountryId, selectedCountryIsoCode]);
+  }, [findCountry, selectedCountryId, selectedCountryIsoCode]);
 
   useEffect(() => {
     if (isDialogOpen) {
       if (mode === "edit" && city) {
-        const matchedCountry = countries.find((item) => item.id === city.countryId);
+        const matchedCountry = findCountry(city.countryId) || findCountry(city.countryName);
         reset({
-          countryId: city.countryId || "",
+          countryId: matchedCountry?.id || city.countryId || "",
           countryIsoCode:
             resolveWorldCountryIsoCode(
               matchedCountry?.name ?? city.countryName,
@@ -107,16 +126,16 @@ export function AddCityDialog({
           cityName: city.cityName || city.name || "",
         });
       } else {
-        const matchedCountry = countries.find((item) => item.id === defaultCountryId);
+        const matchedCountry = findCountry(defaultCountryId);
         reset({
-          countryId: defaultCountryId || "",
+          countryId: matchedCountry?.id || defaultCountryId || "",
           countryIsoCode:
             resolveWorldCountryIsoCode(matchedCountry?.name, matchedCountry?.countryCode) ?? "",
-          cityName: "",
+          cityName: defaultCityName || "",
         });
       }
     }
-  }, [isDialogOpen, mode, city, defaultCountryId, countries, reset]);
+  }, [isDialogOpen, mode, city, defaultCountryId, defaultCityName, findCountry, reset]);
 
   const onSubmit = async (data: CityFormValues) => {
     try {
@@ -239,6 +258,7 @@ export function AddCityDialog({
                   invalid={!!errors.cityName}
                   disabled={isPending}
                   excludeNames={excludedCityNames}
+                  allowCustom
                 />
                 {errors.cityName && (
                   <p className="flex items-center gap-1 text-xs font-medium text-red-500">

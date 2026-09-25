@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Clock, Calendar, CheckCircle2, Store, Phone } from "lucide-react";
+import { MapPin, Clock, Calendar, CheckCircle2, AlertTriangle, Store, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
@@ -27,17 +27,19 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
       dailySchedule?: { day: string; isOpen: boolean; openTime: string; closeTime: string }[];
     }> = [];
 
-    lead.locations.forEach((loc: any) => {
+    lead.locations.forEach((loc: unknown) => {
       if (typeof loc === "object" && loc !== null && "address" in loc) {
-        list.push(loc);
+        list.push(loc as (typeof list)[number]);
       } else if (typeof loc === "string") {
         try {
           const parsed = JSON.parse(loc);
           if (typeof parsed === "object" && parsed !== null && "address" in parsed) {
-            list.push(parsed);
+            list.push(parsed as (typeof list)[number]);
           } else if (Array.isArray(parsed)) {
             parsed.forEach((p) => {
-              if (typeof p === "object" && p !== null && "address" in p) list.push(p);
+              if (typeof p === "object" && p !== null && "address" in p) {
+                list.push(p as (typeof list)[number]);
+              }
             });
           }
         } catch {
@@ -80,7 +82,21 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
           </div>
           <div>
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">City</dt>
-            <dd className="text-sm font-semibold text-slate-900">{lead.businessCity || "N/A"}</dd>
+            <dd className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-900">
+              <span>{lead.businessCity || "N/A"}</span>
+              {lead.cityCoverage &&
+                (!lead.cityCoverage.cityExists ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-800">
+                    <AlertTriangle className="h-3 w-3" />
+                    City Not in System
+                  </span>
+                ) : lead.cityCoverage.hasCityManager && lead.cityCoverage.cityManager ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700">
+                    <CheckCircle2 className="h-3 w-3" />
+                    CM: {lead.cityCoverage.cityManager.name}
+                  </span>
+                ) : null)}
+            </dd>
           </div>
           <div>
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
