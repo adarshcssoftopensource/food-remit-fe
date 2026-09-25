@@ -54,7 +54,7 @@ export function VerifiedBankCard({ verifiedBank, onChangeBank }: VerifiedBankCar
 
 export function PlaidFeaturesGrid() {
   return (
-    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-2.5">
       <div className="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/70 p-3 text-xs">
         <Building2 className="size-4.5 shrink-0 text-emerald-600" />
         <div>

@@ -647,12 +647,12 @@ export function StoreScheduleEditor({
             <div
               key={item.day}
               className={cn(
-                "flex flex-col gap-2.5 p-3 transition-colors sm:flex-row sm:items-center sm:justify-between sm:gap-4",
+                "flex flex-col gap-3.5 p-4 transition-colors",
                 isDayOpen ? "hover:bg-slate-50/40" : "bg-slate-50/60 text-slate-400",
               )}
             >
               {/* Left: Day Abbr & Open/Closed Status Toggle */}
-              <div className="flex items-center justify-between sm:w-40 sm:shrink-0 sm:justify-start sm:gap-3">
+              <div className="flex w-full shrink-0 items-center justify-between sm:gap-3">
                 <div className="flex items-center gap-2">
                   <span
                     className={cn(

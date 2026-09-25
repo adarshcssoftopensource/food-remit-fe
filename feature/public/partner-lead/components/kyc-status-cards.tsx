@@ -54,7 +54,7 @@ export function KycDeclinedBanner({}: KycDeclinedBannerProps) {
 
 export function KycFeatureBadges() {
   return (
-    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-2.5">
       <div className="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
         <FileText className="size-4 shrink-0 text-emerald-600" />
         <div className="text-xs">
@@ -154,7 +154,7 @@ export function KycAwaitingApprovalCard({ applicantName }: KycAwaitingApprovalCa
         </div>
 
         {/* 3-Step Progress Indicator */}
-        <div className="grid grid-cols-1 gap-2 pt-1 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 pt-1">
           <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50/80 p-2.5 text-xs text-emerald-900">
             <CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
             <span className="font-semibold">Photo ID &amp; Selfie Sent</span>

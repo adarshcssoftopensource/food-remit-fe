@@ -655,14 +655,17 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         </div>
       )}
 
-      <div className="overflow-x-auto border-b border-slate-100 pb-5 sm:mt-6 sm:pb-6">
-        <div className="relative flex min-w-[320px] sm:min-w-0">
+      <div className="scrollbar-hide overflow-x-auto border-b border-slate-100 pb-5 sm:mt-6 sm:pb-6">
+        <div className="relative flex min-w-[600px] lg:min-w-0">
           {STEPS.map((step) => {
             const isCompleted = currentStep > step.id;
             const isActive = currentStep === step.id;
 
             return (
-              <div key={step.id} className="relative z-10 mt-1 flex flex-1 flex-col items-center">
+              <div
+                key={step.id}
+                className="relative z-10 mt-1 flex flex-1 flex-col items-center px-2"
+              >
                 {step.id < STEPS.length && (
                   <span
                     aria-hidden="true"
@@ -696,7 +699,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 </button>
                 <span
                   className={cn(
-                    "mt-2 hidden text-[11px] font-semibold sm:block",
+                    "mt-2 text-center text-[11px] font-semibold",
                     isActive
                       ? "text-emerald-700"
                       : isCompleted
@@ -742,7 +745,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
             </div>
 
-            <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
               <Controller
                 name="businessName"
                 control={control}
@@ -816,7 +819,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name="otherBusinessType"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <div className="flex flex-col gap-1.5 xl:col-span-2">
                       <FieldLabel
                         htmlFor="otherBusinessType"
                         className="text-xs font-semibold text-slate-700"
@@ -857,7 +860,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         : null;
 
                   return (
-                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <div className="flex flex-col gap-1.5 xl:col-span-2">
                       <FieldLabel className="text-xs font-semibold text-slate-700">
                         Store Logo{" "}
                         <span className="font-normal text-slate-400">
@@ -952,7 +955,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 name="hasBusinessAccount"
                 control={control}
                 render={({ field }) => (
-                  <div className="flex flex-col gap-1.5 sm:col-span-2">
+                  <div className="flex flex-col gap-1.5 xl:col-span-2">
                     <FieldLabel className="text-xs font-semibold text-slate-700">
                       Does your Business have a Business Account?{" "}
                       <span className="font-normal text-slate-400">(Bank Account - Optional)</span>
@@ -1009,7 +1012,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   </p>
                 </div>
               </div>{" "}
-              <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+              <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
                 <Controller
                   name="country"
                   control={control}
@@ -1078,7 +1081,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name={"locations.0.address" as const}
                   control={control}
                   render={({ field, fieldState }) => (
-                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <div className="flex flex-col gap-1.5 xl:col-span-2">
                       <FieldLabel
                         htmlFor="storeAddress"
                         className="text-xs font-semibold text-slate-700"
@@ -1232,7 +1235,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   name="storePhoneNumber"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <div className="flex flex-col gap-1.5 xl:col-span-2">
                       <FieldLabel
                         htmlFor="storePhoneNumber"
                         className="text-xs font-semibold text-slate-700"
@@ -1324,7 +1327,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
               </div>
             </div>
 
-            <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
               <Controller
                 name="firstName"
                 control={control}
@@ -1392,7 +1395,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         : null;
 
                   return (
-                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <div className="flex flex-col gap-1.5 xl:col-span-2">
                       <FieldLabel className="text-xs font-semibold text-slate-700">
                         Profile Photo{" "}
                         <span className="font-normal text-slate-400">
@@ -1493,7 +1496,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 name="jobTitle"
                 control={control}
                 render={({ field }) => (
-                  <div className="flex flex-col gap-1.5 sm:col-span-2">
+                  <div className="flex flex-col gap-1.5 xl:col-span-2">
                     <FieldLabel htmlFor="jobTitle" className="text-xs font-semibold text-slate-700">
                       Job Title / Role{" "}
                       <span className="font-normal text-slate-400">(Optional)</span>
@@ -1583,12 +1586,12 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 </div>
               </div>
 
-              <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+              <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
                 <Controller
                   name="languages"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <div className="flex flex-col gap-1.5 xl:col-span-2">
                       <FieldLabel className="text-xs font-semibold text-slate-700">
                         Languages Spoken <span className="text-red-500">*</span>
                       </FieldLabel>
@@ -1646,7 +1649,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                         <span className="font-normal text-slate-400">(Select all that apply)</span>
                       </FieldLabel>
 
-                      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                      <div className="grid grid-cols-1 gap-2 xl:grid-cols-3">
                         {WORK_PREFERENCES_OPTIONS.map((opt) => {
                           const isChecked = values.includes(opt);
                           return (
@@ -1707,7 +1710,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 }}
               />
 
-              <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+              <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
                 <Controller
                   name="inventoryManagement"
                   control={control}

@@ -228,12 +228,12 @@ export function VeriffKycStep({
 
             <KycFeatureBadges />
 
-            <div className="mt-2 flex flex-col gap-2.5 sm:flex-row sm:items-center">
+            <div className="mt-2 flex flex-col gap-2.5">
               <Button
                 type="button"
                 onClick={handleStartVerification}
                 isLoading={createKycSessionMutation.isPending}
-                className="h-12 w-full rounded-xl bg-emerald-700 px-6 text-xs font-bold text-white shadow-md transition-all hover:bg-emerald-800 sm:w-auto"
+                className="h-12 w-full rounded-xl bg-emerald-700 px-6 text-xs font-bold text-white shadow-md transition-all hover:bg-emerald-800"
               >
                 <ShieldCheck className="mr-2 size-4.5" />
                 {isDeclined
@@ -250,7 +250,7 @@ export function VeriffKycStep({
                     if (onContinue) onContinue();
                   }, 100);
                 }}
-                className="h-12 w-full rounded-xl border-slate-200 px-6 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 sm:w-auto"
+                className="h-12 w-full rounded-xl border-slate-200 px-6 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50"
               >
                 <ShieldOff className="mr-2 h-4 w-4" />
                 Bypass Verification
