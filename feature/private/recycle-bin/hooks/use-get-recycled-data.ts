@@ -20,7 +20,8 @@ export type RecycleEntityType =
   | "city-managers"
   | "country-managers"
   | "employees"
-  | "partner-leads";
+  | "partner-leads"
+  | "product-boxes";
 
 export interface RecycledQueryArgs {
   page?: number;
@@ -60,6 +61,7 @@ const ENDPOINT_MAP: Record<RecycleEntityType, string> = {
   "country-managers": COUNTRY_MANAGER_ENDPOINTS.GET_RECYCLED_COUNTRY_MANAGERS,
   employees: EMPLOYEE_ENDPOINTS.GET_RECYCLED_EMPLOYEES,
   "partner-leads": PARTNER_LEAD_ENDPOINTS.GET_RECYCLED_LEADS,
+  "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.GET_RECYCLED_PRODUCT_BOXES,
 };
 
 export function useGetRecycledData(entityType: RecycleEntityType, args: RecycledQueryArgs = {}) {

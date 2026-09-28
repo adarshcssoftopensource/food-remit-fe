@@ -6,6 +6,7 @@ import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDebounce } from "@/lib/debounce";
 import { RowSelectionState, SortingState } from "@tanstack/react-table";
 import {
+  Boxes,
   Building2,
   Check,
   FolderTree,
@@ -44,6 +45,7 @@ const ALL_ENTITY_TABS: {
   { id: "country-managers", label: "Country Managers", icon: Globe },
   { id: "employees", label: "Employees", icon: UserCog },
   { id: "partner-leads", label: "Partner Leads", icon: Handshake },
+  { id: "product-boxes", label: "Product Boxes", icon: Boxes },
 ];
 
 export function RecycledUsersManagement() {
@@ -53,7 +55,7 @@ export function RecycledUsersManagement() {
   const ENTITY_TABS = useMemo(() => {
     if (isStoreManager) {
       return ALL_ENTITY_TABS.filter((tab) =>
-        ["departments", "categories", "items", "employees"].includes(tab.id),
+        ["departments", "categories", "items", "employees", "product-boxes"].includes(tab.id),
       );
     }
     return ALL_ENTITY_TABS;

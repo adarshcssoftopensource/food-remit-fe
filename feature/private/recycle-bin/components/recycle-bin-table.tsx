@@ -19,6 +19,7 @@ const ENTITY_TITLES: Record<string, string> = {
   "country-managers": "Deleted Country Managers",
   employees: "Deleted Employees",
   "partner-leads": "Deleted Partner Leads",
+  "product-boxes": "Deleted Product Boxes",
 };
 
 export function RecycleBinTable({
@@ -39,13 +40,9 @@ export function RecycleBinTable({
   onBulkRestoreClick,
   onBulkPermanentDeleteClick,
 }: RecycleBinTableProps) {
-  const { isSuperAdmin } = useProfile();
   const columns = useMemo(() => {
-    const base = COLUMNS_BY_ENTITY[entityType] || COLUMNS_BY_ENTITY.users;
-    // Column is baked into every entity; hide for non–super-admin
-    if (isSuperAdmin) return base;
-    return base.filter((c) => c.id !== "deletedBy");
-  }, [entityType, isSuperAdmin]);
+    return COLUMNS_BY_ENTITY[entityType] || COLUMNS_BY_ENTITY.users;
+  }, [entityType]);
   const title = ENTITY_TITLES[entityType] || "Recycled Items";
 
   return (

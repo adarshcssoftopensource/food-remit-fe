@@ -72,4 +72,9 @@ export const CATALOGUE_MANAGEMENT_ENDPOINTS = {
   ADD_PRODUCT_BOX_ITEM: (id: string) => `/admin/product-boxes/${id}/items`,
   REMOVE_PRODUCT_BOX_ITEM: (boxId: string, itemId: string) =>
     `/admin/product-boxes/${boxId}/items/${itemId}`,
+  GET_RECYCLED_PRODUCT_BOXES: "/admin/product-boxes/recycle-bin",
+  RESTORE_PRODUCT_BOX: (id: string) => `/admin/product-boxes/recycle-bin/${id}/restore`,
+  BULK_RESTORE_PRODUCT_BOXES: "/admin/product-boxes/recycle-bin/bulk-restore",
+  PERMANENT_DELETE_PRODUCT_BOX: (id: string) => `/admin/product-boxes/recycle-bin/${id}`,
+  BULK_PERMANENT_DELETE_PRODUCT_BOXES: "/admin/product-boxes/recycle-bin/bulk-permanent-delete",
 };

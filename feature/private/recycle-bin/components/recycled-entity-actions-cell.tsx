@@ -32,6 +32,7 @@ export function RecycledEntityActionsCell({
     entity.productName ||
     entity.departmentName ||
     entity.categoryName ||
+    entity.title ||
     `${entity.firstName || ""} ${entity.lastName || ""}`.trim() ||
     entity.userName ||
     entity.email ||

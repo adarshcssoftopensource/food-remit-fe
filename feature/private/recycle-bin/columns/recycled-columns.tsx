@@ -118,6 +118,21 @@ export const itemsColumns: ColumnDef<any>[] = [
     ),
   },
   {
+    accessorKey: "storeName",
+    header: "Originating Store / Vendor",
+    cell: ({ row }) => {
+      const storeName =
+        row.original.storeName ||
+        row.original.store?.storeName ||
+        row.original.department?.store?.storeName;
+      return (
+        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          {storeName || "Global / N/A"}
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: "departmentName",
     header: "Department",
     cell: ({ row }) => (
@@ -484,6 +499,56 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
             entityType="partner-leads"
             entity={row.original}
             entityNameField="businessName"
+          />
+        ),
+      },
+    ],
+    true,
+  ),
+  "product-boxes": withDeletedByColumn(
+    [
+      createSNoColumn(),
+      createSelectColumn(),
+      {
+        accessorKey: "title",
+        header: "Box Title",
+        enableSorting: true,
+        cell: ({ row }) => (
+          <ImageNameCell
+            name={row.original.title}
+            image={row.original.image || undefined}
+            type="logo"
+          />
+        ),
+      },
+      {
+        accessorKey: "price",
+        header: "Price",
+        cell: ({ row }) => (
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+            ${row.original.price ?? "0.00"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => (
+          <StatusBadge
+            status={row.original.status}
+            activeLabel="ACTIVE"
+            displayLabel={row.original.status === "ACTIVE" ? "Active" : "Inactive"}
+          />
+        ),
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <RecycledEntityActionsCell
+            entityType="product-boxes"
+            entity={row.original}
+            entityNameField="title"
           />
         ),
       },

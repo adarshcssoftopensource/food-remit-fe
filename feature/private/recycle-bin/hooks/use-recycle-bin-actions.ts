@@ -22,6 +22,7 @@ export function useRestoreEntity(entityType: RecycleEntityType, id: string) {
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.RESTORE_COUNTRY_MANAGER(id),
     employees: EMPLOYEE_ENDPOINTS.RESTORE_EMPLOYEE(id),
     "partner-leads": PARTNER_LEAD_ENDPOINTS.RESTORE_LEAD(id),
+    "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.RESTORE_PRODUCT_BOX(id),
   };
 
   return useApiMutation<{ message: string }, void>("post", urlMap[entityType], {
@@ -47,6 +48,7 @@ export function usePermanentDeleteEntity(entityType: RecycleEntityType, id: stri
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.PERMANENT_DELETE_COUNTRY_MANAGER(id),
     employees: EMPLOYEE_ENDPOINTS.PERMANENT_DELETE_EMPLOYEE(id),
     "partner-leads": PARTNER_LEAD_ENDPOINTS.PERMANENT_DELETE_LEAD(id),
+    "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.PERMANENT_DELETE_PRODUCT_BOX(id),
   };
 
   return useApiMutation<{ message: string }, void>("delete", urlMap[entityType], {
@@ -72,6 +74,7 @@ export function useBulkRestoreEntities(entityType: RecycleEntityType) {
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.BULK_RESTORE_COUNTRY_MANAGERS,
     employees: EMPLOYEE_ENDPOINTS.BULK_RESTORE_EMPLOYEES,
     "partner-leads": PARTNER_LEAD_ENDPOINTS.BULK_RESTORE_LEADS,
+    "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.BULK_RESTORE_PRODUCT_BOXES,
   };
 
   return useApiMutation<{ message: string }, { ids: string[] }>("post", urlMap[entityType], {
@@ -97,6 +100,7 @@ export function useBulkPermanentDeleteEntities(entityType: RecycleEntityType) {
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.BULK_PERMANENT_DELETE_COUNTRY_MANAGERS,
     employees: EMPLOYEE_ENDPOINTS.BULK_PERMANENT_DELETE_EMPLOYEES,
     "partner-leads": PARTNER_LEAD_ENDPOINTS.BULK_PERMANENT_DELETE_LEADS,
+    "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.BULK_PERMANENT_DELETE_PRODUCT_BOXES,
   };
 
   return useApiMutation<{ message: string }, { ids: string[] }>("post", urlMap[entityType], {
