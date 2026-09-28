@@ -17,6 +17,7 @@ import { CheckCircle2, Info, MessageSquarePlus, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
+import { useEffect } from "react";
 import { useApprovePartnerLead } from "../hooks/use-approve-partner-lead";
 import { useUpdateLeadStatus } from "../hooks/use-update-lead-status";
 import { updateLeadStatusSchema, UpdateLeadStatusValues } from "../schema/update-status.schema";
@@ -44,10 +45,17 @@ export function UpdateStatusDialog({
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isValid },
   } = useForm<UpdateLeadStatusValues>({
     resolver: zodResolver(updateLeadStatusSchema),
-    defaultValues: { status: defaultStatus, remark: "" },
+    defaultValues: {
+      status: defaultStatus,
+      remark:
+        defaultStatus === "APPROVED"
+          ? "Congratulations! Your partnership application has been approved. Welcome to Food Remit."
+          : "",
+    },
     mode: "onChange",
   });
 
@@ -60,6 +68,18 @@ export function UpdateStatusDialog({
   const isRequestMoreInfo = watchStatus === "REQUEST_MORE_INFO";
   const isRejectedStatus = watchStatus === "REJECTED" || watchStatus === "NOT_QUALIFIED";
   const isSubmitting = isUpdatingStatus || isApproving;
+
+  useEffect(() => {
+    if (watchStatus === "APPROVED") {
+      setValue(
+        "remark",
+        "Congratulations! Your partnership application has been approved. Welcome to Food Remit.",
+        { shouldValidate: true },
+      );
+    } else {
+      setValue("remark", "", { shouldValidate: true });
+    }
+  }, [watchStatus, setValue]);
 
   const onSubmit = async (data: UpdateLeadStatusValues) => {
     if (data.status === "APPROVED") {

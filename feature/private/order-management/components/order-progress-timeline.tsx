@@ -197,7 +197,7 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
     },
     {
       key: "ready",
-      label: "Ready for Pickup / Delivery",
+      label: "Ready for Pickup",
       subtitle:
         pickedUp || closed
           ? `Completed by ${handlerName || "store employee"}${

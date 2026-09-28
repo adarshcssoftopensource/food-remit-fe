@@ -9,6 +9,7 @@ import { GovtTaxManagement } from "./components/govt-tax-management";
 import { MarkupManagement } from "./components/markup-management";
 import { OrderAbandonSettings } from "./components/order-abandon-settings";
 import { ProcessingFee } from "./components/processing-fee";
+import { FoodRemitCommission } from "./components/food-remit-commission";
 
 import { useProfile } from "@/components/providers/profile-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -95,6 +96,12 @@ export function SettingsPage() {
               label: "Govt Tax",
               component: <GovtTaxManagement />,
               icon: <ShieldCheck className="size-4" />,
+            },
+            {
+              value: "commission",
+              label: "Commission",
+              component: <FoodRemitCommission />,
+              icon: <Percent className="size-4" />,
             },
           ]
         : []),

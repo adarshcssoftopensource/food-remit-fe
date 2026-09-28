@@ -45,6 +45,7 @@ export interface AdminProfile {
     addedOn?: string | null;
     addedOnTimestamp?: string | number | null;
     createdAt?: string | null;
+    foodRemitCommission?: number | null;
   }[];
   partnerLead?: any;
   isReadOnly?: boolean;
