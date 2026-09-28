@@ -128,7 +128,7 @@ export function getDisplayStatus(order: {
     if (order.finalStatus === FINAL_STATUS.ABANDONED) {
       return { label: "Abandoned", tone: "abandoned" };
     }
-    return { label: "Closed", tone: "closed" };
+    return { label: "Picked Up", tone: "picked-up" };
   }
   if (isRequestedOrder(order)) return { label: "Requested", tone: "requested" };
   if (isAcceptedRequest(order)) return { label: "Accepted", tone: "accepted" };
@@ -148,7 +148,7 @@ export function getDisplayStatus(order: {
 }
 
 export function getFinalStatusLabel(finalStatus?: number | null): string | null {
-  if (finalStatus === FINAL_STATUS.PICKED_UP) return "Closed";
+  if (finalStatus === FINAL_STATUS.PICKED_UP) return "Picked Up";
   if (finalStatus === FINAL_STATUS.ABANDONED) return "Abandoned";
   return null;
 }
