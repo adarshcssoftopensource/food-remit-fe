@@ -6,8 +6,8 @@ import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
-import type { CountryDropdownItem } from "@/feature/private/settings/types/settings.types";
+import { useGetCountriesDropdown } from "@/feature/private/(shared)/settings/hooks/use-get-countries-dropdown";
+import type { CountryDropdownItem } from "@/feature/private/(shared)/settings/types/settings.types";
 import { cn } from "@/lib/utils";
 
 function countryFlag(code?: string | null) {

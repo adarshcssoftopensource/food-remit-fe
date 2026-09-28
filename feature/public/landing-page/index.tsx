@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetLandingPage } from "@/feature/private/content-management/landing-page/hooks/use-get-landing-page";
+import { useGetLandingPage } from "@/feature/private/(super-admin)/content-management/landing-page/hooks/use-get-landing-page";
 
 import { BenefitsSection } from "./components/benefits-section";
 import { BusinessTypesSection } from "./components/business-types-section";

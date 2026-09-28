@@ -6,8 +6,8 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useGetStoresDropdown } from "@/feature/private/store-management/hooks/use-get-stores-dropdown";
-import type { StoreData } from "@/feature/private/store-management/types/store-management";
+import { useGetStoresDropdown } from "@/feature/private/(super-admin)/store-management/hooks/use-get-stores-dropdown";
+import type { StoreData } from "@/feature/private/(super-admin)/store-management/types/store-management";
 import { useDebounce } from "@/lib/debounce";
 import { cn } from "@/lib/utils";
 

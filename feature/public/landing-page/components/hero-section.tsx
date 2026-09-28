@@ -3,7 +3,7 @@
 import { buttonVariants } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
-import type { LandingHero } from "@/feature/private/content-management/landing-page/types";
+import type { LandingHero } from "@/feature/private/(super-admin)/content-management/landing-page/types";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

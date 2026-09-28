@@ -18,9 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useGetCategoriesDropdown } from "@/feature/private/catalogue-management/categories/hooks/use-get-categories-dropdown";
-import { useGetDepartmentsDropdown } from "@/feature/private/catalogue-management/departments/hooks/use-get-departments-dropdown";
-import { useGetCountriesDropdown } from "@/feature/private/settings/hooks/use-get-countries-dropdown";
+import { useGetCategoriesDropdown } from "@/feature/private/(super-admin)/catalogue-management/categories/hooks/use-get-categories-dropdown";
+import { useGetDepartmentsDropdown } from "@/feature/private/(super-admin)/catalogue-management/departments/hooks/use-get-departments-dropdown";
+import { useGetCountriesDropdown } from "@/feature/private/(shared)/settings/hooks/use-get-countries-dropdown";
 import { resolveCurrencyDisplay } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 

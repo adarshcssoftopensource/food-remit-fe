@@ -1,7 +1,7 @@
 import { HandCoins, Headphones, Shield } from "lucide-react";
 import Image from "next/image";
 
-import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
+import type { LandingPageContent } from "@/feature/private/(super-admin)/content-management/landing-page/types";
 
 const TRUST_ICONS = [Shield, HandCoins, Headphones] as const;
 

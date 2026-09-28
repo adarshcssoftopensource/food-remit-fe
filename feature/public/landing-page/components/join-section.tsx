@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { ROUTES } from "@/config/routes";
 import { APP_ASSETS } from "@/config/assets";
-import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
+import type { LandingPageContent } from "@/feature/private/(super-admin)/content-management/landing-page/types";
 
 type JoinSectionProps = {
   data: LandingPageContent["join"];

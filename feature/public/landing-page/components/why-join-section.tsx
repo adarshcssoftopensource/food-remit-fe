@@ -2,7 +2,7 @@ import { Check } from "lucide-react";
 import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
-import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
+import type { LandingPageContent } from "@/feature/private/(super-admin)/content-management/landing-page/types";
 
 type WhyJoinSectionProps = {
   data: LandingPageContent["whyJoin"];

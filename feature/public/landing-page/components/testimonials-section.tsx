@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
+import type { LandingPageContent } from "@/feature/private/(super-admin)/content-management/landing-page/types";
 
 type TestimonialsSectionProps = {
   data: LandingPageContent["testimonials"];

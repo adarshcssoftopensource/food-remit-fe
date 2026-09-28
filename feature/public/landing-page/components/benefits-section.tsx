@@ -1,6 +1,6 @@
 import { BadgeCheck, Package, ShieldCheck, Store, TrendingUp, Users } from "lucide-react";
 
-import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
+import type { LandingPageContent } from "@/feature/private/(super-admin)/content-management/landing-page/types";
 
 const ICONS = [Users, TrendingUp, ShieldCheck, Package, Store] as const;
 

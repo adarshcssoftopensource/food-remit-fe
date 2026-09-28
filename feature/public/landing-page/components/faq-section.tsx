@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react";
 
-import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
+import type { LandingPageContent } from "@/feature/private/(super-admin)/content-management/landing-page/types";
 
 type FaqSectionProps = {
   data: LandingPageContent["faq"];

@@ -6,8 +6,8 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useGetDepartmentsDropdown } from "@/feature/private/catalogue-management/departments/hooks/use-get-departments-dropdown";
-import { DepartmentDropdownItem } from "@/feature/private/catalogue-management/departments/types/department.types";
+import { useGetDepartmentsDropdown } from "@/feature/private/(super-admin)/catalogue-management/departments/hooks/use-get-departments-dropdown";
+import { DepartmentDropdownItem } from "@/feature/private/(super-admin)/catalogue-management/departments/types/department.types";
 import { cn } from "@/lib/utils";
 
 interface DepartmentSelectProps {

@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useGetCities } from "@/feature/private/settings/hooks/use-get-cities";
-import type { CityData } from "@/feature/private/settings/types/settings.types";
+import { useGetCities } from "@/feature/private/(shared)/settings/hooks/use-get-cities";
+import type { CityData } from "@/feature/private/(shared)/settings/types/settings.types";
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown, Loader2, MapPin, Search } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";

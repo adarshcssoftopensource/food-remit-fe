@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { APP_ASSETS } from "@/config/assets";
 import { ROUTES } from "@/config/routes";
-import type { LandingFooter } from "@/feature/private/content-management/landing-page/types";
+import type { LandingFooter } from "@/feature/private/(super-admin)/content-management/landing-page/types";
 import { VENDOR_NAV_LINKS } from "../../../../constants/landing.constants";
 
 type SiteFooterProps = {

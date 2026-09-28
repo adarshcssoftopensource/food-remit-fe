@@ -1,8 +1,8 @@
 "use client";
 
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
-import { useGetCategoriesDropdown } from "@/feature/private/catalogue-management/categories/hooks/use-get-categories-dropdown";
-import { CategoryDropdownItem } from "@/feature/private/catalogue-management/categories/types/category.types";
+import { useGetCategoriesDropdown } from "@/feature/private/(super-admin)/catalogue-management/categories/hooks/use-get-categories-dropdown";
+import { CategoryDropdownItem } from "@/feature/private/(super-admin)/catalogue-management/categories/types/category.types";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 

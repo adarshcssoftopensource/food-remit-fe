@@ -1,4 +1,4 @@
-import type { LandingPageContent } from "@/feature/private/content-management/landing-page/types";
+import type { LandingPageContent } from "@/feature/private/(super-admin)/content-management/landing-page/types";
 
 /** Safe empty shell so public UI never maps over undefined. */
 export const EMPTY_LANDING_CONTENT: LandingPageContent = {

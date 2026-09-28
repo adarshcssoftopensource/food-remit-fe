@@ -1,5 +1,5 @@
 import { ROUTES } from "@/config/routes";
-import { DashboardData } from "@/feature/private/dashboard/types/dashboard.types";
+import { DashboardData } from "@/feature/private/(shared)/dashboard/types/dashboard.types";
 
 export const DEFAULT_DASHBOARD_DATA: DashboardData = {
   overviewStats: {
