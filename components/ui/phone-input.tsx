@@ -261,22 +261,15 @@ export function PhoneInputComponent({
   const formattedNationalNumber = useMemo(() => {
     if (!nationalNumber) return "";
 
-    // We want the true local format as it appears internationally, which handles
-    // dropped leading zeros correctly (e.g. Afghanistan drops '0', UK drops '0').
-    // By passing the full international number to AsYouType, it figures out the correct spacing.
+    // Format the number directly using AsYouType to get proper national formatting
+    // complete with parentheses and dashes (e.g., (213) 373-4253 for US).
     const formatter = new AsYouType(selectedCountry.isoCode as CountryCode);
-    const fullIntl = `+${selectedCountry.dialCode}${nationalNumber}`;
-    const formatted = formatter.input(fullIntl);
+    const formatted = formatter.input(nationalNumber);
 
-    // Now strip the dial code (+XX) from the front to leave just the beautifully formatted national part
-    const dialPrefix = `+${selectedCountry.dialCode}`;
-    if (formatted.startsWith(dialPrefix)) {
-      return formatted.slice(dialPrefix.length).trim();
-    }
-
-    // Fallback just in case
-    return formatter.input(nationalNumber);
-  }, [nationalNumber, selectedCountry.isoCode, selectedCountry.dialCode]);
+    // Replace spaces between digits with dashes (e.g. 6565 656 565 -> 6565-656-565)
+    // but leave spaces after parentheses intact (e.g. (213) 373-4253).
+    return formatted.replace(/(?<=\d) (?=\d)/g, "-");
+  }, [nationalNumber, selectedCountry.isoCode]);
 
   const filteredCountries = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();

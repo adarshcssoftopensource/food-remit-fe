@@ -75,14 +75,14 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
       onClick: () => setAssignOpen(true),
       hidden: !canAssign || showAssignPrimary,
     },
-    {
-      label: "Delete Order",
-      icon: <Trash2 className="size-4" />,
-      onClick: () => setDeleteOpen(true),
-      variant: "destructive",
-      disabled: isDeleting,
-      hidden: isEmployee || order.orderStatus !== 11,
-    },
+    // {
+    //   label: "Delete Order",
+    //   icon: <Trash2 className="size-4" />,
+    //   onClick: () => setDeleteOpen(true),
+    //   variant: "destructive",
+    //   disabled: isDeleting,
+    //   hidden: isEmployee || order.orderStatus !== 11,
+    // },
   ];
 
   return (

@@ -20,14 +20,22 @@ function asCountryCode(code?: string | null): CountryCode | null {
   return isSupportedCountry(normalized) ? (normalized as CountryCode) : null;
 }
 
+const maxDigitsCache = new Map<string, number>();
+
 export function getMaxNationalDigits(countryCode?: string | null): number {
   const cc = asCountryCode(countryCode);
   if (!cc) return 15;
 
+  if (maxDigitsCache.has(cc)) return maxDigitsCache.get(cc)!;
+
+  let maxLen = 15;
+
   try {
     const example = getExampleNumber(cc, examples);
     if (example?.nationalNumber) {
-      return example.nationalNumber.length;
+      maxLen = example.nationalNumber.length;
+      maxDigitsCache.set(cc, maxLen);
+      return maxLen;
     }
   } catch {
     // fall through
@@ -37,25 +45,37 @@ export function getMaxNationalDigits(countryCode?: string | null): number {
     const meta = new Metadata(metadata);
     meta.selectNumberingPlan(cc);
     const lengths = meta.numberingPlan?.possibleLengths() ?? [];
-    if (lengths.length > 0) return Math.max(...lengths);
+    if (lengths.length > 0) {
+      maxLen = Math.max(...lengths);
+    }
   } catch {
     // fall through
   }
 
-  return 15;
+  maxDigitsCache.set(cc, maxLen);
+  return maxLen;
 }
+
+const expectedDigitsCache = new Map<string, number | null>();
 
 export function getExpectedNationalDigits(countryCode?: string | null): number | null {
   const cc = asCountryCode(countryCode);
   if (!cc) return null;
 
+  if (expectedDigitsCache.has(cc)) return expectedDigitsCache.get(cc)!;
+
   try {
     const example = getExampleNumber(cc, examples);
-    if (example?.nationalNumber) return example.nationalNumber.length;
+    if (example?.nationalNumber) {
+      const len = example.nationalNumber.length;
+      expectedDigitsCache.set(cc, len);
+      return len;
+    }
   } catch {
     // ignore
   }
 
+  expectedDigitsCache.set(cc, null);
   return null;
 }
 

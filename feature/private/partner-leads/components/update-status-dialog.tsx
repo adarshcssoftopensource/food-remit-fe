@@ -22,6 +22,23 @@ import { useApprovePartnerLead } from "../hooks/use-approve-partner-lead";
 import { useUpdateLeadStatus } from "../hooks/use-update-lead-status";
 import { updateLeadStatusSchema, UpdateLeadStatusValues } from "../schema/update-status.schema";
 
+const DEFAULT_REMARKS: Record<string, string> = {
+  APPROVED:
+    "Congratulations! Your partnership application has been approved. Welcome to Food Remit.",
+  REQUEST_MORE_INFO:
+    "Please provide more details regarding your business registration and licensing to proceed.",
+  REJECTED: "Unfortunately, your application does not meet our current partnership requirements.",
+  NOT_QUALIFIED: "Unfortunately, your business does not qualify for a partnership at this time.",
+  PENDING: "Your application is currently under review.",
+  NEW: "Your application has been received and is pending review.",
+  CONTACTED: "We have reached out to you regarding your application. Please check your email.",
+  REGISTRATION_INVITED:
+    "You have been invited to complete the registration process. Please follow the instructions sent to you.",
+  REGISTRATION_STARTED: "Your registration process has successfully started.",
+  QUALIFIED:
+    "Your application has met our preliminary qualifications and is proceeding to the next step.",
+};
+
 interface UpdateStatusDialogProps {
   leadId: string;
   open: boolean;
@@ -51,10 +68,7 @@ export function UpdateStatusDialog({
     resolver: zodResolver(updateLeadStatusSchema),
     defaultValues: {
       status: defaultStatus,
-      remark:
-        defaultStatus === "APPROVED"
-          ? "Congratulations! Your partnership application has been approved. Welcome to Food Remit."
-          : "",
+      remark: DEFAULT_REMARKS[defaultStatus] || "",
     },
     mode: "onChange",
   });
@@ -70,14 +84,8 @@ export function UpdateStatusDialog({
   const isSubmitting = isUpdatingStatus || isApproving;
 
   useEffect(() => {
-    if (watchStatus === "APPROVED") {
-      setValue(
-        "remark",
-        "Congratulations! Your partnership application has been approved. Welcome to Food Remit.",
-        { shouldValidate: true },
-      );
-    } else {
-      setValue("remark", "", { shouldValidate: true });
+    if (watchStatus) {
+      setValue("remark", DEFAULT_REMARKS[watchStatus] || "", { shouldValidate: true });
     }
   }, [watchStatus, setValue]);
 
@@ -207,11 +215,19 @@ export function UpdateStatusDialog({
                               : "Status Remark"}{" "}
                         <span className="text-red-500">*</span>
                       </span>
-                      {isApprovedStatus && (
-                        <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                          Included in Partner Email
-                        </span>
-                      )}
+                      <span
+                        className={`text-xs font-semibold ${
+                          isApprovedStatus
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : isRequestMoreInfo
+                              ? "text-amber-600 dark:text-amber-400"
+                              : isRejectedStatus
+                                ? "text-rose-600 dark:text-rose-400"
+                                : "text-blue-600 dark:text-blue-400"
+                        }`}
+                      >
+                        Included in Partner Email
+                      </span>
                     </Label>
                     <Textarea
                       {...field}

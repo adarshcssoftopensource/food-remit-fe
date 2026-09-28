@@ -208,7 +208,7 @@ export function MarkupManagement({ readOnly: readOnlyProp = false }: { readOnly?
               )}
             />
 
-            <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4">
+            <div className="hidden rounded-xl border border-slate-200/80 bg-slate-50/50 p-4">
               <Controller
                 name="isFeeRefundable"
                 control={control}

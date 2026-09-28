@@ -96,6 +96,7 @@ export function AbandonOrderDialog({
               }}
               placeholder="e.g. Customer did not collect within 5 days"
               rows={4}
+              maxLength={100}
               disabled={isPending}
               className="resize-none rounded-xl"
             />
