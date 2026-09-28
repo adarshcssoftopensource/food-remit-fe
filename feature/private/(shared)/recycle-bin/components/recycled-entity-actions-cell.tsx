@@ -62,6 +62,10 @@ export function RecycledEntityActionsCell({
     });
   };
 
+  if (entityType === "partner-leads" && entity.status === "APPROVED") {
+    return <span className="text-xs text-slate-400 italic">Managed via Store</span>;
+  }
+
   return (
     <>
       <div className="flex items-center gap-2">

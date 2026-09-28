@@ -4,6 +4,12 @@ import { Mail, User } from "lucide-react";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
 export function ContactInformationCard({ lead }: { lead: PartnerLeadData }) {
+  const phone = lead.phoneNumber
+    ? lead.phoneNumber.startsWith("+")
+      ? lead.phoneNumber
+      : `+${lead.phoneNumber}`
+    : "";
+
   return (
     <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
       <CardHeader className="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
@@ -47,11 +53,8 @@ export function ContactInformationCard({ lead }: { lead: PartnerLeadData }) {
               Phone Number
             </dt>
             <dd>
-              <a
-                href={`tel:${lead.phoneNumber}`}
-                className="transition-colors hover:text-emerald-600"
-              >
-                <PhoneDisplay value={lead.phoneNumber} className="font-semibold" emptyLabel="N/A" />
+              <a href={`tel:${phone}`} className="transition-colors hover:text-emerald-600">
+                <PhoneDisplay value={phone} className="font-semibold" emptyLabel="N/A" />
               </a>
             </dd>
           </div>

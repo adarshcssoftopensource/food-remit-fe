@@ -467,7 +467,32 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       }
     }
 
-    const isValid = await trigger(fieldsToValidate);
+    let isValid = await trigger(fieldsToValidate);
+
+    if (isValid && currentStep === 2) {
+      const emailToVerify = getValues("businessEmail");
+      if (emailToVerify) {
+        try {
+          const res = await checkEmailExists(emailToVerify, true);
+          if (res?.isValidDomain === false) {
+            setError("businessEmail", {
+              type: "manual",
+              message: "The email domain is invalid or cannot receive emails.",
+            });
+            isValid = false;
+          } else if (res?.exists) {
+            setError("businessEmail", {
+              type: "manual",
+              message: "This email is already registered. Please use a different one.",
+            });
+            isValid = false;
+          }
+        } catch (err) {
+          // ignore
+        }
+      }
+    }
+
     if (isValid) {
       clearErrors("agreeToContact");
       setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));

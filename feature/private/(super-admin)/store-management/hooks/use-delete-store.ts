@@ -10,6 +10,8 @@ export function useDeleteStore(id: string) {
   return useApiMutation<ApiResponse, void>("delete", STORE_ENDPOINTS.DELETE_STORE(id), {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.STORES });
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.PARTNER_LEADS_LIST });
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.RECYCLED_PARTNER_LEADS });
     },
   });
 }

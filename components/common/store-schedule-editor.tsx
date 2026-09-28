@@ -458,6 +458,7 @@ export function StoreScheduleEditor({
   disabled = false,
 }: StoreScheduleEditorProps) {
   const [isCopied, setIsCopied] = React.useState(false);
+  const previousTimesRef = React.useRef<Record<string, { open: string; close: string }>>({});
 
   // Initialize internal state from dailySchedule or fallback to defaults
   const scheduleItems = React.useMemo<DailyScheduleItem[]>(() => {
@@ -521,11 +522,21 @@ export function StoreScheduleEditor({
     const next = scheduleItems.map((item) => {
       if (item.day === dayName) {
         const is24H = item.openTime === "24H";
-        return {
-          ...item,
-          openTime: is24H ? "00:00" : "24H",
-          closeTime: is24H ? "00:00" : "24H",
-        };
+        if (!is24H) {
+          previousTimesRef.current[dayName] = { open: item.openTime, close: item.closeTime };
+          return {
+            ...item,
+            openTime: "24H",
+            closeTime: "24H",
+          };
+        } else {
+          const prev = previousTimesRef.current[dayName];
+          return {
+            ...item,
+            openTime: prev?.open && prev.open !== "24H" ? prev.open : "00:00",
+            closeTime: prev?.close && prev.close !== "24H" ? prev.close : "00:00",
+          };
+        }
       }
       return item;
     });

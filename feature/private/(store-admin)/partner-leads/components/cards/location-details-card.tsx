@@ -141,8 +141,13 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                   : loc.daysOpen || [];
 
                 const openDaysCount = openDaysList.length;
-                const storePhone =
+                const storePhoneRaw =
                   loc.storePhoneNumber || loc.phone || (idx === 0 ? lead.storePhoneNumber : null);
+                const storePhone = storePhoneRaw
+                  ? storePhoneRaw.startsWith("+")
+                    ? storePhoneRaw
+                    : `+${storePhoneRaw}`
+                  : null;
 
                 return (
                   <div
