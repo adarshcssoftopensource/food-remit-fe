@@ -11,11 +11,11 @@ const DEFAULTS: Record<NonNullable<OrderInfoBannerProps["variant"]>, string> = {
   requested:
     "Food requests are accepted or rejected on the mobile app. Here you only track status — Requested, Accepted (awaiting payment), or Rejected. After payment, Accepted orders move to Pending.",
   "employee-start":
-    "Pending orders can be started by any employee. Once you start an order, it will be marked as Processing and your name will be recorded.",
+    "Pending orders can be started by any employee. Orders assigned to you by a manager appear as Assigned — tap Start Order to move them to Processing. Your name will be recorded.",
   "manager-assign":
-    "Once you assign an order to an employee, it moves to Processing and appears in that employee's My Orders queue.",
+    "Once you assign an order to an employee, it moves to Assigned and appears in that employee's My Orders queue. It becomes Processing when the employee taps Start Order.",
   processing:
-    "Orders in Processing have already been started or assigned. Start Order and Assign are locked for other employees.",
+    "Orders in Processing have been started by an employee. Tap Mark as Completed when ready — status becomes Ready for Pickup / Delivery.",
   history:
     "Closed orders appear here after pickup verification or abandonment. Final Status shows the outcome; Order Status is always Closed.",
 };

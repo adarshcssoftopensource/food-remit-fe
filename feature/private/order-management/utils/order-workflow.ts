@@ -8,7 +8,7 @@ export const ORDER_STATUS = {
   PROCESSING: 5,
   COMPLETED: 6,
   DECLINED: 7,
-  /** Paid — UI "Pending" when unassigned */
+  /** Paid — UI "Pending" when unassigned, "Assigned" when assigned but not started */
   PAID: 8,
   PARTIAL: 9,
   ACCEPTED: 10,
@@ -35,7 +35,7 @@ export const REQUEST_QUEUE_STATUSES = [
 ] as const;
 
 export type OrderWorkflowTab =
-  "all" | "requested" | "pending" | "processing" | "completed" | "history";
+  "all" | "requested" | "pending" | "assigned" | "processing" | "completed" | "history";
 
 export type HistorySubFilter = "all" | "picked-up" | "abandoned";
 
@@ -72,6 +72,34 @@ export function isPendingOrder(order: {
   return order.orderStatus === ORDER_STATUS.PAID && !order.assignedEmployeeId && !order.startedById;
 }
 
+/** Assigned by a manager, waiting for the employee to tap Start Order */
+export function isAssignedOrder(order: {
+  orderStatus: number;
+  assignedEmployeeId?: string | null;
+  startedById?: string | null;
+}): boolean {
+  return (
+    order.orderStatus === ORDER_STATUS.PAID && !!order.assignedEmployeeId && !order.startedById
+  );
+}
+
+/** Ready for Pickup / Delivery — employee tapped Mark as Completed */
+export function isReadyForPickupOrder(order: { orderStatus: number }): boolean {
+  return order.orderStatus === ORDER_STATUS.COMPLETED;
+}
+
+/**
+ * Employee can Start when the order is Pending (unassigned) or Assigned to them.
+ * Pass `employeeId` = current employee's id; omit to only allow Pending.
+ */
+export function canEmployeeStartOrder(
+  order: { orderStatus: number; assignedEmployeeId?: string | null; startedById?: string | null },
+  employeeId?: string | null,
+): boolean {
+  if (isPendingOrder(order)) return true;
+  return isAssignedOrder(order) && !!employeeId && order.assignedEmployeeId === employeeId;
+}
+
 export function isProcessingOrder(order: { orderStatus: number }): boolean {
   return (PROCESSING_STATUSES as readonly number[]).includes(order.orderStatus);
 }
@@ -79,6 +107,7 @@ export function isProcessingOrder(order: { orderStatus: number }): boolean {
 export function getDisplayStatus(order: {
   orderStatus: number;
   assignedEmployeeId?: string | null;
+  startedById?: string | null;
   finalStatus?: number | null;
 }): {
   label: string;
@@ -87,6 +116,7 @@ export function getDisplayStatus(order: {
     | "accepted"
     | "rejected"
     | "pending"
+    | "assigned"
     | "processing"
     | "completed"
     | "picked-up"
@@ -95,11 +125,8 @@ export function getDisplayStatus(order: {
     | "other";
 } {
   if (order.orderStatus === ORDER_STATUS.CLOSED) {
-    if (order.finalStatus === FINAL_STATUS.PICKED_UP) {
-      return { label: "Closed", tone: "closed" };
-    }
     if (order.finalStatus === FINAL_STATUS.ABANDONED) {
-      return { label: "Closed", tone: "closed" };
+      return { label: "Abandoned", tone: "abandoned" };
     }
     return { label: "Closed", tone: "closed" };
   }
@@ -107,9 +134,10 @@ export function getDisplayStatus(order: {
   if (isAcceptedRequest(order)) return { label: "Accepted", tone: "accepted" };
   if (isRejectedRequest(order)) return { label: "Rejected", tone: "rejected" };
   if (isPendingOrder(order)) return { label: "Pending", tone: "pending" };
+  if (isAssignedOrder(order)) return { label: "Assigned", tone: "assigned" };
   if (isProcessingOrder(order)) return { label: "Processing", tone: "processing" };
   if (order.orderStatus === ORDER_STATUS.COMPLETED) {
-    return { label: "Picked Up", tone: "picked-up" };
+    return { label: "Ready for Pickup", tone: "picked-up" };
   }
   if (order.orderStatus === ORDER_STATUS.PAID) return { label: "Pending", tone: "pending" };
   if (order.orderStatus === ORDER_STATUS.PARTIAL) return { label: "Partial", tone: "other" };
@@ -120,7 +148,7 @@ export function getDisplayStatus(order: {
 }
 
 export function getFinalStatusLabel(finalStatus?: number | null): string | null {
-  if (finalStatus === FINAL_STATUS.PICKED_UP) return "Closed (Collected)";
+  if (finalStatus === FINAL_STATUS.PICKED_UP) return "Closed";
   if (finalStatus === FINAL_STATUS.ABANDONED) return "Abandoned";
   return null;
 }

@@ -88,6 +88,7 @@ export function OrdersManagementPage() {
     all: counts?.all,
     requested: counts?.requested,
     pending: counts?.pending,
+    assigned: counts?.assigned,
     processing: counts?.processing,
     completed: counts?.completed,
     history: counts?.history,
@@ -203,8 +204,8 @@ export function OrdersManagementPage() {
             <div className="flex flex-wrap gap-2">
               {(
                 [
-                  { key: "all", label: "All History", count: counts.history },
-                  { key: "picked-up", label: "Collected", count: counts.pickedUp },
+                  { key: "all", label: "All Closed", count: counts.history },
+                  { key: "picked-up", label: "Picked Up", count: counts.pickedUp },
                   { key: "abandoned", label: "Abandoned", count: counts.abandoned },
                 ] as const
               ).map((f) => (
@@ -316,13 +317,13 @@ function OrderHistoryFlowDiagram() {
       color: "border-blue-300 bg-blue-50 text-blue-700",
     },
     {
-      label: "Picked Up",
-      sub: "Auto after Complete — waiting at store",
+      label: "Ready for Pickup",
+      sub: "After Mark as Completed",
       color: "border-emerald-300 bg-emerald-50 text-emerald-700",
     },
     {
-      label: "Close",
-      sub: "Collected (reference ID)",
+      label: "Picked Up",
+      sub: "QR / reference verified",
       color: "border-teal-300 bg-teal-50 text-teal-700",
     },
     {
@@ -332,7 +333,7 @@ function OrderHistoryFlowDiagram() {
     },
     {
       label: "Closed",
-      sub: "Moved to history",
+      sub: "Automatically after pickup",
       color: "border-slate-300 bg-slate-100 text-slate-600",
     },
   ];
@@ -358,8 +359,8 @@ function OrderHistoryFlowDiagram() {
         ))}
       </div>
       <p className="mt-2 text-[11px] text-slate-500">
-        Processing → Complete → Picked Up (auto) → Close (employee/manager) &nbsp;|&nbsp; Picked Up
-        → Abandoned (manager + remark / auto after store days)
+        Processing → Mark as Completed → Ready for Pickup → QR verified → Picked Up → Closed (auto)
+        &nbsp;|&nbsp; Ready for Pickup → Abandoned (manager + remark / auto after store days)
       </p>
     </div>
   );

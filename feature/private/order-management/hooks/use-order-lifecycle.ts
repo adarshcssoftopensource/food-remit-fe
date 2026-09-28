@@ -49,7 +49,7 @@ export function useMarkOrderCompleted() {
       return data;
     },
     onSuccess: () => {
-      successToast({ description: "Order completed — now Picked Up (waiting for Close)" });
+      successToast({ description: "Order completed — now Ready for Pickup / Delivery" });
       invalidateOrders();
     },
     onError: (error: unknown) => {

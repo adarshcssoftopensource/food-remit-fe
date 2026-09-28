@@ -20,9 +20,10 @@ import { cn } from "@/lib/utils";
 const EMPLOYEE_TABS: { label: string; value: OrderSectionKey }[] = [
   { label: "All Orders", value: "all" },
   { label: "Pending", value: "pending" },
+  { label: "Assigned", value: "assigned" },
   { label: "Processing", value: "processing" },
-  { label: "Completed", value: "completed" },
-  { label: "History", value: "history" },
+  { label: "Ready for Pickup", value: "completed" },
+  { label: "Closed", value: "history" },
 ];
 
 export function OrdersManagementPage() {
@@ -58,6 +59,7 @@ export function OrdersManagementPage() {
   const tabCounts: Record<string, number | undefined> = {
     all: counts?.all,
     pending: counts?.pending,
+    assigned: counts?.assigned,
     processing: counts?.processing,
     completed: counts?.completed,
     history: counts?.history,
@@ -68,7 +70,7 @@ export function OrdersManagementPage() {
       <PageHeader
         title="My Orders"
         welcomeMessage={welcomeMessage}
-        description="Start pending store orders, prepare them, then mark ready for pickup."
+        description="Start pending or assigned orders, prepare them, then Mark as Completed to make them Ready for Pickup / Delivery."
       />
 
       <WorkflowSummaryCards
@@ -143,14 +145,16 @@ export function OrdersManagementPage() {
                 </CardTitle>
                 <p className="text-xs text-slate-500">
                   {tab.value === "pending"
-                    ? "Paid orders waiting to be started — tap Start Order to claim one."
-                    : tab.value === "processing"
-                      ? "Orders you are preparing. Mark Completed when ready for pickup."
-                      : tab.value === "completed"
-                        ? "Ready for pickup — verify reference to mark Picked Up."
-                        : tab.value === "history"
-                          ? "Closed orders (Picked Up or Abandoned)."
-                          : "Your active store queue."}
+                    ? "Paid orders not yet assigned — tap Start Order to claim one."
+                    : tab.value === "assigned"
+                      ? "Orders assigned to you by your manager — tap Start Order to begin."
+                      : tab.value === "processing"
+                        ? "Orders you are preparing. Tap Mark as Completed when ready."
+                        : tab.value === "completed"
+                          ? "Ready for Pickup / Delivery — verify the QR / reference when collected (Picked Up → Closed)."
+                          : tab.value === "history"
+                            ? "Picked up or abandoned orders — latest closed first."
+                            : "Your active store queue."}
                 </p>
               </CardHeader>
               <CardContent className="p-4">

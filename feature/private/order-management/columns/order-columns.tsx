@@ -8,7 +8,7 @@ import { OrderData } from "../types/order.types";
 import { OrderActionsCell } from "../components/order-actions-cell";
 import { OrderStatusBadge } from "../components/order-status-badge";
 import { OrderHandlerCell } from "../components/order-handler-cell";
-import { isPendingOrder } from "../utils/order-workflow";
+import { FINAL_STATUS, isPendingOrder } from "../utils/order-workflow";
 import { parseAbandonRemark, SystemAbandonBadge } from "../components/abandon-remark-badge";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 function formatTimePlaced(iso?: string) {
@@ -21,6 +21,15 @@ function formatTimePlaced(iso?: string) {
     d.getDate() === now.getDate();
   const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
   if (sameDay) return `Today, ${time}`;
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (
+    d.getFullYear() === yesterday.getFullYear() &&
+    d.getMonth() === yesterday.getMonth() &&
+    d.getDate() === yesterday.getDate()
+  ) {
+    return `Yesterday, ${time}`;
+  }
   return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${time}`;
 }
 
@@ -135,6 +144,7 @@ export const orderColumns: ColumnDef<OrderData>[] = [
       <OrderStatusBadge
         status={row.original.orderStatus}
         assignedEmployeeId={row.original.assignedEmployeeId}
+        startedById={row.original.startedById}
         finalStatus={row.original.finalStatus}
       />
     ),
@@ -190,17 +200,46 @@ export const historyOrderColumns: ColumnDef<OrderData>[] = [
     cell: ({ row }) => <span className="font-semibold">{row.original.price || "—"}</span>,
   },
   {
-    id: "completedAt",
-    header: "Completed At",
+    id: "handledBy",
+    header: "Handled By",
+    cell: ({ row }) => {
+      const name = row.original.startedByName || row.original.assignedEmployeeName;
+      return name ? (
+        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{name}</span>
+      ) : (
+        <span className="text-xs text-slate-400">—</span>
+      );
+    },
+  },
+  {
+    id: "pickedUpBy",
+    header: "Picked Up By",
+    cell: ({ row }) =>
+      row.original.finalStatus === FINAL_STATUS.PICKED_UP ? (
+        <div>
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            {row.original.recieverName || row.original.userName || "Customer"}
+          </p>
+          <p className="text-[11px] whitespace-nowrap text-slate-500">
+            {formatTimePlaced(row.original.pickedUpAt || undefined)}
+          </p>
+        </div>
+      ) : (
+        <span className="text-xs text-slate-400">—</span>
+      ),
+  },
+  {
+    id: "closedAt",
+    header: "Closed At",
     cell: ({ row }) => (
-      <span className="text-sm text-slate-600">
-        {row.original.completedAt ? new Date(row.original.completedAt).toLocaleString() : "—"}
+      <span className="text-sm whitespace-nowrap text-slate-600">
+        {formatTimePlaced(row.original.closedAt || undefined)}
       </span>
     ),
   },
   {
     id: "finalStatus",
-    header: "Final Status",
+    header: "Status",
     cell: ({ row }) => (
       <OrderStatusBadge
         status={row.original.orderStatus}
@@ -227,15 +266,6 @@ export const historyOrderColumns: ColumnDef<OrderData>[] = [
         </div>
       );
     },
-  },
-  {
-    id: "closedAt",
-    header: "Closed At",
-    cell: ({ row }) => (
-      <span className="text-sm text-slate-600">
-        {row.original.closedAt ? new Date(row.original.closedAt).toLocaleString() : "—"}
-      </span>
-    ),
   },
   {
     id: "actions",

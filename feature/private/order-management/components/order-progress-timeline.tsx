@@ -4,6 +4,7 @@ import {
   FINAL_STATUS,
   ORDER_STATUS,
   isAcceptedRequest,
+  isAssignedOrder,
   isAwaitingPayment,
   isPendingOrder,
   isProcessingOrder,
@@ -17,11 +18,14 @@ import {
   CircleDot,
   Clock3,
   CreditCard,
+  HandPlatter,
+  Lock,
   PackageCheck,
   PackageX,
   RefreshCw,
   ShoppingBag,
   ThumbsUp,
+  UserCheck,
   X,
 } from "lucide-react";
 import { parseAbandonRemark, SystemAbandonBadge } from "./abandon-remark-badge";
@@ -64,7 +68,10 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
   const rejected = isRejectedRequest(order);
   const awaitingPayment = isAwaitingPayment(order);
   const pending = isPendingOrder(order);
+  const assigned = isAssignedOrder(order);
   const processing = isProcessingOrder(order);
+  /** Manager assignment adds an extra step; self-started orders skip it */
+  const managerAssigned = assigned || Boolean(order.assignedById);
   const pickedUp = order.orderStatus === ORDER_STATUS.COMPLETED;
   const closed = order.orderStatus === ORDER_STATUS.CLOSED;
   const abandoned = closed && order.finalStatus === FINAL_STATUS.ABANDONED;
@@ -74,11 +81,14 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
   const createdStamp = formatFullStamp(order.createdAt);
   const pendingStamp = paymentDone ? createdStamp : null;
   const paymentStamp = awaitingPayment || paymentDone || rejected ? createdStamp : null;
-  const processingStamp = formatFullStamp(order.startedAt || order.assignedAt);
-  const pickedUpStamp = formatFullStamp(order.pickedUpAt || order.completedAt);
-  const closedStamp = formatFullStamp(
-    abandoned ? order.abandonedAt || order.closedAt : collected ? order.closedAt : null,
-  );
+  const assignedStamp = formatFullStamp(order.assignedAt);
+  const processingStamp = formatFullStamp(order.startedAt);
+  const readyStamp = formatFullStamp(order.completedAt);
+  const pickedUpStamp = formatFullStamp(collected ? order.pickedUpAt || order.closedAt : null);
+  const abandonedStamp = formatFullStamp(order.abandonedAt || order.closedAt);
+  const handlerName = order.startedByName || order.assignedEmployeeName;
+  const receiverName = order.recieverName || order.userName || "customer";
+  const closedStamp = formatFullStamp(closed ? order.closedAt : null);
 
   const responseState: StepState = pureRequested
     ? "current"
@@ -136,7 +146,25 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
     });
   }
 
-  const steps = [
+  const afterPending = assigned || processing || pickedUp || closed;
+  const assignedSteps: typeof baseSteps = managerAssigned
+    ? [
+        {
+          key: "assigned",
+          label: "Assigned",
+          subtitle: order.assignedEmployeeName
+            ? assigned
+              ? `Assigned to ${order.assignedEmployeeName} — waiting for Start Order`
+              : `Assigned to ${order.assignedEmployeeName}`
+            : "Assigned by store manager",
+          stamp: assignedStamp,
+          state: assigned ? "current" : processing || pickedUp || closed ? "done" : "upcoming",
+          Icon: UserCheck,
+        },
+      ]
+    : [];
+
+  const steps: typeof baseSteps = [
     ...baseSteps,
     {
       key: "pending",
@@ -151,46 +179,67 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
           ? "upcoming"
           : pending
             ? "current"
-            : paymentDone
+            : paymentDone || afterPending
               ? "done"
               : "upcoming",
       Icon: ShoppingBag,
     },
+    ...assignedSteps,
     {
       key: "processing",
       label: "Processing",
       subtitle: order.startedByName
         ? `Started by ${order.startedByName}`
-        : order.assignedEmployeeName
-          ? `Assigned to ${order.assignedEmployeeName}`
-          : "Being prepared at store",
+        : "Starts when an employee taps Start Order",
       stamp: processingStamp,
       state: processing ? "current" : pickedUp || closed ? "done" : "upcoming",
       Icon: RefreshCw,
     },
     {
-      key: "pickedUp",
-      label: "Picked Up",
-      subtitle: pickedUp
-        ? "Ready at store — awaiting Close or Abandon"
-        : closed
-          ? "Was ready at store for collection"
-          : "Will move here after Mark Completed",
-      stamp: pickedUpStamp,
+      key: "ready",
+      label: "Ready for Pickup / Delivery",
+      subtitle:
+        pickedUp || closed
+          ? `Completed by ${handlerName || "store employee"}${
+              pickedUp ? " — waiting for customer QR / reference" : ""
+            }`
+          : "Moves here after Mark as Completed",
+      stamp: readyStamp,
       state: pickedUp ? "current" : closed ? "done" : "upcoming",
       Icon: PackageCheck,
     },
+    abandoned
+      ? {
+          key: "abandoned",
+          label: "Abandoned",
+          subtitle: `Not collected by ${receiverName}`,
+          stamp: abandonedStamp,
+          state: "failed" as StepState,
+          Icon: PackageX,
+        }
+      : {
+          key: "pickedUp",
+          label: "Picked Up",
+          subtitle: collected
+            ? `Picked up by ${receiverName}`
+            : pickedUp
+              ? `Waiting for ${receiverName} to collect`
+              : "After QR / reference is verified",
+          stamp: pickedUpStamp,
+          state: (collected ? "done" : "upcoming") as StepState,
+          Icon: HandPlatter,
+        },
     {
-      key: "final",
-      label: abandoned ? "Abandoned" : collected ? "Closed (Collected)" : "Close / Abandon",
-      subtitle: abandoned
-        ? parseAbandonRemark(order.abandonRemark).remark || "Not collected"
-        : collected
-          ? "Customer collected with reference"
-          : "Final step after pickup",
+      key: "closed",
+      label: "Closed",
+      subtitle: closed
+        ? abandoned
+          ? "Closed automatically after abandonment"
+          : "Closed automatically after pickup verification"
+        : "Closes automatically after pickup",
       stamp: closedStamp,
-      state: abandoned ? "failed" : collected ? "done" : "upcoming",
-      Icon: abandoned ? PackageX : Check,
+      state: closed ? "done" : "upcoming",
+      Icon: Lock,
     },
   ];
 
@@ -201,8 +250,8 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
           <p className="text-sm font-bold text-slate-900 dark:text-white">Order journey</p>
           <p className="text-[11px] text-slate-500">
             {order.orderType === 2
-              ? "Mobile Accept/Reject → Payment → Pending → Processing → Picked Up → Close"
-              : "Pending → Processing → Picked Up → Close"}
+              ? `Mobile Accept/Reject → Payment → Pending${managerAssigned ? " → Assigned" : ""} → Processing → Ready for Pickup → Picked Up → Closed`
+              : `Pending${managerAssigned ? " → Assigned" : ""} → Processing → Ready for Pickup → Picked Up → Closed`}
           </p>
         </div>
         {pureRequested ? (
@@ -233,7 +282,7 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
               )}
             >
               <CircleDot className="size-3" />
-              {abandoned ? "Abandoned" : collected ? "Collected" : "Awaiting action"}
+              {abandoned ? "Abandoned" : collected ? "Closed" : "Awaiting pickup"}
             </span>
           )
         )}
@@ -332,7 +381,7 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
                     </div>
                   </div>
 
-                  {step.key === "final" &&
+                  {step.key === "abandoned" &&
                     abandoned &&
                     order.abandonRemark &&
                     (() => {

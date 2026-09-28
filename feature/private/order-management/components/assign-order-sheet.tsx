@@ -43,15 +43,17 @@ export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheet
     open,
   );
 
+  const { data: assignedRes } = useGetOrders({ page: 1, limit: 100, workflow: "assigned" }, open);
+
   const busyCountByEmployee = useMemo(() => {
     const map = new Map<string, number>();
-    for (const o of processingRes?.data || []) {
+    for (const o of [...(processingRes?.data || []), ...(assignedRes?.data || [])]) {
       if (o.assignedEmployeeId) {
         map.set(o.assignedEmployeeId, (map.get(o.assignedEmployeeId) || 0) + 1);
       }
     }
     return map;
-  }, [processingRes?.data]);
+  }, [processingRes?.data, assignedRes?.data]);
 
   const selectedEmployee = useMemo(
     () => (employees || []).find((e) => e.id === selectedEmployeeId),
@@ -112,7 +114,8 @@ export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheet
           <SheetHeader className="border-b border-slate-100 dark:border-slate-800">
             <SheetTitle className="text-lg font-bold">Assign Order</SheetTitle>
             <SheetDescription>
-              Manager-only — assigning moves this order to Processing.
+              Manager-only — assigning moves this order to Assigned. The employee then taps Start
+              Order.
             </SheetDescription>
           </SheetHeader>
 
@@ -201,8 +204,8 @@ export function AssignOrderSheet({ open, onOpenChange, order }: AssignOrderSheet
               </div>
 
               <p className="text-xs leading-relaxed text-slate-500">
-                Assigning changes status from Pending to Processing and shows the designated
-                employee on the order.
+                Assigning changes status from Pending to Assigned and shows the designated employee
+                on the order. It moves to Processing when the employee starts it.
               </p>
             </div>
           )}

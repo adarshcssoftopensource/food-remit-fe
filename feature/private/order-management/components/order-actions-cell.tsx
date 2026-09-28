@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useDeleteOrder } from "../hooks/use-delete-order";
 import { useStartOrder } from "../hooks/use-order-lifecycle";
 import { OrderData } from "../types/order.types";
-import { isPendingOrder } from "../utils/order-workflow";
+import { canEmployeeStartOrder, isPendingOrder } from "../utils/order-workflow";
 import { getOrderActorRole } from "../utils/order-roles";
 import { AssignOrderSheet } from "./assign-order-sheet";
 import { StartOrderConfirmDialog } from "./start-order-confirm-dialog";
@@ -34,7 +34,7 @@ export function OrderActionsCell({ order }: OrderActionsCellProps) {
 
   const { isEmployee, canAssign: roleCanAssign } = getOrderActorRole(profile);
   const pending = isPendingOrder(order);
-  const canStart = pending && isEmployee;
+  const canStart = isEmployee && canEmployeeStartOrder(order, profile?.id);
   const canAssign = pending && roleCanAssign;
   const detailPath = isEmployee
     ? ROUTES.ADMIN.MY_ORDER_DETAIL(order.id)

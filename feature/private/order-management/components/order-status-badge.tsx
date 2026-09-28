@@ -23,6 +23,11 @@ const TONE_STYLES: Record<string, { colorClass: string; dotClass: string }> = {
       "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400",
     dotClass: "bg-amber-500",
   },
+  assigned: {
+    colorClass:
+      "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-400",
+    dotClass: "bg-violet-500",
+  },
   processing: {
     colorClass:
       "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400",
@@ -58,14 +63,15 @@ const TONE_STYLES: Record<string, { colorClass: string; dotClass: string }> = {
 interface OrderStatusBadgeProps {
   status: number;
   assignedEmployeeId?: string | null;
+  startedById?: string | null;
   finalStatus?: number | null;
-  /** When true, show Final Status (Picked Up / Abandoned) instead of Closed */
   showFinal?: boolean;
 }
 
 export function OrderStatusBadge({
   status,
   assignedEmployeeId,
+  startedById,
   finalStatus,
   showFinal = false,
 }: OrderStatusBadgeProps) {
@@ -91,6 +97,7 @@ export function OrderStatusBadge({
   const { label, tone } = getDisplayStatus({
     orderStatus: status,
     assignedEmployeeId,
+    startedById,
     finalStatus,
   });
   const { colorClass, dotClass } = TONE_STYLES[tone] ?? TONE_STYLES.other;

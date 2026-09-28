@@ -8,8 +8,7 @@ import { formatRelativeTime, ORDER_STATUS } from "../utils/order-workflow";
 
 /**
  * Shows who started or was assigned the order.
- * Client rule: Start records who started; Assign shows the designated employee.
- * Manager/Super Admin Start → "Started by [their name]" (no employee assignee).
+ * Assigned (not started) → "Assigned …"; after Start → "Started …"; after Complete → "Completed …".
  */
 export function OrderHandlerCell({ order }: { order: OrderData }) {
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -22,22 +21,19 @@ export function OrderHandlerCell({ order }: { order: OrderData }) {
   }
 
   const image = order.assignedEmployeeImage || order.startedByImage;
-  const when = order.assignedAt || order.startedAt;
-  const relative = formatRelativeTime(when);
   const isCompleted =
     order.orderStatus === ORDER_STATUS.COMPLETED || order.orderStatus === ORDER_STATUS.CLOSED;
 
-  // Prefer "Assigned" when an employee was designated, unless they started it themselves
-  let verb = "Started";
-  if (isCompleted) {
+  let verb = "Assigned";
+  let when = order.assignedAt;
+  if (isCompleted && order.completedAt) {
     verb = "Completed";
-  } else if (assignedName) {
-    if (order.assignedEmployeeId && order.assignedEmployeeId === order.startedById) {
-      verb = "Started";
-    } else {
-      verb = "Assigned";
-    }
+    when = order.completedAt;
+  } else if (order.startedById) {
+    verb = "Started";
+    when = order.startedAt || order.assignedAt;
   }
+  const relative = formatRelativeTime(when);
 
   return (
     <>

@@ -17,35 +17,65 @@ export function OrderStatusBadge({
 }: OrderStatusBadgeProps) {
   const isRequested = orderType === 2;
   let label = customLabel || "Pending";
-  let colorClass =
+  let colorClass: string =
     "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300";
-  let dotClass = "bg-slate-500";
+  let dotClass: string = "bg-slate-500";
+
+  const tone = (colorKey: "red" | "amber" | "sky" | "blue" | "violet" | "emerald" | "slate") => {
+    const tones = {
+      red: [
+        "border-red-200 bg-red-50 text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400",
+        "bg-red-500",
+      ],
+      amber: [
+        "border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400",
+        "bg-amber-500",
+      ],
+      sky: [
+        "border-sky-200 bg-sky-50 text-sky-600 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-400",
+        "bg-sky-500",
+      ],
+      blue: [
+        "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400",
+        "bg-blue-500",
+      ],
+      violet: [
+        "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-400",
+        "bg-violet-500",
+      ],
+      emerald: [
+        "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400",
+        "bg-emerald-500",
+      ],
+      slate: [
+        "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300",
+        "bg-slate-400",
+      ],
+    } as const;
+    [colorClass, dotClass] = tones[colorKey];
+  };
 
   if (status === 0 || status === 7) {
-    label = "Declined";
-    colorClass =
-      "border-red-200 bg-red-50 text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400";
-    dotClass = "bg-red-500";
+    label = customLabel || "Declined";
+    tone("red");
   } else if (status === 1) {
-    label = isRequested ? "Requested" : "Pending";
-    colorClass =
-      "border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400";
-    dotClass = "bg-amber-500";
-  } else if (status === 2) {
-    label = "Preparing";
-    colorClass =
-      "border-sky-200 bg-sky-50 text-sky-600 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-400";
-    dotClass = "bg-sky-500";
-  } else if (status === 5) {
-    label = isRequested ? "Accepted" : "Sent";
-    colorClass =
-      "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400";
-    dotClass = "bg-blue-500";
-  } else if (status === 6 || status === 8 || status === 3) {
-    label = status === 8 ? "Paid" : "Completed";
-    colorClass =
-      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400";
-    dotClass = "bg-emerald-500";
+    label = customLabel || (isRequested ? "Requested" : "Pending");
+    tone("amber");
+  } else if (status === 10) {
+    label = customLabel || "Accepted";
+    tone("sky");
+  } else if (status === 8) {
+    label = customLabel || "Pending";
+    tone(label === "Assigned" ? "violet" : "amber");
+  } else if (status === 2 || status === 3 || status === 4 || status === 5) {
+    label = customLabel || "Processing";
+    tone("blue");
+  } else if (status === 6) {
+    label = customLabel || "Ready for Pickup";
+    tone("emerald");
+  } else if (status === 11) {
+    label = customLabel || "Closed";
+    tone(label === "Abandoned" ? "red" : "slate");
   }
 
   return (

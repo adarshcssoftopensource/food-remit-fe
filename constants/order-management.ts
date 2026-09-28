@@ -2,6 +2,7 @@ export type OrderSectionKey =
   | "all"
   | "requested"
   | "pending"
+  | "assigned"
   | "processing"
   | "completed"
   | "history"
@@ -25,19 +26,26 @@ export const ORDER_SECTION_META: Record<OrderSectionKey, { title: string; descri
   },
   pending: {
     title: "Pending",
-    description: "Paid orders ready to be started or assigned.",
+    description:
+      "Paid orders not yet assigned or started. Managers can assign; any employee can start.",
+  },
+  assigned: {
+    title: "Assigned",
+    description:
+      "Orders assigned to an employee by a manager, waiting for the employee to tap Start Order.",
   },
   processing: {
     title: "Processing",
-    description: "Orders being prepared by employees.",
+    description: "Orders being prepared by employees. Mark as Completed when ready.",
   },
   completed: {
-    title: "Picked Up",
-    description: "Orders ready at the store — Close when collected, or Abandon if not.",
+    title: "Ready for Pickup / Delivery",
+    description:
+      "Completed orders waiting for the customer. Verify the QR / reference when collected — the order is marked Picked Up and Closed automatically.",
   },
   history: {
-    title: "Order History",
-    description: "Closed orders (collected or Abandoned).",
+    title: "Closed Orders",
+    description: "Picked up or abandoned orders — latest closed first.",
   },
   "all-orders": {
     title: "All Orders",
@@ -69,9 +77,10 @@ export const ORDER_TABS: { label: string; value: OrderSectionKey }[] = [
   { label: "All Orders", value: "all" },
   { label: "Requested", value: "requested" },
   { label: "Pending", value: "pending" },
+  { label: "Assigned", value: "assigned" },
   { label: "Processing", value: "processing" },
-  { label: "Picked Up", value: "completed" },
-  { label: "History", value: "history" },
+  { label: "Ready for Pickup", value: "completed" },
+  { label: "Closed", value: "history" },
 ];
 
 /** Map legacy tab query values to the new workflow tabs */

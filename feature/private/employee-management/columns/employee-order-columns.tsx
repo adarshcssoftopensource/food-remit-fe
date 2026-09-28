@@ -3,6 +3,7 @@
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeOrderActionsCell } from "../components/employee-order-actions-cell";
+import { OrderStatusBadge } from "@/feature/private/order-management/components/order-status-badge";
 
 interface GetEmployeeOrderColumnsOptions {
   _employeeId: string;
@@ -124,54 +125,14 @@ export function getEmployeeOrderColumns({
     {
       accessorKey: "orderStatus",
       header: "Status",
-      cell: ({ row }) => {
-        const status = row.original.orderStatus as number;
-        const isRequested = (row.original.orderType as number) === 2;
-        let label = "Pending";
-        let colorClass = "border-slate-200 bg-slate-50 text-slate-700";
-        let dotClass = "bg-slate-500";
-
-        if (status === 0 || status === 7) {
-          label = "Declined";
-          colorClass =
-            "border-red-200 bg-red-50 text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400";
-          dotClass = "bg-red-500";
-        } else if (status === 1) {
-          label = isRequested ? "Requested" : "Pending";
-          colorClass =
-            "border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400";
-          dotClass = "bg-amber-500";
-        } else if (status === 2) {
-          label = "Preparing";
-          colorClass =
-            "border-sky-200 bg-sky-50 text-sky-600 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-400";
-          dotClass = "bg-sky-500";
-        } else if (status === 5) {
-          label = "Processing";
-          colorClass =
-            "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400";
-          dotClass = "bg-blue-500";
-        } else if (status === 6 || status === 8) {
-          label = status === 8 ? "Paid" : "Completed";
-          colorClass =
-            "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400";
-          dotClass = "bg-emerald-500";
-        } else if (status === 9) {
-          label = "Partial";
-          colorClass =
-            "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-400";
-          dotClass = "bg-purple-500";
-        }
-
-        return (
-          <span
-            className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 focus:outline-none dark:focus:ring-slate-300 ${colorClass}`}
-          >
-            <span className={`size-1.5 rounded-full ${dotClass}`} />
-            {label}
-          </span>
-        );
-      },
+      cell: ({ row }) => (
+        <OrderStatusBadge
+          status={row.original.orderStatus as number}
+          assignedEmployeeId={row.original.assignedEmployeeId as string | null | undefined}
+          startedById={row.original.startedById as string | null | undefined}
+          finalStatus={row.original.finalStatus as number | null | undefined}
+        />
+      ),
     },
     {
       id: "actions",

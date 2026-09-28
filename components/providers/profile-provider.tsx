@@ -22,6 +22,7 @@ import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 export type ProfilePermissions = Record<string, number | null | undefined>;
 
 export interface AdminProfile {
+  id?: string;
   name: string;
   firstName?: string | null;
   lastName?: string | null;

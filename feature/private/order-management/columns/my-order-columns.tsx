@@ -6,7 +6,12 @@ import { OrderStatusBadge } from "../components/order-status-badge";
 import { StartOrderConfirmDialog } from "../components/start-order-confirm-dialog";
 import { useMarkOrderCompleted, useStartOrder } from "../hooks/use-order-lifecycle";
 import { OrderData } from "../types/order.types";
-import { isPendingOrder, isProcessingOrder, ORDER_STATUS } from "../utils/order-workflow";
+import {
+  isAssignedOrder,
+  isPendingOrder,
+  isProcessingOrder,
+  ORDER_STATUS,
+} from "../utils/order-workflow";
 import { ROUTES } from "@/config/routes";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
@@ -40,7 +45,7 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
   const { mutateAsync: startOrder, isPending: starting } = useStartOrder();
   const { mutateAsync: markCompleted, isPending: completing } = useMarkOrderCompleted();
 
-  const pending = isPendingOrder(order);
+  const pending = isPendingOrder(order) || isAssignedOrder(order);
   const processing = isProcessingOrder(order);
   const completed = order.orderStatus === ORDER_STATUS.COMPLETED;
   const detail = ROUTES.ADMIN.MY_ORDER_DETAIL(order.id);
@@ -105,7 +110,7 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
             onClick={() => setPickupOpen(true)}
           >
             <PackageCheck className="mr-1.5 size-3.5" />
-            Close Order
+            Verify Pickup
           </Button>
           <CompleteOrderByReferenceDialog
             orderId={order.id}
@@ -193,13 +198,14 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
       <OrderStatusBadge
         status={row.original.orderStatus}
         assignedEmployeeId={row.original.assignedEmployeeId}
+        startedById={row.original.startedById}
         finalStatus={row.original.finalStatus}
       />
     ),
   },
   {
     id: "startedBy",
-    header: "Started By",
+    header: "Handled By",
     cell: ({ row }) => <OrderHandlerCell order={row.original} />,
   },
   {

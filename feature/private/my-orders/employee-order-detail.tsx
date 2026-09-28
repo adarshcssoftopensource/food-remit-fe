@@ -25,6 +25,7 @@ import {
 import {
   FINAL_STATUS,
   formatRelativeTime,
+  isAssignedOrder,
   isPendingOrder,
   isProcessingOrder,
   ORDER_STATUS,
@@ -54,6 +55,8 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
   if (!order) return <OrderNotFound onBack={() => router.back()} />;
 
   const pending = isPendingOrder(order);
+  const assigned = isAssignedOrder(order);
+  const canStart = pending || assigned;
   const processing = isProcessingOrder(order);
   const pickedUp = order.orderStatus === ORDER_STATUS.COMPLETED;
   const closed = order.orderStatus === ORDER_STATUS.CLOSED;
@@ -73,23 +76,27 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
             description={
               pending
                 ? "Paid and waiting to be started."
-                : processing
-                  ? "You are preparing this order."
-                  : pickedUp
-                    ? "Picked Up — Close with customer reference when collected."
-                    : abandoned
-                      ? "This order was abandoned."
-                      : "Order details"
+                : assigned
+                  ? "Assigned to you by your manager — tap Start Order to begin."
+                  : processing
+                    ? "You are preparing this order."
+                    : pickedUp
+                      ? "Ready for Pickup / Delivery — verify the QR / reference when collected."
+                      : abandoned
+                        ? "This order was abandoned."
+                        : "Order details"
             }
           />
           <div className="flex flex-wrap items-center gap-2">
             <OrderStatusBadge
               status={order.orderStatus}
               assignedEmployeeId={order.assignedEmployeeId}
+              startedById={order.startedById}
               finalStatus={order.finalStatus}
               showFinal={closed}
             />
-            {pickedUp && <OrderWaitingBadge label="Awaiting Close" />}
+            {assigned && <OrderWaitingBadge label="Awaiting Start" />}
+            {pickedUp && <OrderWaitingBadge label="Awaiting Pickup" />}
           </div>
         </div>
         <Button
@@ -106,6 +113,14 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
         <OrderInfoBanner
           variant="employee-start"
           message="Start this order to claim it. Status becomes Processing and other employees cannot start it."
+        />
+      )}
+      {assigned && (
+        <OrderInfoBanner
+          variant="employee-start"
+          message={`Assigned to you${
+            order.assignedAt ? ` · ${formatRelativeTime(order.assignedAt)}` : ""
+          }. Tap Start Order to move it to Processing.`}
         />
       )}
       {processing && handlerName && (
@@ -143,7 +158,9 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
                     {handlerName}
                   </p>
                   <p className="text-xs text-slate-500">
-                    Started {formatRelativeTime(order.startedAt || order.assignedAt) || "—"}
+                    {order.startedAt
+                      ? `Started ${formatRelativeTime(order.startedAt)}`
+                      : `Assigned ${formatRelativeTime(order.assignedAt) || "—"}`}
                   </p>
                 </div>
               </div>
@@ -164,11 +181,15 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
 
           <div className="space-y-3">
             <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Actions</p>
-            {pending && (
+            {canStart && (
               <OrderLifecycleActionCard
                 variant="start"
                 title="Start Order"
-                description="Claim this order and move it to Processing."
+                description={
+                  assigned
+                    ? "This order is assigned to you. Start it to move it to Processing."
+                    : "Claim this order and move it to Processing."
+                }
                 loading={starting}
                 onClick={() => setStartOpen(true)}
               />
@@ -177,7 +198,7 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
               <OrderLifecycleActionCard
                 variant="complete"
                 title="Mark as Completed"
-                description="Finishes prep and auto-moves to Picked Up."
+                description="Finishes prep — status becomes Ready for Pickup / Delivery."
                 loading={completing}
                 onClick={async () => {
                   try {
@@ -189,14 +210,14 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
             {pickedUp && (
               <OrderLifecycleActionCard
                 variant="close"
-                title="Close Order"
-                description="Customer collected — enter the full reference ID."
+                title="Verify & Close"
+                description="Customer collected — verify the QR / reference. Marks Picked Up and Closes automatically."
                 onClick={() => setCloseOpen(true)}
               />
             )}
             {pickedUp && (
               <OrderLifecycleActionsHint>
-                You can only Close. Store admin abandons with a remark if nobody collects.
+                Store admin abandons with a remark if nobody collects.
               </OrderLifecycleActionsHint>
             )}
           </div>

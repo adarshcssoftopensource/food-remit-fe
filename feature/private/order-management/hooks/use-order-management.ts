@@ -72,6 +72,8 @@ export function useOrderManagement(
     workflow = "requested";
   } else if (normalized === "pending") {
     workflow = "pending";
+  } else if (normalized === "assigned") {
+    workflow = "assigned";
   } else if (normalized === "processing") {
     workflow = "processing";
   } else if (normalized === "completed") {

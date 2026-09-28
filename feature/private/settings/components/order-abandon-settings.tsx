@@ -79,7 +79,7 @@ export function OrderAbandonSettings() {
         title: "Global Auto-Abandon Saved",
         description:
           res?.message ||
-          `All stores will auto-abandon uncollected Picked Up orders after ${form.autoAbandonDays} day(s).`,
+          `All stores will auto-abandon uncollected Ready for Pickup orders after ${form.autoAbandonDays} day(s).`,
       });
     } catch (error) {
       console.error(error);
@@ -130,7 +130,7 @@ export function OrderAbandonSettings() {
             <Globe2 className="mt-0.5 size-4 shrink-0 text-sky-600" />
             <p className="text-xs leading-relaxed text-sky-900 dark:text-sky-200">
               These settings are <strong>global for all stores</strong>. When an order is{" "}
-              <strong>Picked Up</strong> and nobody <strong>Closes</strong> it within the set days,
+              <strong>Ready for Pickup</strong> and nobody verifies the pickup within the set days,
               the system auto-<strong>Abandons</strong> it everywhere, stores this remark with a{" "}
               <code>System </code> tag, and emails sender &amp; receiver.
             </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Clock3, HandPlatter, Package, RefreshCw } from "lucide-react";
+import { CheckCircle2, Clock3, HandPlatter, Package, RefreshCw, UserCheck } from "lucide-react";
 import { WorkflowCounts } from "../hooks/use-workflow-counts";
 import { OrderSectionKey } from "@/constants/order-management";
 import { cn } from "@/lib/utils";
@@ -43,11 +43,20 @@ const CARDS: {
   {
     key: "pending",
     label: "Pending",
-    description: "Ready to be started",
+    description: "Not yet assigned or started",
     icon: Clock3,
     countKey: "pending",
     accent: "text-amber-700",
     iconBg: "bg-amber-50 text-amber-600",
+  },
+  {
+    key: "assigned",
+    label: "Assigned",
+    description: "Waiting for employee to start",
+    icon: UserCheck,
+    countKey: "assigned",
+    accent: "text-violet-700",
+    iconBg: "bg-violet-50 text-violet-600",
   },
   {
     key: "processing",
@@ -60,8 +69,8 @@ const CARDS: {
   },
   {
     key: "completed",
-    label: "Picked Up",
-    description: "Waiting for Close or Abandon",
+    label: "Ready for Pickup",
+    description: "Awaiting QR / reference verification",
     icon: CheckCircle2,
     countKey: "completed",
     accent: "text-emerald-700",
@@ -77,8 +86,8 @@ export function WorkflowSummaryCards({
 }: WorkflowSummaryCardsProps) {
   const cards = showRequested ? CARDS : CARDS.filter((c) => c.key !== "requested");
   const gridClass = showRequested
-    ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-5"
-    : "grid gap-3 sm:grid-cols-2 xl:grid-cols-4";
+    ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6"
+    : "grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5";
 
   return (
     <div className={gridClass}>
