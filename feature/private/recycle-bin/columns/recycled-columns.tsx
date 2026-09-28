@@ -8,6 +8,7 @@ import { RecycleEntityType } from "../hooks/use-get-recycled-data";
 import { RecycledEntityActionsCell } from "../components/recycled-entity-actions-cell";
 import { withDeletedByColumn } from "../components/deleted-by-cell";
 import { usersColumns as rawUsersColumns } from "./recycled-users-columns";
+import { Store, User } from "lucide-react";
 
 export const usersColumns = withDeletedByColumn(rawUsersColumns as ColumnDef<any>[], true);
 
@@ -119,16 +120,47 @@ export const itemsColumns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "storeName",
-    header: "Originating Store / Vendor",
+    header: "Vendor / Store",
     cell: ({ row }) => {
       const storeName =
         row.original.storeName ||
         row.original.store?.storeName ||
         row.original.department?.store?.storeName;
+      const vendorName =
+        row.original.vendorName ||
+        row.original.store?.vendorName ||
+        (row.original.store?.storeManager
+          ? `${row.original.store.storeManager.firstName || ""} ${row.original.store.storeManager.lastName || ""}`.trim() ||
+            row.original.store.storeManager.email
+          : null);
+
+      if (!storeName && !vendorName) {
+        return (
+          <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+            Global / Platform
+          </span>
+        );
+      }
+
       return (
-        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-          {storeName || "Global / N/A"}
-        </span>
+        <div className="flex min-w-[130px] flex-col gap-0.5">
+          {storeName && (
+            <div className="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-slate-100">
+              <Store className="text-primary h-3.5 w-3.5 shrink-0" />
+              <span className="max-w-[180px] truncate text-xs" title={storeName}>
+                {storeName}
+              </span>
+            </div>
+          )}
+          {vendorName && (
+            <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              <User className="h-3 w-3 shrink-0 text-slate-400" />
+              <span className="max-w-[180px] truncate" title={vendorName}>
+                {vendorName}
+              </span>
+            </div>
+          )}
+        </div>
       );
     },
   },
@@ -190,10 +222,18 @@ export const departmentsColumns: ColumnDef<any>[] = [
     accessorKey: "countryName",
     header: "Country / City",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-600">
-        {row.original.countryName || "Global"}{" "}
-        {row.original.cityName ? `/ ${row.original.cityName}` : ""}
-      </span>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-xs text-slate-600 dark:text-slate-300">
+          {row.original.countryName || "Global"}{" "}
+          {row.original.cityName ? `/ ${row.original.cityName}` : ""}
+        </span>
+        {row.original.storeName && (
+          <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500">
+            <Store className="h-3 w-3 shrink-0 text-slate-400" />
+            {row.original.storeName}
+          </span>
+        )}
+      </div>
     ),
   },
   {
