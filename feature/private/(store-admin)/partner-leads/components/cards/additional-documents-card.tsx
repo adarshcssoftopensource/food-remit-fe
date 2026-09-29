@@ -6,7 +6,6 @@ import {
   FileText,
   FileImage,
   ExternalLink,
-  Eye,
   X,
   FolderArchive,
   Download,
@@ -14,11 +13,14 @@ import {
   Clock,
   UploadCloud,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 import { useAddPartnerLeadDocuments } from "../../hooks/use-add-partner-lead-documents";
+import { useDeletePartnerLeadDocument } from "../../hooks/use-delete-partner-lead-document";
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { successToast } from "@/components/toaster";
 
 interface AdditionalDocumentsCardProps {
@@ -41,11 +43,15 @@ function formatBytes(bytes?: number): string {
 
 export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) {
   const [activePreview, setActivePreview] = useState<ActivePreview | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ index: number; name: string } | null>(null);
 
   const docs = lead.additionalDocuments || [];
   const hasDocs = docs.length > 0;
 
   const { mutateAsync: uploadDocuments, isPending: isUploading } = useAddPartnerLeadDocuments(
+    lead.id,
+  );
+  const { mutateAsync: deleteDocument, isPending: isDeleting } = useDeletePartnerLeadDocument(
     lead.id,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -72,8 +78,36 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
     }
   };
 
+  const handleDeleteDocument = async () => {
+    if (deleteTarget === null) return;
+    try {
+      await deleteDocument({ docIndex: deleteTarget.index });
+      successToast({
+        title: "Document Removed",
+        description: `"${deleteTarget.name}" has been deleted.`,
+      });
+    } catch {
+      // API error toast is handled globally by axios interceptor
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
+
   return (
     <>
+      <ConfirmationDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title="Delete Document"
+        description={`Are you sure you want to delete "${deleteTarget?.name || "this document"}"? This will permanently remove the file from S3 storage and cannot be undone.`}
+        confirmLabel="Delete Document"
+        onConfirm={handleDeleteDocument}
+        isLoading={isDeleting}
+        variant="destructive"
+      />
+
       <Card className="col-span-1 overflow-hidden rounded-2xl border-slate-200/80 shadow-xs md:col-span-2 dark:border-slate-800">
         <CardHeader className="border-b border-slate-100 bg-slate-50/60 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/60">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -204,17 +238,32 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                           </div>
                         </div>
 
-                        {/* External Link at the end */}
-                        <a
-                          href={doc.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          download={docName}
-                          className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                          title="Open original link in S3"
-                        >
-                          <ExternalLink className="size-3.5" />
-                        </a>
+                        <div className="flex shrink-0 items-center gap-1">
+                          {/* External Link */}
+                          <a
+                            href={doc.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download={docName}
+                            className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            title="Open original link in S3"
+                          >
+                            <ExternalLink className="size-3.5" />
+                          </a>
+
+                          {/* Delete Button */}
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDeleteTarget({ index: idx, name: docName })}
+                            disabled={isDeleting}
+                            className="size-8 rounded-lg p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
+                            title="Delete document"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   );

@@ -34,6 +34,7 @@ export const PARTNER_LEAD_ENDPOINTS = {
   UPDATE_STATUS: (id: string) => `partner-leads/${id}/status`,
   APPROVE_LEAD: (id: string) => `partner-leads/${id}/approve`,
   ADD_DOCUMENTS: (id: string) => `partner-leads/${id}/documents`,
+  DELETE_DOCUMENT: (id: string, docIndex: number) => `partner-leads/${id}/documents/${docIndex}`,
   CHECK_EMAIL: (email: string) => `partner-leads/check-email?email=${encodeURIComponent(email)}`,
   DELETE_LEAD: (id: string) => `partner-leads/${id}`,
   BULK_DELETE_LEADS: "partner-leads/bulk-delete",
