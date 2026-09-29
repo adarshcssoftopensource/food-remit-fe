@@ -93,10 +93,19 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {docs.map((doc, idx) => {
+                  const fileNameLower = (doc.name || "").toLowerCase();
+                  const urlLower = (doc.url || "").toLowerCase();
                   const isPdf =
                     doc.mimeType?.includes("pdf") ||
-                    doc.name?.toLowerCase().endsWith(".pdf") ||
-                    doc.url.toLowerCase().includes(".pdf");
+                    fileNameLower.endsWith(".pdf") ||
+                    urlLower.includes(".pdf");
+                  const isHeic =
+                    doc.mimeType?.includes("heic") ||
+                    doc.mimeType?.includes("heif") ||
+                    fileNameLower.endsWith(".heic") ||
+                    fileNameLower.endsWith(".heif") ||
+                    urlLower.includes(".heic") ||
+                    urlLower.includes(".heif");
                   const docName = doc.name || `Supporting Document #${idx + 1}`;
 
                   return (
@@ -109,7 +118,9 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                           className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${
                             isPdf
                               ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
-                              : "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
+                              : isHeic
+                                ? "bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400"
+                                : "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
                           }`}
                         >
                           {isPdf ? (
@@ -133,7 +144,7 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                             </span>
                             <span>•</span>
                             <span className="text-[10px] font-semibold uppercase">
-                              {isPdf ? "PDF" : "IMAGE"}
+                              {isPdf ? "PDF" : isHeic ? "HEIC" : "IMAGE"}
                             </span>
                           </div>
                         </div>

@@ -1,5 +1,5 @@
 "use client";
-import { ArrowLeftRight, ChevronDown, Globe2, MapPin, Settings, User, Store } from "lucide-react";
+import { ArrowLeftRight, ChevronDown, Globe2, MapPin, User, Store } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { APP_ASSETS } from "@/config/assets";
@@ -37,7 +37,6 @@ export function AppTopBar() {
   const initials = getInitials(displayName);
 
   const isProfilePage = pathname === ROUTES.ADMIN.PROFILE;
-  const isSettingsPage = pathname === ROUTES.ADMIN.SETTINGS;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
@@ -128,7 +127,7 @@ export function AppTopBar() {
           <PopoverTrigger
             className={cn(
               "group flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 transition-all duration-200 outline-none",
-              isProfilePage || isSettingsPage
+              isProfilePage
                 ? "bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/20"
                 : "hover:bg-slate-100/80 dark:hover:bg-slate-800/80",
             )}
@@ -159,9 +158,7 @@ export function AppTopBar() {
               <span
                 className={cn(
                   "max-w-36 truncate text-sm leading-tight font-semibold",
-                  isProfilePage || isSettingsPage
-                    ? "text-white"
-                    : "text-slate-900 dark:text-slate-100",
+                  isProfilePage ? "text-white" : "text-slate-900 dark:text-slate-100",
                 )}
               >
                 {displayName}
@@ -172,7 +169,7 @@ export function AppTopBar() {
                   <div
                     className={cn(
                       "mt-1 flex w-fit items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-bold shadow-xs",
-                      isProfilePage || isSettingsPage
+                      isProfilePage
                         ? "bg-white/20 text-white"
                         : "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
                     )}
@@ -188,7 +185,7 @@ export function AppTopBar() {
             <ChevronDown
               className={cn(
                 "h-4 w-4",
-                isProfilePage || isSettingsPage ? "text-white" : "text-slate-400",
+                isProfilePage ? "text-white" : "text-slate-400",
                 "transition-transform duration-200",
                 "group-data-[state=open]:rotate-180",
               )}
@@ -238,27 +235,6 @@ export function AppTopBar() {
                     <ArrowLeftRight className="h-3.5 w-3.5" />
                   </div>
                   {inCmsMode ? "Admin Dashboard" : "CMS Dashboard"}
-                </Button>
-              </Link>
-            )}
-            {!(profile?.roleCode === "EMPLOYEE" || profile?.role === "employee") && (
-              <Link
-                href={inCmsMode ? `${ROUTES.ADMIN.SETTINGS}?context=cms` : ROUTES.ADMIN.SETTINGS}
-                className="w-full"
-                onClick={() => setIsPopoverOpen(false)}
-              >
-                <Button
-                  variant={"ghost"}
-                  className={cn(
-                    "flex w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200",
-                    isSettingsPage &&
-                      "bg-emerald-50 font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
-                  )}
-                >
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-                    <Settings className="h-3.5 w-3.5" />
-                  </div>
-                  Settings
                 </Button>
               </Link>
             )}

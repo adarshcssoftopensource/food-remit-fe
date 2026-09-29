@@ -69,6 +69,11 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
                 value: `+ ${formatMoney(pricing.markupAmount, currencySymbol)}`,
                 addon: true,
               },
+              // {
+              //   label: `Food Remit Store Commission (${pricing.commissionPercent}%)`,
+              //   value: `${formatMoney(pricing.commissionAmount, currencySymbol)}`,
+              //   muted: true,
+              // },
             ]
           : []),
       ]

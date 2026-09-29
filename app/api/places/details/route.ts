@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
   const url = new URL("https://maps.googleapis.com/maps/api/place/details/json");
   url.searchParams.set("place_id", placeId);
-  url.searchParams.set("fields", "name,formatted_address,geometry,address_component");
+  url.searchParams.set("fields", "name,formatted_address,geometry,address_components");
   url.searchParams.set("key", apiKey);
   url.searchParams.set("language", "en");
 

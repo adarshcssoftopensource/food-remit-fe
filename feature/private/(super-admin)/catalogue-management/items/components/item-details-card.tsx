@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useProfile } from "@/components/providers/profile-provider";
 import { formatDate } from "@/lib/date";
 import {
   Building2,
@@ -9,6 +10,7 @@ import {
   Scale,
   QrCode,
   CheckCircle2,
+  Percent,
 } from "lucide-react";
 import Image from "next/image";
 import type { ItemData } from "../types/item.types";
@@ -20,6 +22,7 @@ interface ItemDetailsCardProps {
 
 export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
   const codeVal = item.barcodeValue || item.upcCode || item.id;
+  const { canViewPlatformFees } = useProfile();
 
   return (
     <Card className="flex h-full flex-col rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-2 dark:bg-slate-950 dark:shadow-none">
@@ -113,6 +116,13 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
             label="Modified On"
             value={formatDate(item.updatedAt)}
           />
+          {canViewPlatformFees && item.pricing && (
+            <InfoCard
+              icon={<Percent className="h-4 w-4 text-rose-500" />}
+              label="Store Commission"
+              value={`${item.pricing.commissionPercent.toFixed(2)}%`}
+            />
+          )}
         </div>
 
         {/* Bottom QR Code Digital Verification Banner */}

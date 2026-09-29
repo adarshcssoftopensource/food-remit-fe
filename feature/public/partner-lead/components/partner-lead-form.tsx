@@ -12,6 +12,7 @@ import {
   Globe,
   Lock,
   Mail,
+  MapPin,
   RefreshCw,
   ShieldCheck,
   Store,
@@ -24,7 +25,7 @@ import {
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useId } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Country } from "country-state-city";
 import { WorldCitySelect } from "@/components/common/world-city-select";
@@ -32,7 +33,6 @@ import { WorldStateSelect } from "@/components/common/world-state-select";
 import { getWorldStatesByCountryIso } from "@/lib/world-locations";
 import { useDebounce } from "@/lib/debounce";
 import { CountrySelect } from "@/components/common/country-select";
-import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { MultiLanguageSelect } from "@/components/common/multi-language-select";
 import {
   StoreScheduleEditor,
@@ -40,6 +40,7 @@ import {
   parseTimeToMinutes,
 } from "@/components/common/store-schedule-editor";
 import { errorToast, successToast } from "@/components/toaster";
+import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldLabel } from "@/components/ui/field";
@@ -94,6 +95,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
   const [currentStep, setCurrentStep] = useState(1);
   const [draftRestored, setDraftRestored] = useState(false);
   const DRAFT_KEY = "food_remit_partner_lead_draft";
+
+  const reactId = useId();
 
   const { mutateAsync, isPending } = useCreatePartnerLead();
 
@@ -1064,12 +1067,14 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           setValue("businessCity", "");
                           setValue("locations.0.address" as const, "");
                           setValue("storePhoneNumber", "");
+                          setValue("zipCode", "");
                           clearErrors([
                             "country",
                             "stateProvinceRegion",
                             "businessCity",
                             "locations",
                             "storePhoneNumber",
+                            "zipCode",
                           ]);
                         }}
                         id="country"
@@ -1121,69 +1126,20 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                       </FieldLabel>
                       <AddressAutocompleteInput
                         id="storeAddress"
-                        value={field.value}
+                        value={field.value || ""}
                         onChange={(val) => {
                           field.onChange(val);
                           clearErrors("locations");
                         }}
-                        onPlaceSelect={(details) => {
-                          // 1. Auto-fill State
-                          if (details.state || details.stateCode) {
-                            const states = selectedCountryIsoCode
-                              ? getWorldStatesByCountryIso(selectedCountryIsoCode)
-                              : [];
-                            const cleanState = details.state?.trim().toLowerCase() || "";
-                            const cleanCode = details.stateCode?.trim().toLowerCase() || "";
-                            const matchedState = states.find(
-                              (s) =>
-                                (cleanState && s.name.toLowerCase() === cleanState) ||
-                                (cleanCode && s.isoCode.toLowerCase() === cleanCode),
-                            );
-                            const stateVal = matchedState
-                              ? matchedState.name
-                              : details.state?.trim() || "";
-                            if (stateVal) {
-                              setValue("stateProvinceRegion", stateVal, {
-                                shouldValidate: true,
-                                shouldDirty: true,
-                              });
-                              clearErrors("stateProvinceRegion");
-                            }
-                          }
-
-                          // 2. Auto-fill City
-                          if (details.city) {
-                            setValue("businessCity", details.city.trim(), {
-                              shouldValidate: true,
-                              shouldDirty: true,
-                            });
-                            clearErrors("businessCity");
-                          }
-
-                          // 3. Auto-fill Zip Code
-                          if (details.postalCode) {
-                            setValue("zipCode", details.postalCode.trim(), {
-                              shouldValidate: true,
-                              shouldDirty: true,
-                            });
-                            clearErrors("zipCode");
-                          }
-
-                          clearErrors("locations");
-                        }}
-                        addressFormat="street"
-                        countryCode={selectedCountryIsoCode}
-                        disabled={!selectedCountryIsoCode}
+                        addressFormat="full"
                         placeholder={
                           selectedCountryIsoCode
                             ? "Enter store address"
                             : "Select country to enter address"
                         }
-                        className={cn(
-                          "h-11! w-full rounded-xl border-slate-200 bg-white text-sm",
-                          (fieldState.error || errors.locations?.[0]?.address) &&
-                            "border-red-400 bg-red-50/30",
-                        )}
+                        disabled={!selectedCountryIsoCode}
+                        invalid={!!(fieldState.error || errors.locations?.[0]?.address)}
+                        countryCode={selectedCountryIsoCode || undefined}
                       />
                       {(fieldState.error || errors.locations?.[0]?.address) && (
                         <p className="text-xs font-medium text-red-500">
