@@ -228,6 +228,18 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                           <div className="grid grid-cols-1 gap-1.5 @md:grid-cols-2">
                             {scheduleItems.map((ds) => {
                               const isOpen = ds.isOpen;
+                              const is24Hours =
+                                ds.openTime?.trim().toUpperCase() === "24H" ||
+                                ds.closeTime?.trim().toUpperCase() === "24H" ||
+                                ds.openTime?.toLowerCase().includes("24 hour") ||
+                                ds.openTime?.toLowerCase().includes("open 24");
+
+                              const formattedTime = is24Hours
+                                ? "Open 24 Hours"
+                                : ds.openTime && ds.closeTime && ds.openTime !== ds.closeTime
+                                  ? `${ds.openTime} – ${ds.closeTime}`
+                                  : ds.openTime || ds.closeTime || "Open";
+
                               return (
                                 <div
                                   key={ds.day}
@@ -259,9 +271,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                                     {isOpen ? (
                                       <span className="inline-flex min-w-0 items-center gap-1 rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 font-semibold whitespace-nowrap text-slate-800">
                                         <Clock className="h-3 w-3 shrink-0 text-emerald-600" />
-                                        <span className="truncate">
-                                          {ds.openTime} – {ds.closeTime}
-                                        </span>
+                                        <span className="truncate">{formattedTime}</span>
                                       </span>
                                     ) : (
                                       <span className="inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium text-slate-400">
