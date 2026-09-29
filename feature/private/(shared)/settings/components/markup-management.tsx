@@ -157,7 +157,6 @@ export function MarkupManagement({ readOnly: readOnlyProp = false }: { readOnly?
                     Markup Percentage <span className="text-red-500">*</span>
                   </FieldLabel>
                   <div className="relative">
-                    <Percent className="pointer-events-none absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <Input
                       {...field}
                       id="markupPercentage"
@@ -193,11 +192,11 @@ export function MarkupManagement({ readOnly: readOnlyProp = false }: { readOnly?
                         }
                         field.onChange(val);
                       }}
-                      className="h-11 pr-12 pl-9 disabled:bg-slate-100 disabled:opacity-80"
+                      className="h-11 pr-12 disabled:bg-slate-100 disabled:opacity-80"
                     />
-                    <span className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 text-sm font-semibold text-slate-400">
+                    <div className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-extrabold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                       %
-                    </span>
+                    </div>
                   </div>
                   {errors.markupPercentage && (
                     <p className="text-xs font-medium text-red-500">
