@@ -116,7 +116,7 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
             label="Modified On"
             value={formatDate(item.updatedAt)}
           />
-          {canViewPlatformFees && item.pricing && (
+          {item.pricing && (
             <InfoCard
               icon={<Percent className="h-4 w-4 text-rose-500" />}
               label="Store Commission"

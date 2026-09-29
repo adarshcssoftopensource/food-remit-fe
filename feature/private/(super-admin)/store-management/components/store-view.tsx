@@ -152,7 +152,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                   <span className="font-semibold text-slate-700">{store.storeTax.toFixed(2)}%</span>
                 }
               />
-              {canViewPlatformFees && (
+              {store.foodRemitCommission !== undefined && store.foodRemitCommission !== null && (
                 <InfoRow
                   label="Commission"
                   value={

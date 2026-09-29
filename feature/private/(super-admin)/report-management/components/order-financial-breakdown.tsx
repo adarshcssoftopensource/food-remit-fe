@@ -336,11 +336,11 @@ export function OrderFinancialBreakdown({
             ...(vs?.govtTax
               ? [{ label: `Store Govt Tax (${vs?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
               : []),
-            ...(canViewPlatformFees
+            ...(vs?.commissionAmount !== undefined && vs?.commissionAmount !== null
               ? [
                   {
-                    label: `Food Remit Commission (${vs?.commissionPercent || "0%"})`,
-                    value: vs?.commissionAmount || "₹0.00",
+                    label: `Food Remit Store Commission (${vs?.commissionPercent || "0%"})`,
+                    value: vs.commissionAmount,
                   },
                 ]
               : []),
