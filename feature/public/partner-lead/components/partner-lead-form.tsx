@@ -41,6 +41,7 @@ import {
 } from "@/components/common/store-schedule-editor";
 import { errorToast, successToast } from "@/components/toaster";
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
+import { applyPlaceToLocationFields } from "@/lib/places/apply-place-to-location-fields";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldLabel } from "@/components/ui/field";
@@ -1131,7 +1132,16 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                           field.onChange(val);
                           clearErrors("locations");
                         }}
-                        addressFormat="full"
+                        onPlaceSelect={(place) => {
+                          applyPlaceToLocationFields(place, setValue, {
+                            country: "country",
+                            state: "stateProvinceRegion",
+                            city: "businessCity",
+                            zipcode: "zipCode",
+                          });
+                          clearErrors(["stateProvinceRegion", "businessCity", "zipCode"]);
+                        }}
+                        addressFormat="street"
                         placeholder={
                           selectedCountryIsoCode
                             ? "Enter store address"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   FileText,
@@ -12,10 +12,14 @@ import {
   Download,
   ShieldCheck,
   Clock,
+  UploadCloud,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PartnerLeadData } from "../../types/partner-lead.types";
+import { useAddPartnerLeadDocuments } from "../../hooks/use-add-partner-lead-documents";
+import { successToast } from "@/components/toaster";
 
 interface AdditionalDocumentsCardProps {
   lead: PartnerLeadData;
@@ -41,6 +45,33 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
   const docs = lead.additionalDocuments || [];
   const hasDocs = docs.length > 0;
 
+  const { mutateAsync: uploadDocuments, isPending: isUploading } = useAddPartnerLeadDocuments(
+    lead.id,
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const formData = new FormData();
+    files.forEach((f) => formData.append("files", f));
+
+    try {
+      await uploadDocuments(formData);
+      successToast({
+        title: "Success",
+        description: "Documents uploaded successfully",
+      });
+    } catch {
+      // API error toast is handled globally by axios interceptor
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
   return (
     <>
       <Card className="col-span-1 overflow-hidden rounded-2xl border-slate-200/80 shadow-xs md:col-span-2 dark:border-slate-800">
@@ -65,6 +96,30 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                   No Documents Attached
                 </span>
               )}
+
+              <input
+                type="file"
+                multiple
+                accept=".pdf,image/png,image/jpeg,image/jpg,image/webp,.heic,.heif,image/heic,image/heif"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                disabled={isUploading || docs.length >= 10}
+              />
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 gap-1.5 rounded-full border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading || docs.length >= 10}
+              >
+                {isUploading ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <UploadCloud className="size-3.5" />
+                )}
+                {isUploading ? "Uploading..." : "Upload Docs"}
+              </Button>
             </div>
           </div>
         </CardHeader>
