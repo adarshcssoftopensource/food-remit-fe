@@ -95,17 +95,6 @@ export function ProfileForm() {
       formData.append("lastName", data.lastName);
       formData.append("name", `${data.firstName} ${data.lastName}`.trim());
 
-      // Persist national number + dial separately (same shape as employee create)
-      const isoHint =
-        phoneIso ||
-        resolvedCountry ||
-        (profile as any)?.countryCode ||
-        (profile as any)?.country ||
-        "US";
-      const { country, nationalNumber } = resolveFromValue(data.contactNumber, isoHint);
-      formData.append("contactNumber", nationalNumber);
-      formData.append("countryCode", `+${country.dialCode}`);
-
       if (data.address !== undefined) {
         formData.append("address", data.address);
       }
@@ -215,10 +204,12 @@ export function ProfileForm() {
                         id="email"
                         type="email"
                         placeholder="Enter your email"
-                        disabled={isViewOnly}
-                        className="h-12 rounded-xl border-gray-200/50 bg-gray-50/50 pl-10 text-sm focus-visible:border-[#1B3A8C] focus-visible:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                        disabled
+                        readOnly
+                        className="h-12 cursor-not-allowed rounded-xl border-gray-200/80 bg-slate-100/80 pl-10 text-sm text-slate-600 disabled:cursor-not-allowed disabled:opacity-75 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400"
                       />
                     </div>
+                    <p className="text-[11px] text-slate-400">Email address cannot be changed</p>
                   </div>
                 )}
               />
@@ -232,7 +223,8 @@ export function ProfileForm() {
                       Contact Number
                     </FieldLabel>
                     <PhoneInputComponent
-                      value={field.value}
+                      value={field.value || ""}
+                      disabled
                       onChange={(value, data) => {
                         if (data?.countryCode) setPhoneIso(data.countryCode);
                         field.onChange(value);
@@ -247,6 +239,7 @@ export function ProfileForm() {
                         "US"
                       }
                     />
+                    <p className="text-[11px] text-slate-400">Contact number cannot be changed</p>
                     {errors.contactNumber && (
                       <p className="text-xs font-medium text-red-500">
                         {errors.contactNumber.message}
