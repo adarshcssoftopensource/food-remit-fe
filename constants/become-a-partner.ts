@@ -41,6 +41,13 @@ export const INVENTORY_MANAGEMENT_OPTIONS = [
   "Not Sure",
 ] as const;
 
+export const ORDER_PROCESSING_TIME_OPTIONS = [
+  "0–15 minutes",
+  "15–30 minutes",
+  "30–45 minutes",
+  "45–60 minutes",
+] as const;
+
 export const STEPS = [
   { id: 1, title: "Business Info", icon: Building2 },
   { id: 2, title: "Your Info", icon: User },

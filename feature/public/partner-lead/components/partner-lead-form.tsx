@@ -20,6 +20,8 @@ import {
   User,
   Home,
   X,
+  XCircle,
+  Truck,
   ChevronDown,
 } from "lucide-react";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
@@ -59,6 +61,7 @@ import { ROUTES } from "@/config/routes";
 import {
   BUSINESS_TYPES,
   INVENTORY_MANAGEMENT_OPTIONS,
+  ORDER_PROCESSING_TIME_OPTIONS,
   STEPS,
   WORK_PREFERENCES_OPTIONS,
 } from "@/constants/become-a-partner";
@@ -143,6 +146,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       workPreferences: [],
       otherWorkPreference: "",
       inventoryManagement: "",
+      sameDayDelivery: false,
+      orderProcessingTime: "",
       websiteOrSocial: "",
       additionalNotes: "",
       agreeToContact: false,
@@ -232,6 +237,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
   const businessType = watch("businessType");
   const isOtherBusinessType = businessType === "Other";
+
+  const sameDayDelivery = watch("sameDayDelivery");
 
   const workPreferences = watch("workPreferences") || [];
   const hasOtherWorkPreference = workPreferences.includes("Other");
@@ -435,6 +442,8 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     } else if (currentStep === 3) {
       fieldsToValidate = [
         "workPreferences",
+        "sameDayDelivery",
+        "orderProcessingTime",
         "inventoryManagement",
         "websiteOrSocial",
         "additionalNotes",
@@ -587,6 +596,10 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
       }
       if (data.inventoryManagement?.trim()) {
         formData.append("inventoryManagement", data.inventoryManagement.trim());
+      }
+      formData.append("sameDayDelivery", String(data.sameDayDelivery ?? false));
+      if (data.sameDayDelivery && data.orderProcessingTime?.trim()) {
+        formData.append("orderProcessingTime", data.orderProcessingTime.trim());
       }
       if (data.websiteOrSocial?.trim()) {
         formData.append("website", data.websiteOrSocial.trim());
@@ -1756,6 +1769,132 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   );
                 }}
               />
+
+              {/* Same-Day Delivery & Order Processing Time */}
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 sm:p-5">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <FieldLabel className="text-sm font-semibold text-slate-800">
+                      Does your Store offer same-day delivery?{" "}
+                      <span className="text-red-500">*</span>
+                    </FieldLabel>
+                    <p className="text-xs text-slate-500">
+                      Let customers know if their orders can be prepared and delivered or picked up
+                      on the same day.
+                    </p>
+
+                    <div className="grid max-w-sm grid-cols-2 gap-3 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setValue("sameDayDelivery", true, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }}
+                        className={cn(
+                          "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all",
+                          sameDayDelivery === true
+                            ? "border-emerald-600 bg-emerald-50 text-emerald-950 shadow-sm ring-2 ring-emerald-600/20"
+                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                        )}
+                      >
+                        <CheckCircle2
+                          className={cn(
+                            "size-4",
+                            sameDayDelivery === true ? "text-emerald-600" : "text-slate-400",
+                          )}
+                        />
+                        Yes
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setValue("sameDayDelivery", false, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                          setValue("orderProcessingTime", "", {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                          clearErrors("orderProcessingTime");
+                        }}
+                        className={cn(
+                          "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all",
+                          sameDayDelivery === false
+                            ? "border-slate-800 bg-slate-900 text-white shadow-sm"
+                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                        )}
+                      >
+                        <XCircle
+                          className={cn(
+                            "size-4",
+                            sameDayDelivery === false ? "text-white" : "text-slate-400",
+                          )}
+                        />
+                        No
+                      </button>
+                    </div>
+                  </div>
+
+                  {sameDayDelivery && (
+                    <div className="mt-1 flex flex-col gap-1.5 border-t border-slate-200/60 pt-4">
+                      <FieldLabel
+                        htmlFor="orderProcessingTime"
+                        className="text-sm font-semibold text-slate-800"
+                      >
+                        Estimated Order Processing Time <span className="text-red-500">*</span>
+                      </FieldLabel>
+                      <p className="text-xs text-slate-500">
+                        Required preparation time before an order is ready for fulfillment.
+                      </p>
+                      <Controller
+                        name="orderProcessingTime"
+                        control={control}
+                        render={({ field }) => (
+                          <div className="max-w-md pt-1">
+                            <Select
+                              value={field.value}
+                              onValueChange={(val) => {
+                                field.onChange(val ?? "");
+                                clearErrors("orderProcessingTime");
+                              }}
+                            >
+                              <SelectTrigger
+                                id="orderProcessingTime"
+                                aria-invalid={!!errors.orderProcessingTime}
+                                className={cn(
+                                  "h-11! w-full rounded-xl border-slate-200 bg-white text-sm",
+                                  errors.orderProcessingTime && "border-red-400 bg-red-50/30",
+                                )}
+                              >
+                                <SelectValue placeholder="Select processing time" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {ORDER_PROCESSING_TIME_OPTIONS.map((opt) => (
+                                  <SelectItem key={opt} value={opt}>
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="size-3.5 text-emerald-600" />
+                                      <span>{opt}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      />
+                      {errors.orderProcessingTime && (
+                        <p className="text-xs font-medium text-red-500">
+                          {errors.orderProcessingTime.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
 
               <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
                 <Controller

@@ -16,6 +16,8 @@ export type StoreData = {
   foodRemitCommission: number;
   autoAbandonDays?: number | null;
   autoAbandonRemark?: string | null;
+  sameDayDelivery?: boolean;
+  orderProcessingTime?: string | null;
   assignedCityManager?: string | null;
   status: StoreStatus;
   createdAt: string;

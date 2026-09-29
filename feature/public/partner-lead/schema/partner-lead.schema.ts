@@ -189,6 +189,8 @@ export const partnerLeadSchema = z
     workPreferences: z.array(z.string()),
     otherWorkPreference: z.string().optional(),
     inventoryManagement: z.string().optional(),
+    sameDayDelivery: z.boolean(),
+    orderProcessingTime: z.string().optional(),
     websiteOrSocial: z
       .string()
       .refine((value) => !value || /^https?:\/\/.+\..+/.test(value), {
@@ -258,6 +260,14 @@ export const partnerLeadSchema = z
           message: "Specified preference cannot exceed 100 characters",
         });
       }
+    }
+
+    if (data.sameDayDelivery && !data.orderProcessingTime?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["orderProcessingTime"],
+        message: "Please select an estimated order processing time",
+      });
     }
   });
 
