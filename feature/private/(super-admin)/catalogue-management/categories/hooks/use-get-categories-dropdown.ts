@@ -3,10 +3,10 @@ import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-ma
 
 import { CategoryDropdownItem } from "../types/category.types";
 
-export function useGetCategoriesDropdown(departmentId?: string) {
+export function useGetCategoriesDropdown(countryId?: string) {
   return useApiQuery<{ data: CategoryDropdownItem[] }>(
-    ["categories", "dropdown", departmentId || ""],
-    `${CATALOGUE_MANAGEMENT_ENDPOINTS.GET_CATEGORIES}/dropdown${departmentId ? `?departmentId=${departmentId}` : ""}`,
+    ["categories", "dropdown", countryId || ""],
+    `${CATALOGUE_MANAGEMENT_ENDPOINTS.GET_CATEGORIES}/dropdown${countryId ? `?countryId=${countryId}` : ""}`,
     {},
   );
 }

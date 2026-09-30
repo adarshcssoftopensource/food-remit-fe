@@ -12,13 +12,11 @@ import { ItemData } from "../items/types/item.types";
 const placementSchema = z.object({
   key: z.string(),
   countryId: z.string().min(1),
-  departmentId: z.string().min(1),
   categoryId: z.string().min(1),
   price: z.string().min(1, "Price is required"),
   currency: z.string(),
   currencySymbol: z.string(),
   countryName: z.string(),
-  departmentName: z.string(),
   categoryName: z.string(),
 });
 
@@ -122,20 +120,17 @@ function mapItemPlacements(item?: ItemData | null): ItemPlacementRow[] {
       return {
         key: placement.id || `existing-${index}`,
         countryId: placement.countryId,
-        departmentId: placement.departmentId,
         categoryId: placement.categoryId,
         price: String(placement.price ?? ""),
         currency: placement.currency || currencyMeta.code,
         currencySymbol: placement.currencySymbol || currencyMeta.symbol,
         countryName: placement.country?.name || "Country",
-        departmentName:
-          placement.department?.displayName || placement.department?.departmentName || "Department",
         categoryName: placement.category?.categoryName || "Category",
       };
     });
   }
 
-  if (item.countryId && item.departmentId && item.categoryId) {
+  if (item.countryId && item.categoryId) {
     const currencyMeta = resolveCurrencyDisplay({
       countryName: item.country?.name,
     });
@@ -143,14 +138,11 @@ function mapItemPlacements(item?: ItemData | null): ItemPlacementRow[] {
       {
         key: `legacy-${item.id}`,
         countryId: item.countryId,
-        departmentId: item.departmentId,
         categoryId: item.categoryId,
         price: "",
         currency: currencyMeta.code,
         currencySymbol: currencyMeta.symbol,
         countryName: item.country?.name || "Country",
-        departmentName:
-          item.departmentDisplayName || item.department?.departmentName || "Department",
         categoryName: item.category?.categoryName || "Category",
       },
     ];
@@ -262,21 +254,19 @@ export function useItemForm(
       }
 
       const primary = placements[0];
-      if (!primary?.countryId || !primary?.departmentId || !primary?.categoryId) {
-        toast.error("Each placement needs country, department and category");
+      if (!primary?.countryId || !primary?.categoryId) {
+        toast.error("Each placement needs country and category");
         return;
       }
 
       const formData = new FormData();
       formData.append("countryId", primary.countryId);
-      formData.append("departmentId", primary.departmentId);
       formData.append("categoryId", primary.categoryId);
       formData.append(
         "placements",
         JSON.stringify(
           placements.map((row) => ({
             countryId: row.countryId,
-            departmentId: row.departmentId,
             categoryId: row.categoryId,
             price: Number(row.price),
           })),

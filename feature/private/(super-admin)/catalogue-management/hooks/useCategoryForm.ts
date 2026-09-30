@@ -10,7 +10,7 @@ import { CategoryData } from "../categories/types/category.types";
 const categorySchema = z
   .object({
     countryId: z.string().min(1, "Country is required"),
-    departmentId: z.string().min(1, "Department is required"),
+    cityId: z.string().optional(),
     categoryName: z.string().min(2, "Category name must be at least 2 characters"),
     iconFile: z.array(z.instanceof(File)).optional(),
     hasExistingIcon: z.boolean().optional(),
@@ -43,8 +43,8 @@ export function useCategoryForm(
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
-      countryId: (category?.department as any)?.countryId ?? "",
-      departmentId: category?.department?.id ?? "",
+      countryId: category?.countryId ?? (category?.department as any)?.countryId ?? "",
+      cityId: category?.cityId ?? (category?.department as any)?.cityId ?? "",
       categoryName: category?.categoryName ?? "",
       iconFile: [],
       hasExistingIcon: !!(category?.categoryIcon || category?.categoryIconUrl),
@@ -54,8 +54,8 @@ export function useCategoryForm(
   useEffect(() => {
     if (open) {
       form.reset({
-        countryId: (category?.department as any)?.countryId ?? "",
-        departmentId: category?.department?.id ?? "",
+        countryId: category?.countryId ?? (category?.department as any)?.countryId ?? "",
+        cityId: category?.cityId ?? (category?.department as any)?.cityId ?? "",
         categoryName: category?.categoryName ?? "",
         iconFile: [],
         hasExistingIcon: !!(category?.categoryIcon || category?.categoryIconUrl),
@@ -66,8 +66,11 @@ export function useCategoryForm(
   const handleSubmit = async (values: CategoryFormValues) => {
     try {
       const formData = new FormData();
-      formData.append("departmentId", values.departmentId);
       formData.append("categoryName", values.categoryName);
+      formData.append("countryId", values.countryId);
+      if (values.cityId) {
+        formData.append("cityId", values.cityId);
+      }
 
       if (values.iconFile && values.iconFile.length > 0) {
         formData.append("categoryIcon", values.iconFile[0]);

@@ -2,7 +2,6 @@
 
 import { CategorySelect } from "@/components/common/category-select";
 import { DataTable } from "@/components/common/data-table/data-table";
-import { DepartmentSelect } from "@/components/common/department-select";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { ImageLightbox } from "@/components/common/image-lightbox";
@@ -68,19 +67,16 @@ export function ItemsManagement() {
   const router = useRouter();
   const [country, setCountry] = useState("all");
   const [city, setCity] = useState("all");
-  const [department, setDepartment] = useState("all");
   const [category, setCategory] = useState("all");
 
   const [appliedCountry, setAppliedCountry] = useState("all");
   const [appliedCity, setAppliedCity] = useState("all");
-  const [appliedDepartment, setAppliedDepartment] = useState("all");
   const [appliedCategory, setAppliedCategory] = useState("all");
 
   const applyAllFilters = () => {
     applyFilters();
     setAppliedCountry(country);
     setAppliedCity(city);
-    setAppliedDepartment(department);
     setAppliedCategory(category);
   };
 
@@ -88,7 +84,6 @@ export function ItemsManagement() {
     cancelFilters();
     setCountry(appliedCountry);
     setCity(appliedCity);
-    setDepartment(appliedDepartment);
     setCategory(appliedCategory);
   };
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -105,7 +100,6 @@ export function ItemsManagement() {
     search: debouncedSearch,
     countryId: appliedCountry !== "all" ? appliedCountry : undefined,
     cityId: appliedCity !== "all" ? appliedCity : undefined,
-    departmentId: appliedDepartment !== "all" ? appliedDepartment : undefined,
     categoryId: appliedCategory !== "all" ? appliedCategory : undefined,
     status: statusTab !== "all" ? statusTab : undefined,
     fromDate: applied.fromDate ? new Date(applied.fromDate).toISOString() : undefined,
@@ -127,7 +121,6 @@ export function ItemsManagement() {
     applied.toDate ||
     appliedCountry !== "all" ||
     appliedCity !== "all" ||
-    appliedDepartment !== "all" ||
     appliedCategory !== "all" ||
     debouncedSearch
   );
@@ -136,11 +129,9 @@ export function ItemsManagement() {
     resetBaseFilters();
     setCountry("all");
     setCity("all");
-    setDepartment("all");
     setCategory("all");
     setAppliedCountry("all");
     setAppliedCity("all");
-    setAppliedDepartment("all");
     setAppliedCategory("all");
   };
 
@@ -149,17 +140,9 @@ export function ItemsManagement() {
     if (applied.fromDate || applied.toDate) count++;
     if (appliedCountry !== "all" && appliedCountry !== "All") count++;
     if (appliedCity !== "all" && appliedCity !== "All") count++;
-    if (appliedDepartment !== "all") count++;
     if (appliedCategory !== "all") count++;
     return count;
-  }, [
-    applied.fromDate,
-    applied.toDate,
-    appliedCountry,
-    appliedCity,
-    appliedDepartment,
-    appliedCategory,
-  ]);
+  }, [applied.fromDate, applied.toDate, appliedCountry, appliedCity, appliedCategory]);
 
   const handleEdit = useCallback((item: ItemData) => {
     setEditingItem(item);
@@ -333,7 +316,7 @@ export function ItemsManagement() {
 
       <PageHeader
         title="Items"
-        description="Manage all catalogue items across categories, departments, and countries."
+        description="Manage all catalogue items across categories and countries."
         action={
           canWrite ? (
             <div className="flex flex-wrap items-center gap-2">
@@ -398,14 +381,13 @@ export function ItemsManagement() {
 
       <ModuleFilters
         title="Filter Items"
-        description="Refine items by date, country, city, department, category, and status"
+        description="Refine items by date, country, city, category, and status"
         countryId={isStoreManager ? undefined : country}
         onCountryChange={
           isStoreManager
             ? undefined
             : (val) => {
                 setCountry(val);
-                setDepartment("all");
                 setCategory("all");
               }
         }
@@ -415,7 +397,6 @@ export function ItemsManagement() {
             ? undefined
             : (val) => {
                 setCity(val);
-                setDepartment("all");
                 setCategory("all");
               }
         }
@@ -425,38 +406,19 @@ export function ItemsManagement() {
         onCancelFilters={cancelAllFilters}
         activeFilterCount={activeFilterCount}
       >
-        <>
-          <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-            <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              Department
-            </Label>
-            <DepartmentSelect
-              countryId={country !== "all" ? country : undefined}
-              value={department === "all" ? "" : department}
-              onValueChange={(val) => {
-                setDepartment(val || "all");
-                setCategory("all");
-              }}
-              placeholder="All Departments"
-              disabled={country === "all" && !isStoreManager}
-              className="h-10 rounded-xl px-3"
-            />
-          </div>
-
-          <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
-            <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              Category
-            </Label>
-            <CategorySelect
-              departmentId={department !== "all" ? department : undefined}
-              value={category === "all" ? "" : category}
-              onValueChange={(val) => setCategory(val || "all")}
-              placeholder="All Categories"
-              disabled={department === "all"}
-              className="h-10 rounded-xl px-3"
-            />
-          </div>
-        </>
+        <div className="min-w-36 flex-1 space-y-1 sm:min-w-44">
+          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            Category
+          </Label>
+          <CategorySelect
+            countryId={country !== "all" ? country : undefined}
+            value={category === "all" ? "" : category}
+            onValueChange={(val) => setCategory(val || "all")}
+            placeholder="All Categories"
+            disabled={country === "all" && !isStoreManager}
+            className="h-10 rounded-xl px-3"
+          />
+        </div>
         <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
           <DateRangeFilter
             fromDate={fromDate}

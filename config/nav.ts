@@ -116,10 +116,6 @@ export const navigationItems: NavItem[] = [
     group: "STORES & CATALOG",
     items: [
       {
-        title: "Departments",
-        url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.DEPARTMENTS,
-      },
-      {
         title: "Categories",
         url: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES,
       },

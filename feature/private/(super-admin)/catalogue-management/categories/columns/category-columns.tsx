@@ -1,4 +1,5 @@
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { ScopeBadge } from "@/components/common/scope-badge";
 import { StatusBadge } from "@/components/common/status-badge";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
@@ -35,19 +36,15 @@ export function getCategoryColumns(
             onImageClick={onImageClick}
             enableZoom={!!onImageClick}
           />
+          {!isStoreScoped && (row.original.scopeLabel || row.original.isGlobal !== undefined) && (
+            <div className="pt-0.5">
+              <ScopeBadge isGlobal={row.original.isGlobal} scopeLabel={row.original.scopeLabel} />
+            </div>
+          )}
         </div>
       ),
     },
-    {
-      accessorKey: "department",
-      header: "Department",
-      enableSorting: true,
-      cell: ({ row }) => (
-        <span className="text-primary text-sm font-medium">
-          {row.original.department?.departmentName || "-"}
-        </span>
-      ),
-    },
+
     {
       id: "createdBy",
       header: "Created By",

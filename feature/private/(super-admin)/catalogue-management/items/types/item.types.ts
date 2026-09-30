@@ -3,7 +3,7 @@ export type ItemStatus = "ACTIVE" | "INACTIVE";
 export interface ItemPlacementData {
   id?: string;
   countryId: string;
-  departmentId: string;
+  departmentId?: string | null;
   categoryId: string;
   price: number;
   currency?: string | null;
@@ -13,7 +13,7 @@ export interface ItemPlacementData {
     id: string;
     departmentName: string;
     displayName?: string | null;
-  };
+  } | null;
   category?: { id: string; categoryName: string };
 }
 
@@ -76,14 +76,14 @@ export interface ItemData {
   isPerishable?: boolean;
 
   countryId: string;
-  departmentId: string;
+  departmentId?: string | null;
   categoryId: string;
   storeId?: string | null;
   storeName?: string | null;
   placements?: ItemPlacementData[];
 
   country?: { id: string; name: string };
-  department?: { id: string; departmentName: string };
+  department?: { id: string; departmentName: string } | null;
   category?: { id: string; categoryName: string };
   store?: { id: string; storeName: string } | null;
 
@@ -142,11 +142,11 @@ export interface GetItemsResponse {
 
 export interface CreateItemPayload {
   countryId: string;
-  departmentId: string;
+  departmentId?: string | null;
   categoryId: string;
   placements: Array<{
     countryId: string;
-    departmentId: string;
+    departmentId?: string | null;
     categoryId: string;
     price: number;
   }>;
