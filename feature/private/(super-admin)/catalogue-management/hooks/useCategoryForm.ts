@@ -7,23 +7,13 @@ import { useCreateCategory } from "../categories/hooks/use-create-category";
 import { useUpdateCategory } from "../categories/hooks/use-update-category";
 import { CategoryData } from "../categories/types/category.types";
 
-const categorySchema = z
-  .object({
-    countryId: z.string().min(1, "Country is required"),
-    cityId: z.string().optional(),
-    categoryName: z.string().min(2, "Category name must be at least 2 characters"),
-    iconFile: z.array(z.instanceof(File)).optional(),
-    hasExistingIcon: z.boolean().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (!data.hasExistingIcon && (!data.iconFile || data.iconFile.length === 0)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["iconFile"],
-        message: "Category logo is required",
-      });
-    }
-  });
+const categorySchema = z.object({
+  countryId: z.string().min(1, "Country is required"),
+  cityId: z.string().optional(),
+  categoryName: z.string().min(2, "Category name must be at least 2 characters"),
+  iconFile: z.array(z.instanceof(File)).optional(),
+  hasExistingIcon: z.boolean().optional(),
+});
 
 export type CategoryFormValues = z.infer<typeof categorySchema>;
 

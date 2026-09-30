@@ -180,7 +180,7 @@ export function CategoryFormDialog({
                     <FormItem className="space-y-2">
                       <div className="flex items-center justify-between">
                         <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                          Category Icon <span className="text-destructive">*</span>
+                          Category Icon
                         </FormLabel>
 
                         <span className="text-[10px] font-medium text-slate-400">
