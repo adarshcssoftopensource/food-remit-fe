@@ -91,7 +91,7 @@ export function AppTopBar() {
           <div className="flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1.5 shadow-xs dark:border-slate-700/80 dark:bg-slate-900">
             <Globe2 className="h-3.5 w-3.5 shrink-0 text-slate-400" />
             <span
-              className="max-w-[80px] truncate text-xs font-semibold text-slate-700 dark:text-slate-300"
+              className="max-w-20 truncate text-xs font-semibold text-slate-700 dark:text-slate-300"
               title={profile.stores[0].countryName || profile.stores[0].country || "—"}
             >
               {profile.stores[0].countryName || profile.stores[0].country || "—"}
@@ -99,7 +99,7 @@ export function AppTopBar() {
             <span className="text-slate-300 dark:text-slate-600">·</span>
             <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
             <span
-              className="max-w-[80px] truncate text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+              className="max-w-20 truncate text-xs font-semibold text-emerald-700 dark:text-emerald-400"
               title={profile.stores[0].cityName || profile.stores[0].city || "—"}
             >
               {profile.stores[0].cityName || profile.stores[0].city || "—"}
@@ -109,7 +109,7 @@ export function AppTopBar() {
                 <>
                   <span className="text-slate-300 dark:text-slate-600">·</span>
                   <div
-                    className="max-w-[120px] truncate rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                    className="max-w-30 truncate rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
                     title={profile.stores[0].storeName}
                   >
                     {profile.stores[0].storeName}
