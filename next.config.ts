@@ -28,6 +28,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "api.qrserver.com",
       },
+      {
+        protocol: "https",
+        hostname: "example.com",
+      },
+      {
+        protocol: "http",
+        hostname: "example.com",
+      },
     ],
   },
 };
