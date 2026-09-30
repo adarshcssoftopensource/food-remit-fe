@@ -37,10 +37,10 @@ const storeInfoSchema = z.object({
   storeName: z.string().min(1, "Store name is required"),
   storePhoneCode: z.string().min(1, "Country code is required"),
   storePhoneNumber: z.string().min(1, "Phone number is required"),
-  storeAddress: z.string().min(1, "Address is required"),
+  storeAddress: z.string().optional(),
   address2: z.string().optional(),
-  storeCountry: z.string().min(1, "Country is required"),
-  storeCity: z.string().min(1, "City is required"),
+  storeCountry: z.string().optional(),
+  storeCity: z.string().optional(),
 });
 
 type StoreInfoValues = z.infer<typeof storeInfoSchema>;
@@ -145,9 +145,6 @@ export function StoreInformation() {
       formData.append("storeName", values.storeName);
       formData.append("storeCountryCode", values.storePhoneCode);
       formData.append("storePhoneNumber", values.storePhoneNumber);
-      formData.append("storeAddress", values.storeAddress);
-      formData.append("country", values.storeCountry);
-      formData.append("city", values.storeCity);
 
       const storeImageFile = Array.isArray(values.storeImage)
         ? values.storeImage[0]
@@ -311,8 +308,8 @@ export function StoreInformation() {
                     render={({ field: cityField }) => (
                       <CountryCityFields
                         prefix="store"
-                        countryValue={countryField.value}
-                        cityValue={cityField.value}
+                        countryValue={countryField.value || ""}
+                        cityValue={cityField.value || ""}
                         onCountryChange={(val, countryObj) => {
                           countryField.onChange(val);
                           cityField.onChange("");
@@ -328,7 +325,7 @@ export function StoreInformation() {
                         onCityChange={cityField.onChange}
                         countryError={errors.storeCountry?.message}
                         cityError={errors.storeCity?.message}
-                        disabled={needsBankVerification}
+                        disabled={true}
                         countryDisabled={true}
                       />
                     )}
@@ -345,17 +342,13 @@ export function StoreInformation() {
                       Address <span className="text-red-500">*</span>
                     </FieldLabel>
                     <AddressAutocompleteInput
-                      value={field.value}
+                      value={field.value || ""}
                       onChange={field.onChange}
-                      onPlaceSelect={(place) => {
-                        field.onChange(place.formattedAddress);
-                        if (place.country) setValue("storeCountry", place.country);
-                        if (place.city) setValue("storeCity", place.city);
-                      }}
                       placeholder="Enter Address"
                       invalid={!!errors.storeAddress}
-                      disabled={needsBankVerification}
+                      disabled={true}
                     />
+                    <p className="text-[11px] text-slate-400">Address cannot be changed</p>
                     {errors.storeAddress && (
                       <p className="text-xs font-medium text-red-500">
                         {errors.storeAddress.message}

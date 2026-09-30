@@ -120,8 +120,14 @@ export function CountrySelect({
   }, [includeAll, value, allLabel, selectedCountry, placeholder]);
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover
+      open={disabled ? false : isOpen}
+      onOpenChange={(nextOpen) => {
+        if (!disabled) setIsOpen(nextOpen);
+      }}
+    >
       <PopoverTrigger
+        disabled={disabled}
         render={
           <Button
             id={id}
