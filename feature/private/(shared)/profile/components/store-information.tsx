@@ -78,6 +78,7 @@ export function StoreInformation() {
   const { profile, needsBankVerification } = useProfile();
   const storeId = profile?.stores?.[0]?.id;
   const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
+  const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
 
   const { data: storeData, isLoading } = useQuery({
     queryKey: ["store", storeId],
@@ -256,11 +257,16 @@ export function StoreInformation() {
                     label="Upload store image"
                     hint="PNG, JPG or WEBP"
                     accept="image/jpeg,image/png,image/webp"
-                    disabled={needsBankVerification}
+                    disabled={needsBankVerification || isEmployee}
                   />
                   {errors.storeImage && (
                     <p className="text-xs font-medium text-red-500">
                       {errors.storeImage.message as string}
+                    </p>
+                  )}
+                  {isEmployee && (
+                    <p className="text-[11px] text-slate-400">
+                      Only store managers can update the store image.
                     </p>
                   )}
                 </div>

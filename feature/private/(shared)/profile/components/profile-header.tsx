@@ -20,14 +20,16 @@ export function ProfileHeader() {
 
   const storeFileInputRef = useRef<HTMLInputElement>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
   const canEditImages = !needsBankVerification;
+  const canEditStoreImage = !needsBankVerification && !isEmployee;
 
   const storeId = profile?.stores?.[0]?.id || "";
   const updateStoreMutation = useUpdateStore(storeId);
 
   const handleStoreImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !storeId || !canEditImages) return;
+    if (!file || !storeId || !canEditStoreImage) return;
 
     try {
       const formData = new FormData();
@@ -105,7 +107,7 @@ export function ProfileHeader() {
                 <Maximize2 className="h-5 w-5" />
               </button>
             )}
-            {canEditImages && (
+            {canEditStoreImage && (
               <label className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-white/30">
                 {updateStoreMutation.isPending ? (
                   <Loader2 className="h-5 w-5 animate-spin" />

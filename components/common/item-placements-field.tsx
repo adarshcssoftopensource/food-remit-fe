@@ -38,6 +38,7 @@ type ItemPlacementsFieldProps = {
   onChange: (rows: ItemPlacementRow[]) => void;
   invalid?: boolean;
   className?: string;
+  hidePrice?: boolean;
 };
 
 function createRowKey() {
@@ -49,6 +50,7 @@ export function ItemPlacementsField({
   onChange,
   invalid,
   className,
+  hidePrice,
 }: ItemPlacementsFieldProps) {
   const rows = Array.isArray(value) ? value : [];
   const [draftCountryId, setDraftCountryId] = useState("");
@@ -71,8 +73,13 @@ export function ItemPlacementsField({
   );
 
   const handleAdd = () => {
-    if (!draftCountryId || !draftCategoryId || !draftPrice) {
-      toast.error("Select country, category, and enter price first");
+    const finalPrice = hidePrice ? "0" : draftPrice;
+    if (!draftCountryId || !draftCategoryId || (!hidePrice && !finalPrice)) {
+      toast.error(
+        hidePrice
+          ? "Select country and category first"
+          : "Select country, category, and enter price first",
+      );
       return;
     }
 
@@ -99,7 +106,7 @@ export function ItemPlacementsField({
         key: createRowKey(),
         countryId: draftCountryId,
         categoryId: draftCategoryId,
-        price: draftPrice,
+        price: finalPrice,
         currency: currencyMeta.code,
         currencySymbol: currencyMeta.symbol,
         countryName: country?.name || country?.countryName || "Country",
@@ -160,17 +167,19 @@ export function ItemPlacementsField({
           placeholder="Select category"
           disabled={!draftCountryId}
         />
-        <div className="min-w-0">
-          <CurrencyPriceInput
-            value={draftPrice}
-            onChange={setDraftPrice}
-            currency={draftCurrencyMeta?.code}
-            currencySymbol={draftCurrencyMeta?.symbol}
-            disabled={!draftCountryId}
-            placeholder="Price"
-            className="h-11"
-          />
-        </div>
+        {!hidePrice && (
+          <div className="min-w-0">
+            <CurrencyPriceInput
+              value={draftPrice}
+              onChange={setDraftPrice}
+              currency={draftCurrencyMeta?.code}
+              currencySymbol={draftCurrencyMeta?.symbol}
+              disabled={!draftCountryId}
+              placeholder="Price"
+              className="h-11"
+            />
+          </div>
+        )}
         <Button type="button" onClick={handleAdd} className="h-11 rounded-xl font-semibold">
           <Plus data-icon="inline-start" />
           Add
@@ -186,9 +195,9 @@ export function ItemPlacementsField({
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/50">
-              <TableHead className="w-[18%]">Country</TableHead>
-              <TableHead className="w-[30%]">Price</TableHead>
-              <TableHead className="w-[40%]">Category</TableHead>
+              <TableHead className={hidePrice ? "w-[40%]" : "w-[18%]"}>Country</TableHead>
+              {!hidePrice && <TableHead className="w-[30%]">Price</TableHead>}
+              <TableHead className={hidePrice ? "w-[45%]" : "w-[40%]"}>Category</TableHead>
               <TableHead className="w-[12%] text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -205,15 +214,17 @@ export function ItemPlacementsField({
                   <TableCell className="font-medium text-slate-700 dark:text-slate-200">
                     {row.countryName}
                   </TableCell>
-                  <TableCell>
-                    <CurrencyPriceInput
-                      value={row.price}
-                      onChange={(price) => updatePrice(row.key, price)}
-                      currency={row.currency}
-                      currencySymbol={row.currencySymbol}
-                      invalid={!row.price || Number(row.price) < 0}
-                    />
-                  </TableCell>
+                  {!hidePrice && (
+                    <TableCell>
+                      <CurrencyPriceInput
+                        value={row.price}
+                        onChange={(price) => updatePrice(row.key, price)}
+                        currency={row.currency}
+                        currencySymbol={row.currencySymbol}
+                        invalid={!row.price || Number(row.price) < 0}
+                      />
+                    </TableCell>
+                  )}
                   <TableCell className="text-slate-600 dark:text-slate-300">
                     {row.categoryName}
                   </TableCell>

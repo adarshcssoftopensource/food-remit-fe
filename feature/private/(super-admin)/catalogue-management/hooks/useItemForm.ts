@@ -20,6 +20,17 @@ const placementSchema = z.object({
   categoryName: z.string(),
 });
 
+const optionSchema = z.object({
+  id: z.string().optional(),
+  optionName: z.string().min(1, "Option name is required"),
+  price: z.string().min(1, "Price is required"),
+  quantityPerPack: z.string().optional(),
+  netWeight: z.string().optional(),
+  weightUnit: z.string().optional(),
+  stockQuantity: z.string().optional(),
+  upcCode: z.string().optional(),
+});
+
 const itemSchema = z
   .object({
     productName: z.string().min(2, "Item name must be at least 2 characters"),
@@ -64,6 +75,7 @@ const itemSchema = z
     unit: z.string().optional(),
     isPerishable: z.boolean(),
     placements: z.array(placementSchema).min(1, "Add at least one country price"),
+    options: z.array(optionSchema).optional(),
     productImageFile: z
       .array(z.instanceof(File))
       .max(5, "Maximum 5 product images allowed")
@@ -151,6 +163,20 @@ function mapItemPlacements(item?: ItemData | null): ItemPlacementRow[] {
   return [];
 }
 
+function mapItemOptions(item?: ItemData | null) {
+  if (!item || !Array.isArray(item.options)) return [];
+  return item.options.map((opt) => ({
+    id: opt.id,
+    optionName: opt.optionName || "",
+    price: String(opt.price ?? ""),
+    quantityPerPack: opt.quantityPerPack ? String(opt.quantityPerPack) : "",
+    netWeight: opt.netWeight ? String(opt.netWeight) : "",
+    weightUnit: opt.weightUnit || "",
+    stockQuantity: opt.stockQuantity ? String(opt.stockQuantity) : "",
+    upcCode: opt.upcCode || "",
+  }));
+}
+
 export function useItemForm(
   open: boolean,
   item: ItemData | null | undefined,
@@ -203,6 +229,7 @@ export function useItemForm(
       unit: item?.unit ?? "",
       isPerishable: item?.isPerishable ?? false,
       placements: mapItemPlacements(item),
+      options: mapItemOptions(item),
       productImageFile: [],
       productInfoImageFile: [],
       nutritionInfoImageFile: [],
@@ -233,6 +260,7 @@ export function useItemForm(
           unit: item?.unit ?? "",
           isPerishable: item?.isPerishable ?? false,
           placements: mapItemPlacements(item),
+          options: mapItemOptions(item),
           productImageFile: [],
           productInfoImageFile: [],
           nutritionInfoImageFile: [],
@@ -259,6 +287,14 @@ export function useItemForm(
         return;
       }
 
+      // If there are variants, the base placement price is governed by the first variant's price
+      if (values.options && values.options.length > 0) {
+        const basePrice = values.options[0].price;
+        placements.forEach((p) => {
+          p.price = String(basePrice);
+        });
+      }
+
       const formData = new FormData();
       formData.append("countryId", primary.countryId);
       formData.append("categoryId", primary.categoryId);
@@ -272,6 +308,24 @@ export function useItemForm(
           })),
         ),
       );
+
+      if (values.options && values.options.length > 0) {
+        formData.append(
+          "options",
+          JSON.stringify(
+            values.options.map((opt) => ({
+              id: opt.id,
+              optionName: opt.optionName,
+              price: Number(opt.price),
+              quantityPerPack: opt.quantityPerPack ? Number(opt.quantityPerPack) : undefined,
+              netWeight: opt.netWeight ? Number(opt.netWeight) : undefined,
+              weightUnit: opt.weightUnit || undefined,
+              stockQuantity: opt.stockQuantity ? Number(opt.stockQuantity) : undefined,
+              upcCode: opt.upcCode || undefined,
+            })),
+          ),
+        );
+      }
       formData.append("productName", values.productName);
       formData.append("description", values.description);
       formData.append("upcCode", values.upcCode || "");

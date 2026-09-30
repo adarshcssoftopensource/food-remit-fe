@@ -4,6 +4,7 @@ import { generateUpcCode } from "@/lib/utils/generate-upc";
 import { Boxes, ImageIcon, Package2, Save, Wrench } from "lucide-react";
 
 import { ImageUpload } from "@/components/common/image-upload";
+import { ItemOptionsField } from "@/components/common/item-options-field";
 import { ItemPlacementsField } from "@/components/common/item-placements-field";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +61,9 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
     }
     return [];
   }, [open, item]);
+
+  const options = form.watch("options");
+  const hasVariants = options && options.length > 0;
 
   const initialProductInfoImage = useMemo(() => {
     if (!open) return [];
@@ -735,6 +739,41 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                         <FormControl>
                           <ItemPlacementsField
                             value={field.value}
+                            onChange={field.onChange}
+                            invalid={!!fieldState.error}
+                            hidePrice={hasVariants}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </section>
+
+                <section className="mt-6 w-full rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
+                  <div className="mb-5 flex items-center gap-3">
+                    <div className="text-primary flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-700">
+                      <Package2 className="h-4 w-4" />
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                        Item Variants (Options)
+                      </h3>
+                      <p className="text-[11px] text-slate-400">
+                        Add item variations with distinct pricing and sizes
+                      </p>
+                    </div>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="options"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormControl>
+                          <ItemOptionsField
+                            value={field.value || []}
                             onChange={field.onChange}
                             invalid={!!fieldState.error}
                           />
