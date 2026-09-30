@@ -58,23 +58,16 @@ export function getItemColumns(
         </span>
       ),
     },
+
     {
-      id: "departmentName",
-      header: "Department",
+      id: "categoryName",
+      header: "Category",
       cell: ({ row }) => (
         <div className="space-y-1">
           <TruncatedTextCell
             maxWords={2}
+            text={row.original.category?.categoryName || "-"}
             className="text-sm text-slate-600"
-            text={
-              isStoreScoped
-                ? row.original.department?.departmentName ||
-                  row.original.departmentDisplayName ||
-                  "-"
-                : row.original.departmentDisplayName ||
-                  row.original.department?.departmentName ||
-                  "-"
-            }
           />
           {!isStoreScoped && (row.original.scopeLabel || row.original.isGlobal !== undefined) && (
             <div>
@@ -82,17 +75,6 @@ export function getItemColumns(
             </div>
           )}
         </div>
-      ),
-    },
-    {
-      id: "categoryName",
-      header: "Category",
-      cell: ({ row }) => (
-        <TruncatedTextCell
-          maxWords={2}
-          text={row.original.category?.categoryName || "-"}
-          className="text-sm text-slate-600"
-        />
       ),
     },
     {

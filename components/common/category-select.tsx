@@ -12,7 +12,7 @@ interface CategorySelectProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
-  departmentId?: string;
+  countryId?: string;
 }
 
 export function CategorySelect({
@@ -21,9 +21,9 @@ export function CategorySelect({
   placeholder = "Select category...",
   className,
   disabled,
-  departmentId,
+  countryId,
 }: CategorySelectProps) {
-  const { data, isLoading } = useGetCategoriesDropdown(departmentId);
+  const { data, isLoading } = useGetCategoriesDropdown(countryId);
   const categories: CategoryDropdownItem[] = Array.isArray(data?.data) ? data.data : [];
 
   return (

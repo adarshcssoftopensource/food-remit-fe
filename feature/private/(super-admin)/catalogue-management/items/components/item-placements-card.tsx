@@ -56,7 +56,7 @@ export function ItemPlacementsCard({ item }: ItemPlacementsCardProps) {
               No country prices yet
             </p>
             <p className="text-xs text-slate-400">
-              Edit this item to add country, department, category and price rows.
+              Edit this item to add country, category and price rows.
             </p>
           </div>
         ) : (
@@ -66,7 +66,6 @@ export function ItemPlacementsCard({ item }: ItemPlacementsCardProps) {
                 <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/50">
                   <TableHead>Country</TableHead>
                   <TableHead>Price</TableHead>
-                  <TableHead>Department</TableHead>
                   <TableHead>Category</TableHead>
                 </TableRow>
               </TableHeader>
@@ -74,11 +73,7 @@ export function ItemPlacementsCard({ item }: ItemPlacementsCardProps) {
                 {placements.map((row, index) => {
                   const { symbol, code, priceText } = formatPrice(row);
                   return (
-                    <TableRow
-                      key={
-                        row.id || `${row.countryId}-${row.departmentId}-${row.categoryId}-${index}`
-                      }
-                    >
+                    <TableRow key={row.id || `${row.countryId}-${row.categoryId}-${index}`}>
                       <TableCell>
                         <div className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
                           <MapPin className="size-3.5 shrink-0 text-slate-400" />
@@ -99,9 +94,6 @@ export function ItemPlacementsCard({ item }: ItemPlacementsCardProps) {
                             </Badge>
                           ) : null} */}
                         </div>
-                      </TableCell>
-                      <TableCell className="text-slate-600 dark:text-slate-300">
-                        {row.department?.displayName || row.department?.departmentName || "-"}
                       </TableCell>
                       <TableCell className="text-slate-600 dark:text-slate-300">
                         {row.category?.categoryName || "-"}

@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 import { Building2, Loader2 } from "lucide-react";
 
+import { CitySelect } from "@/components/common/city-select";
 import { CountrySelect } from "@/components/common/country-select";
-import { DepartmentSelect } from "@/components/common/department-select";
 import { ImageUpload } from "@/components/common/image-upload";
 import { useProfile } from "@/components/providers/profile-provider";
 import { Button } from "@/components/ui/button";
@@ -107,7 +107,7 @@ export function CategoryFormDialog({
                           value={field.value}
                           onValueChange={(val) => {
                             field.onChange(val);
-                            form.setValue("departmentId", "");
+                            form.setValue("cityId", "");
                           }}
                           placeholder="Select country"
                           className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
@@ -119,28 +119,37 @@ export function CategoryFormDialog({
                   />
                 )}
 
-                <FormField
-                  control={form.control}
-                  name="departmentId"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                        Department <span className="text-destructive">*</span>
-                      </FormLabel>
+                {!isStoreScoped && (
+                  <FormField
+                    control={form.control}
+                    name="cityId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+                          City{" "}
+                          <span className="text-muted-foreground font-normal lowercase">
+                            (optional)
+                          </span>
+                        </FormLabel>
 
-                      <DepartmentSelect
-                        countryId={form.watch("countryId")}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder="Select department"
-                        disabled={!form.watch("countryId") || isEditing}
-                        className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
-                      />
+                        <CitySelect
+                          disabled={isEditing || !form.watch("countryId")}
+                          countryId={form.watch("countryId")}
+                          value={field.value}
+                          onValueChange={(val) => {
+                            field.onChange(val);
+                          }}
+                          placeholder="Global (All Cities)"
+                          includeAll={true}
+                          allLabel="Global (All Cities)"
+                          className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
+                        />
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}

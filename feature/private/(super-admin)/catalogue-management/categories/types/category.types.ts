@@ -3,6 +3,8 @@ export type CategoryStatus = "ACTIVE" | "INACTIVE";
 export interface CategoryData {
   id: string;
   categoryName: string;
+  countryId?: string | null;
+  cityId?: string | null;
   department?: {
     id: string;
     departmentName: string;

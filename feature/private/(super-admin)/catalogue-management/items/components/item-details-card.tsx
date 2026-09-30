@@ -54,20 +54,15 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           <InfoCard
             icon={<MapPin className="h-4 w-4 text-sky-500" />}
             label="City"
-            value={(item.department as any)?.city?.name || "-"}
+            value={(item.category as any)?.city?.name || "-"}
           />
-          {(item.department as any)?.store?.storeName && (
+          {(item.category as any)?.store?.storeName && (
             <InfoCard
               icon={<Building2 className="h-4 w-4 text-indigo-500" />}
               label="Store"
-              value={(item.department as any).store.storeName || "-"}
+              value={(item.category as any).store.storeName || "-"}
             />
           )}
-          <InfoCard
-            icon={<Building2 className="h-4 w-4 text-blue-500" />}
-            label="Department"
-            value={item.department?.departmentName || "-"}
-          />
           <InfoCard
             icon={<Layers className="h-4 w-4 text-purple-500" />}
             label="Category"
