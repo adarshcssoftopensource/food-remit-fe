@@ -41,9 +41,12 @@ export function ItemOptionsCard({ item }: ItemOptionsCardProps) {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/50">
+                <TableHead>Item ID</TableHead>
                 <TableHead>Option Name</TableHead>
+                <TableHead>UPC / Barcode</TableHead>
                 <TableHead>Quantity per Pack</TableHead>
                 <TableHead>Net Weight</TableHead>
+                <TableHead>Stock</TableHead>
                 <TableHead>Price</TableHead>
               </TableRow>
             </TableHeader>
@@ -52,10 +55,20 @@ export function ItemOptionsCard({ item }: ItemOptionsCardProps) {
                 return (
                   <TableRow key={row.id || index}>
                     <TableCell>
+                      <span className="font-mono text-xs font-medium text-slate-500 dark:text-slate-400">
+                        {item.itemNumber || "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2 font-medium text-slate-800 dark:text-slate-100">
                         <PackageOpen className="size-4 shrink-0 text-slate-400" />
                         <span>{row.optionName || "-"}</span>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-slate-600 dark:text-slate-300">
+                        {row.upcCode || "-"}
+                      </span>
                     </TableCell>
                     <TableCell>
                       <span className="text-slate-600 dark:text-slate-300">
@@ -77,6 +90,13 @@ export function ItemOptionsCard({ item }: ItemOptionsCardProps) {
                           "-"
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-slate-600 dark:text-slate-300">
+                        {row.stockQuantity !== null && row.stockQuantity !== undefined
+                          ? row.stockQuantity
+                          : "-"}
+                      </span>
                     </TableCell>
                     <TableCell>
                       <span className="font-semibold text-slate-900 dark:text-white">

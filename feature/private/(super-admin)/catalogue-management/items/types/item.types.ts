@@ -47,6 +47,7 @@ export interface ItemPricingData {
 
 export interface ItemData {
   id: string;
+  itemNumber?: string | null;
   productName: string;
   description?: string | null;
   productInfo?: string | null;
@@ -119,6 +120,8 @@ export interface ItemOptionData {
   netWeight?: number | null;
   weightUnit?: string | null;
   price: number;
+  stockQuantity?: number | null;
+  upcCode?: string | null;
 }
 
 export interface UseGetItemsArgs {
