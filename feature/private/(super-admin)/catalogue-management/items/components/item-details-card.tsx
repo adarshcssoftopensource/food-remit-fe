@@ -54,7 +54,7 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           <InfoCard
             icon={<MapPin className="h-4 w-4 text-sky-500" />}
             label="City"
-            value={(item.category as any)?.city?.name || "-"}
+            value={(item.category as any)?.city?.name || (item.category as any)?.store?.city || "-"}
           />
           {(item.category as any)?.store?.storeName && (
             <InfoCard
@@ -71,7 +71,13 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           <InfoCard
             icon={<Scale className="h-4 w-4 text-emerald-500" />}
             label="Items Per Pack"
-            value={item.itemsPerPack && item.unit ? `${item.itemsPerPack} ${item.unit}` : "-"}
+            value={
+              item.options && item.options.length > 1
+                ? "Multiple Variants"
+                : item.itemsPerPack && item.unit
+                  ? `${item.itemsPerPack} ${item.unit}`
+                  : "-"
+            }
           />
           <InfoCard
             icon={<Layers className="h-4 w-4 text-orange-500" />}
@@ -82,24 +88,30 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
             icon={<Layers className="h-4 w-4 text-orange-500" />}
             label="Item Quantity"
             value={
-              item.stockQuantity !== null && item.stockQuantity !== undefined
-                ? item.unit
-                  ? `${item.stockQuantity} `
-                  : String(item.stockQuantity)
-                : "-"
+              item.options && item.options.length > 1
+                ? "Multiple Variants"
+                : item.stockQuantity !== null && item.stockQuantity !== undefined
+                  ? item.unit
+                    ? `${item.stockQuantity} `
+                    : String(item.stockQuantity)
+                  : "-"
             }
           />
           <InfoCard
             icon={<Scale className="h-4 w-4 text-slate-500" />}
             label="Net Weight"
             value={
-              item.netWeight !== null && item.netWeight !== undefined ? String(item.netWeight) : "-"
+              item.options && item.options.length > 1
+                ? "Multiple Variants"
+                : item.netWeight !== null && item.netWeight !== undefined
+                  ? String(item.netWeight)
+                  : "-"
             }
           />
           <InfoCard
             icon={<Scale className="h-4 w-4 text-teal-500" />}
             label="Weight Unit"
-            value={item.unit || "-"}
+            value={item.options && item.options.length > 1 ? "Multiple Variants" : item.unit || "-"}
           />
           <InfoCard
             icon={<Calendar className="h-4 w-4 text-slate-400" />}
@@ -147,11 +159,6 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
                   <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
                   Scanner Verified
                 </span>
-                {item.upcCode && (
-                  <span className="inline-flex items-center rounded-full bg-slate-200/70 px-2.5 py-0.5 font-mono text-[11px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    UPC: {item.upcCode}
-                  </span>
-                )}
               </div>
 
               <div>
@@ -163,12 +170,6 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
                   Scan this QR code with the Food Remit Mobile App to quickly verify product details
                   and order stock.
                 </p>
-              </div>
-
-              <div className="pt-1">
-                <span className="inline-block rounded-lg border border-slate-200/60 bg-white/80 px-2.5 py-1 font-mono text-xs font-semibold text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
-                  Code: {codeVal}
-                </span>
               </div>
             </div>
           </div>

@@ -9,6 +9,7 @@ import { AdditionalDocumentsCard } from "@/feature/private/(store-admin)/partner
 import { BankVerificationCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/bank-verification-card";
 import { KycVerificationCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/kyc-verification-card";
 import { LocationDetailsCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/location-details-card";
+import { OperationalPreferencesCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/operational-preferences-card";
 import { useGetStore } from "@/feature/private/(super-admin)/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
 import { Building2, Expand, Mail, MapPin, Phone, UserCircle } from "lucide-react";
@@ -265,6 +266,13 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
 
       {store.partnerLead && (
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <OperationalPreferencesCard
+              lead={store.partnerLead}
+              storeSameDayDelivery={store.sameDayDelivery}
+              storeOrderProcessingTime={store.orderProcessingTime}
+            />
+          </div>
           <KycVerificationCard lead={store.partnerLead} />
           <BankVerificationCard lead={store.partnerLead} />
           <AdditionalDocumentsCard lead={store.partnerLead} />

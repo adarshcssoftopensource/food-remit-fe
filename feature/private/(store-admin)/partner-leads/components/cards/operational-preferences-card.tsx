@@ -4,8 +4,21 @@ import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, Clock, Store, Truck, XCircle } from "lucide-react";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
-export function OperationalPreferencesCard({ lead }: { lead: PartnerLeadData }) {
-  const offersSameDay = lead.sameDayDelivery === true;
+export function OperationalPreferencesCard({
+  lead,
+  storeSameDayDelivery,
+  storeOrderProcessingTime,
+}: {
+  lead: PartnerLeadData;
+  storeSameDayDelivery?: boolean;
+  storeOrderProcessingTime?: string | null;
+}) {
+  const offersSameDay =
+    storeSameDayDelivery !== undefined
+      ? storeSameDayDelivery === true
+      : lead.sameDayDelivery === true;
+  const processingTime =
+    storeOrderProcessingTime !== undefined ? storeOrderProcessingTime : lead.orderProcessingTime;
 
   return (
     <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
@@ -52,7 +65,7 @@ export function OperationalPreferencesCard({ lead }: { lead: PartnerLeadData }) 
                 <div className="mt-1 flex items-center gap-1.5">
                   <Clock className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
                   <span className="text-sm font-semibold text-slate-900">
-                    {offersSameDay && lead.orderProcessingTime ? lead.orderProcessingTime : "N/A"}
+                    {offersSameDay && processingTime ? processingTime : "N/A"}
                   </span>
                 </div>
               </div>

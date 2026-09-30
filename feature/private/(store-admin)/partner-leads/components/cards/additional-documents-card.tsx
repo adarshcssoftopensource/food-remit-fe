@@ -22,6 +22,7 @@ import { useAddPartnerLeadDocuments } from "../../hooks/use-add-partner-lead-doc
 import { useDeletePartnerLeadDocument } from "../../hooks/use-delete-partner-lead-document";
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { successToast } from "@/components/toaster";
+import { useProfile } from "@/components/providers/profile-provider";
 
 interface AdditionalDocumentsCardProps {
   lead: PartnerLeadData;
@@ -42,6 +43,7 @@ function formatBytes(bytes?: number): string {
 }
 
 export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) {
+  const { isSuperAdmin } = useProfile();
   const [activePreview, setActivePreview] = useState<ActivePreview | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ index: number; name: string } | null>(null);
 
@@ -131,29 +133,33 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                 </span>
               )}
 
-              <input
-                type="file"
-                multiple
-                accept=".pdf,image/png,image/jpeg,image/jpg,image/webp,.heic,.heif,image/heic,image/heif"
-                className="hidden"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-                disabled={isUploading || docs.length >= 10}
-              />
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 gap-1.5 rounded-full border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading || docs.length >= 10}
-              >
-                {isUploading ? (
-                  <Loader2 className="size-3.5 animate-spin" />
-                ) : (
-                  <UploadCloud className="size-3.5" />
-                )}
-                {isUploading ? "Uploading..." : "Upload Docs"}
-              </Button>
+              {isSuperAdmin && (
+                <>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,image/png,image/jpeg,image/jpg,image/webp,.heic,.heif,image/heic,image/heif"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    disabled={isUploading || docs.length >= 10}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 gap-1.5 rounded-full border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading || docs.length >= 10}
+                  >
+                    {isUploading ? (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    ) : (
+                      <UploadCloud className="size-3.5" />
+                    )}
+                    {isUploading ? "Uploading..." : "Upload Docs"}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -252,17 +258,19 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                           </a>
 
                           {/* Delete Button */}
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDeleteTarget({ index: idx, name: docName })}
-                            disabled={isDeleting}
-                            className="size-8 rounded-lg p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
-                            title="Delete document"
-                          >
-                            <Trash2 className="size-3.5" />
-                          </Button>
+                          {isSuperAdmin && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setDeleteTarget({ index: idx, name: docName })}
+                              disabled={isDeleting}
+                              className="size-8 rounded-lg p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
+                              title="Delete document"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>

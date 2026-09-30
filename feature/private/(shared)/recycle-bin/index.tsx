@@ -39,7 +39,6 @@ const ALL_ENTITY_TABS: {
   { id: "users", label: "Users", icon: Users },
   { id: "stores", label: "Stores", icon: Store },
   { id: "items", label: "Items", icon: Package },
-  { id: "departments", label: "Departments", icon: Building2 },
   { id: "categories", label: "Categories", icon: FolderTree },
   { id: "city-managers", label: "City Managers", icon: MapPin },
   { id: "country-managers", label: "Country Managers", icon: Globe },
@@ -55,14 +54,14 @@ export function RecycledUsersManagement() {
   const ENTITY_TABS = useMemo(() => {
     if (isStoreManager) {
       return ALL_ENTITY_TABS.filter((tab) =>
-        ["departments", "categories", "items", "employees", "product-boxes"].includes(tab.id),
+        ["categories", "items", "employees", "product-boxes"].includes(tab.id),
       );
     }
     return ALL_ENTITY_TABS;
   }, [isStoreManager]);
 
   const [activeTab, setActiveTab] = useState<RecycleEntityType>(
-    isStoreManager ? "departments" : "users",
+    isStoreManager ? "categories" : "users",
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);

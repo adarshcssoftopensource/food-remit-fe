@@ -5,13 +5,22 @@ import { useProfile } from "@/components/providers/profile-provider";
 import { cn } from "@/lib/utils";
 import { Hash, Info, MapPin, Receipt, Wallet } from "lucide-react";
 import type { ItemData } from "../types/item.types";
+import { useState, useMemo } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ItemProductPricingCardProps {
   item: ItemData;
 }
 
-function formatMoney(amount: number, currencySymbol: string) {
-  return `${currencySymbol}${amount.toFixed(2)}`;
+function formatMoney(amount: number | string, currencySymbol: string) {
+  const num = Number(amount);
+  return `${currencySymbol}${!isNaN(num) ? num.toFixed(2) : "0.00"}`;
 }
 
 type ReceiptLine = {
@@ -25,7 +34,51 @@ type ReceiptLine = {
 
 export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
   const { canViewPlatformFees } = useProfile();
-  const pricing = item.pricing;
+
+  const hasOptions = Array.isArray(item.options) && item.options.length > 0;
+  const [selectedOptionId, setSelectedOptionId] = useState<string>(
+    hasOptions ? item.options![0].id : "base",
+  );
+
+  const selectedOption = hasOptions ? item.options!.find((o) => o.id === selectedOptionId) : null;
+
+  const originalPricing = item.pricing;
+
+  // Calculate dynamic pricing if an option is selected, otherwise use base
+  const pricing = useMemo(() => {
+    if (!originalPricing) return null;
+    if (!selectedOption) return originalPricing;
+
+    const basePrice = Number(selectedOption.price) || 0;
+    const discountEnabled = originalPricing.discountEnabled;
+    const discountPercent = originalPricing.discountPercent || 0;
+    const discountAmount = discountEnabled ? (basePrice * discountPercent) / 100 : 0;
+    const priceAfterDiscount = basePrice - discountAmount;
+
+    const taxPercent = originalPricing.taxPercent || 0;
+    const taxAmount = (priceAfterDiscount * taxPercent) / 100;
+
+    const markupPercent = originalPricing.markupPercent || 0;
+    const markupAmount = (priceAfterDiscount * markupPercent) / 100;
+
+    const commissionPercent = originalPricing.commissionPercent || 0;
+    const commissionAmount = (priceAfterDiscount * commissionPercent) / 100;
+
+    const itemTotal = priceAfterDiscount + (item.storeId ? taxAmount : markupAmount);
+
+    return {
+      ...originalPricing,
+      basePrice,
+      discountAmount,
+      priceAfterDiscount,
+      taxAmount,
+      markupAmount,
+      commissionAmount,
+      itemTotal,
+      grandTotal: itemTotal,
+    };
+  }, [originalPricing, selectedOption, item.storeId]);
+
   const currencySymbol = pricing?.currencySymbol || "-";
   const countryLabel = pricing?.countryName || item.pricingCountry?.name || "your location";
   const currency = pricing?.currency || "—";
@@ -33,7 +86,9 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
   const lines: ReceiptLine[] = pricing
     ? [
         {
-          label: "Item base price",
+          label: selectedOption
+            ? `Item base price (${selectedOption.optionName})`
+            : "Item base price",
           value: formatMoney(pricing.basePrice, currencySymbol),
           muted: true,
         },
@@ -69,11 +124,6 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
                 value: `+ ${formatMoney(pricing.markupAmount, currencySymbol)}`,
                 addon: true,
               },
-              // {
-              //   label: `Food Remit Store Commission (${pricing.commissionPercent}%)`,
-              //   value: `${formatMoney(pricing.commissionAmount, currencySymbol)}`,
-              //   muted: true,
-              // },
             ]
           : []),
       ]
@@ -88,12 +138,41 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
 
   return (
     <Card className="w-full overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 dark:bg-slate-950 dark:shadow-none">
-      <CardHeader className="border-b border-slate-100/80 px-5 py-4 sm:px-8 dark:border-slate-800/80">
-        <CardTitle className="flex items-center gap-3 text-base font-bold text-slate-900 sm:text-lg dark:text-white">
-          <div className="bg-primary h-4 w-1.5 rounded-full" />
-          Product Information
-        </CardTitle>
-        <p className="mt-1 text-xs text-slate-500 sm:text-sm">Item pricing and tax details.</p>
+      <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100/80 px-5 py-4 sm:px-8 dark:border-slate-800/80">
+        <div>
+          <CardTitle className="flex items-center gap-3 text-base font-bold text-slate-900 sm:text-lg dark:text-white">
+            <div className="bg-primary h-4 w-1.5 rounded-full" />
+            Product Information
+          </CardTitle>
+          <p className="mt-1 text-xs text-slate-500 sm:text-sm">Item pricing and tax details.</p>
+        </div>
+
+        {hasOptions && (
+          <div className="flex items-center gap-3">
+            <span className="hidden text-xs font-medium tracking-wider text-slate-500 uppercase sm:inline-block">
+              Select Variant
+            </span>
+            <div className="w-[200px]">
+              <Select
+                value={selectedOptionId}
+                onValueChange={(val) => val && setSelectedOptionId(val)}
+              >
+                <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
+                  <SelectValue placeholder="Select Variant">
+                    {selectedOption?.optionName || "Select Variant"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {item.options?.map((opt) => (
+                    <SelectItem key={opt.id} value={opt.id}>
+                      {opt.optionName || "Default Option"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
       </CardHeader>
 
       <CardContent className="space-y-4 p-4 sm:p-6 lg:p-8">
