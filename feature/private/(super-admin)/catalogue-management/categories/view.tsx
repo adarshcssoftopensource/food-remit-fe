@@ -157,11 +157,6 @@ export function CategoryView({ id }: CategoryViewProps) {
             <CardContent className="p-5">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <InfoCard
-                  icon={<Building2 className="h-5 w-5" />}
-                  label="Department"
-                  value={category.department?.departmentName || "Unknown"}
-                />
-                <InfoCard
                   icon={<MapPin className="h-5 w-5" />}
                   label="City"
                   value={category.cityName || "All Cities"}

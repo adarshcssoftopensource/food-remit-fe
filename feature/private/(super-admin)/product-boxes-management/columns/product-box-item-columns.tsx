@@ -79,11 +79,7 @@ export const getProductBoxItemColumns = ({
       );
     },
   },
-  {
-    accessorKey: "item.department.departmentName",
-    header: "Department",
-    cell: ({ row }) => <div>{row.original.item?.department?.departmentName || "-"}</div>,
-  },
+
   {
     accessorKey: "item.category.categoryName",
     header: "Category",

@@ -178,15 +178,7 @@ export const itemsColumns: ColumnDef<any>[] = [
       );
     },
   },
-  {
-    accessorKey: "departmentName",
-    header: "Department",
-    cell: ({ row }) => (
-      <span className="text-xs font-medium text-slate-600">
-        {row.original.department?.departmentName || row.original.departmentDisplayName || "N/A"}
-      </span>
-    ),
-  },
+
   {
     accessorKey: "categoryName",
     header: "Category",
@@ -232,13 +224,7 @@ export const categoriesColumns: ColumnDef<any>[] = [
       <p className="font-semibold text-slate-900 dark:text-white">{row.original.categoryName}</p>
     ),
   },
-  {
-    accessorKey: "departmentName",
-    header: "Department",
-    cell: ({ row }) => (
-      <span className="text-xs text-slate-600">{row.original.departmentName || "N/A"}</span>
-    ),
-  },
+
   {
     accessorKey: "status",
     header: "Status",
