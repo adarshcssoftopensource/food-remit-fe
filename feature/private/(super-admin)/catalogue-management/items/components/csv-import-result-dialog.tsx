@@ -98,18 +98,12 @@ export function CsvImportResultDialog({ open, onOpenChange, result }: CsvImportR
         </div>
 
         <div className="space-y-4 px-6 pb-2">
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
             <SummaryStat
               icon={<PackagePlus className="size-3.5" />}
               label="Imported"
               value={result.successCount ?? 0}
               tone="emerald"
-            />
-            <SummaryStat
-              icon={<FolderPlus className="size-3.5" />}
-              label="Departments"
-              value={result.departmentsCreated ?? 0}
-              tone="sky"
             />
             <SummaryStat
               icon={<FolderPlus className="size-3.5" />}
