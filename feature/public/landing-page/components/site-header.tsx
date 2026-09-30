@@ -94,8 +94,10 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "absolute inset-x-0 top-full h-[calc(100vh-64px)] overflow-y-auto bg-white transition-all duration-300 lg:hidden",
-          open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0",
+          "absolute inset-x-0 top-full h-[calc(100dvh-64px)] overflow-y-auto overscroll-contain bg-white transition-all duration-300 lg:hidden",
+          open
+            ? "pointer-events-auto visible translate-y-0 opacity-100"
+            : "pointer-events-none invisible -translate-y-2 opacity-0",
         )}
       >
         <div className="flex h-full min-h-125 flex-col bg-white">

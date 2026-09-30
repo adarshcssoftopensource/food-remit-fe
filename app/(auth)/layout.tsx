@@ -8,12 +8,12 @@ import { LockAuthScroll } from "./lock-auth-scroll";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="brand-mesh-canvas relative flex h-dvh w-full overflow-hidden">
+    <main className="brand-mesh-canvas relative flex min-h-dvh w-full flex-col lg:h-dvh lg:flex-row lg:overflow-hidden">
       <LockAuthScroll />
-      <div className="pointer-events-none absolute -top-40 -left-40 h-125 w-125 rounded-full bg-linear-to-br from-emerald-500/10 to-teal-500/0 blur-3xl" />
-      <div className="pointer-events-none absolute -right-40 -bottom-40 h-125 w-125 rounded-full bg-linear-to-tl from-emerald-600/10 to-transparent blur-3xl" />
+      <div className="pointer-events-none fixed -top-40 -left-40 h-125 w-125 rounded-full bg-linear-to-br from-emerald-500/10 to-teal-500/0 blur-3xl" />
+      <div className="pointer-events-none fixed -right-40 -bottom-40 h-125 w-125 rounded-full bg-linear-to-tl from-emerald-600/10 to-transparent blur-3xl" />
 
-      <div className="pointer-events-none absolute bottom-0 left-0 z-0 h-96 w-96 opacity-40">
+      <div className="pointer-events-none fixed bottom-0 left-0 z-0 hidden h-96 w-96 opacity-40 lg:block">
         <Image
           src={APP_ASSETS.IMAGES.LOGIN_BACKGROUND.PATH}
           alt={APP_ASSETS.IMAGES.LOGIN_BACKGROUND.ALT}
@@ -79,8 +79,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
       </div>
 
-      <div className="relative z-10 flex h-full w-full items-center justify-center overflow-y-auto overscroll-contain px-4 py-6 sm:px-8 sm:py-8 lg:w-1/2 lg:px-12">
-        {children}
+      <div
+        data-auth-scroll-container
+        className="relative z-10 flex min-h-dvh w-full flex-col px-4 py-6 sm:px-8 sm:py-10 lg:h-full lg:min-h-0 lg:w-1/2 lg:overflow-y-auto lg:overscroll-contain lg:px-12 lg:py-10"
+      >
+        <div className="my-auto flex w-full flex-col items-center">{children}</div>
       </div>
     </main>
   );

@@ -298,6 +298,39 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
     }
   }, [reset]);
 
+  const formCardRef = useRef<HTMLDivElement | null>(null);
+  const stepperScrollRef = useRef<HTMLDivElement | null>(null);
+  const stepItemRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const isInitialStepRender = useRef(true);
+
+  useEffect(() => {
+    const activeStepEl = stepItemRefs.current[currentStep];
+    const stepperContainer = stepperScrollRef.current;
+    if (activeStepEl && stepperContainer) {
+      const targetLeft =
+        activeStepEl.offsetLeft - stepperContainer.clientWidth / 2 + activeStepEl.clientWidth / 2;
+      stepperContainer.scrollTo({
+        left: Math.max(0, targetLeft),
+        behavior: isInitialStepRender.current ? "auto" : "smooth",
+      });
+    }
+
+    if (isInitialStepRender.current) {
+      isInitialStepRender.current = false;
+      return;
+    }
+
+    const scrollContainer = formCardRef.current?.closest(
+      "[data-auth-scroll-container]",
+    ) as HTMLElement | null;
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [currentStep]);
+
   // Persist draft to sessionStorage on form value or step change only if user entered data
   const formValues = watch();
   useEffect(() => {
@@ -656,8 +689,9 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
   return (
     <div
+      ref={formCardRef}
       className={cn(
-        "relative z-10 mt-auto w-full overflow-hidden rounded-[2rem] bg-white px-3 py-4 shadow-2xl shadow-black/30 sm:mt-auto sm:rounded-[2.5rem] sm:p-10 md:mt-auto lg:mt-auto",
+        "relative z-10 my-auto w-full overflow-hidden rounded-[2rem] bg-white px-4 py-6 shadow-2xl shadow-black/30 sm:rounded-[2.5rem] sm:p-8 md:p-10",
         className,
       )}
     >
@@ -703,8 +737,11 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         </div>
       )}
 
-      <div className="scrollbar-hide overflow-x-auto border-b border-slate-100 pb-5 sm:mt-6 sm:pb-6">
-        <div className="relative flex min-w-[600px] lg:min-w-0">
+      <div
+        ref={stepperScrollRef}
+        className="scrollbar-hide mt-4 touch-pan-y overflow-x-auto border-b border-slate-100 pb-5 sm:mt-6 sm:pb-6"
+      >
+        <div className="relative flex min-w-[460px] sm:min-w-0">
           {STEPS.map((step) => {
             const isCompleted = currentStep > step.id;
             const isActive = currentStep === step.id;
@@ -712,7 +749,10 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             return (
               <div
                 key={step.id}
-                className="relative z-10 mt-1 flex flex-1 flex-col items-center px-2"
+                ref={(el) => {
+                  stepItemRefs.current[step.id] = el;
+                }}
+                className="relative z-10 mt-1 flex flex-1 flex-col items-center px-1.5 sm:px-2"
               >
                 {step.id < STEPS.length && (
                   <span
@@ -909,7 +949,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
                   return (
                     <div className="flex flex-col gap-1.5 xl:col-span-2">
-                      <FieldLabel className="text-xs font-semibold text-slate-700">
+                      <FieldLabel className="block text-xs font-semibold text-slate-700">
                         Store Logo{" "}
                         <span className="font-normal text-slate-400">
                           (Optional — Default store picture will be used if not uploaded)
@@ -1004,7 +1044,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                 control={control}
                 render={({ field }) => (
                   <div className="flex flex-col gap-1.5 xl:col-span-2">
-                    <FieldLabel className="text-xs font-semibold text-slate-700">
+                    <FieldLabel className="block text-xs font-semibold text-slate-700">
                       Does your Business have a Business Account?{" "}
                       <span className="font-normal text-slate-400">(Bank Account - Optional)</span>
                     </FieldLabel>
@@ -1455,7 +1495,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
                   return (
                     <div className="flex flex-col gap-1.5 xl:col-span-2">
-                      <FieldLabel className="text-xs font-semibold text-slate-700">
+                      <FieldLabel className="block text-xs font-semibold text-slate-700">
                         Profile Photo{" "}
                         <span className="font-normal text-slate-400">
                           (Optional — Default avatar will be used if not uploaded)
@@ -1704,7 +1744,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
                   };
                   return (
                     <div className="flex flex-col gap-2.5">
-                      <FieldLabel className="text-sm font-semibold text-slate-800">
+                      <FieldLabel className="block text-sm font-semibold text-slate-800">
                         How would you like to work with Food Remit?{" "}
                         <span className="font-normal text-slate-400">(Select all that apply)</span>
                       </FieldLabel>
@@ -2223,7 +2263,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
           </div>
         )}
 
-        <div className="flex flex-col-reverse flex-wrap gap-3 border-t border-slate-100 pt-4 md:flex-row md:items-center md:justify-between md:pt-5">
+        <div className="mt-6 flex flex-col-reverse flex-wrap gap-3 border-t border-slate-100 pt-5 sm:mt-8 sm:pt-6 md:flex-row md:items-center md:justify-between">
           {currentStep > 1 ? (
             <Button
               type="button"
@@ -2313,7 +2353,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
         </div>
       </form>
 
-      <div className="mt-3 px-2 text-center text-xs font-medium text-slate-500">
+      <div className="mt-5 border-t border-slate-100 px-2 pt-4 text-center text-xs font-medium text-slate-500 sm:mt-6 sm:pt-5">
         Already started your registration?{" "}
         <Link
           href={ROUTES.AUTH.LOGIN}
