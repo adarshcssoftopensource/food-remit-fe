@@ -37,17 +37,16 @@ export function FoodRemitCommission() {
             <div className="flex flex-col gap-1.5">
               <FieldLabel className="text-sm font-semibold">Food Remit Commission (%)</FieldLabel>
               <div className="relative">
-                <Percent className="pointer-events-none absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
                   type={isLoading ? "text" : "number"}
                   value={commission}
                   disabled
                   readOnly
-                  className="h-11 pr-12 pl-9 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-80"
+                  className="h-11 pr-12 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-80"
                 />
-                <span className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 text-sm font-semibold text-slate-400">
+                <div className="pointer-events-none absolute top-1/2 right-3 z-10 -translate-y-1/2 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-extrabold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                   %
-                </span>
+                </div>
               </div>
               <p className="text-xs font-medium text-slate-500">
                 This commission rate is set by the super admin and cannot be changed here.

@@ -13,22 +13,36 @@ import { Store, User } from "lucide-react";
 export const usersColumns = withDeletedByColumn(rawUsersColumns as ColumnDef<any>[], true);
 
 // Helper to create checkbox column
-const createSelectColumn = (): ColumnDef<any> => ({
+const createSelectColumn = (isRowDisabled?: (item: any) => boolean): ColumnDef<any> => ({
   id: "select",
   header: ({ table }) => (
     <Checkbox
       checked={table.getIsAllPageRowsSelected()}
+      indeterminate={table.getIsSomePageRowsSelected()}
       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
       aria-label="Select all"
     />
   ),
-  cell: ({ row }) => (
-    <Checkbox
-      checked={row.getIsSelected()}
-      onCheckedChange={(value) => row.toggleSelected(!!value)}
-      aria-label="Select row"
-    />
-  ),
+  cell: ({ row }) => {
+    const disabled = isRowDisabled ? isRowDisabled(row.original) : !row.getCanSelect();
+    return (
+      <div className="flex items-center" title={disabled ? "Managed via Store" : undefined}>
+        <Checkbox
+          checked={row.getIsSelected()}
+          disabled={disabled}
+          onCheckedChange={(value) => {
+            if (!disabled) {
+              row.toggleSelected(!!value);
+            }
+          }}
+          aria-label="Select row"
+          className={
+            disabled ? "cursor-not-allowed opacity-40 data-[state=checked]:opacity-40" : ""
+          }
+        />
+      </div>
+    );
+  },
   enableSorting: false,
   enableHiding: false,
 });
@@ -453,7 +467,7 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
   "partner-leads": withDeletedByColumn(
     [
       createSNoColumn(),
-      createSelectColumn(),
+      createSelectColumn((item) => item?.status === "APPROVED"),
       {
         accessorKey: "referenceNumber",
         header: "Ref No.",

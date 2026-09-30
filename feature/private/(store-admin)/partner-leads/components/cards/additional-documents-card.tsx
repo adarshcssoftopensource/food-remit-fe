@@ -1,21 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   FileText,
   FileImage,
   ExternalLink,
-  Eye,
   X,
   FolderArchive,
   Download,
   ShieldCheck,
   Clock,
+  UploadCloud,
+  Loader2,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PartnerLeadData } from "../../types/partner-lead.types";
+import { useAddPartnerLeadDocuments } from "../../hooks/use-add-partner-lead-documents";
+import { useDeletePartnerLeadDocument } from "../../hooks/use-delete-partner-lead-document";
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
+import { successToast } from "@/components/toaster";
 
 interface AdditionalDocumentsCardProps {
   lead: PartnerLeadData;
@@ -37,12 +43,71 @@ function formatBytes(bytes?: number): string {
 
 export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) {
   const [activePreview, setActivePreview] = useState<ActivePreview | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ index: number; name: string } | null>(null);
 
   const docs = lead.additionalDocuments || [];
   const hasDocs = docs.length > 0;
 
+  const { mutateAsync: uploadDocuments, isPending: isUploading } = useAddPartnerLeadDocuments(
+    lead.id,
+  );
+  const { mutateAsync: deleteDocument, isPending: isDeleting } = useDeletePartnerLeadDocument(
+    lead.id,
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const formData = new FormData();
+    files.forEach((f) => formData.append("files", f));
+
+    try {
+      await uploadDocuments(formData);
+      successToast({
+        title: "Success",
+        description: "Documents uploaded successfully",
+      });
+    } catch {
+      // API error toast is handled globally by axios interceptor
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleDeleteDocument = async () => {
+    if (deleteTarget === null) return;
+    try {
+      await deleteDocument({ docIndex: deleteTarget.index });
+      successToast({
+        title: "Document Removed",
+        description: `"${deleteTarget.name}" has been deleted.`,
+      });
+    } catch {
+      // API error toast is handled globally by axios interceptor
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
+
   return (
     <>
+      <ConfirmationDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title="Delete Document"
+        description={`Are you sure you want to delete "${deleteTarget?.name || "this document"}"? This will permanently remove the file from S3 storage and cannot be undone.`}
+        confirmLabel="Delete Document"
+        onConfirm={handleDeleteDocument}
+        isLoading={isDeleting}
+        variant="destructive"
+      />
+
       <Card className="col-span-1 overflow-hidden rounded-2xl border-slate-200/80 shadow-xs md:col-span-2 dark:border-slate-800">
         <CardHeader className="border-b border-slate-100 bg-slate-50/60 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/60">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -65,6 +130,30 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                   No Documents Attached
                 </span>
               )}
+
+              <input
+                type="file"
+                multiple
+                accept=".pdf,image/png,image/jpeg,image/jpg,image/webp,.heic,.heif,image/heic,image/heif"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                disabled={isUploading || docs.length >= 10}
+              />
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 gap-1.5 rounded-full border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading || docs.length >= 10}
+              >
+                {isUploading ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <UploadCloud className="size-3.5" />
+                )}
+                {isUploading ? "Uploading..." : "Upload Docs"}
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -93,10 +182,19 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {docs.map((doc, idx) => {
+                  const fileNameLower = (doc.name || "").toLowerCase();
+                  const urlLower = (doc.url || "").toLowerCase();
                   const isPdf =
                     doc.mimeType?.includes("pdf") ||
-                    doc.name?.toLowerCase().endsWith(".pdf") ||
-                    doc.url.toLowerCase().includes(".pdf");
+                    fileNameLower.endsWith(".pdf") ||
+                    urlLower.includes(".pdf");
+                  const isHeic =
+                    doc.mimeType?.includes("heic") ||
+                    doc.mimeType?.includes("heif") ||
+                    fileNameLower.endsWith(".heic") ||
+                    fileNameLower.endsWith(".heif") ||
+                    urlLower.includes(".heic") ||
+                    urlLower.includes(".heif");
                   const docName = doc.name || `Supporting Document #${idx + 1}`;
 
                   return (
@@ -109,7 +207,9 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                           className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${
                             isPdf
                               ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
-                              : "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
+                              : isHeic
+                                ? "bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400"
+                                : "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
                           }`}
                         >
                           {isPdf ? (
@@ -133,22 +233,37 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
                             </span>
                             <span>•</span>
                             <span className="text-[10px] font-semibold uppercase">
-                              {isPdf ? "PDF" : "IMAGE"}
+                              {isPdf ? "PDF" : isHeic ? "HEIC" : "IMAGE"}
                             </span>
                           </div>
                         </div>
 
-                        {/* External Link at the end */}
-                        <a
-                          href={doc.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          download={docName}
-                          className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                          title="Open original link in S3"
-                        >
-                          <ExternalLink className="size-3.5" />
-                        </a>
+                        <div className="flex shrink-0 items-center gap-1">
+                          {/* External Link */}
+                          <a
+                            href={doc.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download={docName}
+                            className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            title="Open original link in S3"
+                          >
+                            <ExternalLink className="size-3.5" />
+                          </a>
+
+                          {/* Delete Button */}
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDeleteTarget({ index: idx, name: docName })}
+                            disabled={isDeleting}
+                            className="size-8 rounded-lg p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
+                            title="Delete document"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   );

@@ -12,22 +12,8 @@ export const getProfileDetailsSchema = (isStoreAdmin: boolean) =>
       .min(2, "Minimum 2 characters are required")
       .max(50, "Maximum 50 characters are allowed"),
 
-    email: z
-      .string()
-      .trim()
-      .min(1, "Email is required")
-      .max(100, "Maximum 100 characters are allowed")
-      .email("Invalid email address"),
-
-    contactNumber: z
-      .string()
-      .min(1, "Contact Number is required")
-      .superRefine((value, ctx) => {
-        const error = getFullPhoneError(value);
-        if (error) {
-          ctx.addIssue({ code: z.ZodIssueCode.custom, message: error });
-        }
-      }),
+    email: z.string().trim().optional(),
+    contactNumber: z.string().optional(),
 
     address: z.string().max(200, "Maximum 200 characters are allowed").optional(),
     country: isStoreAdmin ? z.string().min(1, "Country is required") : z.string().optional(),

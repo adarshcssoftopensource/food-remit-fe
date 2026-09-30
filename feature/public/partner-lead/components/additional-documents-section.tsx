@@ -32,7 +32,18 @@ interface AdditionalDocumentsSectionProps {
 
 const MAX_DOCS = 10;
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_TYPES = ["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"];
+const ACCEPTED_TYPES = [
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+  "image/heic-sequence",
+  "image/heif-sequence",
+];
+const ACCEPTED_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg", ".webp", ".heic", ".heif"];
 
 function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 B";
@@ -64,13 +75,19 @@ export function AdditionalDocumentsSection({
           });
           break;
         }
-        if (!ACCEPTED_TYPES.includes(file.type)) {
+
+        const fileNameLower = file.name.toLowerCase();
+        const hasAcceptedExt = ACCEPTED_EXTENSIONS.some((ext) => fileNameLower.endsWith(ext));
+        const hasAcceptedMime = file.type && ACCEPTED_TYPES.includes(file.type);
+
+        if (!hasAcceptedMime && !hasAcceptedExt) {
           errorToast({
             title: "Unsupported File Format",
-            description: `"${file.name}" is not supported (PDF, PNG, JPG, WEBP only).`,
+            description: `"${file.name}" is not supported (PDF, PNG, JPG, WEBP, HEIC only).`,
           });
           continue;
         }
+
         if (file.size > MAX_FILE_SIZE) {
           errorToast({
             title: "File Exceeds Limit",
@@ -79,13 +96,40 @@ export function AdditionalDocumentsSection({
           continue;
         }
 
-        const previewUrl = URL.createObjectURL(file);
+        // Determine effective mime type (iOS sometimes sends empty or application/octet-stream for HEIC)
+        let resolvedMime = file.type;
+        if (!resolvedMime || resolvedMime === "application/octet-stream") {
+          if (fileNameLower.endsWith(".heif")) {
+            resolvedMime = "image/heif";
+          } else if (fileNameLower.endsWith(".heic")) {
+            resolvedMime = "image/heic";
+          } else if (fileNameLower.endsWith(".pdf")) {
+            resolvedMime = "application/pdf";
+          } else if (fileNameLower.endsWith(".png")) {
+            resolvedMime = "image/png";
+          } else if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".jpeg")) {
+            resolvedMime = "image/jpeg";
+          } else if (fileNameLower.endsWith(".webp")) {
+            resolvedMime = "image/webp";
+          }
+        }
+
+        // Create a resolved file instance with proper mime type if it was missing/generic
+        const resolvedFile =
+          !file.type || file.type === "application/octet-stream"
+            ? new File([file], file.name, {
+                type: resolvedMime || "image/heic",
+                lastModified: file.lastModified,
+              })
+            : file;
+
+        const previewUrl = URL.createObjectURL(resolvedFile);
         currentDocs.push({
-          rawFile: file,
+          rawFile: resolvedFile,
           url: previewUrl,
           name: file.name,
           size: file.size,
-          mimeType: file.type,
+          mimeType: resolvedMime || "image/heic",
         });
         addedCount++;
       }
@@ -160,7 +204,7 @@ export function AdditionalDocumentsSection({
       <p className="text-xs leading-relaxed text-slate-600">
         Please attach <strong>at least 1 supporting document</strong> to verify your business (e.g.,
         Business Registration, Voided Cheque, Tax Certificate). Max <strong>5MB per file</strong>{" "}
-        (PDF, PNG, JPG, WEBP).
+        (PDF, PNG, JPG, WEBP, HEIC).
       </p>
 
       {!isAtLimit && (
@@ -181,7 +225,7 @@ export function AdditionalDocumentsSection({
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,image/png,image/jpeg,image/jpg,image/webp"
+            accept=".pdf,image/png,image/jpeg,image/jpg,image/webp,.heic,.heif,image/heic,image/heif"
             multiple
             className="hidden"
             onChange={handleFilesSelected}
@@ -202,7 +246,7 @@ export function AdditionalDocumentsSection({
                   Click to browse or drag & drop documents here
                 </p>
                 <p className="text-[11px] text-slate-500">
-                  PDF, PNG, JPG, or WEBP (Up to 5MB each, max 10 documents)
+                  PDF, PNG, JPG, WEBP, or HEIC (Up to 5MB each, max 10 documents)
                 </p>
               </div>
             </div>
@@ -224,8 +268,13 @@ export function AdditionalDocumentsSection({
           </span>
           <div className="grid grid-cols-1 gap-2.5">
             {documents.map((doc, idx) => {
-              const isPdf =
-                doc.mimeType?.includes("pdf") || doc.name?.toLowerCase().endsWith(".pdf");
+              const fileNameLower = doc.name?.toLowerCase() || "";
+              const isPdf = doc.mimeType?.includes("pdf") || fileNameLower.endsWith(".pdf");
+              const isHeic =
+                doc.mimeType?.includes("heic") ||
+                doc.mimeType?.includes("heif") ||
+                fileNameLower.endsWith(".heic") ||
+                fileNameLower.endsWith(".heif");
               const previewSrc = doc.url || doc.file;
 
               return (
@@ -235,7 +284,13 @@ export function AdditionalDocumentsSection({
                 >
                   <div className="flex items-center gap-3 overflow-hidden">
                     <div
-                      className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${isPdf ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"}`}
+                      className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${
+                        isPdf
+                          ? "bg-rose-50 text-rose-600"
+                          : isHeic
+                            ? "bg-purple-50 text-purple-600"
+                            : "bg-blue-50 text-blue-600"
+                      }`}
                     >
                       {isPdf ? <FileText className="size-5" /> : <FileImage className="size-5" />}
                     </div>
@@ -245,6 +300,10 @@ export function AdditionalDocumentsSection({
                       </p>
                       <div className="flex items-center gap-2 text-[11px] text-slate-500">
                         <span>{formatBytes(doc.size)}</span>
+                        <span>•</span>
+                        <span className="text-[10px] font-semibold text-slate-400 uppercase">
+                          {isPdf ? "PDF" : isHeic ? "HEIC" : "IMAGE"}
+                        </span>
                         <span>•</span>
                         <span className="inline-flex items-center gap-1 font-semibold text-emerald-700">
                           <CheckCircle2 className="size-3 text-emerald-600" />

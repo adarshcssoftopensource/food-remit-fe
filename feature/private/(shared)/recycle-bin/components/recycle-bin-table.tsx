@@ -133,6 +133,9 @@ export function RecycleBinTable({
             onSortingChange={onSortingChange}
             rowSelection={rowSelection}
             onRowSelectionChange={onRowSelectionChange}
+            enableRowSelection={(row) =>
+              !(entityType === "partner-leads" && row.original?.status === "APPROVED")
+            }
             getRowId={(row: any) => row.id}
           />
         </div>

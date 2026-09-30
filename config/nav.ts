@@ -21,6 +21,7 @@ import {
   Package,
   Scale,
   Shield,
+  Settings,
   Store,
   Ticket,
   Trash2,
@@ -255,6 +256,12 @@ export const navigationItems: NavItem[] = [
   },
 
   // UTILITIES
+  {
+    title: "Settings",
+    url: ROUTES.ADMIN.SETTINGS,
+    icon: Settings,
+    group: "UTILITIES",
+  },
   {
     title: "Recycle Bin",
     url: ROUTES.ADMIN.RECYCLE_BIN,

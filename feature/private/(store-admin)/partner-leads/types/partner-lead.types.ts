@@ -106,6 +106,8 @@ export interface PartnerLeadData {
   storePhoneNumber?: string | null;
   workPreferences: string[];
   inventoryManagement: string | null;
+  sameDayDelivery?: boolean;
+  orderProcessingTime?: string | null;
   website: string | null;
   additionalInfo: string | null;
   agreeToContact: boolean;

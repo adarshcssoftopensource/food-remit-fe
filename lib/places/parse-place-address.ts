@@ -181,7 +181,17 @@ export function parsePlaceAddress(input: {
   const country = matchCountry(components);
   const state = country ? matchState(country.isoCode, components) : null;
   const city = country && state ? matchCity(country.isoCode, state.isoCode, components) : "";
-  const postalCode = findComponent(components, "postal_code")?.long_name ?? "";
+  let postalCode =
+    findComponent(components, "postal_code")?.long_name ||
+    findComponent(components, "postal_code_prefix")?.long_name ||
+    "";
+
+  if (!postalCode && input.formattedAddress) {
+    const match = input.formattedAddress.match(/\b\d{5,6}\b/);
+    if (match) {
+      postalCode = match[0];
+    }
+  }
 
   return {
     streetAddress: buildStreetAddress(components, input.name),

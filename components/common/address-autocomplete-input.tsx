@@ -220,9 +220,9 @@ export function AddressAutocompleteInput({
             ref={inputRef}
             id={inputId}
             type="text"
-            autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
+            autoComplete={reactId}
             spellCheck={false}
             disabled={disabled}
             aria-invalid={invalid}

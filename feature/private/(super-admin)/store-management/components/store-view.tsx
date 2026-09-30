@@ -152,7 +152,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                   <span className="font-semibold text-slate-700">{store.storeTax.toFixed(2)}%</span>
                 }
               />
-              {canViewPlatformFees && (
+              {store.foodRemitCommission !== undefined && store.foodRemitCommission !== null && (
                 <InfoRow
                   label="Commission"
                   value={
@@ -164,6 +164,28 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
               )}
               <InfoRow label="Country" value={store.storeCountryName} />
               <InfoRow label="City" value={store.storeCityName} />
+              <InfoRow
+                label="Same-Day Delivery"
+                value={
+                  store.sameDayDelivery ? (
+                    <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-800">
+                      Yes
+                    </span>
+                  ) : (
+                    <span className="text-slate-500">No</span>
+                  )
+                }
+              />
+              {store.sameDayDelivery && store.orderProcessingTime && (
+                <InfoRow
+                  label="Processing Time"
+                  value={
+                    <span className="font-semibold text-slate-800">
+                      {store.orderProcessingTime}
+                    </span>
+                  }
+                />
+              )}
             </div>
           </div>
 

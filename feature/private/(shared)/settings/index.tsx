@@ -20,7 +20,7 @@ import { Clock3, Globe, Mail, MapPin, Percent, Receipt, ShieldCheck } from "luci
 export function SettingsPage() {
   const { hasPermission, profile, canViewPlatformFees } = useProfile();
   const searchParams = useSearchParams();
-  const isStoreManager = profile?.roleCode === "STORE_MANAGER";
+  const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
   const isMobile = useIsMobile();
 
   const roleCode = String(profile?.roleCode || "").toUpperCase();
@@ -68,11 +68,20 @@ export function SettingsPage() {
             {
               value: "markup",
               label: "Markup",
-              component: <MarkupManagement />,
+              component: <MarkupManagement readOnly={isStoreManager} />,
               icon: <Percent className="size-4" />,
             },
           ]
-        : []),
+        : isStoreManager
+          ? [
+              {
+                value: "markup",
+                label: "Markup",
+                component: <MarkupManagement readOnly />,
+                icon: <Percent className="size-4" />,
+              },
+            ]
+          : []),
       ...(canViewAutoAbandon
         ? [
             {
@@ -85,12 +94,6 @@ export function SettingsPage() {
         : []),
       ...(isStoreManager
         ? [
-            {
-              value: "markup",
-              label: "Markup",
-              component: <MarkupManagement readOnly />,
-              icon: <Percent className="size-4" />,
-            },
             {
               value: "govt-tax",
               label: "Govt Tax",
@@ -107,9 +110,14 @@ export function SettingsPage() {
         : []),
     ];
 
-    return allTabs.filter(
-      (tab) => !("permission" in tab) || !tab.permission || hasPermission(tab.permission),
-    );
+    const seen = new Set<string>();
+    return allTabs.filter((tab) => {
+      const allowed = !("permission" in tab) || !tab.permission || hasPermission(tab.permission);
+      if (!allowed) return false;
+      if (seen.has(tab.value)) return false;
+      seen.add(tab.value);
+      return true;
+    });
   }, [hasPermission, isStoreManager, canViewPlatformFees, canViewAutoAbandon]);
 
   const tabParam = searchParams.get("tab");
