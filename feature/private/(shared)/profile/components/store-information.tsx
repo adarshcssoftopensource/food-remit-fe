@@ -4,13 +4,28 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Building2, ShieldCheck, Landmark, CalendarClock } from "lucide-react";
+import {
+  Building2,
+  ShieldCheck,
+  Landmark,
+  CalendarClock,
+  CheckCircle2,
+  XCircle,
+  Clock,
+} from "lucide-react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ImageUpload } from "@/components/common/image-upload";
 import {
   PhoneInputComponent,
@@ -24,6 +39,7 @@ import { KycVerificationCard } from "@/feature/private/(store-admin)/partner-lea
 import { ProfileBankVerification } from "@/feature/private/(shared)/profile/components/profile-bank-verification";
 import { LocationDetailsCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/location-details-card";
 import { AdditionalDocumentsCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/additional-documents-card";
+import { OperationalPreferencesCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/operational-preferences-card";
 
 import { useProfile } from "@/components/providers/profile-provider";
 import { useUpdateStore } from "@/feature/private/(super-admin)/store-management/hooks/use-update-store";
@@ -31,17 +47,30 @@ import { successToast } from "@/components/toaster";
 import { fetcher } from "@/hooks/useApi";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { ORDER_PROCESSING_TIME_OPTIONS } from "@/constants/become-a-partner";
 
-const storeInfoSchema = z.object({
-  storeImage: z.any().optional(),
-  storeName: z.string().min(1, "Store name is required"),
-  storePhoneCode: z.string().min(1, "Country code is required"),
-  storePhoneNumber: z.string().min(1, "Phone number is required"),
-  storeAddress: z.string().optional(),
-  address2: z.string().optional(),
-  storeCountry: z.string().optional(),
-  storeCity: z.string().optional(),
-});
+const storeInfoSchema = z
+  .object({
+    storeImage: z.any().optional(),
+    storeName: z.string().min(1, "Store name is required"),
+    storePhoneCode: z.string().min(1, "Country code is required"),
+    storePhoneNumber: z.string().min(1, "Phone number is required"),
+    storeAddress: z.string().optional(),
+    address2: z.string().optional(),
+    storeCountry: z.string().optional(),
+    storeCity: z.string().optional(),
+    sameDayDelivery: z.boolean().optional(),
+    orderProcessingTime: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.sameDayDelivery && !data.orderProcessingTime?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["orderProcessingTime"],
+        message: "Please select an estimated processing time.",
+      });
+    }
+  });
 
 type StoreInfoValues = z.infer<typeof storeInfoSchema>;
 
@@ -97,6 +126,8 @@ export function StoreInformation() {
       address2: "",
       storeCountry: "",
       storeCity: "",
+      sameDayDelivery: false,
+      orderProcessingTime: "",
     },
   });
 
@@ -133,9 +164,11 @@ export function StoreInformation() {
         storeAddress: storeData.storeAddress || "",
         storeCountry: storeData.country || "",
         storeCity: storeData.city || "",
+        sameDayDelivery: storeData.sameDayDelivery ?? false,
+        orderProcessingTime: storeData.orderProcessingTime || "",
       });
     }
-  }, [storeData, reset]);
+  }, [storeData, reset, detectedTargetCountry]);
 
   const onSubmit = async (values: StoreInfoValues) => {
     if (!storeId || needsBankVerification) return;
@@ -145,6 +178,12 @@ export function StoreInformation() {
       formData.append("storeName", values.storeName);
       formData.append("storeCountryCode", values.storePhoneCode);
       formData.append("storePhoneNumber", values.storePhoneNumber);
+      formData.append("sameDayDelivery", values.sameDayDelivery ? "true" : "false");
+      if (values.orderProcessingTime) {
+        formData.append("orderProcessingTime", values.orderProcessingTime);
+      } else {
+        formData.append("orderProcessingTime", "");
+      }
 
       const storeImageFile = Array.isArray(values.storeImage)
         ? values.storeImage[0]
@@ -357,6 +396,132 @@ export function StoreInformation() {
                   </div>
                 )}
               />
+
+              <div className="flex flex-col gap-1.5 border-t border-slate-100 pt-6 dark:border-slate-800/60">
+                <FieldLabel className="text-sm font-semibold">
+                  Does your Store offer same-day delivery? <span className="text-red-500">*</span>
+                </FieldLabel>
+                <p className="text-xs text-slate-500">
+                  Let customers know if their orders can be prepared and delivered or picked up on
+                  the same day.
+                </p>
+
+                <Controller
+                  name="sameDayDelivery"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="grid max-w-sm grid-cols-2 gap-3 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          field.onChange(true);
+                        }}
+                        className={cn(
+                          "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all",
+                          field.value === true
+                            ? "border-emerald-600 bg-emerald-50 text-emerald-950 shadow-sm ring-2 ring-emerald-600/20"
+                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                        )}
+                      >
+                        <CheckCircle2
+                          className={cn(
+                            "size-4",
+                            field.value === true ? "text-emerald-600" : "text-slate-400",
+                          )}
+                        />
+                        Yes
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          field.onChange(false);
+                          setValue("orderProcessingTime", "", {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }}
+                        className={cn(
+                          "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all",
+                          field.value === false
+                            ? "border-slate-800 bg-slate-900 text-white shadow-sm"
+                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                        )}
+                      >
+                        <XCircle
+                          className={cn(
+                            "size-4",
+                            field.value === false ? "text-white" : "text-slate-400",
+                          )}
+                        />
+                        No
+                      </button>
+                    </div>
+                  )}
+                />
+              </div>
+
+              <Controller
+                name="sameDayDelivery"
+                control={control}
+                render={({ field: sameDayField }) => (
+                  <>
+                    {sameDayField.value && (
+                      <div className="mt-1 flex flex-col gap-1.5 border-t border-slate-100 pt-4 dark:border-slate-800/60">
+                        <FieldLabel
+                          htmlFor="orderProcessingTime"
+                          className="text-sm font-semibold text-slate-800 dark:text-slate-200"
+                        >
+                          Estimated Order Processing Time <span className="text-red-500">*</span>
+                        </FieldLabel>
+                        <p className="text-xs text-slate-500">
+                          Required preparation time before an order is ready for fulfillment.
+                        </p>
+                        <Controller
+                          name="orderProcessingTime"
+                          control={control}
+                          render={({ field }) => (
+                            <div className="max-w-md pt-1">
+                              <Select
+                                value={field.value}
+                                onValueChange={(val) => {
+                                  field.onChange(val ?? "");
+                                }}
+                              >
+                                <SelectTrigger
+                                  id="orderProcessingTime"
+                                  aria-invalid={!!errors.orderProcessingTime}
+                                  className={cn(
+                                    "h-11! w-full rounded-xl border-slate-200 bg-white text-sm",
+                                    errors.orderProcessingTime && "border-red-400 bg-red-50/30",
+                                  )}
+                                >
+                                  <SelectValue placeholder="Select processing time" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {ORDER_PROCESSING_TIME_OPTIONS.map((opt) => (
+                                    <SelectItem key={opt} value={opt}>
+                                      <div className="flex items-center gap-2">
+                                        <Clock className="size-3.5 text-emerald-600" />
+                                        <span>{opt}</span>
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        />
+                        {errors.orderProcessingTime && (
+                          <p className="text-xs font-medium text-red-500">
+                            {errors.orderProcessingTime.message as string}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              />
             </div>
 
             {!needsBankVerification && (
@@ -378,6 +543,13 @@ export function StoreInformation() {
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           <ProfileBankVerification />
           <KycVerificationCard lead={partnerLead} />
+          <div className="md:col-span-2">
+            <OperationalPreferencesCard
+              lead={partnerLead}
+              storeSameDayDelivery={storeData?.sameDayDelivery}
+              storeOrderProcessingTime={storeData?.orderProcessingTime}
+            />
+          </div>
           <AdditionalDocumentsCard lead={partnerLead} />
           <LocationDetailsCard lead={partnerLead} />
         </div>

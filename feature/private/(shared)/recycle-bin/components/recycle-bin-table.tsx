@@ -6,14 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RotateCcw, Trash2, Trash2Icon } from "lucide-react";
 import { COLUMNS_BY_ENTITY } from "../columns/recycled-columns";
 import { RecycleBinTableProps } from "../types/recycle-bin.types";
-import { useProfile } from "@/components/providers/profile-provider";
 import { useMemo } from "react";
 
 const ENTITY_TITLES: Record<string, string> = {
   users: "Deleted Users",
   stores: "Deleted Stores",
   items: "Deleted Items",
-  departments: "Deleted Departments",
+  // departments: "Deleted Departments",
   categories: "Deleted Categories",
   "city-managers": "Deleted City Managers",
   "country-managers": "Deleted Country Managers",

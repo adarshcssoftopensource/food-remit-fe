@@ -15,7 +15,6 @@ export type RecycleEntityType =
   | "users"
   | "stores"
   | "items"
-  | "departments"
   | "categories"
   | "city-managers"
   | "country-managers"
@@ -55,7 +54,6 @@ const ENDPOINT_MAP: Record<RecycleEntityType, string> = {
   users: USER_MANAGEMENT_ENDPOINTS.GET_RECYCLED_USERS,
   stores: STORE_ENDPOINTS.GET_RECYCLED_STORES,
   items: CATALOGUE_MANAGEMENT_ENDPOINTS.GET_RECYCLED_ITEMS,
-  departments: CATALOGUE_MANAGEMENT_ENDPOINTS.GET_RECYCLED_DEPARTMENTS,
   categories: CATALOGUE_MANAGEMENT_ENDPOINTS.GET_RECYCLED_CATEGORIES,
   "city-managers": CITY_MANAGER_ENDPOINTS.GET_RECYCLED_CITY_MANAGERS,
   "country-managers": COUNTRY_MANAGER_ENDPOINTS.GET_RECYCLED_COUNTRY_MANAGERS,

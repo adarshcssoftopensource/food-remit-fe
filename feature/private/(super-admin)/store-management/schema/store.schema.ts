@@ -13,6 +13,8 @@ export const storeSchema = z
     storeCity: z.string().min(1, "City is required"),
     storeTax: z.coerce.number().min(0).max(100).optional(),
     foodRemitCommission: z.coerce.number().min(0).max(100).optional(),
+    sameDayDelivery: z.boolean().optional(),
+    orderProcessingTime: z.string().optional(),
 
     managerImage: z.any().optional(),
     managerFirstName: z.string().min(1, "First name is required"),
@@ -42,6 +44,14 @@ export const storeSchema = z
         code: z.ZodIssueCode.custom,
         path: ["managerPhoneNumber"],
         message: managerPhoneError,
+      });
+    }
+
+    if (data.sameDayDelivery && !data.orderProcessingTime?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["orderProcessingTime"],
+        message: "Please select an estimated processing time.",
       });
     }
   });

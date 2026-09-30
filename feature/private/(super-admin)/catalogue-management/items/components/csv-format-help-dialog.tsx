@@ -47,15 +47,11 @@ const CSV_COLUMNS = [
     note: "true/false, yes/no, 1/0 — default false (blank = non-perishable)",
   },
   { name: "price", required: true, note: "Valid number ≥ 0" },
-  {
-    name: "departmentName",
-    required: true,
-    note: "Matched in your store; created if missing",
-  },
+
   {
     name: "categoryName",
     required: true,
-    note: "Created under the row department if missing",
+    note: "Created if missing",
   },
 ];
 

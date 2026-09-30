@@ -41,6 +41,8 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
     storeCity: store.storeCity,
     storeTax: store.storeTax,
     foodRemitCommission: store.foodRemitCommission,
+    sameDayDelivery: store.sameDayDelivery ?? false,
+    orderProcessingTime: store.orderProcessingTime ?? "",
     managerImage: store.managerImage,
     managerFirstName: store.managerFirstName,
     managerLastName: store.managerLastName,
@@ -94,6 +96,12 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
       if (values.address2) storeFormData.append("storeAddress2", values.address2);
       storeFormData.append("country", values.storeCountry);
       storeFormData.append("city", values.storeCity);
+      storeFormData.append("sameDayDelivery", values.sameDayDelivery ? "true" : "false");
+      if (values.orderProcessingTime) {
+        storeFormData.append("orderProcessingTime", values.orderProcessingTime);
+      } else {
+        storeFormData.append("orderProcessingTime", "");
+      }
       if (values.storeTax !== undefined) storeFormData.append("storeTax", String(values.storeTax));
       if (values.foodRemitCommission !== undefined)
         storeFormData.append("foodRemitCommission", String(values.foodRemitCommission));

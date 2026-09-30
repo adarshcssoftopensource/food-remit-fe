@@ -220,60 +220,6 @@ export const itemsColumns: ColumnDef<any>[] = [
   },
 ];
 
-// DEPARTMENTS COLUMNS
-export const departmentsColumns: ColumnDef<any>[] = [
-  createSNoColumn(),
-  createSelectColumn(),
-  {
-    accessorKey: "departmentName",
-    header: "Department Name",
-    enableSorting: true,
-    cell: ({ row }) => (
-      <p className="font-semibold text-slate-900 dark:text-white">{row.original.departmentName}</p>
-    ),
-  },
-  {
-    accessorKey: "countryName",
-    header: "Country / City",
-    cell: ({ row }) => (
-      <div className="flex flex-col gap-0.5">
-        <span className="text-xs text-slate-600 dark:text-slate-300">
-          {row.original.countryName || "Global"}{" "}
-          {row.original.cityName ? `/ ${row.original.cityName}` : ""}
-        </span>
-        {row.original.storeName && (
-          <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500">
-            <Store className="h-3 w-3 shrink-0 text-slate-400" />
-            {row.original.storeName}
-          </span>
-        )}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <StatusBadge
-        status={row.original.status}
-        activeLabel="ACTIVE"
-        displayLabel={row.original.status === "ACTIVE" ? "Active" : "Inactive"}
-      />
-    ),
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => (
-      <RecycledEntityActionsCell
-        entityType="departments"
-        entity={row.original}
-        entityNameField="departmentName"
-      />
-    ),
-  },
-];
-
 // CATEGORIES COLUMNS
 export const categoriesColumns: ColumnDef<any>[] = [
   createSNoColumn(),
@@ -431,7 +377,6 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
   users: usersColumns,
   stores: withDeletedByColumn(storesColumns, true),
   items: withDeletedByColumn(itemsColumns, true),
-  departments: withDeletedByColumn(departmentsColumns, true),
   categories: withDeletedByColumn(categoriesColumns, true),
   "city-managers": withDeletedByColumn(cityManagersColumns, true),
   "country-managers": withDeletedByColumn(countryManagersColumns, true),
