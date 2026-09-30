@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import { ItemDetailsCard } from "./components/item-details-card";
 import { ItemInfoSection } from "./components/item-info-section";
 import { ItemMediaCard } from "./components/item-media-card";
+import { ItemOptionsCard } from "./components/item-options-card";
 import { ItemPlacementsCard } from "./components/item-placements-card";
 import { ItemProductPricingCard } from "./components/item-product-pricing-card";
 import { ItemViewSkeleton } from "./components/item-view-skeleton";
@@ -112,6 +113,12 @@ export function ItemView({ id }: ItemViewProps) {
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
           <ItemProductPricingCard item={item} />
         </div>
+
+        {item.options && item.options.length > 0 && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <ItemOptionsCard item={item} />
+          </div>
+        )}
 
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
           <ItemInfoSection item={item} />

@@ -105,8 +105,20 @@ export interface ItemData {
   barcodeImage?: string | null;
   qrCodeImage?: string | null;
 
+  options?: ItemOptionData[];
+
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ItemOptionData {
+  id: string;
+  itemId: string;
+  optionName: string;
+  quantityPerPack?: number | null;
+  netWeight?: number | null;
+  weightUnit?: string | null;
+  price: number;
 }
 
 export interface UseGetItemsArgs {
