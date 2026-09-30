@@ -6,15 +6,25 @@ export function LockAuthScroll() {
   useEffect(() => {
     const html = document.documentElement;
     const body = document.body;
-    const previousHtmlOverflow = html.style.overflow;
-    const previousBodyOverflow = body.style.overflow;
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
 
-    html.style.overflow = "hidden";
-    body.style.overflow = "hidden";
+    const updateScrollLock = () => {
+      if (mediaQuery.matches) {
+        html.style.overflow = "hidden";
+        body.style.overflow = "hidden";
+      } else {
+        html.style.overflow = "";
+        body.style.overflow = "";
+      }
+    };
+
+    updateScrollLock();
+    mediaQuery.addEventListener("change", updateScrollLock);
 
     return () => {
-      html.style.overflow = previousHtmlOverflow;
-      body.style.overflow = previousBodyOverflow;
+      mediaQuery.removeEventListener("change", updateScrollLock);
+      html.style.overflow = "";
+      body.style.overflow = "";
     };
   }, []);
 
