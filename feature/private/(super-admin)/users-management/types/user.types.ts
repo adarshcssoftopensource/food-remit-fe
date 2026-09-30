@@ -8,6 +8,8 @@ export type UserData = {
   phoneNumber: string;
   countryCode: string;
   createdAt: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
   userStatus: "ACTIVE" | "INACTIVE";
   profileImage?: string;
   country: string;

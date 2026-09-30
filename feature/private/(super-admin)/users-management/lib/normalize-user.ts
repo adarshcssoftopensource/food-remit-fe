@@ -13,6 +13,8 @@ export function normalizeUser(item: Record<string, unknown>): UserData {
   const createdAt = String(
     item.createdAt ?? item.created_at ?? item.registeredOn ?? item.registered_at ?? "",
   );
+  const updatedAt = item.updatedAt ?? item.updated_at;
+  const deletedAt = item.deletedAt ?? item.deleted_at;
 
   const rawStatus = item.userStatus ?? item.status;
   const isActive =
@@ -36,6 +38,8 @@ export function normalizeUser(item: Record<string, unknown>): UserData {
     state: String(item.state ?? ""),
     city: String(item.city ?? ""),
     createdAt,
+    updatedAt: updatedAt ? String(updatedAt) : undefined,
+    deletedAt: deletedAt ? String(deletedAt) : null,
     address: String(item.address),
     userStatus: isActive ? "ACTIVE" : "INACTIVE",
     profileImage: item.profileImage ? String(item.profileImage) : undefined,

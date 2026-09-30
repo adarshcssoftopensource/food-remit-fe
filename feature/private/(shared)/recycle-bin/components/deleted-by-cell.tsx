@@ -62,7 +62,12 @@ export const movedDateColumn: ColumnDef<any> = {
   header: "Moved Date",
   enableSorting: true,
   cell: ({ row }) => {
-    const raw = row.original.deletedAt || row.original.updatedAt;
+    const raw =
+      row.original.deletedAt ||
+      row.original.updatedAt ||
+      row.original.modifiedOn ||
+      row.original.addedOn ||
+      row.original.createdAt;
     if (!raw) return <span className="text-xs text-slate-400">—</span>;
     const d = new Date(raw);
     if (isNaN(d.getTime())) return <span className="text-xs text-slate-400">—</span>;
