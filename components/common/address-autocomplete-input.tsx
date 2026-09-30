@@ -67,10 +67,10 @@ export function AddressAutocompleteInput({
 
   const query = debouncedValue.trim();
   const visibleSuggestions = query ? suggestions : [];
-  const showDropdown = isOpen && visibleSuggestions.length > 0;
+  const showDropdown = !disabled && isOpen && visibleSuggestions.length > 0;
 
   useEffect(() => {
-    if (!isReady || !query) return;
+    if (disabled || !isReady || !query) return;
 
     if (!userEditedRef.current) return;
 
@@ -106,9 +106,10 @@ export function AddressAutocompleteInput({
     return () => {
       cancelled = true;
     };
-  }, [query, isReady, getSuggestions, countryCode]);
+  }, [query, isReady, getSuggestions, countryCode, disabled]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (disabled) return;
     userEditedRef.current = true;
     suppressFetchRef.current = false;
     onChange(e.target.value);
@@ -225,6 +226,7 @@ export function AddressAutocompleteInput({
             autoComplete={reactId}
             spellCheck={false}
             disabled={disabled}
+            readOnly={disabled}
             aria-invalid={invalid}
             aria-expanded={showDropdown}
             aria-haspopup="listbox"

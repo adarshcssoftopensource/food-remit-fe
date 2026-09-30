@@ -41,6 +41,7 @@ export function ProfileForm() {
   const queryClient = useQueryClient();
   const updateProfileMutation = useUpdateProfile();
   const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+  const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
   const isViewOnly = isEmployee || needsBankVerification;
   const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
 
@@ -69,7 +70,7 @@ export function ProfileForm() {
     formState: { errors, isDirty },
     reset,
   } = useForm<ProfileDetailsValues>({
-    resolver: zodResolver(getProfileDetailsSchema(profile?.roleCode === "STORE_MANAGER")),
+    resolver: zodResolver(getProfileDetailsSchema(isStoreManager)),
     values: {
       firstName,
       lastName,
@@ -95,13 +96,13 @@ export function ProfileForm() {
       formData.append("lastName", data.lastName);
       formData.append("name", `${data.firstName} ${data.lastName}`.trim());
 
-      if (data.address !== undefined) {
-        formData.append("address", data.address);
+      if (!isStoreManager) {
+        if (data.address !== undefined) formData.append("address", data.address);
+        if (data.country !== undefined) formData.append("country", data.country);
+        if (data.state !== undefined) formData.append("state", data.state);
+        if (data.city !== undefined) formData.append("city", data.city);
+        if (data.zipCode !== undefined) formData.append("zipCode", data.zipCode);
       }
-      if (data.country !== undefined) formData.append("country", data.country);
-      if (data.state !== undefined) formData.append("state", data.state);
-      if (data.city !== undefined) formData.append("city", data.city);
-      if (data.zipCode !== undefined) formData.append("zipCode", data.zipCode);
 
       await updateProfileMutation.mutateAsync(formData);
       successToast({ title: "Profile updated successfully!" });
@@ -360,7 +361,11 @@ export function ProfileForm() {
                         addressFormat="full"
                         placeholder="Search address..."
                         invalid={!!errors.address}
+                        disabled={isStoreManager}
                       />
+                      {isStoreManager && (
+                        <p className="text-[11px] text-slate-400">Address cannot be changed</p>
+                      )}
                       {errors.address && (
                         <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
                       )}
@@ -369,7 +374,7 @@ export function ProfileForm() {
                 />
               )}
 
-              {profile?.roleCode === "STORE_MANAGER" && (
+              {isStoreManager && (
                 <>
                   <Controller
                     name="country"
@@ -393,6 +398,7 @@ export function ProfileForm() {
                                 countryError={errors.country?.message}
                                 stateError={errors.state?.message}
                                 cityError={errors.city?.message}
+                                disabled
                               />
                             )}
                           />
@@ -414,7 +420,9 @@ export function ProfileForm() {
                           value={field.value || ""}
                           id="zipCode"
                           placeholder="Enter Zipcode"
-                          className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                          disabled
+                          readOnly
+                          className="h-11 cursor-not-allowed rounded-xl border-slate-200 bg-slate-100 text-slate-600 disabled:cursor-not-allowed disabled:opacity-75"
                         />
                         {errors.zipCode && (
                           <p className="text-xs font-medium text-red-500">

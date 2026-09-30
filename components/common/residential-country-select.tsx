@@ -53,7 +53,7 @@ export function ResidentialCountrySelect({
   const { countries: apiCountries } = useGetCountriesDropdown();
 
   useEffect(() => {
-    if (disableAutoDetect) return;
+    if (disabled || disableAutoDetect) return;
     if (autoDetectApplied.current) return;
     if (isDetecting) return;
     if (!detectedName) return;
@@ -66,7 +66,7 @@ export function ResidentialCountrySelect({
       onValueChange(match.name);
     }
     autoDetectApplied.current = true;
-  }, [detectedName, isDetecting, value, onValueChange]);
+  }, [detectedName, isDetecting, value, onValueChange, disabled, disableAutoDetect]);
 
   useEffect(() => {
     if (open) {
@@ -115,10 +115,11 @@ export function ResidentialCountrySelect({
 
   // Sync normalized country name back if it was resolved from a UUID or ISO code
   useEffect(() => {
+    if (disabled) return;
     if (selectedCountry && selectedCountry.name !== value) {
       onValueChange(selectedCountry.name);
     }
-  }, [selectedCountry, value, onValueChange]);
+  }, [selectedCountry, value, onValueChange, disabled]);
 
   const filteredCountries = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -132,8 +133,14 @@ export function ResidentialCountrySelect({
   const isPlaceholder = !selectedCountry;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={disabled ? false : open}
+      onOpenChange={(nextOpen) => {
+        if (!disabled) setOpen(nextOpen);
+      }}
+    >
       <PopoverTrigger
+        disabled={disabled}
         render={
           <Button
             id={id}

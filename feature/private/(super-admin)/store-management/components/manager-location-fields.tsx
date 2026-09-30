@@ -82,12 +82,20 @@ export function ManagerLocationFields({
         <Select
           value={state}
           onValueChange={(v) => {
+            if (disabled) return;
             onStateChange(v ?? "");
             onCityChange("");
           }}
           disabled={disabled || !country}
         >
-          <SelectTrigger className="h-11! w-full rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100">
+          <SelectTrigger
+            disabled={disabled || !country}
+            className={`h-11! w-full rounded-xl border-slate-200 ${
+              disabled || !country
+                ? "cursor-not-allowed bg-slate-100 text-slate-600 opacity-100"
+                : "bg-white"
+            } disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100`}
+          >
             <SelectValue
               placeholder={country ? "Select State (optional)" : "Select country first"}
             />
@@ -111,10 +119,20 @@ export function ManagerLocationFields({
         </Label>
         <Select
           value={city}
-          onValueChange={(value) => onCityChange(value || "")}
+          onValueChange={(value) => {
+            if (disabled) return;
+            onCityChange(value || "");
+          }}
           disabled={disabled || !country}
         >
-          <SelectTrigger className="h-11! w-full min-w-full rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100">
+          <SelectTrigger
+            disabled={disabled || !country}
+            className={`h-11! w-full min-w-full rounded-xl border-slate-200 ${
+              disabled || !country
+                ? "cursor-not-allowed bg-slate-100 text-slate-600 opacity-100"
+                : "bg-white"
+            } disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100`}
+          >
             <SelectValue placeholder={country ? "Select City" : "Select country first"} />
           </SelectTrigger>
           <SelectContent>

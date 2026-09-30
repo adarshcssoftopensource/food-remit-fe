@@ -90,8 +90,14 @@ export function CitySelect({
   const isDisabled = disabled || (!countryId && countryId !== undefined);
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover
+      open={isDisabled ? false : isOpen}
+      onOpenChange={(nextOpen) => {
+        if (!isDisabled) setIsOpen(nextOpen);
+      }}
+    >
       <PopoverTrigger
+        disabled={isDisabled}
         render={
           <Button
             id={id}

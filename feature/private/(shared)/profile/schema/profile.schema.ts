@@ -16,10 +16,10 @@ export const getProfileDetailsSchema = (isStoreAdmin: boolean) =>
     contactNumber: z.string().optional(),
 
     address: z.string().max(200, "Maximum 200 characters are allowed").optional(),
-    country: isStoreAdmin ? z.string().min(1, "Country is required") : z.string().optional(),
-    state: isStoreAdmin ? z.string().min(1, "State is required") : z.string().optional(),
-    city: isStoreAdmin ? z.string().min(1, "City is required") : z.string().optional(),
-    zipCode: isStoreAdmin ? z.string().min(1, "Zipcode is required") : z.string().optional(),
+    country: z.string().optional(),
+    state: z.string().optional(),
+    city: z.string().optional(),
+    zipCode: z.string().optional(),
     image: z.any().optional(),
   });
 
