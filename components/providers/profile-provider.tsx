@@ -31,6 +31,9 @@ export interface AdminProfile {
   roleCode: string;
   phoneNumber: string;
   countryCode?: string | null;
+  countryIsoCode?: string | null;
+  country?: string | null;
+  countryName?: string | null;
   permissions: ProfilePermissions;
   image?: string | null;
   address?: string | null;
@@ -42,6 +45,7 @@ export interface AdminProfile {
     country: string;
     cityName?: string | null;
     countryName?: string | null;
+    countryCode?: string | null;
     addedOn?: string | null;
     addedOnTimestamp?: string | number | null;
     createdAt?: string | null;

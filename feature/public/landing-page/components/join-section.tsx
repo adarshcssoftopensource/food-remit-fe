@@ -74,7 +74,7 @@ export function JoinSection({ data }: JoinSectionProps) {
                 />
               </div>
 
-              <div className="absolute top-[10%] right-[15%] z-20 -rotate-6 sm:top-[20%] sm:right-[5%] md:-right-4 lg:-right-10">
+              <div className="absolute top-[10%] right-[15%] z-20 -rotate-6 sm:top-[20%] sm:right-[5%] md:-right-4 lg:-right-1">
                 <p className="text-right font-serif text-base leading-tight font-bold text-white italic drop-shadow-lg sm:text-xl md:text-2xl lg:text-3xl">
                   Good
                   <br />

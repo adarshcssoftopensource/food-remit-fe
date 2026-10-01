@@ -19,17 +19,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import PhoneInputComponent from "@/components/ui/phone-input";
+import PhoneInputComponent, { findPhoneCountry } from "@/components/ui/phone-input";
 import { useProfile } from "@/components/providers/profile-provider";
 import {
   EmployeeFormSchema,
   EmployeeFormValues,
 } from "@/feature/private/(store-admin)/employee-management/schema/employee.schema";
 import { type Employee } from "@/feature/private/(store-admin)/employee-management/types/employee-management";
-import { toPhoneDigits } from "@/lib/phone";
+import { useGetCountriesDropdown } from "@/feature/private/(shared)/settings/hooks/use-get-countries-dropdown";
+import { getCountryPhoneInfo, toPhoneDigits } from "@/lib/phone";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Contact, MapPin, Save, UserCircle, UserPen, UserPlus, X } from "lucide-react";
-import { useState } from "react";
+import { Contact, Globe2, MapPin, Save, UserCircle, UserPen, UserPlus, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateEmployee } from "../hooks/use-create-employee";
 import { useUpdateEmployee } from "../hooks/use-update-employee";
@@ -58,6 +59,66 @@ export function EmployeeDialog({
 
   const isPending = isCreating || isUpdating;
   const { profile } = useProfile();
+  const { countries: apiCountries } = useGetCountriesDropdown();
+  const store = profile?.stores?.[0];
+
+  const { targetCountryIso, targetCountryName, defaultDialCode } = useMemo(() => {
+    // 1. If store has countryCode (e.g. "US", "IN")
+    if (store?.countryCode && store.countryCode.length === 2) {
+      const iso = store.countryCode.toUpperCase();
+      const phoneInfo = getCountryPhoneInfo(iso, apiCountries);
+      return {
+        targetCountryIso: iso,
+        targetCountryName: store.countryName || phoneInfo?.isoCode || iso,
+        defaultDialCode: phoneInfo?.dialCode || "+1",
+      };
+    }
+
+    // 2. Check store.countryName or store.country
+    const storeCountryRaw = store?.countryName || store?.country;
+    if (storeCountryRaw) {
+      const phoneInfo = getCountryPhoneInfo(storeCountryRaw, apiCountries);
+      if (phoneInfo?.isoCode) {
+        return {
+          targetCountryIso: phoneInfo.isoCode.toUpperCase(),
+          targetCountryName: store?.countryName || phoneInfo.isoCode,
+          defaultDialCode: phoneInfo.dialCode,
+        };
+      }
+    }
+
+    // 3. Check profile countryIsoCode / countryName / country
+    const profileIsoRaw = (profile as any)?.countryIsoCode;
+    if (profileIsoRaw && profileIsoRaw.length === 2) {
+      const iso = profileIsoRaw.toUpperCase();
+      const phoneInfo = getCountryPhoneInfo(iso, apiCountries);
+      return {
+        targetCountryIso: iso,
+        targetCountryName: (profile as any)?.countryName || iso,
+        defaultDialCode: phoneInfo?.dialCode || "+1",
+      };
+    }
+
+    const profileCountryRaw = (profile as any)?.countryName || (profile as any)?.country;
+    if (profileCountryRaw) {
+      const phoneInfo = getCountryPhoneInfo(profileCountryRaw, apiCountries);
+      if (phoneInfo?.isoCode) {
+        return {
+          targetCountryIso: phoneInfo.isoCode.toUpperCase(),
+          targetCountryName: (profile as any)?.countryName || phoneInfo.isoCode,
+          defaultDialCode: phoneInfo.dialCode,
+        };
+      }
+    }
+
+    // 4. Default fallback: US
+    return {
+      targetCountryIso: "US",
+      targetCountryName: "United States",
+      defaultDialCode: "+1",
+    };
+  }, [store, profile, apiCountries]);
+
   /** Locked ISO for phone flag (US vs CA for +1). Never pass only "+1" as defaultCountry. */
   const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
 
@@ -68,7 +129,7 @@ export function EmployeeDialog({
       lastName: "",
       email: "",
       phoneNumber: "",
-      countryCode: "",
+      countryCode: defaultDialCode || "+1",
       address: "",
       city: "",
       state: "",
@@ -82,14 +143,15 @@ export function EmployeeDialog({
   if (open !== wasOpen) {
     setWasOpen(open);
     if (open) {
-      setPhoneIso(undefined);
       if (isEdit && employee) {
+        const empCountry = findPhoneCountry(employee.countryCode);
+        setPhoneIso(empCountry?.isoCode || targetCountryIso);
         form.reset({
           firstName: employee.firstName,
           lastName: employee.lastName,
           email: employee.email,
           phoneNumber: employee.phoneNumber || "",
-          countryCode: employee.countryCode || "",
+          countryCode: employee.countryCode || defaultDialCode,
           address: employee.address || "",
           city: employee.city || "",
           state: employee.state || "",
@@ -98,12 +160,13 @@ export function EmployeeDialog({
           accountStatus: employee.accountStatus,
         });
       } else {
+        setPhoneIso(targetCountryIso);
         form.reset({
           firstName: "",
           lastName: "",
           email: "",
           phoneNumber: "",
-          countryCode: "",
+          countryCode: defaultDialCode,
           address: "",
           city: "",
           state: "",
@@ -145,10 +208,22 @@ export function EmployeeDialog({
   };
 
   const handlePlaceSelect = (place: any) => {
-    form.setValue("address", place.streetAddress || place.name || "");
-    form.setValue("city", place.city || "");
-    form.setValue("state", place.state || "");
-    form.setValue("zipCode", place.postalCode || "");
+    form.setValue("address", place.streetAddress || place.name || "", {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    form.setValue("city", place.city || "", {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    form.setValue("state", place.state || "", {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    form.setValue("zipCode", place.postalCode || "", {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   return (
@@ -301,13 +376,7 @@ export function EmployeeDialog({
                           <FormControl>
                             <PhoneInputComponent
                               valueMode="national"
-                              defaultCountry={
-                                phoneIso ||
-                                (profile as any)?.country ||
-                                (profile as any)?.countryName ||
-                                (profile as any)?.stores?.[0]?.country ||
-                                "US"
-                              }
+                              defaultCountry={phoneIso || targetCountryIso}
                               value={field.value || ""}
                               onChange={(val, data) => {
                                 if (data && data.dialCode) {
@@ -339,14 +408,22 @@ export function EmployeeDialog({
                 </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-                  <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-4">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-violet-50">
-                      <MapPin className="size-5 text-violet-600" />
+                  <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-9 items-center justify-center rounded-xl bg-violet-50">
+                        <MapPin className="size-5 text-violet-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-bold text-slate-800">Location</h3>
+                        <p className="text-xs text-slate-500">Employee residential address</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-base font-bold text-slate-800">Location</h3>
-                      <p className="text-xs text-slate-500">Employee residential address</p>
-                    </div>
+                    {targetCountryName && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 shadow-2xs">
+                        <Globe2 className="size-3.5 text-slate-400" />
+                        {targetCountryName}
+                      </span>
+                    )}
                   </div>
                   <div className="space-y-6 p-6">
                     <div className="w-full">
@@ -358,10 +435,11 @@ export function EmployeeDialog({
                             <FormLabel className="font-semibold text-slate-700">Address</FormLabel>
                             <FormControl className="w-full">
                               <AddressAutocompleteInput
+                                countryCode={targetCountryIso}
                                 value={field.value || ""}
                                 onChange={field.onChange}
                                 onPlaceSelect={handlePlaceSelect}
-                                placeholder="Search for an address"
+                                placeholder={`Search for an address in ${targetCountryName}`}
                               />
                             </FormControl>
                             <FormMessage />
