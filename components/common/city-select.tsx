@@ -46,6 +46,7 @@ export function CitySelect({
       }, 10);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [isOpen]);
 
   const { data: citiesResponse, isLoading } = useGetCities({

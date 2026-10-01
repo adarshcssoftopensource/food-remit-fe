@@ -7,7 +7,7 @@ const LOCATION_TEXT_REGEX = /^[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\s.'-]+$/;
 function parseTimeToMinutes(timeStr: string, isCloseTime: boolean = false): number {
   if (!timeStr || timeStr === "00:00") return 0;
   const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-  if (!match) return 0;
+  if (!match || !match[1] || !match[2] || !match[3]) return 0;
   let hours = parseInt(match[1], 10);
   const minutes = parseInt(match[2], 10);
   const ampm = match[3].toUpperCase();
@@ -77,7 +77,7 @@ export const partnerLeadSchema = z
                   code: z.ZodIssueCode.custom,
                   path: ["hoursOfOperation"],
                   message:
-                    invalidDays.length === 1
+                    invalidDays.length === 1 && invalidDays[0]
                       ? `Please select opening and closing times for ${invalidDays[0].day}`
                       : `Please select opening and closing times for all open days`,
                 });
@@ -94,7 +94,7 @@ export const partnerLeadSchema = z
                   code: z.ZodIssueCode.custom,
                   path: ["hoursOfOperation"],
                   message:
-                    sequencedDays.length === 1
+                    sequencedDays.length === 1 && sequencedDays[0]
                       ? `Closing time must be after opening time on ${sequencedDays[0].day}`
                       : `Closing time must be after opening time on all open days`,
                 });

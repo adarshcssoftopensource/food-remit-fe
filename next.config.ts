@@ -14,10 +14,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Disable heavy checks during Next.js build (run them separately via scripts) to prevent system freeze/lag
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },

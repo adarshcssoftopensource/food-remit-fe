@@ -34,7 +34,7 @@ export function useGetAmountLimits(args?: UseGetAmountLimitsArgs) {
       amount: item.amount,
       currency: item.currency ?? null,
       email: item.email ?? null,
-      createdAt: item.createdAt ? item.createdAt.split("T")[0] : (item.addedOn ?? ""),
+      createdAt: item.createdAt ? (item.createdAt.split("T")[0] ?? "") : (item.addedOn ?? ""),
     }));
   }, [rawData]);
 

@@ -296,15 +296,17 @@ export function OrderProgressTimeline({ order }: OrderProgressTimelineProps) {
               step.state === "current" &&
               (step.key === "payment" || (step.key === "response" && pureRequested));
 
+            const nextStep = steps[index + 1];
+
             return (
               <li key={step.key} className="relative flex gap-3.5 pb-6 last:pb-0">
                 {!isLast && (
                   <span
                     className={cn(
                       "absolute top-9 left-[15px] h-[calc(100%-24px)] w-0.5",
-                      steps[index + 1].state === "upcoming"
+                      nextStep?.state === "upcoming"
                         ? "bg-slate-200"
-                        : steps[index + 1].state === "failed" || step.state === "failed"
+                        : nextStep?.state === "failed" || step.state === "failed"
                           ? "bg-red-300"
                           : isAmberCurrent
                             ? "bg-amber-300"

@@ -1,2 +1,7 @@
+echo "🔍 [1/2] Checking staged files (Lint & Format via lint-staged)..."
 npx lint-staged
+
+echo "⚡ [2/2] Verifying TypeScript types..."
 pnpm exec tsc --noEmit
+
+echo "✅ All pre-commit checks passed successfully!"

@@ -162,7 +162,7 @@ export function parseOrderNotification(message: string) {
         if (line.startsWith("•") || line.match(/^[-*]\s+.*\s+x\s+\d+/)) {
           const clean = line.replace(/^[•\-*]\s*/, "").trim();
           const match = clean.match(/^(.*?)\s+x\s+(\d+)\s+@\s+(.*)$/);
-          if (match) {
+          if (match && match[1] && match[2] && match[3]) {
             items.push({
               name: match[1].trim(),
               qty: match[2].trim(),
@@ -170,7 +170,7 @@ export function parseOrderNotification(message: string) {
             });
             if (!detectedCurrency) {
               const currMatch = match[3].trim().match(/^([A-Za-z$₹₱€£]+)/);
-              if (currMatch) detectedCurrency = currMatch[1];
+              if (currMatch && currMatch[1]) detectedCurrency = currMatch[1];
             }
           } else if (clean) {
             items.push({
@@ -186,7 +186,7 @@ export function parseOrderNotification(message: string) {
       if (line.startsWith("Item Price")) {
         // e.g. "Item Price (Including Markup 10.0%): INR 566.00"
         const m = line.match(/Markup\s+([\d.]+%?)/i);
-        if (m) markup = m[1];
+        if (m && m[1]) markup = m[1];
         subtotal = line.split(":").slice(1).join(":").trim();
       } else if (line.startsWith("Items Subtotal:")) {
         subtotal = line.replace("Items Subtotal:", "").trim();
@@ -213,7 +213,7 @@ export function parseOrderNotification(message: string) {
       } else if (line.startsWith("Food Remit Commission")) {
         // "Food Remit Commission (5.0%): -INR 25.73"
         const m = line.match(/\(([\d.]+%?)\)/);
-        if (m) commissionPercent = m[1];
+        if (m && m[1]) commissionPercent = m[1];
         commission = line.split(":").slice(1).join(":").trim();
       } else if (line.startsWith("Total Settlement:")) {
         vendorSettlement = line.replace("Total Settlement:", "").trim();
@@ -231,7 +231,7 @@ export function parseOrderNotification(message: string) {
   if (!detectedCurrency) {
     const textToCheck = `${grandTotal} ${subtotal} ${fee} ${tax} ${vendorBase}`;
     const m = textToCheck.match(/\b(INR|CAD|USD|PHP|GBP|AUD|AED|₹|₱|\$|€|£)\b/);
-    if (m) detectedCurrency = m[1];
+    if (m && m[1]) detectedCurrency = m[1];
   }
 
   // Customer parsing
@@ -240,10 +240,10 @@ export function parseOrderNotification(message: string) {
   let customerEmail = "";
 
   if (customerRaw.includes("•")) {
-    const [namePhone, email] = customerRaw.split("•").map((s) => s.trim());
-    customerEmail = email || "";
+    const [namePhone = "", email = ""] = customerRaw.split("•").map((s) => s.trim());
+    customerEmail = email;
     const phoneMatch = namePhone.match(/^(.*?)\s*\((.*?)\)$/);
-    if (phoneMatch) {
+    if (phoneMatch && phoneMatch[1] && phoneMatch[2]) {
       customerName = phoneMatch[1].trim();
       customerPhone = phoneMatch[2].trim();
     } else {
@@ -251,7 +251,7 @@ export function parseOrderNotification(message: string) {
     }
   } else {
     const phoneMatch = customerRaw.match(/^(.*?)\s*\((.*?)\)$/);
-    if (phoneMatch) {
+    if (phoneMatch && phoneMatch[1] && phoneMatch[2]) {
       customerName = phoneMatch[1].trim();
       customerPhone = phoneMatch[2].trim();
     }
@@ -261,7 +261,7 @@ export function parseOrderNotification(message: string) {
   let recipientName = recipientRaw;
   let recipientPhone = "";
   const recMatch = recipientRaw.match(/^(.*?)\s*\((.*?)\)$/);
-  if (recMatch) {
+  if (recMatch && recMatch[1] && recMatch[2]) {
     recipientName = recMatch[1].trim();
     recipientPhone = recMatch[2].trim();
   }

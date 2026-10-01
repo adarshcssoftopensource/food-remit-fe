@@ -77,7 +77,7 @@ export function MultiLanguageSelect({
       .map((code) => {
         const countryCode = languageToCountry[code];
         const flag = countryCode ? getFlagEmoji(countryCode) : "🌐";
-        const langName = allLangs[code];
+        const langName = allLangs[code] || code;
         return {
           value: langName,
           label: `${flag} ${langName}`,

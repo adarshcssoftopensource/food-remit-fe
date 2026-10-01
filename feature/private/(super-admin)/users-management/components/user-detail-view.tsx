@@ -41,8 +41,8 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
   const [sorting, setSorting] = useState<SortingState>([]);
   const debouncedSearch = useDebounce(searchValue, 500);
 
-  const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
-  const sortOrder = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
+  const sortBy = sorting[0]?.id;
+  const sortOrder = sorting[0] ? (sorting[0].desc ? "desc" : "asc") : undefined;
 
   const orderQuery = useMemo(() => {
     if (tab === "requested") {

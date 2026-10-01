@@ -56,22 +56,23 @@ export function FcmProvider({ children }: { children: React.ReactNode }) {
 
   // Setup Firebase foreground listener (if FCM configured)
   useEffect(() => {
+    let unsubscribe: (() => void) | void;
     try {
-      const unsubscribe = setupForegroundListener(() => {
+      unsubscribe = setupForegroundListener(() => {
         playNotificationSound();
 
         void queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.NOTIFICATION_COUNT });
         void queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.NOTIFICATIONS });
       });
-
-      return () => {
-        if (typeof unsubscribe === "function") {
-          unsubscribe();
-        }
-      };
     } catch (err) {
       console.warn("FCM foreground listener setup failed:", err);
     }
+
+    return () => {
+      if (typeof unsubscribe === "function") {
+        unsubscribe();
+      }
+    };
   }, [setupForegroundListener, queryClient]);
 
   // Handle live polling notification alerts

@@ -261,7 +261,7 @@ export function AppSidebar() {
         const recycleIndex = utilGroup.items.findIndex(
           (i) => i.url === ROUTES.ADMIN.RECYCLE_BIN || i.title === "Recycle Bin",
         );
-        if (recycleIndex !== -1) {
+        if (recycleIndex !== -1 && utilGroup.items[recycleIndex]) {
           const recycleItem = utilGroup.items[recycleIndex];
           const beforeRecycle = utilGroup.items.slice(0, recycleIndex);
           const afterRecycle = utilGroup.items.slice(recycleIndex + 1);

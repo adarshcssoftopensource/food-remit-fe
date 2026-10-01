@@ -62,7 +62,7 @@ export function useCategoryForm(
         formData.append("cityId", values.cityId);
       }
 
-      if (values.iconFile && values.iconFile.length > 0) {
+      if (values.iconFile && values.iconFile[0]) {
         formData.append("categoryIcon", values.iconFile[0]);
       }
 

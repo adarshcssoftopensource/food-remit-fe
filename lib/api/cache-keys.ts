@@ -108,4 +108,4 @@ export const API_CACHE_KEYS = {
   // Coupons
   COUPONS: ["coupons"],
   COUPON_BY_ID: (id: string) => ["coupon", id],
-};
+} as const;

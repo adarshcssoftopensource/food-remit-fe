@@ -98,11 +98,10 @@ export function TestimonialsFields({ control, errors, setValue }: FieldsProps) {
                 maxFiles={1}
                 initialImages={row.image ? [row.image] : []}
                 onAllImagesChange={(images) => {
-                  if (images.length > 0) {
-                    if (images[0].file) {
-                      setValue(`items.${index}.imageFile`, images[0].file, { shouldDirty: true });
-                    }
-                  } else {
+                  const firstImg = images[0];
+                  if (firstImg?.file) {
+                    setValue(`items.${index}.imageFile`, firstImg.file, { shouldDirty: true });
+                  } else if (images.length === 0) {
                     setValue(`items.${index}.imageFile`, null, { shouldDirty: true });
                     setValue(`items.${index}.image`, "", { shouldDirty: true });
                   }

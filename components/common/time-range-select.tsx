@@ -55,8 +55,9 @@ function AnalogTimePicker({
   const handleClockInteract = (e: React.MouseEvent | React.TouchEvent) => {
     if (!clockRef.current) return;
     const rect = clockRef.current.getBoundingClientRect();
-    const clientX = "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    const touch = "touches" in e ? e.touches[0] : null;
+    const clientX = touch ? touch.clientX : (e as React.MouseEvent).clientX;
+    const clientY = touch ? touch.clientY : (e as React.MouseEvent).clientY;
 
     const x = clientX - rect.left - rect.width / 2;
     const y = clientY - rect.top - rect.height / 2;
@@ -252,7 +253,7 @@ function AnalogTimePicker({
 }
 
 export function TimeRangeSelect({ value, onChange, invalid }: TimeRangeSelectProps) {
-  const [openTime, closeTime] = value ? value.split(" - ") : ["", ""];
+  const [openTime = "", closeTime = ""] = value ? value.split(" - ") : ["", ""];
 
   const handleOpenChange = (newOpen: string) => {
     if (closeTime) {

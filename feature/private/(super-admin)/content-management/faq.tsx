@@ -25,8 +25,8 @@ export function FaqManagementPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(DEFAULT_PAGE_SIZE);
 
-  const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
-  const sortOrder = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
+  const sortBy = sorting[0]?.id;
+  const sortOrder = sorting[0] ? (sorting[0].desc ? "desc" : "asc") : undefined;
 
   const { data, isLoading, isError } = useGetFaqs(
     debouncedSearch || undefined,

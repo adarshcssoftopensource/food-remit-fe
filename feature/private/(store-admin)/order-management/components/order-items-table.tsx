@@ -120,7 +120,7 @@ export function OrderItemsTable({ items, onImageClick, hideQrCode }: OrderItemsT
                   const symbol = getCurrencySymbol(item.unit, "₹");
                   const qrCodeText = item.productBarcode || item.upcCode || item.itemId || "N/A";
                   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrCodeText)}`;
-                  const firstPicture = item.productPicture?.split(",")[0].trim();
+                  const firstPicture = item.productPicture?.split(",")[0]?.trim();
 
                   return (
                     <tr

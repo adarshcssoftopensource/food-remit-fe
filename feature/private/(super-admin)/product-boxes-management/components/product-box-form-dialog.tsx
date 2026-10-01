@@ -113,7 +113,7 @@ export function ProductBoxFormDialog({
     formData.append("price", values.price);
     formData.append("status", values.status.toString());
 
-    if (values.imageFile && values.imageFile.length > 0) {
+    if (values.imageFile && values.imageFile[0]) {
       formData.append("image", values.imageFile[0]);
     } else if (isEditing) {
       if (initialData?.image && !values.existingImage) {

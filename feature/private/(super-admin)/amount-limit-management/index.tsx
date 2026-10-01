@@ -63,9 +63,10 @@ export function AmountLimitManagement() {
   };
 
   const handleSortingChange = (sorting: SortingState) => {
-    if (sorting.length > 0) {
-      setSortBy(sorting[0].id);
-      setSortOrder(sorting[0].desc ? "desc" : "asc");
+    const firstSort = sorting[0];
+    if (firstSort) {
+      setSortBy(firstSort.id);
+      setSortOrder(firstSort.desc ? "desc" : "asc");
     } else {
       setSortBy("createdAt");
       setSortOrder("desc");

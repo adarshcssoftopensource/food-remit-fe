@@ -82,8 +82,8 @@ export function PartnerLeadsManagement() {
   const fromDateStr = applied.fromDate ? format(applied.fromDate, "yyyy-MM-dd") : undefined;
   const toDateStr = applied.toDate ? format(applied.toDate, "yyyy-MM-dd") : undefined;
 
-  const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
-  const sortOrder = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
+  const sortBy = sorting[0]?.id;
+  const sortOrder = sorting[0] ? (sorting[0].desc ? "desc" : "asc") : undefined;
 
   const { leads, stats, pagination, isLoading } = usePartnerLeads(
     debouncedSearch,

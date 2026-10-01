@@ -85,14 +85,18 @@ export function formatScheduleSummary(schedule: DailyScheduleItem[]): string {
     const indices = sorted.map((d) => DAYS_OF_WEEK.indexOf(d as any));
     let isConsecutive = true;
     for (let i = 1; i < indices.length; i++) {
-      if (indices[i] !== indices[i - 1] + 1) {
+      const prev = indices[i - 1];
+      const curr = indices[i];
+      if (prev === undefined || curr === undefined || curr !== prev + 1) {
         isConsecutive = false;
         break;
       }
     }
 
-    if (isConsecutive && sorted.length >= 3) {
-      return `${DAY_ABBR[sorted[0]]} - ${DAY_ABBR[sorted[sorted.length - 1]]}`;
+    const firstDay = sorted[0];
+    const lastDay = sorted[sorted.length - 1];
+    if (isConsecutive && sorted.length >= 3 && firstDay && lastDay) {
+      return `${DAY_ABBR[firstDay]} - ${DAY_ABBR[lastDay]}`;
     }
 
     return sorted.map((d) => DAY_ABBR[d] || d).join(", ");
@@ -172,8 +176,9 @@ export function AnalogTimePicker({
   const handleClockInteract = (e: React.MouseEvent | React.TouchEvent) => {
     if (!clockRef.current) return;
     const rect = clockRef.current.getBoundingClientRect();
-    const clientX = "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    const touch = "touches" in e ? e.touches[0] : null;
+    const clientX = touch ? touch.clientX : (e as React.MouseEvent).clientX;
+    const clientY = touch ? touch.clientY : (e as React.MouseEvent).clientY;
 
     const x = clientX - rect.left - rect.width / 2;
     const y = clientY - rect.top - rect.height / 2;
@@ -381,8 +386,12 @@ export function AnalogTimePicker({
                 type="button"
                 onClick={() => {
                   const [time, ap] = preset.split(" ");
-                  const [h, m] = time.split(":").map(Number);
-                  updateTime(h, m, ap);
+                  if (time && ap) {
+                    const [h, m] = time.split(":").map(Number);
+                    if (h !== undefined && m !== undefined) {
+                      updateTime(h, m, ap);
+                    }
+                  }
                   setIsOpen(false);
                 }}
                 className={cn(
@@ -434,7 +443,7 @@ export function parseTimeToMinutes(timeStr: string, isCloseTime: boolean = false
   if (!timeStr || timeStr === "00:00") return 0;
   if (timeStr === "24H") return 1440;
   const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-  if (!match) return 0;
+  if (!match || !match[1] || !match[2] || !match[3]) return 0;
   let hours = parseInt(match[1], 10);
   const minutes = parseInt(match[2], 10);
   const ampm = match[3].toUpperCase();

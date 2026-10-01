@@ -165,9 +165,10 @@ export function CustomerReportsPage() {
               setPage(1);
             }}
             onSortingChange={(sortingState) => {
-              if (sortingState.length > 0) {
-                setSortBy(sortingState[0].id);
-                setSortOrder(sortingState[0].desc ? "desc" : "asc");
+              const firstSort = sortingState[0];
+              if (firstSort) {
+                setSortBy(firstSort.id);
+                setSortOrder(firstSort.desc ? "desc" : "asc");
                 setPage(1);
               } else {
                 setSortBy(undefined);

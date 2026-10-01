@@ -61,9 +61,12 @@ export function CreditsManagement() {
     toDate: undefined as Date | undefined,
   });
 
-  const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
-  const sortOrder: "asc" | "desc" | undefined =
-    sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
+  const sortBy = sorting[0]?.id;
+  const sortOrder: "asc" | "desc" | undefined = sorting[0]
+    ? sorting[0].desc
+      ? "desc"
+      : "asc"
+    : undefined;
 
   const queryParams = useMemo(() => {
     return {

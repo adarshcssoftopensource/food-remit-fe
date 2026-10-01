@@ -96,6 +96,7 @@ export function StatusTabs({
       }, 350);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [pendingTab, isLoading]);
 
   const handleTabClick = (newTab: StatusTabValue) => {

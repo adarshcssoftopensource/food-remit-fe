@@ -36,9 +36,7 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
   const { canViewPlatformFees } = useProfile();
 
   const hasOptions = Array.isArray(item.options) && item.options.length > 0;
-  const [selectedOptionId, setSelectedOptionId] = useState<string>(
-    hasOptions ? item.options![0].id : "base",
-  );
+  const [selectedOptionId, setSelectedOptionId] = useState<string>(item.options?.[0]?.id ?? "base");
 
   const selectedOption = hasOptions ? item.options!.find((o) => o.id === selectedOptionId) : null;
 

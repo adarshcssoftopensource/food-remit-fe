@@ -102,7 +102,12 @@ export function OrderStatusSelect({ orderId, currentStatus }: OrderStatusSelectP
   const [isOpen, setIsOpen] = useState(false);
   const { mutate: updateStatus, isPending } = useUpdateOrderStatus();
 
-  const display = STATUS_DISPLAY[currentStatus] ?? STATUS_DISPLAY[1];
+  const display = STATUS_DISPLAY[currentStatus] ??
+    STATUS_DISPLAY[1] ?? {
+      label: "Pending",
+      color: "text-amber-700 bg-amber-50 border-amber-200",
+      dot: "bg-amber-500",
+    };
 
   const handleSelect = (value: number) => {
     if (value === currentStatus) {

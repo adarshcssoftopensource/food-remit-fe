@@ -142,8 +142,9 @@ export function resolveFromValue(
   defaultCountryOrIso = DEFAULT_ISO,
 ): { country: PhoneCountry; nationalNumber: string } {
   const digits = toPhoneDigits(value || "");
-  const fallback =
-    findPhoneCountry(defaultCountryOrIso) ?? COUNTRIES_BY_ISO.get(DEFAULT_ISO) ?? ALL_COUNTRIES[0];
+  const fallback = (findPhoneCountry(defaultCountryOrIso) ??
+    COUNTRIES_BY_ISO.get(DEFAULT_ISO) ??
+    ALL_COUNTRIES[0])!;
 
   if (!digits) {
     return { country: fallback, nationalNumber: "" };

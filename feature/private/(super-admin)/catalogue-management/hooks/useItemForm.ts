@@ -305,13 +305,13 @@ function buildFormData(
   }
   values.productImageFile?.forEach((file) => formData.append("productImageFile", file));
 
-  if (values.productInfoImageFile && values.productInfoImageFile.length > 0) {
+  if (values.productInfoImageFile && values.productInfoImageFile[0]) {
     formData.append("productInfoImageFile", values.productInfoImageFile[0]);
   } else if (item && getInitialInfoImage(item) && !values.existingProductInfoImage) {
     formData.append("productInfoImage", "");
   }
 
-  if (values.nutritionInfoImageFile && values.nutritionInfoImageFile.length > 0) {
+  if (values.nutritionInfoImageFile && values.nutritionInfoImageFile[0]) {
     formData.append("nutritionInfoImageFile", values.nutritionInfoImageFile[0]);
   } else if (item && getInitialNutritionImage(item) && !values.existingNutritionInfoImage) {
     formData.append("nutritionInfoImage", "");

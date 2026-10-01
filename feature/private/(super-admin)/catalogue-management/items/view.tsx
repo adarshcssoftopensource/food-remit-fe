@@ -55,8 +55,11 @@ export function ItemView({ id }: ItemViewProps) {
 
     if (selectedImageSrc) {
       const selectedIdx = list.findIndex((img) => img.src === selectedImageSrc);
-      if (selectedIdx !== -1) {
-        [list[0], list[selectedIdx]] = [list[selectedIdx], list[0]];
+      const first = list[0];
+      const selectedItem = list[selectedIdx];
+      if (selectedIdx !== -1 && first && selectedItem) {
+        list[0] = selectedItem;
+        list[selectedIdx] = first;
       }
     }
 

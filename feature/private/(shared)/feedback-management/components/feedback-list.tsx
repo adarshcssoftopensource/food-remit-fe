@@ -72,8 +72,8 @@ export function FeedbackList() {
   };
 
   const handleSortingChange = (sorting: SortingState) => {
-    if (sorting.length > 0) {
-      const sort = sorting[0];
+    const sort = sorting[0];
+    if (sort) {
       setSortBy(sort.id);
       setSortOrder(sort.desc ? "desc" : "asc");
     } else {

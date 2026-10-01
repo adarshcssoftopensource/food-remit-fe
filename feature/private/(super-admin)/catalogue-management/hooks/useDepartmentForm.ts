@@ -121,7 +121,7 @@ export function useDepartmentForm(
         }
       }
 
-      if (values.iconFile && values.iconFile.length > 0) {
+      if (values.iconFile && values.iconFile[0]) {
         formData.append("departmentIcon", values.iconFile[0]);
       }
 

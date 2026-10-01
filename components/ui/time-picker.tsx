@@ -22,8 +22,8 @@ function parse24To12(timeStr?: string): {
 } {
   if (!timeStr) return { hour: 12, minute: 0, period: "AM" };
   const parts = timeStr.split(":");
-  let h = parseInt(parts[0], 10);
-  const m = parseInt(parts[1], 10) || 0;
+  let h = parseInt(parts[0] ?? "", 10);
+  const m = parseInt(parts[1] ?? "", 10) || 0;
   if (isNaN(h)) h = 0;
   const period: "AM" | "PM" = h >= 12 ? "PM" : "AM";
   const hour = h % 12 === 0 ? 12 : h % 12;

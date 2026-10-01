@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/api/client";
 import type { AxiosRequestConfig } from "axios";
-import type { UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
+import type { QueryKey, UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 interface FetcherArgs<TBody = unknown> {
@@ -40,7 +40,7 @@ export async function fetcher<TResponse, TBody = unknown>({
 
 // GET Hook
 export function useApiQuery<TResponse>(
-  key: string[],
+  key: QueryKey,
   url: string,
   options?: Omit<UseQueryOptions<TResponse, Error>, "queryKey" | "queryFn"> & {
     timeout?: number;

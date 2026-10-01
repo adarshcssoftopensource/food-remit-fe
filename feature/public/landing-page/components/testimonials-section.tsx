@@ -18,6 +18,7 @@ export function TestimonialsSection({ data }: TestimonialsSectionProps) {
   const prev = () => setActiveIndex((prev) => (prev - 1 + data.items.length) % data.items.length);
 
   const current = data.items[activeIndex];
+  if (!current) return null;
 
   return (
     <section id="testimonials" className="bg-[#eef8f3] py-16 sm:py-24">

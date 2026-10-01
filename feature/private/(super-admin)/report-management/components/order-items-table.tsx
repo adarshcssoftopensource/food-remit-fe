@@ -121,8 +121,9 @@ export function OrderItemsTable({
           onPageChange={onPageChange}
           onRowsPerPageChange={onRowsPerPageChange}
           onSortingChange={(sortingState) => {
-            if (sortingState.length > 0) {
-              onSortingChange(sortingState[0].id, sortingState[0].desc ? "desc" : "asc");
+            const firstSort = sortingState[0];
+            if (firstSort) {
+              onSortingChange(firstSort.id, firstSort.desc ? "desc" : "asc");
             }
           }}
           manualSorting={true}

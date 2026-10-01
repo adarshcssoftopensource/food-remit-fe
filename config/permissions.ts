@@ -83,6 +83,6 @@ export function hasPathPermission(
   // Deny by default — only SUPER_ADMIN (above) or an explicit mapped permission can pass.
   if (!matchedKey) return false;
 
-  const permissionKey = ROUTE_PERMISSION_MAP[matchedKey];
-  return permissions[permissionKey] === 1;
+  const permissionKey = ROUTE_PERMISSION_MAP[matchedKey as keyof typeof ROUTE_PERMISSION_MAP];
+  return permissionKey ? permissions[permissionKey] === 1 : false;
 }

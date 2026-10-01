@@ -76,9 +76,11 @@ import { AdditionalDocumentsSection } from "./additional-documents-section";
 function dataUrlToFile(dataUrl: string, fileName: string, mimeType?: string): File | null {
   try {
     const parts = dataUrl.split(",");
-    if (parts.length < 2) return null;
-    const mime = mimeType || parts[0].match(/:(.*?);/)?.[1] || "application/octet-stream";
-    const bstr = atob(parts[1]);
+    const header = parts[0];
+    const data = parts[1];
+    if (parts.length < 2 || !header || !data) return null;
+    const mime = mimeType || header.match(/:(.*?);/)?.[1] || "application/octet-stream";
+    const bstr = atob(data);
     let n = bstr.length;
     const u8arr = new Uint8Array(n);
     while (n--) {

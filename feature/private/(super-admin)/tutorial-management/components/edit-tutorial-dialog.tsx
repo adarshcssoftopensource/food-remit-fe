@@ -58,7 +58,7 @@ export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDia
 
   const handleImageUpload = (files: File[]) => {
     setUploadedFiles(files);
-    if (files.length > 0) {
+    if (files[0]) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setValue("image", reader.result as string, { shouldValidate: true });
@@ -76,7 +76,7 @@ export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDia
       formData.append("title", values.title);
       formData.append("description", values.description);
       formData.append("isActive", values.isActive.toString());
-      if (uploadedFiles.length > 0) {
+      if (uploadedFiles[0]) {
         formData.append("image", uploadedFiles[0]);
       }
 

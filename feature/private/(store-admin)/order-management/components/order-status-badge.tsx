@@ -83,7 +83,8 @@ export function OrderStatusBadge({
         : finalStatus === FINAL_STATUS.ABANDONED
           ? "abandoned"
           : "other";
-    const { colorClass, dotClass } = TONE_STYLES[tone];
+    const { colorClass, dotClass } = TONE_STYLES[tone] ??
+      TONE_STYLES.other ?? { colorClass: "", dotClass: "" };
     return (
       <span
         className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${colorClass}`}
@@ -100,7 +101,8 @@ export function OrderStatusBadge({
     startedById,
     finalStatus,
   });
-  const { colorClass, dotClass } = TONE_STYLES[tone] ?? TONE_STYLES.other;
+  const { colorClass, dotClass } = TONE_STYLES[tone] ??
+    TONE_STYLES.other ?? { colorClass: "", dotClass: "" };
 
   return (
     <span

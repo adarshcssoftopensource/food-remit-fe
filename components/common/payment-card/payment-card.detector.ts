@@ -29,8 +29,8 @@ export function detectGlobalCardNetwork(
     try {
       const matches = creditCardType(cleanDigits);
       if (matches && matches.length > 0) {
-        const type = matches[0].type;
-        if (type in NETWORK_STYLE_MAP) {
+        const type = matches[0]?.type;
+        if (type && type in NETWORK_STYLE_MAP) {
           return type as GlobalCardNetwork;
         }
       }

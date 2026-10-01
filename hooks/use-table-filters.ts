@@ -19,8 +19,8 @@ export function useTableFilters(defaultPageSize = DEFAULT_PAGE_SIZE) {
   const formattedFromDate = fromDate ? format(fromDate, "yyyy-MM-dd") : undefined;
   const formattedToDate = toDate ? format(toDate, "yyyy-MM-dd") : undefined;
 
-  const sortBy = sorting.length ? sorting[0].id : undefined;
-  const sortOrder: "desc" | "asc" | undefined = sorting.length
+  const sortBy = sorting[0]?.id;
+  const sortOrder: "desc" | "asc" | undefined = sorting[0]
     ? sorting[0].desc
       ? "desc"
       : "asc"
@@ -104,8 +104,8 @@ export function useDraftTableFilters(defaultPageSize = DEFAULT_PAGE_SIZE) {
   const formattedFromDate = applied.fromDate ? format(applied.fromDate, "yyyy-MM-dd") : undefined;
   const formattedToDate = applied.toDate ? format(applied.toDate, "yyyy-MM-dd") : undefined;
 
-  const sortBy = sorting.length ? sorting[0].id : undefined;
-  const sortOrder: "desc" | "asc" | undefined = sorting.length
+  const sortBy = sorting[0]?.id;
+  const sortOrder: "desc" | "asc" | undefined = sorting[0]
     ? sorting[0].desc
       ? "desc"
       : "asc"

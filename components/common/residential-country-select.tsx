@@ -75,6 +75,7 @@ export function ResidentialCountrySelect({
       }, 10);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [open]);
 
   const selectedCountry = useMemo(() => {
