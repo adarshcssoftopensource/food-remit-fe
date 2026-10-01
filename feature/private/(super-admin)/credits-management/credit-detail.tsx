@@ -28,6 +28,7 @@ import { CreditPaymentCard } from "./components/credit-payment-card";
 import { CreditUnmarkedItems } from "./components/credit-unmarked-items";
 import { useGetCreditDetail } from "./hooks/use-get-credit-detail";
 import { usePayCreditRefund } from "./hooks/use-pay-credit-refund";
+import { ROUTES } from "@/config/routes";
 
 interface CreditDetailPageProps {
   id: string;
@@ -94,7 +95,7 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/credits-management")}
+          onClick={() => router.push(ROUTES.ADMIN.CREDITS_MANAGEMENT)}
           className="gap-2 text-slate-500 hover:text-slate-900 dark:hover:text-white"
         >
           <ArrowLeft className="size-4" />
@@ -111,7 +112,7 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
           </p>
           <Button
             className="mt-5 rounded-full px-6"
-            onClick={() => router.push("/credits-management")}
+            onClick={() => router.push(ROUTES.ADMIN.CREDITS_MANAGEMENT)}
           >
             Return to Credits
           </Button>
@@ -129,7 +130,7 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
               <Button
                 type="button"
                 variant={"secondary"}
-                onClick={() => router.push("/credits-management")}
+                onClick={() => router.push(ROUTES.ADMIN.CREDITS_MANAGEMENT)}
                 className="inline-flex h-7 items-center gap-1.5 font-medium transition-colors hover:text-slate-900 dark:hover:text-white"
               >
                 <ArrowLeft className="size-3.5" />

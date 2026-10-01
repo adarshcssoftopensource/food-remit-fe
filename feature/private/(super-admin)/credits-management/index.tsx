@@ -20,6 +20,7 @@ import { useGetCredits } from "./hooks/use-get-credits";
 import { usePayCreditRefund } from "./hooks/use-pay-credit-refund";
 import type { CreditsData } from "./types/credits.types";
 import { ImageLightbox } from "@/components/common/image-lightbox";
+import { ROUTES } from "@/config/routes";
 
 function formatLocalDate(date?: Date): string | undefined {
   if (!date) return undefined;
@@ -101,7 +102,7 @@ export function CreditsManagement() {
   const columns = useMemo(
     () =>
       getCreditColumns({
-        onViewDetails: (id) => router.push(`/credits-management/${id}`),
+        onViewDetails: (id) => router.push(`${ROUTES.ADMIN.CREDITS_MANAGEMENT}/${id}`),
         onPayRefund: (credit) => setPayingCredit(credit),
         isSuperAdmin,
         onImageClick: (url) => setSelectedImage(url),

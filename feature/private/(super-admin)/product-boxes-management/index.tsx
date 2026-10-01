@@ -18,6 +18,7 @@ import { useGetProductBoxes } from "./hooks/use-get-product-boxes";
 import { useUpdateProductBox } from "./hooks/use-update-product-box";
 import { useUpdateProductBoxStatus } from "./hooks/use-update-product-box-status";
 import { ProductBox } from "./types/product-box.types";
+import { ROUTES } from "@/config/routes";
 
 export function ProductBoxesManagement() {
   const router = useRouter();
@@ -89,7 +90,7 @@ export function ProductBoxesManagement() {
 
   const handleView = useCallback(
     (box: ProductBox) => {
-      router.push(`/product-boxes/${box.id}`);
+      router.push(`${ROUTES.ADMIN.PRODUCT_BOXES}/${box.id}`);
     },
     [router],
   );
