@@ -248,9 +248,12 @@ export function PartnerLeadsManagement() {
                               PENDING: "Pending",
                               NEW: "New",
                               CONTACTED: "Contacted",
-                              REGISTRATION_INVITED: "Invited",
-                              REGISTRATION_STARTED: "Started",
                               QUALIFIED: "Qualified",
+                              REGISTRATION_INVITED: "Registration Invited",
+                              REGISTRATION_STARTED: "Registration Started",
+                              APPROVED: "Approved",
+                              REJECTED: "Rejected",
+                              REQUEST_MORE_INFO: "Request More Info",
                             }[draft.status || "all"] || "All Statuses"}
                           </SelectValue>
                         </SelectTrigger>
@@ -259,9 +262,12 @@ export function PartnerLeadsManagement() {
                           <SelectItem value="PENDING">Pending</SelectItem>
                           <SelectItem value="NEW">New</SelectItem>
                           <SelectItem value="CONTACTED">Contacted</SelectItem>
-                          <SelectItem value="REGISTRATION_INVITED">Invited</SelectItem>
-                          <SelectItem value="REGISTRATION_STARTED">Started</SelectItem>
                           <SelectItem value="QUALIFIED">Qualified</SelectItem>
+                          <SelectItem value="REGISTRATION_INVITED">Registration Invited</SelectItem>
+                          <SelectItem value="REGISTRATION_STARTED">Registration Started</SelectItem>
+                          <SelectItem value="APPROVED">Approved</SelectItem>
+                          <SelectItem value="REJECTED">Rejected</SelectItem>
+                          <SelectItem value="REQUEST_MORE_INFO">Request More Info</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
