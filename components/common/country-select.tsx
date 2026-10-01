@@ -59,16 +59,6 @@ export function CountrySelect({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    if (isOpen) {
-      // Delay slightly to let the popover mount
-      const timer = setTimeout(() => {
-        document.getElementById("country-search-input")?.focus({ preventScroll: true });
-      }, 10);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
-
   const { countries: apiCountries, isLoading } = useGetCountriesDropdown();
 
   const countriesList = useMemo<CountryOption[]>(() => {
@@ -180,7 +170,7 @@ export function CountrySelect({
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search country"
-            className="h-9 border-slate-200 pl-9 text-sm"
+            className="h-9 border-slate-200 pl-9 text-base md:text-sm"
           />
         </div>
 

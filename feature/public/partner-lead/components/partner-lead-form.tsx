@@ -739,7 +739,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
 
       <div
         ref={stepperScrollRef}
-        className="scrollbar-hide mt-4 touch-pan-y overflow-x-auto border-b border-slate-100 pb-5 sm:mt-6 sm:pb-6"
+        className="scrollbar-hide mt-4 overflow-x-auto border-b border-slate-100 pb-5 sm:mt-6 sm:pb-6"
       >
         <div className="relative flex min-w-[460px] sm:min-w-0">
           {STEPS.map((step) => {

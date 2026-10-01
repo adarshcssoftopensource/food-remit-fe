@@ -115,11 +115,10 @@ export function WorldStateSelect({
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
           <Input
-            autoFocus
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search state..."
-            className="h-9 border-slate-200 pl-9 text-sm"
+            className="h-9 border-slate-200 pl-9 text-base md:text-sm"
           />
         </div>
 

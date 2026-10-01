@@ -272,11 +272,11 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
                     </span>
                   </p>
                 </div>
-                <p className="text-[11px] text-slate-400 sm:text-xs">
+                {/* <p className="text-[11px] text-slate-400 sm:text-xs">
                   {canViewPlatformFees
                     ? "Tax = Set Food Remit Markup Per Item"
                     : "Store government tax applied on discounted price"}
-                </p>
+                </p> */}
               </div>
             </div>
 
