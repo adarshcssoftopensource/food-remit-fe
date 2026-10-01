@@ -65,7 +65,7 @@ const itemSchema = z
       .refine((val) => !val || Number(val) >= 0, "Cannot be negative"),
     stockQuantity: z
       .string()
-      .min(1, "Stock quantity is required")
+      .min(1, "Quantity on hand is required")
       .refine((val) => Number(val) >= 0, "Cannot be negative"),
     netWeight: z
       .string()

@@ -290,7 +290,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                             render={({ field }) => (
                               <FormItem className="space-y-2">
                                 <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                  Stock Quantity <span className="text-destructive">*</span>
+                                  Quantity on Hand <span className="text-destructive">*</span>
                                 </FormLabel>
 
                                 <FormControl>

@@ -86,7 +86,7 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           />
           <InfoCard
             icon={<Layers className="h-4 w-4 text-orange-500" />}
-            label="Item Quantity"
+            label="Quantity on Hand"
             value={
               item.options && item.options.length > 1
                 ? "Multiple Variants"

@@ -88,7 +88,7 @@ export function ItemAvailabilityCell({ item }: { item: ItemData }) {
   const handleToggle = (checked: boolean) => {
     if (needsBankVerification) return;
     if (checked && (!item.stockQuantity || Number(item.stockQuantity) <= 0)) {
-      errorToast({ description: "Cannot enable availability when stock quantity is 0" });
+      errorToast({ description: "Cannot enable availability when quantity on hand is 0" });
       return;
     }
     setPendingActive(checked);

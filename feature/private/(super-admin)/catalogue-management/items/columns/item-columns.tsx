@@ -164,7 +164,7 @@ export function getItemColumns(
     },
     {
       id: "stockQuantity",
-      header: "Stock Quantity",
+      header: "Quantity on Hand",
       cell: ({ row }) => {
         const options = Array.isArray(row.original.options) ? row.original.options : [];
         if (options.length > 1) {
