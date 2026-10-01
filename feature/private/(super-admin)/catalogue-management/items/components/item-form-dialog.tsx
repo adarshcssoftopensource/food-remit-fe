@@ -156,7 +156,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                           render={({ field }) => (
                             <FormItem className="space-y-2">
                               <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                                Description <span className="text-destructive">*</span>
+                                Description
                               </FormLabel>
 
                               <FormControl>
@@ -558,7 +558,7 @@ export function ItemFormDialog({ open, onOpenChange, item, onSubmit }: ItemFormD
                         render={({ field }) => (
                           <FormItem className="space-y-2">
                             <FormLabel className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                              Product Information <span className="text-destructive">*</span>
+                              Product Information
                             </FormLabel>
 
                             <FormControl>

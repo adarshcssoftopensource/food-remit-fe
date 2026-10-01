@@ -34,7 +34,7 @@ const optionSchema = z.object({
 const itemSchema = z
   .object({
     productName: z.string().min(2, "Item name must be at least 2 characters"),
-    description: z.string().min(1, "Description is required"),
+    description: z.string().optional(),
     upcCode: z
       .string()
       .trim()
@@ -43,7 +43,7 @@ const itemSchema = z
         "UPC code must be between 8 and 12 digits",
       )
       .optional(),
-    productInfo: z.string().min(1, "Product information is required"),
+    productInfo: z.string().optional(),
     nutritionInfo: z.string().optional(),
     discountPercentage: z
       .string()
@@ -327,9 +327,9 @@ export function useItemForm(
         );
       }
       formData.append("productName", values.productName);
-      formData.append("description", values.description);
+      formData.append("description", values.description || "");
       formData.append("upcCode", values.upcCode || "");
-      formData.append("productInfo", values.productInfo);
+      formData.append("productInfo", values.productInfo || "");
       if (values.nutritionInfo) formData.append("nutritionInfo", values.nutritionInfo);
       if (values.discountPercentage !== undefined && values.discountPercentage !== "") {
         formData.append("discountPercentage", values.discountPercentage);
