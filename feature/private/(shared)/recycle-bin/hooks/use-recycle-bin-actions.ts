@@ -6,6 +6,7 @@ import { STORE_ENDPOINTS } from "@/lib/api/endpoints/store.endpoints";
 import { USER_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/user-management.endpoints";
 import { EMPLOYEE_ENDPOINTS } from "@/lib/api/endpoints/employee.endpoints";
 import { PARTNER_LEAD_ENDPOINTS } from "@/lib/api/endpoints/partner-lead.endpoints";
+import { SUB_ADMIN_ENDPOINTS } from "@/lib/api/endpoints/sub-admin.endpoints";
 import { useQueryClient } from "@tanstack/react-query";
 import { RecycleEntityType } from "./use-get-recycled-data";
 
@@ -22,6 +23,7 @@ export function useRestoreEntity(entityType: RecycleEntityType, id: string) {
     employees: EMPLOYEE_ENDPOINTS.RESTORE_EMPLOYEE(id),
     "partner-leads": PARTNER_LEAD_ENDPOINTS.RESTORE_LEAD(id),
     "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.RESTORE_PRODUCT_BOX(id),
+    "sub-admins": SUB_ADMIN_ENDPOINTS.RESTORE_SUB_ADMIN(id),
   };
 
   return useApiMutation<{ message: string }, void>("post", urlMap[entityType], {
@@ -30,6 +32,9 @@ export function useRestoreEntity(entityType: RecycleEntityType, id: string) {
         queryKey: [`RECYCLED_${entityType.toUpperCase().replace(/-/g, "_")}`],
       });
       queryClient.invalidateQueries({ queryKey: [entityType] });
+      if (entityType === "sub-admins") {
+        queryClient.invalidateQueries({ queryKey: ["sub-admins"] });
+      }
     },
   });
 }
@@ -47,6 +52,7 @@ export function usePermanentDeleteEntity(entityType: RecycleEntityType, id: stri
     employees: EMPLOYEE_ENDPOINTS.PERMANENT_DELETE_EMPLOYEE(id),
     "partner-leads": PARTNER_LEAD_ENDPOINTS.PERMANENT_DELETE_LEAD(id),
     "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.PERMANENT_DELETE_PRODUCT_BOX(id),
+    "sub-admins": SUB_ADMIN_ENDPOINTS.PERMANENT_DELETE_SUB_ADMIN(id),
   };
 
   return useApiMutation<{ message: string }, void>("delete", urlMap[entityType], {
@@ -55,6 +61,9 @@ export function usePermanentDeleteEntity(entityType: RecycleEntityType, id: stri
         queryKey: [`RECYCLED_${entityType.toUpperCase().replace(/-/g, "_")}`],
       });
       queryClient.invalidateQueries({ queryKey: [entityType] });
+      if (entityType === "sub-admins") {
+        queryClient.invalidateQueries({ queryKey: ["sub-admins"] });
+      }
     },
   });
 }
@@ -72,6 +81,7 @@ export function useBulkRestoreEntities(entityType: RecycleEntityType) {
     employees: EMPLOYEE_ENDPOINTS.BULK_RESTORE_EMPLOYEES,
     "partner-leads": PARTNER_LEAD_ENDPOINTS.BULK_RESTORE_LEADS,
     "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.BULK_RESTORE_PRODUCT_BOXES,
+    "sub-admins": SUB_ADMIN_ENDPOINTS.BULK_RESTORE_SUB_ADMINS,
   };
 
   return useApiMutation<{ message: string }, { ids: string[] }>("post", urlMap[entityType], {
@@ -80,6 +90,9 @@ export function useBulkRestoreEntities(entityType: RecycleEntityType) {
         queryKey: [`RECYCLED_${entityType.toUpperCase().replace(/-/g, "_")}`],
       });
       queryClient.invalidateQueries({ queryKey: [entityType] });
+      if (entityType === "sub-admins") {
+        queryClient.invalidateQueries({ queryKey: ["sub-admins"] });
+      }
     },
   });
 }
@@ -97,6 +110,7 @@ export function useBulkPermanentDeleteEntities(entityType: RecycleEntityType) {
     employees: EMPLOYEE_ENDPOINTS.BULK_PERMANENT_DELETE_EMPLOYEES,
     "partner-leads": PARTNER_LEAD_ENDPOINTS.BULK_PERMANENT_DELETE_LEADS,
     "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.BULK_PERMANENT_DELETE_PRODUCT_BOXES,
+    "sub-admins": SUB_ADMIN_ENDPOINTS.BULK_PERMANENT_DELETE_SUB_ADMINS,
   };
 
   return useApiMutation<{ message: string }, { ids: string[] }>("post", urlMap[entityType], {
@@ -105,6 +119,9 @@ export function useBulkPermanentDeleteEntities(entityType: RecycleEntityType) {
         queryKey: [`RECYCLED_${entityType.toUpperCase().replace(/-/g, "_")}`],
       });
       queryClient.invalidateQueries({ queryKey: [entityType] });
+      if (entityType === "sub-admins") {
+        queryClient.invalidateQueries({ queryKey: ["sub-admins"] });
+      }
     },
   });
 }

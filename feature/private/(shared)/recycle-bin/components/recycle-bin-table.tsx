@@ -19,6 +19,7 @@ const ENTITY_TITLES: Record<string, string> = {
   employees: "Deleted Employees",
   "partner-leads": "Deleted Partner Leads",
   "product-boxes": "Deleted Product Boxes",
+  "sub-admins": "Deleted Sub/Co Admins",
 };
 
 export function RecycleBinTable({
