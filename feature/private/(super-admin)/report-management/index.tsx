@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { FileSpreadsheet, TableProperties } from "lucide-react";
 import { useFilterState } from "@/hooks/use-filter-state";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -40,25 +38,11 @@ import { useReportDateFilters } from "./hooks/use-report-date-filters";
 import { useStoreReport } from "./hooks/use-store-report";
 import { OrderReportsPage } from "./components/order-reports-page";
 import { CustomerReportsPage } from "./components/customer-reports-page";
+import { getEntriesFoundLabel, ReportTableCardHeader } from "./components/report-table-card-header";
 
 type ReportManagementPageProps = {
   section: ReportSectionKey;
 };
-
-function ExportButton({ onClick, isLoading }: { onClick?: () => void; isLoading?: boolean }) {
-  return (
-    <Button
-      disabled={isLoading}
-      onClick={onClick}
-      isLoading={isLoading}
-      className="h-9 gap-2 rounded-full bg-emerald-600 px-4 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700"
-    >
-      <FileSpreadsheet className="size-4" />
-
-      <span>Export Excel</span>
-    </Button>
-  );
-}
 
 function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "store-report"> }) {
   const meta = REPORT_SECTION_META[section];
@@ -171,21 +155,12 @@ function EmptyReportsTable({ section }: { section: Exclude<ReportSectionKey, "st
       </ReportDateFilters>
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 text-primary ring-primary/20 flex size-10 items-center justify-center rounded-xl ring-1">
-              <TableProperties className="h-5 w-5" />
-            </div>
-            <div>
-              <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                {meta.title}
-              </CardTitle>
-              <p className="text-muted-foreground text-xs">0 entries found</p>
-            </div>
-          </div>
-
-          <ExportButton onClick={handleExport} isLoading={isExporting} />
-        </CardHeader>
+        <ReportTableCardHeader
+          title={meta.title}
+          subtitle="0 entries found"
+          onExport={handleExport}
+          isExporting={isExporting}
+        />
         <CardContent className="p-4">{table}</CardContent>
       </Card>
     </div>
@@ -281,23 +256,12 @@ function StoreReportsPage() {
       />
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 text-primary ring-primary/20 flex size-10 items-center justify-center rounded-xl ring-1">
-              <TableProperties className="h-5 w-5" />
-            </div>
-            <div>
-              <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                {meta.title}
-              </CardTitle>
-              <p className="text-muted-foreground text-xs">
-                {pagination.total} total {pagination.total === 1 ? "entry" : "entries"} found
-              </p>
-            </div>
-          </div>
-
-          <ExportButton onClick={handleExport} isLoading={isExporting} />
-        </CardHeader>
+        <ReportTableCardHeader
+          title={meta.title}
+          subtitle={getEntriesFoundLabel(pagination.total)}
+          onExport={handleExport}
+          isExporting={isExporting}
+        />
         <CardContent className="p-4">
           <DataTable
             columns={storeReportColumns}

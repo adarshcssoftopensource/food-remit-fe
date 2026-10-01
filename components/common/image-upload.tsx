@@ -185,7 +185,7 @@ export const ImageUpload = forwardRef<HTMLInputElement, ImageUploadProps>(
                     variant="secondary"
                     onClick={() => removeImage(index)}
                     title="Remove image"
-                    className="absolute top-1 right-1 h-6 w-6 rounded-full bg-white/90 p-0 text-red-500 shadow-sm transition-all hover:bg-red-500 hover:text-white sm:opacity-0 sm:group-hover:opacity-100 dark:bg-slate-900/90 dark:hover:bg-red-600"
+                    className="absolute top-1 right-1 h-6 w-6 rounded-full bg-white/90 p-0 text-red-500 shadow-sm transition hover:bg-red-500 hover:text-white sm:opacity-0 sm:group-hover:opacity-100 dark:bg-slate-900/90 dark:hover:bg-red-600"
                   >
                     <X className="h-3.5 w-3.5" />
                   </Button>

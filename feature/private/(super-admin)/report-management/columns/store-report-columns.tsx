@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { ROUTES } from "@/config/routes";
 import type { StoreReportRow } from "@/constants/report-management";
@@ -56,7 +57,7 @@ export const storeReportColumns: ColumnDef<StoreReportRow>[] = [
         href={ROUTES.ADMIN.REPORT_MANAGEMENT.STORE_REPORT_DETAIL(row.original.id)}
         className={cn(buttonVariants({ variant: "link" }), "")}
       >
-        <Button size="icon" variant="outline" className="rounded-full">
+        <Button size="icon" variant="outline" className="rounded-full" aria-label="View details">
           <Eye size={14} />
         </Button>
       </Link>

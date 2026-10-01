@@ -9,7 +9,8 @@ import { OrderActionsCell } from "../components/order-actions-cell";
 import { OrderStatusBadge } from "../components/order-status-badge";
 import { OrderHandlerCell } from "../components/order-handler-cell";
 import { FINAL_STATUS, isPendingOrder } from "../utils/order-workflow";
-import { parseAbandonRemark, SystemAbandonBadge } from "../components/abandon-remark-badge";
+import { parseAbandonRemark } from "../components/abandon-remark";
+import { SystemAbandonBadge } from "../components/abandon-remark-badge";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 function formatTimePlaced(iso?: string) {
   if (!iso) return "—";

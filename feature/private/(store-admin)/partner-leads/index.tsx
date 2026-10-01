@@ -54,6 +54,89 @@ const PIPELINE_META: Record<
   },
 };
 
+interface LeadFilters {
+  fromDate?: Date;
+  toDate?: Date;
+  businessType?: string;
+  status?: string;
+  kycStatus?: string;
+  bankStatus?: string;
+}
+
+function getLeadQueryArgs(applied: LeadFilters, sorting: SortingState) {
+  return {
+    fromDateStr: applied.fromDate ? format(applied.fromDate, "yyyy-MM-dd") : undefined,
+    toDateStr: applied.toDate ? format(applied.toDate, "yyyy-MM-dd") : undefined,
+    sortBy: sorting[0]?.id,
+    sortOrder: sorting[0] ? (sorting[0].desc ? "desc" : "asc") : undefined,
+  };
+}
+
+function getLeadFilterSummary(applied: LeadFilters, searchValue: string) {
+  return {
+    hasFilters: Boolean(applied.fromDate || applied.toDate || searchValue || applied.status),
+    activeFilterCount:
+      (applied.fromDate || applied.toDate ? 1 : 0) +
+      (searchValue ? 1 : 0) +
+      (applied.status ? 1 : 0),
+  };
+}
+
+function LeadStatusFilter({
+  status,
+  onStatusChange,
+}: {
+  status: string | undefined;
+  onStatusChange: (status: string | undefined) => void;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label
+        htmlFor="partner-lead-status-filter"
+        className="text-xs font-semibold tracking-wider text-slate-500 uppercase"
+      >
+        Lead Status
+      </label>
+      <Select
+        value={status || "all"}
+        onValueChange={(val) => onStatusChange(val === "all" ? undefined : (val ?? undefined))}
+      >
+        <SelectTrigger
+          id="partner-lead-status-filter"
+          className="h-10 w-full bg-white dark:bg-slate-950"
+        >
+          <SelectValue placeholder="All Statuses">
+            {{
+              all: "All Statuses",
+              PENDING: "Pending",
+              NEW: "New",
+              CONTACTED: "Contacted",
+              QUALIFIED: "Qualified",
+              REGISTRATION_INVITED: "Registration Invited",
+              REGISTRATION_STARTED: "Registration Started",
+              APPROVED: "Approved",
+              REJECTED: "Rejected",
+              REQUEST_MORE_INFO: "Request More Info",
+            }[status || "all"] || "All Statuses"}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Statuses</SelectItem>
+          <SelectItem value="PENDING">Pending</SelectItem>
+          <SelectItem value="NEW">New</SelectItem>
+          <SelectItem value="CONTACTED">Contacted</SelectItem>
+          <SelectItem value="QUALIFIED">Qualified</SelectItem>
+          <SelectItem value="REGISTRATION_INVITED">Registration Invited</SelectItem>
+          <SelectItem value="REGISTRATION_STARTED">Registration Started</SelectItem>
+          <SelectItem value="APPROVED">Approved</SelectItem>
+          <SelectItem value="REJECTED">Rejected</SelectItem>
+          <SelectItem value="REQUEST_MORE_INFO">Request More Info</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 export function PartnerLeadsManagement() {
   const router = useRouter();
   const [pipeline, setPipeline] = useState<PartnerLeadPipeline>("pending");
@@ -63,14 +146,7 @@ export function PartnerLeadsManagement() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(DEFAULT_PAGE_SIZE);
 
-  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState<{
-    fromDate?: Date;
-    toDate?: Date;
-    businessType?: string;
-    status?: string;
-    kycStatus?: string;
-    bankStatus?: string;
-  }>({
+  const { draft, setDraft, applied, apply, cancel, reset } = useFilterState<LeadFilters>({
     fromDate: undefined,
     toDate: undefined,
     businessType: undefined,
@@ -79,11 +155,7 @@ export function PartnerLeadsManagement() {
     bankStatus: undefined,
   });
 
-  const fromDateStr = applied.fromDate ? format(applied.fromDate, "yyyy-MM-dd") : undefined;
-  const toDateStr = applied.toDate ? format(applied.toDate, "yyyy-MM-dd") : undefined;
-
-  const sortBy = sorting[0]?.id;
-  const sortOrder = sorting[0] ? (sorting[0].desc ? "desc" : "asc") : undefined;
+  const { fromDateStr, toDateStr, sortBy, sortOrder } = getLeadQueryArgs(applied, sorting);
 
   const { leads, stats, pagination, isLoading } = usePartnerLeads(
     debouncedSearch,
@@ -100,16 +172,13 @@ export function PartnerLeadsManagement() {
     pipeline,
   );
 
-  const hasFilters = Boolean(applied.fromDate || applied.toDate || searchValue || applied.status);
+  const { hasFilters, activeFilterCount } = getLeadFilterSummary(applied, searchValue);
 
   const handleClearFilters = () => {
     reset();
     setSearchValue("");
     setPage(1);
   };
-
-  const activeFilterCount =
-    (applied.fromDate || applied.toDate ? 1 : 0) + (searchValue ? 1 : 0) + (applied.status ? 1 : 0);
 
   const handleViewDetails = useCallback(
     (id: string) => {
@@ -228,55 +297,16 @@ export function PartnerLeadsManagement() {
               >
                 <div className="flex w-full max-w-[320px] flex-col gap-5">
                   {(pipeline === "pending" || pipeline === "all") && (
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
-                        Lead Status
-                      </label>
-                      <Select
-                        value={draft.status || "all"}
-                        onValueChange={(val) =>
-                          setDraft((p) => ({
-                            ...p,
-                            status: val === "all" ? undefined : (val ?? undefined),
-                          }))
-                        }
-                      >
-                        <SelectTrigger className="h-10 w-full bg-white dark:bg-slate-950">
-                          <SelectValue placeholder="All Statuses">
-                            {{
-                              all: "All Statuses",
-                              PENDING: "Pending",
-                              NEW: "New",
-                              CONTACTED: "Contacted",
-                              QUALIFIED: "Qualified",
-                              REGISTRATION_INVITED: "Registration Invited",
-                              REGISTRATION_STARTED: "Registration Started",
-                              APPROVED: "Approved",
-                              REJECTED: "Rejected",
-                              REQUEST_MORE_INFO: "Request More Info",
-                            }[draft.status || "all"] || "All Statuses"}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Statuses</SelectItem>
-                          <SelectItem value="PENDING">Pending</SelectItem>
-                          <SelectItem value="NEW">New</SelectItem>
-                          <SelectItem value="CONTACTED">Contacted</SelectItem>
-                          <SelectItem value="QUALIFIED">Qualified</SelectItem>
-                          <SelectItem value="REGISTRATION_INVITED">Registration Invited</SelectItem>
-                          <SelectItem value="REGISTRATION_STARTED">Registration Started</SelectItem>
-                          <SelectItem value="APPROVED">Approved</SelectItem>
-                          <SelectItem value="REJECTED">Rejected</SelectItem>
-                          <SelectItem value="REQUEST_MORE_INFO">Request More Info</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <LeadStatusFilter
+                      status={draft.status}
+                      onStatusChange={(status) => setDraft((p) => ({ ...p, status }))}
+                    />
                   )}
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                    <span className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
                       Date Applied
-                    </label>
+                    </span>
                     <DateRangeFilter
                       fromDate={draft.fromDate}
                       toDate={draft.toDate}

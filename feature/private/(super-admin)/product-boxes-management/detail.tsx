@@ -113,7 +113,7 @@ export function ProductBoxDetail({ boxId }: ProductBoxDetailProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" onClick={() => router.back()}>
+        <Button variant="outline" size="icon" onClick={() => router.back()} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <PageHeader
@@ -140,6 +140,7 @@ export function ProductBoxDetail({ boxId }: ProductBoxDetailProps) {
                     src={box.image}
                     alt={box.title}
                     fill
+                    sizes="(min-width: 1024px) 420px, (min-width: 768px) 380px, 100vw"
                     className="object-cover transition-transform duration-500 hover:scale-105"
                   />
                 ) : (
@@ -243,7 +244,7 @@ export function ProductBoxDetail({ boxId }: ProductBoxDetailProps) {
               </div>
               <Button
                 onClick={() => setAddDialogOpen(true)}
-                className="bg-emerald-600 text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow"
+                className="bg-emerald-600 text-white shadow-sm transition hover:bg-emerald-700 hover:shadow"
                 size="sm"
               >
                 <Plus className="mr-2 h-4 w-4" /> Add Item

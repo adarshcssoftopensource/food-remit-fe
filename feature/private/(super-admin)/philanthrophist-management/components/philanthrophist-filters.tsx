@@ -61,7 +61,6 @@ export function PhilanthrophistFilters({
           toDate={toDate}
           onFromDateChange={onFromDateChange}
           onToDateChange={onToDateChange}
-          maxDate={new Date()}
         />
       </div>
     </ModuleFilters>

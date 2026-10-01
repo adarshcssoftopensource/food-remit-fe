@@ -16,6 +16,7 @@ import {
   Phone,
 } from "lucide-react";
 import type { Employee } from "@/feature/private/(store-admin)/employee-management/types/employee-management";
+import { LocationSectionHeader } from "@/feature/private/(shared)/components/location-section-header";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -164,15 +165,7 @@ export function EmployeeProfileCard({ employee, totalOrders }: EmployeeProfileCa
 
         {/* Location — mirrors Add Employee form section */}
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
-          <div className="flex items-center gap-3 border-b border-slate-100 bg-linear-to-r from-violet-50/80 to-transparent px-5 py-4 dark:border-slate-800 dark:from-violet-950/30">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-950/50">
-              <MapPin className="size-5 text-violet-600 dark:text-violet-400" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-slate-800 dark:text-white">Location</h3>
-              <p className="text-xs text-slate-500">Employee residential address</p>
-            </div>
-          </div>
+          <LocationSectionHeader description="Employee residential address" />
 
           <div className="grid grid-cols-1 gap-3 p-5 sm:grid-cols-2">
             <LocationField

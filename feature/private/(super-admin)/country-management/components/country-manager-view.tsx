@@ -4,22 +4,19 @@ import { CountryManagerViewPageProps } from "@/app/(private)/(super-admin)/count
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
-import { PhoneDisplay } from "@/components/ui/phone-display";
 import { ROUTES } from "@/config/routes";
+import { DetailCard } from "@/feature/private/(super-admin)/city-management/components/shared/detail-card";
+import { ManagerViewHero } from "@/feature/private/(super-admin)/city-management/components/shared/manager-view-hero";
+import {
+  ManagerContactSection,
+  ManagerPersonalSection,
+} from "@/feature/private/(super-admin)/city-management/components/shared/manager-view-sections";
 import { useGetCountryManager } from "@/feature/private/(super-admin)/country-management/hooks/use-get-country-manager";
-import { formatDate } from "@/lib/date";
-import { Expand, Globe2, UserCircle } from "lucide-react";
+import { Globe2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { use, useState, type ReactNode } from "react";
+import { use, useState } from "react";
 import ViewPageLoading from "./view-page-loading";
-
-const DetailCard = ({ label, value }: { label: string; value?: ReactNode }) => (
-  <div className="rounded-xl bg-slate-50 p-3 transition hover:bg-slate-100">
-    <p className="text-xs font-medium text-slate-500">{label}</p>
-    <div className="mt-1 text-sm font-semibold text-slate-900">{value || "-"}</div>
-  </div>
-);
 
 export default function CountryManagerViewPage({ params }: CountryManagerViewPageProps) {
   const router = useRouter();
@@ -65,91 +62,12 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
       />
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
-        <div className="border-b border-emerald-100/60 bg-linear-to-r from-emerald-50/70 via-teal-50/30 to-emerald-50/40 p-8 pb-8">
-          <div className="flex items-center gap-6">
-            <div className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-emerald-500/10 text-2xl font-bold text-emerald-700 shadow-sm ring-1 ring-emerald-500/20">
-              {manager.image ? (
-                <>
-                  <Image
-                    src={manager.image}
-                    alt={`${manager.firstName} ${manager.lastName}`}
-                    width={40}
-                    height={40}
-                    className="object-cover"
-                  />
-                  <Button
-                    variant="ghost"
-                    onClick={() => setLightboxSrc(manager.image || null)}
-                    className="absolute right-1 bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 hover:scale-110"
-                    title="View full screen"
-                  >
-                    <Expand className="h-3 w-3" />
-                  </Button>
-                </>
-              ) : (
-                `${manager.firstName[0] ?? ""}${manager.lastName[0] ?? ""}`.toUpperCase()
-              )}
-            </div>
-
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-slate-900">
-                {`${manager.firstName} ${manager.lastName}`}
-              </h1>
-            </div>
-
-            <div className="flex shrink-0 gap-3 text-right">
-              <div>
-                <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">
-                  Status
-                </p>
-                <p className="mt-0.5 font-medium text-slate-700">{manager.status}</p>
-              </div>
-              <div className="w-px bg-slate-200" />
-              <div>
-                <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">
-                  Created On
-                </p>
-                <p className="mt-0.5 font-medium text-slate-700">{formatDate(manager.createdAt)}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ManagerViewHero manager={manager} onImageExpand={setLightboxSrc} />
 
         <div className="space-y-6 p-8">
-          <section className="rounded-2xl border bg-white p-6 shadow-sm">
-            <h3 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-slate-500 uppercase">
-              <UserCircle className="h-4 w-4 text-emerald-600" />
-              Contact Information
-            </h3>
-            <div className="grid gap-4 md:grid-cols-2">
-              <DetailCard label="Email Address" value={manager.email} />
-              <DetailCard
-                label="Phone Number"
-                value={
-                  <PhoneDisplay
-                    countryCode={manager.phoneCode}
-                    phoneNumber={manager.phoneNumber}
-                    className="font-semibold"
-                  />
-                }
-              />
-            </div>
-          </section>
+          <ManagerContactSection manager={manager} />
 
-          <section className="rounded-2xl border bg-white p-6 shadow-sm">
-            <h3 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-slate-500 uppercase">
-              <UserCircle className="h-4 w-4 text-emerald-600" />
-              Personal Details
-            </h3>
-            <div className="grid gap-4 md:grid-cols-2">
-              <DetailCard label="First Name" value={manager.firstName} />
-              <DetailCard label="Last Name" value={manager.lastName} />
-              <DetailCard label="Residential Country" value={manager.residentialCountry} />
-              <DetailCard label="State" value={manager.state} />
-              <DetailCard label="City" value={manager.city} />
-              <DetailCard label="Address" value={managerFullAddress} />
-            </div>
-          </section>
+          <ManagerPersonalSection manager={manager} fullAddress={managerFullAddress} />
 
           <section className="rounded-2xl border bg-white p-6 shadow-sm">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-slate-500 uppercase">

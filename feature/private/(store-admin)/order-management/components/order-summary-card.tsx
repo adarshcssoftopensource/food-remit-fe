@@ -32,10 +32,108 @@ function InfoField({
   );
 }
 
-export function OrderSummaryCard({ order, hideQrCode }: OrderSummaryCardProps) {
+function formatCreatedTime(order: OrderData) {
+  return order.createdAt
+    ? new Date(order.createdAt).toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : order.time || "N/A";
+}
+
+function RecurringScheduleDetails({ order }: { order: OrderData }) {
   const recurringDateList = order.recurringDateList || [];
   const completedDates = recurringDateList.filter((d) => d.status === 1);
   const pendingDates = recurringDateList.filter((d) => d.status === 0);
+
+  return (
+    <div className="mt-6 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 dark:border-indigo-900/30 dark:bg-indigo-950/20">
+      <h4 className="mb-3 flex items-center text-xs font-bold tracking-wider text-indigo-700 uppercase dark:text-indigo-400">
+        <Repeat className="mr-2 size-3.5" /> Recurring Schedule Details
+      </h4>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div>
+          <p className="text-[10px] font-medium text-indigo-400/80 uppercase">Frequency</p>
+          <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+            {order.recurringFrequency || "N/A"}
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] font-medium text-indigo-400/80 uppercase">Start Date</p>
+          <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+            {order.recurringStartDate ? formatDate(order.recurringStartDate) : "N/A"}
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] font-medium text-indigo-400/80 uppercase">End Date</p>
+          <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+            {order.recurringEndDate ? formatDate(order.recurringEndDate) : "N/A"}
+          </p>
+        </div>
+      </div>
+
+      {recurringDateList.length > 0 && (
+        <div className="mt-4 border-t border-indigo-200/50 pt-4 dark:border-indigo-800/50">
+          <p className="mb-3 text-xs font-bold text-indigo-800 dark:text-indigo-300">
+            Schedule Status ({completedDates.length}/{recurringDateList.length} Completed)
+          </p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <p className="mb-1.5 flex items-center text-[10px] font-medium text-emerald-600 uppercase dark:text-emerald-400">
+                <CheckCircle2 className="mr-1 size-3" /> Paid / Completed ({completedDates.length})
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {completedDates.length > 0 ? (
+                  completedDates.map((d) => (
+                    <span
+                      key={d.date}
+                      className="inline-flex items-center gap-1 rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
+                      title={d.paidOn ? `Paid on: ${formatDate(d.paidOn)}` : undefined}
+                    >
+                      {formatDate(d.date)}
+                      {d.paidOn && (
+                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400">
+                          (Paid: {formatDate(d.paidOn)})
+                        </span>
+                      )}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-[10px] text-slate-500 italic">
+                    No completed payments yet.
+                  </span>
+                )}
+              </div>
+            </div>
+            <div>
+              <p className="mb-1.5 flex items-center text-[10px] font-medium text-amber-600 uppercase dark:text-amber-400">
+                <Clock className="mr-1 size-3" /> Pending ({pendingDates.length})
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {pendingDates.length > 0 ? (
+                  pendingDates.map((d) => (
+                    <span
+                      key={d.date}
+                      className="inline-flex items-center rounded border border-dashed border-amber-200/50 bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/30 dark:text-amber-300"
+                    >
+                      {formatDate(d.date)}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-[10px] text-slate-500 italic">No pending payments.</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function OrderSummaryCard({ order, hideQrCode }: OrderSummaryCardProps) {
+  const createdTime = formatCreatedTime(order);
 
   return (
     <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
@@ -58,14 +156,7 @@ export function OrderSummaryCard({ order, hideQrCode }: OrderSummaryCardProps) {
                 icon={<Calendar className="mr-1 size-3" />}
                 value={
                   <>
-                    {formatDate(order.createdAt || "")} •{" "}
-                    {order.createdAt
-                      ? new Date(order.createdAt).toLocaleTimeString("en-US", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        })
-                      : order.time || "N/A"}
+                    {formatDate(order.createdAt || "")} • {createdTime}
                   </>
                 }
               />
@@ -82,96 +173,7 @@ export function OrderSummaryCard({ order, hideQrCode }: OrderSummaryCardProps) {
             </div>
 
             {/* Recurring details */}
-            {order.isRecurring && (
-              <div className="mt-6 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 dark:border-indigo-900/30 dark:bg-indigo-950/20">
-                <h4 className="mb-3 flex items-center text-xs font-bold tracking-wider text-indigo-700 uppercase dark:text-indigo-400">
-                  <Repeat className="mr-2 size-3.5" /> Recurring Schedule Details
-                </h4>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  <div>
-                    <p className="text-[10px] font-medium text-indigo-400/80 uppercase">
-                      Frequency
-                    </p>
-                    <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
-                      {order.recurringFrequency || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-medium text-indigo-400/80 uppercase">
-                      Start Date
-                    </p>
-                    <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
-                      {order.recurringStartDate ? formatDate(order.recurringStartDate) : "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-medium text-indigo-400/80 uppercase">End Date</p>
-                    <p className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
-                      {order.recurringEndDate ? formatDate(order.recurringEndDate) : "N/A"}
-                    </p>
-                  </div>
-                </div>
-
-                {recurringDateList.length > 0 && (
-                  <div className="mt-4 border-t border-indigo-200/50 pt-4 dark:border-indigo-800/50">
-                    <p className="mb-3 text-xs font-bold text-indigo-800 dark:text-indigo-300">
-                      Schedule Status ({completedDates.length}/{recurringDateList.length} Completed)
-                    </p>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <div>
-                        <p className="mb-1.5 flex items-center text-[10px] font-medium text-emerald-600 uppercase dark:text-emerald-400">
-                          <CheckCircle2 className="mr-1 size-3" /> Paid / Completed (
-                          {completedDates.length})
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {completedDates.length > 0 ? (
-                            completedDates.map((d, idx) => (
-                              <span
-                                key={idx}
-                                className="inline-flex items-center gap-1 rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
-                                title={d.paidOn ? `Paid on: ${formatDate(d.paidOn)}` : undefined}
-                              >
-                                {formatDate(d.date)}
-                                {d.paidOn && (
-                                  <span className="text-[9px] text-emerald-600 dark:text-emerald-400">
-                                    (Paid: {formatDate(d.paidOn)})
-                                  </span>
-                                )}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-[10px] text-slate-500 italic">
-                              No completed payments yet.
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <p className="mb-1.5 flex items-center text-[10px] font-medium text-amber-600 uppercase dark:text-amber-400">
-                          <Clock className="mr-1 size-3" /> Pending ({pendingDates.length})
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {pendingDates.length > 0 ? (
-                            pendingDates.map((d, idx) => (
-                              <span
-                                key={idx}
-                                className="inline-flex items-center rounded border border-dashed border-amber-200/50 bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/30 dark:text-amber-300"
-                              >
-                                {formatDate(d.date)}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-[10px] text-slate-500 italic">
-                              No pending payments.
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+            {order.isRecurring && <RecurringScheduleDetails order={order} />}
           </div>
 
           {/* Right: QR Code */}

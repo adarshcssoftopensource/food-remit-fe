@@ -76,6 +76,7 @@ export function TestimonialsFields({ control, errors, setValue }: FieldsProps) {
                 size="icon"
                 className="size-8 rounded-lg text-slate-400 hover:text-red-500"
                 onClick={() => remove(index)}
+                aria-label={`Remove testimonial ${index + 1}`}
               >
                 <Trash2 className="size-4" />
               </Button>

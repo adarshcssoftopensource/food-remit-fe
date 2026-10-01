@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 
 import { useGetStore } from "@/feature/private/(super-admin)/store-management/hooks/use-get-stores";
 import { useUpdateStore } from "@/feature/private/(super-admin)/store-management/hooks/use-update-store";
+import { formatPercentDisplay } from "../lib/format-percent-display";
 
 const govtTaxSchema = z.object({
   tax: z
@@ -27,6 +28,12 @@ const govtTaxSchema = z.object({
 
 type GovtTaxFormValues = z.infer<typeof govtTaxSchema>;
 
+function getCurrentStoreTax(storeData: { storeTax?: unknown } | null | undefined) {
+  return storeData?.storeTax !== undefined && storeData?.storeTax !== null
+    ? String(storeData.storeTax)
+    : "0";
+}
+
 export function GovtTaxManagement() {
   const { isSuperAdmin, profile } = useProfile();
   const isReadOnly = isSuperAdmin;
@@ -35,10 +42,7 @@ export function GovtTaxManagement() {
   const { data: storeData, isLoading } = useGetStore(storeId);
   const { mutateAsync: updateStore, isPending } = useUpdateStore(storeId);
 
-  const currentTax =
-    storeData?.storeTax !== undefined && storeData?.storeTax !== null
-      ? String(storeData.storeTax)
-      : "0";
+  const currentTax = getCurrentStoreTax(storeData);
 
   const {
     control,
@@ -64,13 +68,7 @@ export function GovtTaxManagement() {
   }, [storeData, reset]);
 
   const liveTax = watch("tax") ?? "";
-  const numericTax = parseFloat(liveTax);
-  const isValidTax = !isNaN(numericTax) && numericTax >= 0 && numericTax <= 100;
-
-  const rawDisplayValue = isValidTax ? liveTax || currentTax : currentTax;
-  const formattedDisplayTax = rawDisplayValue
-    ? (Math.round(parseFloat(rawDisplayValue) * 100) / 100).toString()
-    : "0";
+  const formattedDisplayTax = formatPercentDisplay(liveTax, currentTax);
 
   const onSubmit: SubmitHandler<GovtTaxFormValues> = async (data) => {
     if (isReadOnly || !storeId) return;
@@ -242,7 +240,7 @@ export function GovtTaxManagement() {
                 <Button
                   type="submit"
                   disabled={isPending || !isDirty || isReadOnly}
-                  className="h-10 min-w-[140px] gap-2 rounded-xl bg-amber-500 font-semibold text-white shadow-md shadow-amber-500/20 transition-all hover:bg-amber-600 disabled:opacity-60 dark:bg-amber-600 dark:hover:bg-amber-700"
+                  className="h-10 min-w-[140px] gap-2 rounded-xl bg-amber-500 font-semibold text-white shadow-md shadow-amber-500/20 transition hover:bg-amber-600 disabled:opacity-60 dark:bg-amber-600 dark:hover:bg-amber-700"
                 >
                   {isPending ? (
                     <span className="flex items-center gap-2">

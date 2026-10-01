@@ -35,8 +35,10 @@ interface OrderItemsTableProps {
   onPreviewImage: (url: string) => void;
 }
 
+const EMPTY_ORDER_ITEMS: OrderItem[] = [];
+
 export function OrderItemsTable({
-  orderItems = [],
+  orderItems = EMPTY_ORDER_ITEMS,
   currency,
   itemStats = { allCount: 0, availableCount: 0, deliveredCount: 0 },
   itemFilter,

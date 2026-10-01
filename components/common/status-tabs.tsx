@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { STATUS_TAB_ITEMS, getStatusTabCount, type StatusTabValue } from "@/constants/status-tabs";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface StatusTabsStats {
   total?: number;
@@ -64,7 +64,7 @@ export function StatusTabs({
   const [prevActiveTab, setPrevActiveTab] = useState(activeTab);
   const [displayedTab, setDisplayedTab] = useState<StatusTabValue>(activeTab);
   const [pendingTab, setPendingTab] = useState<StatusTabValue | null>(null);
-  const wasLoadingRef = useRef(false);
+  const [wasLoading, setWasLoading] = useState(false);
 
   // Sync displayedTab when activeTab prop changes externally (e.g. reset filters)
   if (activeTab !== prevActiveTab) {
@@ -75,16 +75,14 @@ export function StatusTabs({
   }
 
   // Track loading lifecycle: when data arrives (isLoading was true and turns false), transition
-  useEffect(() => {
-    if (isLoading) {
-      wasLoadingRef.current = true;
-    } else if (wasLoadingRef.current && !isLoading && pendingTab) {
-      // Data arrived! Transition to pending tab
-      setDisplayedTab(pendingTab);
-      setPendingTab(null);
-      wasLoadingRef.current = false;
-    }
-  }, [isLoading, pendingTab]);
+  if (isLoading) {
+    if (!wasLoading) setWasLoading(true);
+  } else if (wasLoading && pendingTab) {
+    // Data arrived! Transition to pending tab
+    setDisplayedTab(pendingTab);
+    setPendingTab(null);
+    setWasLoading(false);
+  }
 
   // Smooth fallback if data was cached or returns immediately (<50ms)
   useEffect(() => {
@@ -92,7 +90,7 @@ export function StatusTabs({
       const timer = setTimeout(() => {
         setDisplayedTab(pendingTab);
         setPendingTab(null);
-        wasLoadingRef.current = false;
+        setWasLoading(false);
       }, 350);
       return () => clearTimeout(timer);
     }

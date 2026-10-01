@@ -35,7 +35,7 @@ export function EmployeeOrderActionsCell({
       <Button
         size="sm"
         variant="outline"
-        className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950/20 dark:text-slate-300"
+        className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950/20 dark:text-slate-300"
         onClick={() => onView(order.id)}
       >
         <Eye className="mr-1.5 size-3.5" />
@@ -46,7 +46,7 @@ export function EmployeeOrderActionsCell({
           <Button
             size="sm"
             variant="outline"
-            className="h-8 rounded-lg border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-600 transition-all hover:bg-red-100 hover:text-red-700 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400"
+            className="h-8 rounded-lg border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-600 transition hover:bg-red-100 hover:text-red-700 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400"
             onClick={() => setUnassignOpen(true)}
             disabled={isUnassigning}
           >

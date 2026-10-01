@@ -1,6 +1,6 @@
 "use client";
 
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import type { LandingHero } from "@/feature/private/(super-admin)/content-management/landing-page/types";

@@ -64,7 +64,7 @@ export function useApiMutation<TResponse, TBody = unknown>(
     skipErrorToast?: boolean;
   },
 ) {
-  const { timeout = 120000, skipErrorToast, ...mutationOptions } = options || {};
+  const { timeout = 120000, skipErrorToast, onSuccess, ...mutationOptions } = options || {};
   return useMutation<TResponse, Error, TBody>({
     mutationFn: (body: TBody) =>
       fetcher<TResponse, TBody>({
@@ -76,5 +76,6 @@ export function useApiMutation<TResponse, TBody = unknown>(
       }),
 
     ...mutationOptions,
+    onSuccess,
   });
 }

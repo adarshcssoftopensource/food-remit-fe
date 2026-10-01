@@ -23,6 +23,60 @@ type CitySelectProps = {
   valueKey?: "id" | "name";
 };
 
+function CityOptionsList({
+  isLoading,
+  cities,
+  value,
+  valueKey,
+  selectedCity,
+  onSelect,
+}: {
+  isLoading: boolean;
+  cities: CityData[];
+  value: string;
+  valueKey: "id" | "name";
+  selectedCity: CityData | null | undefined;
+  onSelect: (cityValue: string, city: CityData) => void;
+}) {
+  return (
+    <>
+      {isLoading ? (
+        <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-500">
+          <Loader2 className="size-4 animate-spin" />
+          Loading cities...
+        </div>
+      ) : cities.length ? (
+        cities.map((city) => {
+          const cityValue = valueKey === "name" ? city.name : city.id;
+          const isSelected = value === cityValue || (selectedCity && selectedCity.id === city.id);
+
+          return (
+            <Button
+              key={city.id}
+              variant="ghost"
+              onClick={() => onSelect(cityValue, city)}
+              className={cn(
+                "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 capitalize transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
+                isSelected && "bg-primary/10 text-primary font-medium",
+              )}
+            >
+              <MapPin className="size-4 shrink-0 text-slate-400" />
+              <span className="flex-1 truncate capitalize">{city.name}</span>
+              {isSelected && <Check className="size-4" />}
+            </Button>
+          );
+        })
+      ) : (
+        <p className="px-2 py-6 text-center text-sm text-slate-500">No cities found.</p>
+      )}
+    </>
+  );
+}
+
+function resolveCountryFilter(countryId?: string) {
+  return countryId && countryId !== "All" && countryId !== "all" ? countryId : undefined;
+}
+
 export function CitySelect({
   className,
   countryId,
@@ -50,7 +104,7 @@ export function CitySelect({
   }, [isOpen]);
 
   const { data: citiesResponse, isLoading } = useGetCities({
-    countryId: countryId && countryId !== "All" && countryId !== "all" ? countryId : undefined,
+    countryId: resolveCountryFilter(countryId),
     limit: 1000,
   });
 
@@ -151,40 +205,18 @@ export function CitySelect({
           onTouchMove={(e) => e.stopPropagation()}
           style={{ overscrollBehavior: "contain" }}
         >
-          {isLoading ? (
-            <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-500">
-              <Loader2 className="size-4 animate-spin" />
-              Loading cities...
-            </div>
-          ) : filteredCities.length ? (
-            filteredCities.map((city) => {
-              const cityValue = valueKey === "name" ? city.name : city.id;
-              const isSelected =
-                value === cityValue || (selectedCity && selectedCity.id === city.id);
-
-              return (
-                <Button
-                  key={city.id}
-                  variant="ghost"
-                  onClick={() => {
-                    onValueChange(cityValue, city);
-                    setIsOpen(false);
-                    setSearchQuery("");
-                  }}
-                  className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 capitalize transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
-                    isSelected && "bg-primary/10 text-primary font-medium",
-                  )}
-                >
-                  <MapPin className="size-4 shrink-0 text-slate-400" />
-                  <span className="flex-1 truncate capitalize">{city.name}</span>
-                  {isSelected && <Check className="size-4" />}
-                </Button>
-              );
-            })
-          ) : (
-            <p className="px-2 py-6 text-center text-sm text-slate-500">No cities found.</p>
-          )}
+          <CityOptionsList
+            isLoading={isLoading}
+            cities={filteredCities}
+            value={value}
+            valueKey={valueKey}
+            selectedCity={selectedCity}
+            onSelect={(cityValue, city) => {
+              onValueChange(cityValue, city);
+              setIsOpen(false);
+              setSearchQuery("");
+            }}
+          />
         </div>
       </PopoverContent>
     </Popover>

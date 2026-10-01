@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileText, PencilLine, Save } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { Controller, useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { useGetContentPage } from "../hooks/use-get-content-page";
 import { useUpdateContentPage } from "../hooks/use-update-content-page";
 import { contentPageSchema, type ContentPageFormValues } from "../schema/content.schema";
-import { CONTENT_PAGE_LABELS, type ContentPageKey } from "../types";
+import { CONTENT_PAGE_LABELS, type ContentPageData, type ContentPageKey } from "../types";
 import { ContentPageSkeleton } from "./content-page-skeleton";
 
 type ContentPageEditorProps = {
@@ -71,63 +71,7 @@ export function ContentPageEditor({ pageKey }: ContentPageEditorProps) {
         </div>
       ) : null}
 
-      {page ? (
-        <Card className="overflow-hidden rounded-2xl border-slate-200/80 pt-0 shadow-sm">
-          <CardHeader className="from-primary/8 border-b bg-linear-to-r via-emerald-50/40 to-transparent py-5">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/15 text-primary flex size-11 items-center justify-center rounded-xl">
-                <FileText className="size-5" />
-              </div>
-              <div>
-                <CardTitle className="text-xl font-bold text-slate-900">
-                  {page.title || label}
-                </CardTitle>
-                <p className="text-muted-foreground mt-0.5 text-sm">
-                  {page.title || page.description
-                    ? `Last updated: ${new Date(page.updatedAt).toLocaleString()}`
-                    : "No content yet - add it from the button above."}
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <ScrollArea className="h-[min(52vh,520px)]">
-              <div className="space-y-4 p-6">
-                {page.title || page.description ? (
-                  <>
-                    <div>
-                      <p className="text-xs font-bold tracking-wide text-slate-400 uppercase">
-                        Title
-                      </p>
-                      <p className="mt-1 text-base font-semibold text-slate-900">
-                        {page.title || "—"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold tracking-wide text-slate-400 uppercase">
-                        Description
-                      </p>
-                      <div className="mt-2 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] transition-colors hover:bg-slate-50 dark:border-slate-800/80 dark:bg-slate-900/40">
-                        <ReactQuill
-                          value={page.description || ""}
-                          readOnly={true}
-                          theme="snow"
-                          modules={{ toolbar: false }}
-                          className="[&_.ql-container]:bg-transparent [&_.ql-container.ql-snow]:border-0! [&_.ql-editor]:p-0!"
-                        />
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <p className="py-10 text-center text-sm text-slate-500">
-                    Nothing added yet. Click &quot;Add {label}&quot; to create content.
-                  </p>
-                )}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      ) : null}
+      {page ? <ContentPageCard page={page} label={label} /> : null}
 
       <EditContentPageDialog
         open={editOpen}
@@ -146,6 +90,80 @@ export function ContentPageEditor({ pageKey }: ContentPageEditorProps) {
       />
     </div>
   );
+}
+
+type ContentPageCardProps = {
+  page: ContentPageData;
+  label: string;
+};
+
+function ContentPageCard({ page, label }: ContentPageCardProps) {
+  return (
+    <Card className="overflow-hidden rounded-2xl border-slate-200/80 pt-0 shadow-sm">
+      <CardHeader className="from-primary/8 border-b bg-linear-to-r via-emerald-50/40 to-transparent py-5">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/15 text-primary flex size-11 items-center justify-center rounded-xl">
+            <FileText className="size-5" />
+          </div>
+          <div>
+            <CardTitle className="text-xl font-bold text-slate-900">
+              {page.title || label}
+            </CardTitle>
+            <p className="text-muted-foreground mt-0.5 text-sm">
+              {page.title || page.description ? (
+                <LastUpdatedText updatedAt={page.updatedAt} />
+              ) : (
+                "No content yet - add it from the button above."
+              )}
+            </p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <ScrollArea className="h-[min(52vh,520px)]">
+          <div className="space-y-4 p-6">
+            {page.title || page.description ? (
+              <>
+                <div>
+                  <p className="text-xs font-bold tracking-wide text-slate-400 uppercase">Title</p>
+                  <p className="mt-1 text-base font-semibold text-slate-900">{page.title || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold tracking-wide text-slate-400 uppercase">
+                    Description
+                  </p>
+                  <div className="mt-2 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] transition-colors hover:bg-slate-50 dark:border-slate-800/80 dark:bg-slate-900/40">
+                    <ReactQuill
+                      value={page.description || ""}
+                      readOnly={true}
+                      theme="snow"
+                      modules={{ toolbar: false }}
+                      className="[&_.ql-container]:bg-transparent [&_.ql-container.ql-snow]:border-0! [&_.ql-editor]:p-0!"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="py-10 text-center text-sm text-slate-500">
+                Nothing added yet. Click &quot;Add {label}&quot; to create content.
+              </p>
+            )}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+}
+
+const subscribeNoop = () => () => {};
+
+function LastUpdatedText({ updatedAt }: { updatedAt: string }) {
+  const formatted = useSyncExternalStore(
+    subscribeNoop,
+    () => new Date(updatedAt).toLocaleString(),
+    () => "",
+  );
+  return <>{`Last updated: ${formatted}`}</>;
 }
 
 type EditDialogProps = {

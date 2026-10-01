@@ -27,6 +27,7 @@ export function BusinessOverviewCard({ lead }: { lead: PartnerLeadData }) {
               src={lead.storeLogo || "/default-store.svg"}
               alt={lead.businessName}
               fill
+              sizes="56px"
               unoptimized
               className="object-contain p-1.5"
             />
@@ -56,6 +57,7 @@ export function BusinessOverviewCard({ lead }: { lead: PartnerLeadData }) {
                 src={lead.profileImage}
                 alt={`${lead.firstName} ${lead.lastName}`}
                 fill
+                sizes="56px"
                 unoptimized
                 className="object-cover"
               />

@@ -16,6 +16,16 @@ interface ImageLightboxProps {
 
 const emptySubscribe = () => () => {};
 
+function showModalOnMount(node: HTMLDialogElement | null) {
+  if (!node || node.open) return;
+  const previouslyFocused =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  node.showModal();
+  return () => {
+    previouslyFocused?.focus();
+  };
+}
+
 export function ImageLightbox({
   src,
   onClose,
@@ -61,13 +71,18 @@ export function ImageLightbox({
     maxWidthClass || (isQrCode ? "max-w-[280px] sm:max-w-[340px]" : "max-w-[50vw]");
 
   return createPortal(
-    <div
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={showModalOnMount}
       aria-label="Image preview"
-      className="fixed inset-0 flex items-center justify-center p-4 backdrop-blur-md transition-all duration-200"
+      className="fixed inset-0 m-0 flex size-full max-h-none max-w-none items-center justify-center overflow-visible border-0 p-4 text-inherit backdrop-blur-md transition duration-200 backdrop:bg-transparent"
       style={{ zIndex: 99999, background: "rgba(15,15,20,0.65)" }}
-      onClick={onClose}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
     >
       <div
         className={`relative overflow-hidden rounded-3xl border border-white/20 bg-white/95 p-3 shadow-2xl backdrop-blur-xl transition-all duration-300 dark:border-slate-800/80 dark:bg-slate-900/95 ${
@@ -83,7 +98,7 @@ export function ImageLightbox({
           variant="ghost"
           size="icon"
           aria-label="Close"
-          className="absolute top-3 right-3 z-30 flex size-8 items-center justify-center rounded-full bg-slate-100/90 text-slate-600 shadow-sm backdrop-blur-md transition-all hover:scale-110 hover:bg-slate-200 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:bg-slate-700"
+          className="absolute top-3 right-3 z-30 flex size-8 items-center justify-center rounded-full bg-slate-100/90 text-slate-600 shadow-sm backdrop-blur-md transition hover:scale-110 hover:bg-slate-200 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           <X className="size-4" />
         </Button>
@@ -119,7 +134,7 @@ export function ImageLightbox({
           />
         </div>
       </div>
-    </div>,
+    </dialog>,
     document.body,
   );
 }

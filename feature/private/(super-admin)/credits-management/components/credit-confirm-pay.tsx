@@ -116,7 +116,7 @@ export function CreditConfirmPay({
               variant="outline"
               onClick={() => handleOpenChange(false)}
               disabled={isPending}
-              className="h-10 rounded-xl border-slate-200 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-100 active:scale-95 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="h-10 rounded-xl border-slate-200 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 active:scale-95 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               Cancel
             </Button>
@@ -124,7 +124,7 @@ export function CreditConfirmPay({
               type="button"
               onClick={onConfirm}
               disabled={isPending}
-              className="h-10 rounded-xl bg-emerald-600 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+              className="h-10 rounded-xl bg-emerald-600 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
             >
               {isPending ? (
                 <>

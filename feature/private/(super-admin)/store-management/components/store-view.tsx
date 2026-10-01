@@ -10,6 +10,7 @@ import { BankVerificationCard } from "@/feature/private/(store-admin)/partner-le
 import { KycVerificationCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/kyc-verification-card";
 import { LocationDetailsCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/location-details-card";
 import { OperationalPreferencesCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/operational-preferences-card";
+import { ViewStatusMeta } from "@/feature/private/(super-admin)/city-management/components/shared/view-status-meta";
 import { useGetStore } from "@/feature/private/(super-admin)/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
 import { Building2, Expand, Mail, MapPin, Phone, UserCircle } from "lucide-react";
@@ -112,21 +113,11 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
               </div>
             </div>
 
-            <div className="flex shrink-0 gap-3 text-right">
-              <div>
-                <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">
-                  Status
-                </p>
-                <p className="mt-0.5 font-medium text-slate-700">{store.status}</p>
-              </div>
-              <div className="w-px bg-slate-200" />
-              <div>
-                <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">
-                  Added On
-                </p>
-                <p className="mt-0.5 font-medium text-slate-700">{formatDate(store.createdAt)}</p>
-              </div>
-            </div>
+            <ViewStatusMeta
+              status={store.status}
+              dateLabel="Added On"
+              dateValue={formatDate(store.createdAt)}
+            />
           </div>
         </div>
 

@@ -53,15 +53,17 @@ export function CreditUnmarkedItems({ items, currency, onImageClick }: CreditUnm
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((item, idx) => (
+              {items.map((item) => (
                 <TableRow
-                  key={item.id || idx}
+                  key={item.id || item.itemId}
                   className="border-b border-slate-100 transition hover:bg-slate-50/50 dark:border-slate-800/80 dark:hover:bg-slate-900/40"
                 >
                   <TableCell className="py-3.5 pl-5">
                     <div className="flex items-center gap-3.5">
                       {/* Image thumbnail with zoom overlay */}
-                      <div
+                      <button
+                        type="button"
+                        disabled={!item.productPicture}
                         className={`group relative size-12 shrink-0 overflow-hidden rounded-xl border border-slate-200/80 bg-slate-50 shadow-2xs dark:border-slate-700/80 dark:bg-slate-800 ${
                           item.productPicture
                             ? "hover:ring-primary cursor-pointer ring-1 ring-black/5 dark:ring-white/10"
@@ -78,7 +80,8 @@ export function CreditUnmarkedItems({ items, currency, onImageClick }: CreditUnm
                               src={item.productPicture}
                               alt={item.itemName}
                               fill
-                              className="object-cover transition-all duration-200 group-hover:scale-110"
+                              sizes="48px"
+                              className="object-cover transition duration-200 group-hover:scale-110"
                             />
                             <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-[1px] transition-opacity duration-200 group-hover:opacity-100">
                               <ZoomIn className="size-4 text-white drop-shadow-md" />
@@ -89,7 +92,7 @@ export function CreditUnmarkedItems({ items, currency, onImageClick }: CreditUnm
                             N/A
                           </div>
                         )}
-                      </div>
+                      </button>
 
                       {/* Product Name & Barcode */}
                       <div className="min-w-0">

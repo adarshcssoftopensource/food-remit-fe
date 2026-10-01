@@ -48,6 +48,53 @@ const CATEGORY_META: Record<
   },
 };
 
+function getEmailNotificationsFormState(
+  overrides: Partial<UpdateEmailNotificationPayload>,
+  prefData: Partial<UpdateEmailNotificationPayload> | undefined,
+) {
+  return {
+    emailNotifications: overrides.emailNotifications ?? prefData?.emailNotifications ?? true,
+    orderEmails: overrides.orderEmails ?? prefData?.orderEmails ?? true,
+    broadcastEmails: overrides.broadcastEmails ?? prefData?.broadcastEmails ?? true,
+    leadEmails: overrides.leadEmails ?? prefData?.leadEmails ?? true,
+    ticketEmails: overrides.ticketEmails ?? prefData?.ticketEmails ?? true,
+  };
+}
+
+interface EmailNotificationsUserBannerProps {
+  name?: string | null;
+  role?: string | null;
+  email?: string | null;
+}
+
+function EmailNotificationsUserBanner({ name, role, email }: EmailNotificationsUserBannerProps) {
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-linear-to-r from-emerald-500/10 via-teal-500/5 to-transparent p-5 backdrop-blur-md dark:border-slate-800 dark:from-emerald-950/30 dark:via-slate-900/40">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3.5">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20">
+            <Mail className="size-5.5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+                {name || "User"}
+              </h3>
+              <Badge variant="default" className="text-[11px] font-medium tracking-wide">
+                {role || "Staff"}
+              </Badge>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Email destination:{" "}
+              <span className="font-medium text-slate-800 dark:text-slate-200">{email}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function EmailNotificationsSettings() {
   const { profile } = useProfile();
   const { data: prefResponse, isLoading, isError } = useGetEmailNotifications();
@@ -60,13 +107,7 @@ export function EmailNotificationsSettings() {
   // Track which specific toggle is currently updating
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
 
-  const formState = {
-    emailNotifications: overrides.emailNotifications ?? prefData?.emailNotifications ?? true,
-    orderEmails: overrides.orderEmails ?? prefData?.orderEmails ?? true,
-    broadcastEmails: overrides.broadcastEmails ?? prefData?.broadcastEmails ?? true,
-    leadEmails: overrides.leadEmails ?? prefData?.leadEmails ?? true,
-    ticketEmails: overrides.ticketEmails ?? prefData?.ticketEmails ?? true,
-  };
+  const formState = getEmailNotificationsFormState(overrides, prefData);
 
   const handleToggle = async (key: keyof UpdateEmailNotificationPayload, value: boolean) => {
     setUpdatingKey(key);
@@ -140,31 +181,11 @@ export function EmailNotificationsSettings() {
   return (
     <div className="max-w-4xl space-y-6">
       {/* User Context & Role Banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-linear-to-r from-emerald-500/10 via-teal-500/5 to-transparent p-5 backdrop-blur-md dark:border-slate-800 dark:from-emerald-950/30 dark:via-slate-900/40">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20">
-              <Mail className="size-5.5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold text-slate-900 dark:text-white">
-                  {profile?.name || "User"}
-                </h3>
-                <Badge variant="default" className="text-[11px] font-medium tracking-wide">
-                  {prefData.roleTitle || profile?.role || "Staff"}
-                </Badge>
-              </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Email destination:{" "}
-                <span className="font-medium text-slate-800 dark:text-slate-200">
-                  {profile?.email}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <EmailNotificationsUserBanner
+        name={profile?.name}
+        role={prefData.roleTitle || profile?.role}
+        email={profile?.email}
+      />
 
       {/* Master Toggle Card */}
       <Card className="rounded-2xl border-slate-200/80 shadow-xs dark:border-slate-800/80 dark:bg-slate-900/60">

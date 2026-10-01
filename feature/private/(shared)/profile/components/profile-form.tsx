@@ -1,40 +1,27 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Mail, User } from "lucide-react";
+import { Check } from "lucide-react";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
 import { useProfile } from "@/components/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { PhoneInputComponent, resolveFromValue } from "@/components/ui/phone-input";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
-import { toPhoneDigits } from "@/lib/phone";
-import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { ManagerLocationFields } from "@/feature/private/(super-admin)/store-management/components/manager-location-fields";
-import { MapPin } from "lucide-react";
 import { useUpdateProfile } from "../hooks/use-update-profile";
 import { getProfileDetailsSchema, type ProfileDetailsValues } from "../schema/profile.schema";
-
-function buildProfileContactNumber(
-  phoneNumber?: string | null,
-  countryCode?: string | null,
-): string {
-  const national = toPhoneDigits(phoneNumber || "");
-  const dial = toPhoneDigits(countryCode || "");
-  if (!national) return "";
-  // Already includes dial (e.g. saved as full "13322359345")
-  if (dial && national.startsWith(dial) && national.length > dial.length) {
-    return national;
-  }
-  return dial ? `${dial}${national}` : national;
-}
+import {
+  EmployeeLocationSection,
+  ProfileAddressField,
+  ProfileContactField,
+  ProfileEmailField,
+  ProfileNameField,
+  StoreManagerLocationFields,
+} from "./profile-form-fields";
+import { getProfileFormValues } from "./profile-form-values";
 
 export function ProfileForm() {
   const { profile, needsBankVerification } = useProfile();
@@ -42,26 +29,9 @@ export function ProfileForm() {
   const updateProfileMutation = useUpdateProfile();
   const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
   const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
-  const isViewOnly = isEmployee || needsBankVerification;
   const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
 
-  const nameParts = (profile?.name || "").trim().split(" ");
-  const firstName = profile?.firstName || nameParts[0] || "";
-  const lastName = profile?.lastName || nameParts.slice(1).join(" ") || "";
-
-  const resolvedCountry =
-    (profile as any)?.countryName ||
-    (profile as any)?.stores?.find((s: any) => s.country === (profile as any)?.country)
-      ?.countryName ||
-    (profile as any)?.stores?.[0]?.countryName ||
-    (profile as any)?.country ||
-    "";
-
-  const resolvedCity =
-    (profile as any)?.cityName ||
-    (profile as any)?.stores?.find((s: any) => s.city === (profile as any)?.city)?.cityName ||
-    (profile as any)?.city ||
-    "";
+  const { phoneFallbackCountry, values } = getProfileFormValues(profile);
 
   const {
     control,
@@ -71,18 +41,7 @@ export function ProfileForm() {
     reset,
   } = useForm<ProfileDetailsValues>({
     resolver: zodResolver(getProfileDetailsSchema(isStoreManager)),
-    values: {
-      firstName,
-      lastName,
-      email: profile?.email || "",
-      contactNumber: buildProfileContactNumber(profile?.phoneNumber, (profile as any)?.countryCode),
-      address: profile?.address || "",
-      country: resolvedCountry,
-      state: (profile as any)?.state || "",
-      city: resolvedCity || (profile as any)?.city || "",
-      zipCode: (profile as any)?.zipCode || (profile as any)?.zipcode || "",
-      image: undefined,
-    },
+    values,
     mode: "onChange",
   });
 
@@ -129,311 +88,43 @@ export function ProfileForm() {
             className="min-w-0 border-0 p-0 disabled:opacity-90"
           >
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
-              <Controller
+              <ProfileNameField
+                control={control}
+                errors={errors}
                 name="firstName"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel htmlFor="firstName" className="text-sm font-semibold">
-                      First Name
-                    </FieldLabel>
-                    <div className="relative">
-                      <User className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
-                      <Input
-                        {...field}
-                        id="firstName"
-                        placeholder="Enter your first name"
-                        aria-invalid={!!errors.firstName}
-                        className={cn(
-                          "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
-                          "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
-                          errors.firstName &&
-                            "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
-                        )}
-                      />
-                    </div>
-                    {errors.firstName && (
-                      <p className="text-xs font-medium text-red-500">{errors.firstName.message}</p>
-                    )}
-                  </div>
-                )}
+                label="First Name"
+                placeholder="Enter your first name"
               />
 
-              <Controller
+              <ProfileNameField
+                control={control}
+                errors={errors}
                 name="lastName"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel htmlFor="lastName" className="text-sm font-semibold">
-                      Last Name
-                    </FieldLabel>
-                    <div className="relative">
-                      <User className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
-                      <Input
-                        {...field}
-                        id="lastName"
-                        placeholder="Enter your last name"
-                        aria-invalid={!!errors.lastName}
-                        className={cn(
-                          "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 pl-10 text-sm transition-colors duration-300 placeholder:text-gray-400/80",
-
-                          "focus-visible:border-[#1B3A8C] focus-visible:bg-white focus-visible:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] focus-visible:ring-[#1B3A8C]/20",
-                          errors.lastName &&
-                            "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15",
-                        )}
-                      />
-                    </div>
-                    {errors.lastName && (
-                      <p className="text-xs font-medium text-red-500">{errors.lastName.message}</p>
-                    )}
-                  </div>
-                )}
+                label="Last Name"
+                placeholder="Enter your last name"
               />
 
-              <Controller
-                name="email"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel htmlFor="email" className="text-sm font-semibold">
-                      Email Address
-                    </FieldLabel>
-                    <div className="relative">
-                      <Mail className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-gray-400" />
-                      <Input
-                        {...field}
-                        id="email"
-                        type="email"
-                        placeholder="Enter your email"
-                        disabled
-                        readOnly
-                        className="h-12 cursor-not-allowed rounded-xl border-gray-200/80 bg-slate-100/80 pl-10 text-sm text-slate-600 disabled:cursor-not-allowed disabled:opacity-75 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400"
-                      />
-                    </div>
-                    <p className="text-[11px] text-slate-400">Email address cannot be changed</p>
-                  </div>
-                )}
-              />
+              <ProfileEmailField control={control} />
 
-              <Controller
-                name="contactNumber"
+              <ProfileContactField
                 control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel htmlFor="contactNumber" className="text-sm font-semibold">
-                      Contact Number
-                    </FieldLabel>
-                    <PhoneInputComponent
-                      value={field.value || ""}
-                      disabled
-                      onChange={(value, data) => {
-                        if (data?.countryCode) setPhoneIso(data.countryCode);
-                        field.onChange(value);
-                      }}
-                      onBlur={field.onBlur}
-                      error={!!errors.contactNumber}
-                      defaultCountry={
-                        phoneIso ||
-                        (profile as any)?.countryCode ||
-                        resolvedCountry ||
-                        (profile as any)?.country ||
-                        "US"
-                      }
-                    />
-                    <p className="text-[11px] text-slate-400">Contact number cannot be changed</p>
-                    {errors.contactNumber && (
-                      <p className="text-xs font-medium text-red-500">
-                        {errors.contactNumber.message}
-                      </p>
-                    )}
-                  </div>
-                )}
+                errors={errors}
+                phoneIso={phoneIso}
+                onPhoneIsoChange={setPhoneIso}
+                fallbackCountry={phoneFallbackCountry}
               />
 
               {isEmployee ? (
-                <div className="md:col-span-2">
-                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800">
-                    <div className="flex items-center gap-3 border-b border-slate-100 bg-linear-to-r from-violet-50/80 to-transparent px-5 py-4 dark:border-slate-800 dark:from-violet-950/30">
-                      <div className="flex size-9 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-950/50">
-                        <MapPin className="size-5 text-violet-600 dark:text-violet-400" />
-                      </div>
-                      <div>
-                        <h3 className="text-base font-bold text-slate-800 dark:text-white">
-                          Location
-                        </h3>
-                        <p className="text-xs text-slate-500">Your residential address details</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
-                      <Controller
-                        name="address"
-                        control={control}
-                        render={({ field }) => (
-                          <div className="flex flex-col gap-1.5">
-                            <FieldLabel htmlFor="address" className="text-sm font-semibold">
-                              Address
-                            </FieldLabel>
-                            <AddressAutocompleteInput
-                              id="address"
-                              value={field.value || ""}
-                              onChange={(val) => field.onChange(val)}
-                              onPlaceSelect={(place) => {
-                                setValue("address", place.streetAddress || place.name || "", {
-                                  shouldDirty: true,
-                                });
-                                setValue("city", place.city || "", { shouldDirty: true });
-                                setValue("state", place.state || "", { shouldDirty: true });
-                                setValue("zipCode", place.postalCode || "", { shouldDirty: true });
-                              }}
-                              addressFormat="full"
-                              placeholder="Search address..."
-                              invalid={!!errors.address}
-                            />
-                            {errors.address && (
-                              <p className="text-xs font-medium text-red-500">
-                                {errors.address.message}
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      />
-                      <Controller
-                        name="city"
-                        control={control}
-                        render={({ field }) => (
-                          <div className="flex flex-col gap-1.5">
-                            <FieldLabel className="text-sm font-semibold">City</FieldLabel>
-                            <Input
-                              {...field}
-                              value={field.value || ""}
-                              placeholder="City"
-                              className="h-11 rounded-xl border-slate-200 bg-slate-50"
-                            />
-                          </div>
-                        )}
-                      />
-                      <Controller
-                        name="state"
-                        control={control}
-                        render={({ field }) => (
-                          <div className="flex flex-col gap-1.5">
-                            <FieldLabel className="text-sm font-semibold">State</FieldLabel>
-                            <Input
-                              {...field}
-                              value={field.value || ""}
-                              placeholder="State"
-                              className="h-11 rounded-xl border-slate-200 bg-slate-50"
-                            />
-                          </div>
-                        )}
-                      />
-                      <Controller
-                        name="zipCode"
-                        control={control}
-                        render={({ field }) => (
-                          <div className="flex flex-col gap-1.5">
-                            <FieldLabel className="text-sm font-semibold">Zip Code</FieldLabel>
-                            <Input
-                              {...field}
-                              value={field.value || ""}
-                              placeholder="Zip Code"
-                              className="h-11 rounded-xl border-slate-200 bg-slate-50"
-                            />
-                          </div>
-                        )}
-                      />
-                    </div>
-                  </div>
-                </div>
+                <EmployeeLocationSection control={control} errors={errors} setValue={setValue} />
               ) : (
-                <Controller
-                  name="address"
+                <ProfileAddressField
                   control={control}
-                  render={({ field }) => (
-                    <div className="flex flex-col gap-1.5 md:col-span-2">
-                      <FieldLabel htmlFor="address" className="text-sm font-semibold">
-                        Address
-                      </FieldLabel>
-                      <AddressAutocompleteInput
-                        id="address"
-                        value={field.value || ""}
-                        onChange={(val) => field.onChange(val)}
-                        addressFormat="full"
-                        placeholder="Search address..."
-                        invalid={!!errors.address}
-                        disabled={isStoreManager}
-                      />
-                      {isStoreManager && (
-                        <p className="text-[11px] text-slate-400">Address cannot be changed</p>
-                      )}
-                      {errors.address && (
-                        <p className="text-xs font-medium text-red-500">{errors.address.message}</p>
-                      )}
-                    </div>
-                  )}
+                  errors={errors}
+                  isStoreManager={isStoreManager}
                 />
               )}
 
-              {isStoreManager && (
-                <>
-                  <Controller
-                    name="country"
-                    control={control}
-                    render={({ field: cField }) => (
-                      <Controller
-                        name="state"
-                        control={control}
-                        render={({ field: sField }) => (
-                          <Controller
-                            name="city"
-                            control={control}
-                            render={({ field: cityField }) => (
-                              <ManagerLocationFields
-                                countryValue={cField.value || ""}
-                                onCountryChange={cField.onChange}
-                                stateValue={sField.value || ""}
-                                onStateChange={sField.onChange}
-                                cityValue={cityField.value || ""}
-                                onCityChange={cityField.onChange}
-                                countryError={errors.country?.message}
-                                stateError={errors.state?.message}
-                                cityError={errors.city?.message}
-                                disabled
-                              />
-                            )}
-                          />
-                        )}
-                      />
-                    )}
-                  />
-
-                  <Controller
-                    name="zipCode"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="flex flex-col gap-1.5 md:col-span-2">
-                        <FieldLabel htmlFor="zipCode" className="text-sm font-semibold">
-                          Zipcode
-                        </FieldLabel>
-                        <Input
-                          {...field}
-                          value={field.value || ""}
-                          id="zipCode"
-                          placeholder="Enter Zipcode"
-                          disabled
-                          readOnly
-                          className="h-11 cursor-not-allowed rounded-xl border-slate-200 bg-slate-100 text-slate-600 disabled:cursor-not-allowed disabled:opacity-75"
-                        />
-                        {errors.zipCode && (
-                          <p className="text-xs font-medium text-red-500">
-                            {errors.zipCode.message}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  />
-                </>
-              )}
+              {isStoreManager && <StoreManagerLocationFields control={control} errors={errors} />}
             </div>
 
             {!needsBankVerification && (

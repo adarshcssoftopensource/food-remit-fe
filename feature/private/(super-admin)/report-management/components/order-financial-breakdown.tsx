@@ -85,15 +85,15 @@ function FinancialCard({
         {icon}
       </div>
       <div className="flex flex-col gap-3 p-5">
-        {rows.map((row, i) => (
-          <FinancialRow key={i} {...row} />
+        {rows.map((row) => (
+          <FinancialRow key={row.label} {...row} />
         ))}
         <hr className="my-1 border-dashed border-slate-200 dark:border-slate-800" />
         <div>
           <p className={`text-xs font-semibold ${totalColor}`}>{totalLabel}</p>
           <p className={`text-xl font-black ${totalColor}`}>{cleanCurrencyDisplay(totalValue)}</p>
           {/* Customer Total Refund (shown in vendor settlement for partial orders) */}
-          {customerRefundTotal && (
+          {customerRefundTotal ? (
             <div className="mt-2 rounded-xl border border-rose-100 bg-rose-50/60 p-3 dark:border-rose-900/30 dark:bg-rose-950/20">
               <p className="text-[10px] font-semibold tracking-wider text-rose-500 uppercase dark:text-rose-400">
                 Total Customer Refund
@@ -129,7 +129,7 @@ function FinancialCard({
                 </div>
               )}
             </div>
-          )}
+          ) : null}
           {/* Vendor actual settlement after partial deduction */}
           {!customerRefundTotal && refundDeduction && (
             <div className="mt-1 flex items-center justify-between text-xs text-rose-500">
@@ -218,6 +218,89 @@ export interface VendorSettlementData {
   totalItemsCount?: number;
 }
 
+function hasVisibleDiscount(cp?: CustomerPaymentData) {
+  return (
+    cp?.discountAmount &&
+    cp.discountAmount !== "₹0.00" &&
+    cp.discountAmount !== "$0.00" &&
+    !cp.discountAmount.includes("0.00")
+  );
+}
+
+function getGridColsClass(cardsCount: number) {
+  return cardsCount === 1
+    ? "md:grid-cols-1"
+    : cardsCount === 2
+      ? "md:grid-cols-2"
+      : "md:grid-cols-3";
+}
+
+function getCustomerPaymentRows(
+  cp: CustomerPaymentData | undefined,
+  canViewPlatformFees: boolean,
+  showDiscount: ReturnType<typeof hasVisibleDiscount>,
+): FinancialRowProps[] {
+  return [
+    {
+      label: canViewPlatformFees
+        ? `Item Price (Incl. Markup ${cp?.itemMarkupPercent || "0%"})`
+        : "Item Price",
+      value: cp?.merchandiseSubtotal || "₹0.00",
+    },
+    ...(showDiscount
+      ? [
+          {
+            label: "Discount Applied",
+            value: `-${cp!.discountAmount}`,
+            highlight: "green" as const,
+          },
+        ]
+      : []),
+    {
+      label: `Store Govt Tax (${cp?.storeTaxPercent || "0%"})`,
+      value: cp?.storeTax || "₹0.00",
+    },
+    ...(canViewPlatformFees
+      ? [{ label: "Processing Fee", value: cp?.processingFee || "₹0.00" }]
+      : []),
+  ];
+}
+
+function getFoodRemitRows(fr: FoodRemitEarningsData | undefined): FinancialRowProps[] {
+  return [
+    {
+      label: `Food Remit Markup (${fr?.markupPercent || "0%"})`,
+      value: fr?.markupAmount || "₹0.00",
+    },
+    {
+      label: `Food Remit Commission (${fr?.commissionPercent || "0%"})`,
+      value: fr?.commissionAmount || "₹0.00",
+    },
+    { label: "Processing Fee", value: fr?.processingFee || "₹0.00" },
+  ];
+}
+
+function getVendorSettlementRows(vs: VendorSettlementData | undefined): FinancialRowProps[] {
+  return [
+    { label: "Base Price", value: vs?.vendorBaseAmount || "₹0.00" },
+    ...(vs?.govtTax
+      ? [{ label: `Store Govt Tax (${vs?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
+      : []),
+    ...(vs?.commissionAmount !== undefined && vs?.commissionAmount !== null
+      ? [
+          {
+            label: `Food Remit Store Commission (${vs?.commissionPercent || "0%"})`,
+            value: vs.commissionAmount,
+          },
+        ]
+      : []),
+  ];
+}
+
+function getVendorSettlementTotal(vs: VendorSettlementData | undefined) {
+  return vs?.totalVendorSettlement || vs?.vendorProceeds || "₹0.00";
+}
+
 interface OrderFinancialBreakdownProps {
   customerPayment?: CustomerPaymentData;
   foodRemitEarnings?: FoodRemitEarningsData;
@@ -234,15 +317,10 @@ export function OrderFinancialBreakdown({
   const fr = canViewPlatformFees ? foodRemitEarnings : undefined;
   const vs = vendorSettlement;
 
-  const showDiscount =
-    cp?.discountAmount &&
-    cp.discountAmount !== "₹0.00" &&
-    cp.discountAmount !== "$0.00" &&
-    !cp.discountAmount.includes("0.00");
+  const showDiscount = hasVisibleDiscount(cp);
 
   const cardsCount = [cp, fr, vs].filter(Boolean).length;
-  const gridColsClass =
-    cardsCount === 1 ? "md:grid-cols-1" : cardsCount === 2 ? "md:grid-cols-2" : "md:grid-cols-3";
+  const gridColsClass = getGridColsClass(cardsCount);
 
   return (
     <div className={`grid grid-cols-1 gap-6 ${gridColsClass}`}>
@@ -257,31 +335,8 @@ export function OrderFinancialBreakdown({
           borderColor="border-blue-100 dark:border-blue-900/30"
           totalLabel="Total Customer Paid"
           totalColor="text-blue-600 dark:text-blue-400"
-          totalValue={cp?.totalCustomerPaid || "₹0.00"}
-          rows={[
-            {
-              label: canViewPlatformFees
-                ? `Item Price (Incl. Markup ${cp?.itemMarkupPercent || "0%"})`
-                : "Item Price",
-              value: cp?.merchandiseSubtotal || "₹0.00",
-            },
-            ...(showDiscount
-              ? [
-                  {
-                    label: "Discount Applied",
-                    value: `-${cp!.discountAmount}`,
-                    highlight: "green" as const,
-                  },
-                ]
-              : []),
-            {
-              label: `Store Govt Tax (${cp?.storeTaxPercent || "0%"})`,
-              value: cp?.storeTax || "₹0.00",
-            },
-            ...(canViewPlatformFees
-              ? [{ label: "Processing Fee", value: cp?.processingFee || "₹0.00" }]
-              : []),
-          ]}
+          totalValue={cp.totalCustomerPaid || "₹0.00"}
+          rows={getCustomerPaymentRows(cp, canViewPlatformFees, showDiscount)}
           refundAmount={cp?.refundAmount}
           actualLabel="Actual Retained Amount"
           actualValue={cp?.actualRetainedAmount}
@@ -301,18 +356,8 @@ export function OrderFinancialBreakdown({
           borderColor="border-purple-100 dark:border-purple-900/30"
           totalLabel="Total Food Remit Revenue"
           totalColor="text-purple-600 dark:text-purple-400"
-          totalValue={fr?.totalFoodRemitRevenue || "₹0.00"}
-          rows={[
-            {
-              label: `Food Remit Markup (${fr?.markupPercent || "0%"})`,
-              value: fr?.markupAmount || "₹0.00",
-            },
-            {
-              label: `Food Remit Commission (${fr?.commissionPercent || "0%"})`,
-              value: fr?.commissionAmount || "₹0.00",
-            },
-            { label: "Processing Fee", value: fr?.processingFee || "₹0.00" },
-          ]}
+          totalValue={fr.totalFoodRemitRevenue || "₹0.00"}
+          rows={getFoodRemitRows(fr)}
           refundDeduction={fr?.refundDeduction}
           actualLabel="Actual Revenue"
           actualValue={fr?.actualRevenue}
@@ -330,21 +375,8 @@ export function OrderFinancialBreakdown({
           borderColor="border-emerald-100 dark:border-emerald-900/30"
           totalLabel="Total Vendor Settlement"
           totalColor="text-emerald-600 dark:text-emerald-400"
-          totalValue={vs?.totalVendorSettlement || vs?.vendorProceeds || "₹0.00"}
-          rows={[
-            { label: "Base Price", value: vs?.vendorBaseAmount || "₹0.00" },
-            ...(vs?.govtTax
-              ? [{ label: `Store Govt Tax (${vs?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
-              : []),
-            ...(vs?.commissionAmount !== undefined && vs?.commissionAmount !== null
-              ? [
-                  {
-                    label: `Food Remit Store Commission (${vs?.commissionPercent || "0%"})`,
-                    value: vs.commissionAmount,
-                  },
-                ]
-              : []),
-          ]}
+          totalValue={getVendorSettlementTotal(vs)}
+          rows={getVendorSettlementRows(vs)}
           refundDeduction={vs?.refundDeduction}
           actualLabel="Actual Settlement"
           actualValue={vs?.actualVendorEarnings}

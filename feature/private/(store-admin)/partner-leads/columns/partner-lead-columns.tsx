@@ -33,6 +33,7 @@ export const getPartnerLeadColumns = (
             src={row.original.storeLogo || "/default-store.svg"}
             alt={row.original.businessName}
             fill
+            sizes="32px"
             unoptimized
             className="object-contain p-0.5"
           />

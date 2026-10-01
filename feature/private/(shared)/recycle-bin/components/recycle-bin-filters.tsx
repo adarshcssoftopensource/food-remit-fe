@@ -64,7 +64,6 @@ export function RecycleBinFilters({
           toDate={toDate}
           onFromDateChange={onFromDateChange}
           onToDateChange={onToDateChange}
-          maxDate={new Date()}
           loading={isLoading}
         />
       </div>

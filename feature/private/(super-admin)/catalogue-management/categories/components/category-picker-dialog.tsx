@@ -1,22 +1,10 @@
 "use client";
 
-import { ImageLightbox } from "@/components/common/image-lightbox";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import {
-  AlertCircle,
-  Check,
-  ChevronRight,
-  CornerDownLeft,
-  FolderOpen,
-  FolderSearch,
-  Loader2,
-  Search,
-  X,
-  ZoomIn,
-} from "lucide-react";
-import Image from "next/image";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { FolderSearch, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,8 +14,22 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useDebounce } from "@/lib/debounce";
-import { cn } from "@/lib/utils";
 import { type CategoryPickerItem, useCategoryPicker } from "../hooks/use-category-picker";
+import { PickerListContent } from "./category-picker-list";
+import { PickerSearchInput } from "./category-picker-search";
+import { PickerFooter } from "./category-picker-states";
+
+export { CategoryRow, Highlight } from "./category-picker-row";
+export {
+  Kbd,
+  PickerEmptyState,
+  PickerFooter,
+  PickerLoadMoreRow,
+  PickerSkeleton,
+  PickerState,
+} from "./category-picker-states";
+export { PickerSearchInput } from "./category-picker-search";
+export { PickerListContent } from "./category-picker-list";
 
 interface CategoryPickerDialogProps {
   open: boolean;
@@ -88,6 +90,7 @@ function CategoryPickerBody({
   onSelect,
   activeCategoryId,
 }: Pick<CategoryPickerDialogProps, "onSelect" | "activeCategoryId">) {
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search.trim(), 250);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -171,39 +174,14 @@ function CategoryPickerBody({
 
   return (
     <>
-      <div className="px-5 pb-3">
-        <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={onKeyDown}
-            placeholder="Search categories by name…"
-            autoFocus
-            role="combobox"
-            aria-expanded
-            aria-controls="category-picker-list"
-            aria-activedescendant={activeOptionId}
-            aria-autocomplete="list"
-            maxLength={100}
-            className="focus:border-primary focus:ring-primary/15 h-12 w-full rounded-xl border border-slate-200 bg-slate-50/70 pr-11 pl-10 text-sm text-slate-900 transition outline-none placeholder:text-slate-400 focus:bg-white focus:ring-4 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-          />
-          <div className="absolute top-1/2 right-2 flex -translate-y-1/2 items-center">
-            {isSearching ? (
-              <Loader2 className="mr-1.5 h-4 w-4 animate-spin text-slate-400" />
-            ) : search ? (
-              <button
-                type="button"
-                onClick={() => setSearch("")}
-                aria-label="Clear search"
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            ) : null}
-          </div>
-        </div>
-      </div>
+      <PickerSearchInput
+        inputRef={searchInputRef}
+        search={search}
+        onSearchChange={setSearch}
+        onKeyDown={onKeyDown}
+        activeOptionId={activeOptionId}
+        isSearching={isSearching}
+      />
 
       <div className="border-t border-slate-100 dark:border-slate-800" />
 
@@ -214,258 +192,26 @@ function CategoryPickerBody({
         aria-label="Categories"
         className="min-h-60 flex-1 overflow-y-auto overscroll-contain px-2 py-2"
       >
-        {isPending ? (
-          <PickerSkeleton />
-        ) : isError && !categories.length ? (
-          <PickerState
-            icon={<AlertCircle className="h-9 w-9 text-rose-400" />}
-            title="Couldn't load categories"
-            description="Check your connection and try again."
-            action={
-              <Button variant="outline" size="sm" className="rounded-lg" onClick={() => refetch()}>
-                Try again
-              </Button>
-            }
-          />
-        ) : !categories.length ? (
-          <PickerState
-            icon={<FolderOpen className="h-9 w-9 text-slate-300" />}
-            title={
-              debouncedSearch ? `No categories match "${debouncedSearch}"` : "No categories yet"
-            }
-            description={
-              debouncedSearch
-                ? "Check the spelling or try a shorter search."
-                : "Create a category first, then add items to it."
-            }
-          />
-        ) : (
-          <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
-            {virtualRows.map((row) => {
-              const category = categories[row.index];
-              return (
-                <div
-                  key={row.key}
-                  className="absolute top-0 left-0 w-full px-1 py-0.5"
-                  style={{ height: row.size, transform: `translateY(${row.start}px)` }}
-                >
-                  {category ? (
-                    <CategoryRow
-                      category={category}
-                      query={debouncedSearch}
-                      isActive={row.index === activeIndex}
-                      isCurrent={category.id === activeCategoryId}
-                      index={row.index}
-                      onHover={setActiveIndex}
-                      onSelect={onSelect}
-                      onZoom={setLightboxSrc}
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center gap-2 text-xs text-slate-400">
-                      {isError ? (
-                        <button
-                          type="button"
-                          onClick={() => fetchNextPage()}
-                          className="text-primary font-semibold hover:underline"
-                        >
-                          Couldn&apos;t load more — retry
-                        </button>
-                      ) : (
-                        <>
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          Loading more…
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <PickerListContent
+          isPending={isPending}
+          isError={isError}
+          categories={categories}
+          debouncedSearch={debouncedSearch}
+          virtualizer={virtualizer}
+          virtualRows={virtualRows}
+          activeIndex={activeIndex}
+          activeCategoryId={activeCategoryId}
+          onHover={setActiveIndex}
+          onSelect={onSelect}
+          onZoom={setLightboxSrc}
+          onRetry={() => refetch()}
+          onLoadMore={() => fetchNextPage()}
+        />
       </div>
 
       <ImageLightbox src={lightboxSrc} alt="Category image" onClose={() => setLightboxSrc(null)} />
 
-      <div className="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-2.5 text-[11px] text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
-        <span>
-          {categories.length > 0
-            ? `${categories.length.toLocaleString()}${hasNextPage ? "+" : ""} ${categories.length === 1 ? "category" : "categories"}`
-            : "\u00a0"}
-        </span>
-        <span className="hidden items-center gap-3 sm:flex">
-          <span className="flex items-center gap-1">
-            <Kbd>↑</Kbd>
-            <Kbd>↓</Kbd> to move
-          </span>
-          <span className="flex items-center gap-1">
-            <Kbd>
-              <CornerDownLeft className="h-3 w-3" />
-            </Kbd>
-            to select
-          </span>
-          <span className="flex items-center gap-1">
-            <Kbd>Esc</Kbd> to close
-          </span>
-        </span>
-      </div>
+      <PickerFooter count={categories.length} hasNextPage={hasNextPage} />
     </>
-  );
-}
-
-const CategoryRow = memo(function CategoryRow({
-  category,
-  query,
-  isActive,
-  isCurrent,
-  index,
-  onHover,
-  onSelect,
-  onZoom,
-}: {
-  category: CategoryPickerItem;
-  query: string;
-  isActive: boolean;
-  isCurrent: boolean;
-  index: number;
-  onHover: (index: number) => void;
-  onSelect: (category: CategoryPickerItem) => void;
-  onZoom: (src: string) => void;
-}) {
-  return (
-    <button
-      type="button"
-      id={`category-option-${category.id}`}
-      role="option"
-      aria-selected={isActive}
-      onMouseMove={isActive ? undefined : () => onHover(index)}
-      onClick={() => onSelect(category)}
-      className={cn(
-        "flex h-full w-full items-center gap-3 rounded-xl px-3 text-left transition-colors",
-        isActive ? "bg-primary/8" : "hover:bg-slate-50 dark:hover:bg-slate-900",
-      )}
-    >
-      <div className="bg-primary/10 text-primary relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg">
-        {category.categoryIconUrl ? (
-          <>
-            <Image
-              src={category.categoryIconUrl}
-              alt=""
-              fill
-              sizes="40px"
-              className="object-cover"
-            />
-            <button
-              type="button"
-              aria-label="View full image"
-              onClick={(e) => {
-                e.stopPropagation();
-                onZoom(category.categoryIconUrl!);
-              }}
-              className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-black/0 opacity-0 transition-all duration-200 hover:bg-black/40 hover:opacity-100"
-            >
-              <ZoomIn className="h-4 w-4 text-white drop-shadow-md" />
-            </button>
-          </>
-        ) : (
-          <FolderOpen className="h-4 w-4" />
-        )}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">
-          <Highlight text={category.categoryName} query={query} />
-        </p>
-        <p className="flex items-center gap-1.5 truncate text-xs text-slate-500">
-          <span>
-            {category.itemCount.toLocaleString()} {category.itemCount === 1 ? "item" : "items"}
-          </span>
-          {category.storeName && (
-            <>
-              <span className="text-slate-300">·</span>
-              <span className="truncate">{category.storeName}</span>
-            </>
-          )}
-          {category.status === "INACTIVE" && (
-            <span className="rounded-md bg-rose-50 px-1.5 py-px text-[10px] font-semibold text-rose-600 dark:bg-rose-950/40">
-              Inactive
-            </span>
-          )}
-        </p>
-      </div>
-      {isCurrent ? (
-        <span className="text-primary inline-flex shrink-0 items-center gap-1 text-xs font-semibold">
-          <Check className="h-4 w-4" />
-          Current
-        </span>
-      ) : (
-        <ChevronRight
-          className={cn(
-            "h-4 w-4 shrink-0 transition",
-            isActive ? "text-primary translate-x-0.5" : "text-slate-300",
-          )}
-        />
-      )}
-    </button>
-  );
-});
-
-function Highlight({ text, query }: { text: string; query: string }) {
-  if (!query) return <>{text}</>;
-  const start = text.toLowerCase().indexOf(query.toLowerCase());
-  if (start < 0) return <>{text}</>;
-  const end = start + query.length;
-  return (
-    <>
-      {text.slice(0, start)}
-      <mark className="text-primary rounded-sm bg-transparent font-bold">
-        {text.slice(start, end)}
-      </mark>
-      {text.slice(end)}
-    </>
-  );
-}
-
-function Kbd({ children }: { children: React.ReactNode }) {
-  return (
-    <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded border border-slate-200 bg-white px-1 font-sans text-[10px] font-semibold text-slate-500 shadow-xs dark:border-slate-700 dark:bg-slate-800">
-      {children}
-    </kbd>
-  );
-}
-
-function PickerSkeleton() {
-  return (
-    <div className="space-y-1 px-1">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="flex h-15 items-center gap-3 rounded-xl px-3">
-          <div className="h-10 w-10 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
-          <div className="flex-1 space-y-2">
-            <div className="h-3 w-2/5 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
-            <div className="h-2.5 w-1/4 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function PickerState({
-  icon,
-  title,
-  description,
-  action,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  action?: React.ReactNode;
-}) {
-  return (
-    <div className="flex h-full min-h-56 flex-col items-center justify-center gap-2 px-6 text-center">
-      {icon}
-      <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{title}</p>
-      <p className="max-w-xs text-xs text-slate-500">{description}</p>
-      {action && <div className="mt-2">{action}</div>}
-    </div>
   );
 }

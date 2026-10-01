@@ -172,7 +172,6 @@ export function UserManagement() {
             onToDateChange={(d) => {
               setDraft((prev) => ({ ...prev, toDate: d ?? undefined }));
             }}
-            maxDate={new Date()}
             loading={isLoading}
           />
         </div>

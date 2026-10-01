@@ -328,7 +328,7 @@ export function PlaidBankStep({
                 onClick={handleOpenPlaid}
                 disabled={isBusy}
                 isLoading={isBusy}
-                className="h-12 w-full rounded-xl bg-emerald-700 px-6 text-sm font-bold text-white shadow-md transition-all hover:bg-emerald-800"
+                className="h-12 w-full rounded-xl bg-emerald-700 px-6 text-sm font-bold text-white shadow-md transition hover:bg-emerald-800"
               >
                 <Landmark className="mr-2 size-4.5" />
                 Connect Bank Account with Plaid

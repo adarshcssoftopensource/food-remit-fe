@@ -28,6 +28,7 @@ const websiteCell = ({ row }: { row: { original: FoundationData } }) => (
     target="_blank"
     rel="noopener noreferrer"
     className="text-primary text-sm hover:underline"
+    aria-label="Foundation website link"
   >
     Link
   </a>

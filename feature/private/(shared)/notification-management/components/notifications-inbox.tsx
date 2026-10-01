@@ -31,17 +31,26 @@ import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import apiClient from "@/lib/api/client";
 import { NOTIFICATION_ENDPOINTS } from "@/lib/api/endpoints/notification.endpoints";
 import { cn } from "@/lib/utils";
+import { USER_TIME_ZONE } from "../../lib/user-time-zone";
 import { useGetWebNotifications } from "../hooks/use-get-notifications";
 
 function formatWhen(value?: string) {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString([], {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: USER_TIME_ZONE,
   });
 }
+
+const DEFAULT_PAGINATION = {
+  page: 1,
+  limit: 20,
+  total: 0,
+  totalPages: 1,
+};
 
 export function NotificationsInbox() {
   const queryClient = useQueryClient();
@@ -56,12 +65,7 @@ export function NotificationsInbox() {
   });
 
   const items = data?.data || [];
-  const pagination = data?.pagination || {
-    page: 1,
-    limit: 20,
-    total: 0,
-    totalPages: 1,
-  };
+  const pagination = data?.pagination || DEFAULT_PAGINATION;
   const unreadCount = data?.count ?? 0;
 
   const readOneMutation = useMutation({
@@ -240,7 +244,7 @@ export function NotificationsInbox() {
                               size="sm"
                               disabled={isMarkingThis || isDeletingThis}
                               onClick={() => readOneMutation.mutate(item.id)}
-                              className="h-8 rounded-lg border-emerald-200/90 bg-emerald-50/80 px-3 text-xs font-semibold text-emerald-700 shadow-2xs transition-all hover:border-emerald-300 hover:bg-emerald-100 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/60"
+                              className="h-8 rounded-lg border-emerald-200/90 bg-emerald-50/80 px-3 text-xs font-semibold text-emerald-700 shadow-2xs transition hover:border-emerald-300 hover:bg-emerald-100 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/60"
                             >
                               {isMarkingThis ? (
                                 <Loader2 className="mr-1.5 size-3.5 animate-spin" />
@@ -257,7 +261,7 @@ export function NotificationsInbox() {
                             size="icon"
                             disabled={isDeletingThis || isMarkingThis}
                             onClick={() => deleteMutation.mutate(item.id)}
-                            className="size-8 rounded-lg border-slate-200/80 bg-white text-slate-400 shadow-2xs transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-red-900/60 dark:hover:bg-red-950/40 dark:hover:text-red-400"
+                            className="size-8 rounded-lg border-slate-200/80 bg-white text-slate-400 shadow-2xs transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-red-900/60 dark:hover:bg-red-950/40 dark:hover:text-red-400"
                             title="Delete notification"
                             aria-label="Delete notification"
                           >

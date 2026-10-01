@@ -219,6 +219,7 @@ function AnalogTimePicker({
           <div className="flex w-full touch-none justify-center select-none">
             <div
               ref={clockRef}
+              aria-hidden="true"
               className="relative h-70 w-70 cursor-pointer rounded-full border border-slate-100 bg-slate-50 shadow-inner"
               onMouseDown={(e) => {
                 handleClockInteract(e);

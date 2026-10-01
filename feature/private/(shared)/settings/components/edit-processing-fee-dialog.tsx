@@ -78,6 +78,7 @@ export function EditProcessingFeeDialog({
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Edit processing fee"
           className="h-8 w-8 text-slate-500 hover:bg-amber-50 hover:text-amber-600"
         >
           <Edit size={20} />

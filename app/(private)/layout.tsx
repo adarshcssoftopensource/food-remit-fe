@@ -20,7 +20,9 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
           <SidebarInset className="relative bg-transparent">
             <ImpersonationBanner />
             <BankVerificationBanner />
-            <AppTopBar />
+            <Suspense fallback={null}>
+              <AppTopBar />
+            </Suspense>
             <div className="relative z-10 flex flex-1 flex-col gap-5 p-4 md:p-6 lg:p-7">
               <ErrorBoundary>{children}</ErrorBoundary>
             </div>

@@ -10,6 +10,30 @@ import {
 } from "@/components/ui/select";
 import { City, Country, State } from "country-state-city";
 
+function getManagerLocationOptions(country: string, state: string) {
+  const allCountries = Country.getAllCountries();
+  const selectedCountryObj = allCountries.find(
+    (c) =>
+      c.name.toLowerCase() === country.trim().toLowerCase() ||
+      c.isoCode.toLowerCase() === country.trim().toLowerCase(),
+  );
+  const stateOptions = selectedCountryObj
+    ? (State.getStatesOfCountry(selectedCountryObj.isoCode) ?? [])
+    : [];
+  const selectedStateObj = stateOptions.find(
+    (s) =>
+      s.name.toLowerCase() === state.trim().toLowerCase() ||
+      s.isoCode.toLowerCase() === state.trim().toLowerCase(),
+  );
+  const cityOptions =
+    selectedCountryObj && selectedStateObj
+      ? (City.getCitiesOfState(selectedCountryObj.isoCode, selectedStateObj.isoCode) ?? [])
+      : selectedCountryObj
+        ? (City.getCitiesOfCountry(selectedCountryObj.isoCode) ?? [])
+        : [];
+  return { stateOptions, cityOptions };
+}
+
 export function ManagerLocationFields({
   countryValue,
   onCountryChange,
@@ -37,26 +61,11 @@ export function ManagerLocationFields({
   const state = stateValue ?? "";
   const city = cityValue ?? "";
 
-  const allCountries = Country.getAllCountries();
-  const selectedCountryObj = allCountries.find(
-    (c) =>
-      c.name.toLowerCase() === country.trim().toLowerCase() ||
-      c.isoCode.toLowerCase() === country.trim().toLowerCase(),
-  );
-  const stateOptions = selectedCountryObj
-    ? (State.getStatesOfCountry(selectedCountryObj.isoCode) ?? [])
-    : [];
-  const selectedStateObj = stateOptions.find(
-    (s) =>
-      s.name.toLowerCase() === state.trim().toLowerCase() ||
-      s.isoCode.toLowerCase() === state.trim().toLowerCase(),
-  );
-  const cityOptions =
-    selectedCountryObj && selectedStateObj
-      ? (City.getCitiesOfState(selectedCountryObj.isoCode, selectedStateObj.isoCode) ?? [])
-      : selectedCountryObj
-        ? (City.getCitiesOfCountry(selectedCountryObj.isoCode) ?? [])
-        : [];
+  const { stateOptions, cityOptions } = getManagerLocationOptions(country, state);
+  const isLocked = disabled || !country;
+  const lockedClassName = isLocked
+    ? "cursor-not-allowed bg-slate-100 text-slate-600 opacity-100"
+    : "bg-white";
 
   return (
     <>
@@ -86,15 +95,11 @@ export function ManagerLocationFields({
             onStateChange(v ?? "");
             onCityChange("");
           }}
-          disabled={disabled || !country}
+          disabled={isLocked}
         >
           <SelectTrigger
-            disabled={disabled || !country}
-            className={`h-11! w-full rounded-xl border-slate-200 ${
-              disabled || !country
-                ? "cursor-not-allowed bg-slate-100 text-slate-600 opacity-100"
-                : "bg-white"
-            } disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100`}
+            disabled={isLocked}
+            className={`h-11! w-full rounded-xl border-slate-200 ${lockedClassName} disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100`}
           >
             <SelectValue
               placeholder={country ? "Select State (optional)" : "Select country first"}
@@ -123,15 +128,11 @@ export function ManagerLocationFields({
             if (disabled) return;
             onCityChange(value || "");
           }}
-          disabled={disabled || !country}
+          disabled={isLocked}
         >
           <SelectTrigger
-            disabled={disabled || !country}
-            className={`h-11! w-full min-w-full rounded-xl border-slate-200 ${
-              disabled || !country
-                ? "cursor-not-allowed bg-slate-100 text-slate-600 opacity-100"
-                : "bg-white"
-            } disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100`}
+            disabled={isLocked}
+            className={`h-11! w-full min-w-full rounded-xl border-slate-200 ${lockedClassName} disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100`}
           >
             <SelectValue placeholder={country ? "Select City" : "Select country first"} />
           </SelectTrigger>

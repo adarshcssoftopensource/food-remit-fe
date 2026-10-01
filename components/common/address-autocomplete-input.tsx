@@ -31,6 +31,69 @@ export type AddressAutocompleteInputProps = {
   countryCode?: string;
 };
 
+function resolveSelectedAddress(
+  details: PlaceDetails | null,
+  prediction: PlacePrediction,
+  addressFormat: AddressFormat,
+): string {
+  if (addressFormat === "street") {
+    const street = details?.streetAddress?.trim() || details?.name?.trim() || prediction.mainText;
+    return street;
+  } else if (addressFormat === "street-and-zip") {
+    const zip = details?.postalCode?.trim() ?? "";
+
+    let streetPart = details?.streetAddress?.trim();
+
+    // If buildStreetAddress fell back to just the postal code as the name, clear it
+    if (streetPart && streetPart === zip) {
+      streetPart = "";
+    }
+
+    // Best source: first segment of secondaryText (e.g. "Pragpur" from "Pragpur, Himachal Pradesh, India")
+    // This captures the actual locality/village name, more specific than resolved city
+    if (!streetPart) {
+      const secondaryFirst = prediction.secondaryText?.split(",")?.[0]?.trim();
+      if (secondaryFirst && secondaryFirst !== zip) {
+        streetPart = secondaryFirst;
+      }
+    }
+
+    // Fallback: resolved city from country-state-city (less specific, e.g. "Kangra")
+    if (!streetPart && details?.city?.trim()) {
+      streetPart = details.city.trim();
+    }
+
+    // Try the Google place name — only if it's not just the postal code itself
+    if (!streetPart) {
+      const candidateName = details?.name?.trim() ?? "";
+      if (candidateName && candidateName !== zip) {
+        streetPart = candidateName;
+      }
+    }
+
+    // Last resort: use the main prediction text (e.g. village/locality name typed)
+    if (!streetPart) {
+      const mainText = prediction.mainText?.trim();
+      if (mainText && mainText !== zip) {
+        streetPart = mainText;
+      }
+    }
+
+    // Build final: "Location, ZipCode" or just one of them
+    if (streetPart && zip) {
+      return `${streetPart}, ${zip}`;
+    } else if (streetPart) {
+      return streetPart;
+    } else if (zip) {
+      return zip;
+    } else {
+      return prediction.description;
+    }
+  } else {
+    return details?.formattedAddress?.trim() || prediction.description;
+  }
+}
+
 export function AddressAutocompleteInput({
   value = "",
   onChange,
@@ -97,7 +160,9 @@ export function AddressAutocompleteInput({
           setIsOpen(false);
         }
       } finally {
-        setIsFetching(false);
+        if (!cancelled) {
+          setIsFetching(false);
+        }
       }
     };
 
@@ -105,6 +170,7 @@ export function AddressAutocompleteInput({
 
     return () => {
       cancelled = true;
+      setIsFetching(false);
     };
   }, [query, isReady, getSuggestions, countryCode, disabled]);
 
@@ -132,62 +198,7 @@ export function AddressAutocompleteInput({
 
     const details = await getPlaceDetails(prediction.placeId);
 
-    if (addressFormat === "street") {
-      const street = details?.streetAddress?.trim() || details?.name?.trim() || prediction.mainText;
-      onChange(street);
-    } else if (addressFormat === "street-and-zip") {
-      const zip = details?.postalCode?.trim() ?? "";
-
-      let streetPart = details?.streetAddress?.trim();
-
-      // If buildStreetAddress fell back to just the postal code as the name, clear it
-      if (streetPart && streetPart === zip) {
-        streetPart = "";
-      }
-
-      // Best source: first segment of secondaryText (e.g. "Pragpur" from "Pragpur, Himachal Pradesh, India")
-      // This captures the actual locality/village name, more specific than resolved city
-      if (!streetPart) {
-        const secondaryFirst = prediction.secondaryText?.split(",")?.[0]?.trim();
-        if (secondaryFirst && secondaryFirst !== zip) {
-          streetPart = secondaryFirst;
-        }
-      }
-
-      // Fallback: resolved city from country-state-city (less specific, e.g. "Kangra")
-      if (!streetPart && details?.city?.trim()) {
-        streetPart = details.city.trim();
-      }
-
-      // Try the Google place name — only if it's not just the postal code itself
-      if (!streetPart) {
-        const candidateName = details?.name?.trim() ?? "";
-        if (candidateName && candidateName !== zip) {
-          streetPart = candidateName;
-        }
-      }
-
-      // Last resort: use the main prediction text (e.g. village/locality name typed)
-      if (!streetPart) {
-        const mainText = prediction.mainText?.trim();
-        if (mainText && mainText !== zip) {
-          streetPart = mainText;
-        }
-      }
-
-      // Build final: "Location, ZipCode" or just one of them
-      if (streetPart && zip) {
-        onChange(`${streetPart}, ${zip}`);
-      } else if (streetPart) {
-        onChange(streetPart);
-      } else if (zip) {
-        onChange(zip);
-      } else {
-        onChange(prediction.description);
-      }
-    } else {
-      onChange(details?.formattedAddress?.trim() || prediction.description);
-    }
+    onChange(resolveSelectedAddress(details, prediction, addressFormat));
 
     if (details && onPlaceSelect) {
       onPlaceSelect(details);

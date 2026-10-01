@@ -12,20 +12,22 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { APP_ASSETS } from "@/config/assets";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { VENDOR_NAV_LINKS } from "../../../../constants/landing.constants";
 
 export function SiteHeader() {
-  const [scrolled, setScrolled] = useState(false);
+  const scrolledRef = useRef(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
+    const onScroll = () => {
+      scrolledRef.current = window.scrollY > 16;
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -39,7 +41,7 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/90 shadow-sm backdrop-blur-xl transition-all duration-300">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/90 shadow-sm backdrop-blur-xl transition duration-300">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:h-18 sm:px-8">
         <Link href="#top" className="relative z-10 flex items-center gap-2.5">
           <Image
@@ -94,7 +96,7 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "absolute inset-x-0 top-full h-[calc(100dvh-64px)] overflow-y-auto overscroll-contain bg-white transition-all duration-300 lg:hidden",
+          "absolute inset-x-0 top-full h-[calc(100dvh-64px)] overflow-y-auto overscroll-contain bg-white transition-[opacity,translate,visibility] duration-300 lg:hidden",
           open
             ? "pointer-events-auto visible translate-y-0 opacity-100"
             : "pointer-events-none invisible -translate-y-2 opacity-0",
@@ -185,6 +187,7 @@ export function SiteHeader() {
                 src={APP_ASSETS.IMAGES.MOBILE_MENU_ILLUSTRATION.PATH}
                 alt={APP_ASSETS.IMAGES.MOBILE_MENU_ILLUSTRATION.ALT}
                 fill
+                sizes="(min-width: 768px) 480px, (min-width: 640px) 380px, 240px"
                 className="right-0 object-contain object-bottom drop-shadow-2xl"
                 priority
               />

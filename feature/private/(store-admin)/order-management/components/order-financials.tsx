@@ -89,8 +89,8 @@ function FinancialCard({
         {icon}
       </div>
       <div className="flex flex-col gap-3 p-5">
-        {rows.map((row, i) => (
-          <FinancialRow key={i} {...row} />
+        {rows.map((row) => (
+          <FinancialRow key={row.label} {...row} />
         ))}
         <hr className="my-1 border-dashed border-slate-200 dark:border-slate-700" />
         <div>
@@ -146,23 +146,18 @@ function FinancialCard({
   );
 }
 
-interface OrderFinancialsProps {
-  order: OrderData;
-}
+type CustomerPayment = OrderData["customerPayment"];
+type FoodRemitEarnings = OrderData["foodRemitEarnings"];
+type VendorSettlement = OrderData["vendorSettlement"];
 
-export function OrderFinancials({ order }: OrderFinancialsProps) {
-  const { canViewPlatformFees } = useProfile();
-  const cp = order.customerPayment;
-  const fr = order.foodRemitEarnings;
-  const vs = order.vendorSettlement;
-  const awaitingPayment = isAwaitingPayment(order);
-  const rejected = isRejectedRequest(order);
-  const unpaidRequest = awaitingPayment || rejected;
-
+function buildCustomerRows(
+  cp: CustomerPayment,
+  canViewPlatformFees: boolean | undefined,
+): FinancialRowProps[] {
   const showDiscount =
     cp?.discountAmount && cp.discountAmount !== "₹0.00" && cp.discountAmount !== "$0.00";
 
-  const customerRows: FinancialRowProps[] = [
+  return [
     {
       label: canViewPlatformFees
         ? `Item Price (Including Markup ${cp?.itemMarkupPercent || "0%"})`
@@ -186,6 +181,101 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
       ? [{ label: "Processing Fee", value: cp?.processingFee || "0.00" }]
       : []),
   ];
+}
+
+function getCustomerPaymentProps(cp: CustomerPayment, awaitingPayment: boolean, rejected: boolean) {
+  const unpaidRequest = awaitingPayment || rejected;
+  return {
+    totalLabel: unpaidRequest ? "Estimated Total" : "Order Total",
+    totalValue: cp?.totalCustomerPaid || "0.00",
+    refundAmount: unpaidRequest ? undefined : cp?.refundAmount,
+    actualLabel: unpaidRequest ? undefined : "Actual Amount Retained",
+    actualValue: unpaidRequest ? undefined : cp?.actualRetainedAmount,
+    paymentMethod: rejected
+      ? "Not applicable"
+      : awaitingPayment
+        ? "Awaiting customer payment"
+        : cp?.paymentMethod,
+    paymentStatus: rejected ? "Rejected" : awaitingPayment ? "Pending Payment" : cp?.paymentStatus,
+    paymentStatusLabel: unpaidRequest ? "Payment Status" : "Paid",
+    paymentPending: awaitingPayment || rejected,
+  };
+}
+
+function buildEarningsRows(fr: FoodRemitEarnings): FinancialRowProps[] {
+  return [
+    {
+      label: `Food Remit Markup(${fr?.markupPercent || "0%"})`,
+      value: fr?.markupAmount || "0.00",
+    },
+    {
+      label: `Food Remit commissions(${fr?.commissionPercent || "0%"})`,
+      value: fr?.commissionAmount || "0.00",
+    },
+    { label: "Processing Fee", value: fr?.processingFee || "0.00" },
+  ];
+}
+
+function buildVendorRows(
+  vs: VendorSettlement,
+  cp: CustomerPayment,
+  order: OrderData,
+): FinancialRowProps[] {
+  return [
+    {
+      label: "Number of Items:",
+      value:
+        vs?.inStockItemsCount !== undefined && vs?.totalItemsCount !== undefined
+          ? `${vs.inStockItemsCount} of ${vs.totalItemsCount}`
+          : String(order.items?.length || 0),
+    },
+    { label: "Base Price", value: vs?.vendorBaseAmount || "0.00" },
+    ...(vs?.govtTax
+      ? [{ label: `Store Govt tax(${cp?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
+      : []),
+    ...(vs?.commissionAmount !== undefined && vs?.commissionAmount !== null
+      ? [
+          {
+            label: `Food Remit Store Commission (${vs?.commissionPercent || "0%"})`,
+            value: vs.commissionAmount,
+          },
+        ]
+      : []),
+  ];
+}
+
+function getEarningsProps(fr: FoodRemitEarnings) {
+  return {
+    totalValue: fr?.totalFoodRemitRevenue || "0.00",
+    rows: buildEarningsRows(fr),
+    refundDeduction: fr?.refundDeduction,
+    actualValue: fr?.actualRevenue,
+  };
+}
+
+function getVendorProps(vs: VendorSettlement, cp: CustomerPayment, order: OrderData) {
+  return {
+    totalValue: vs?.totalVendorSettlement || vs?.vendorProceeds || "0.00",
+    rows: buildVendorRows(vs, cp, order),
+    refundDeduction: vs?.refundDeduction,
+    actualValue: vs?.actualVendorEarnings,
+  };
+}
+
+interface OrderFinancialsProps {
+  order: OrderData;
+}
+
+export function OrderFinancials({ order }: OrderFinancialsProps) {
+  const { canViewPlatformFees } = useProfile();
+  const cp = order.customerPayment;
+  const fr = order.foodRemitEarnings;
+  const vs = order.vendorSettlement;
+  const awaitingPayment = isAwaitingPayment(order);
+  const rejected = isRejectedRequest(order);
+
+  const customerRows = buildCustomerRows(cp, canViewPlatformFees);
+  const customerPaymentProps = getCustomerPaymentProps(cp, awaitingPayment, rejected);
 
   return (
     <div
@@ -198,25 +288,9 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
         headerBg="bg-blue-50/30 dark:bg-blue-950/20"
         headerBorder="border-blue-50/50 dark:border-blue-900/20"
         borderColor="border-blue-100 dark:border-blue-900/30"
-        totalLabel={unpaidRequest ? "Estimated Total" : "Order Total"}
         totalColor="text-blue-600 dark:text-blue-400"
-        totalValue={cp?.totalCustomerPaid || "0.00"}
         rows={customerRows}
-        refundAmount={unpaidRequest ? undefined : cp?.refundAmount}
-        actualLabel={unpaidRequest ? undefined : "Actual Amount Retained"}
-        actualValue={unpaidRequest ? undefined : cp?.actualRetainedAmount}
-        paymentMethod={
-          rejected
-            ? "Not applicable"
-            : awaitingPayment
-              ? "Awaiting customer payment"
-              : cp?.paymentMethod
-        }
-        paymentStatus={
-          rejected ? "Rejected" : awaitingPayment ? "Pending Payment" : cp?.paymentStatus
-        }
-        paymentStatusLabel={unpaidRequest ? "Payment Status" : "Paid"}
-        paymentPending={awaitingPayment || rejected}
+        {...customerPaymentProps}
       />
 
       {canViewPlatformFees && (
@@ -229,21 +303,8 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
           borderColor="border-purple-100 dark:border-purple-900/30"
           totalLabel="Total"
           totalColor="text-purple-600 dark:text-purple-400"
-          totalValue={fr?.totalFoodRemitRevenue || "0.00"}
-          rows={[
-            {
-              label: `Food Remit Markup(${fr?.markupPercent || "0%"})`,
-              value: fr?.markupAmount || "0.00",
-            },
-            {
-              label: `Food Remit commissions(${fr?.commissionPercent || "0%"})`,
-              value: fr?.commissionAmount || "0.00",
-            },
-            { label: "Processing Fee", value: fr?.processingFee || "0.00" },
-          ]}
-          refundDeduction={fr?.refundDeduction}
           actualLabel="Actual Revenue"
-          actualValue={fr?.actualRevenue}
+          {...getEarningsProps(fr)}
         />
       )}
 
@@ -256,31 +317,8 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
         borderColor="border-emerald-100 dark:border-emerald-900/30"
         totalLabel="Total"
         totalColor="text-emerald-600 dark:text-emerald-400"
-        totalValue={vs?.totalVendorSettlement || vs?.vendorProceeds || "0.00"}
-        rows={[
-          {
-            label: "Number of Items:",
-            value:
-              vs?.inStockItemsCount !== undefined && vs?.totalItemsCount !== undefined
-                ? `${vs.inStockItemsCount} of ${vs.totalItemsCount}`
-                : String(order.items?.length || 0),
-          },
-          { label: "Base Price", value: vs?.vendorBaseAmount || "0.00" },
-          ...(vs?.govtTax
-            ? [{ label: `Store Govt tax(${cp?.storeTaxPercent || "0%"})`, value: vs.govtTax }]
-            : []),
-          ...(vs?.commissionAmount !== undefined && vs?.commissionAmount !== null
-            ? [
-                {
-                  label: `Food Remit Store Commission (${vs?.commissionPercent || "0%"})`,
-                  value: vs.commissionAmount,
-                },
-              ]
-            : []),
-        ]}
-        refundDeduction={vs?.refundDeduction}
         actualLabel="Actual Settlement"
-        actualValue={vs?.actualVendorEarnings}
+        {...getVendorProps(vs, cp, order)}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useState } from "react";
 import { ShieldCheck, Lock, ShieldOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { successToast } from "@/components/toaster";
@@ -21,6 +21,21 @@ interface VeriffKycStepProps {
   currentKycStatus?: string;
   onSessionUpdated: (sessionId: string, status: string) => void;
   onContinue: () => void;
+}
+
+const DECLINED_STATUSES = ["DECLINED", "FAILED", "RESUBMISSION_REQUESTED", "EXPIRED", "ABANDONED"];
+
+function getKycStatusFlags(kycStatus: string, sessionId: string | undefined) {
+  const normalizedStatus = (kycStatus || "").toUpperCase();
+  const isVerified = normalizedStatus === "APPROVED";
+  const isDeclined = DECLINED_STATUSES.includes(normalizedStatus);
+  const isAwaitingApproval =
+    !isVerified && !isDeclined && Boolean(sessionId) && ["SUBMITTED"].includes(normalizedStatus);
+  return { isVerified, isDeclined, isAwaitingApproval };
+}
+
+function getApplicantFullName(applicant: VeriffApplicant) {
+  return `${applicant.firstName || "Applicant"} ${applicant.lastName || ""}`;
 }
 
 export function VeriffKycStep({
@@ -73,7 +88,11 @@ export function VeriffKycStep({
         setIsCheckingStatus(false);
       }
     },
-    [sessionId, onSessionUpdated],
+    [sessionId, onSessionUpdated, kycStatus, localKycStatus],
+  );
+
+  const onCheckStatus = useEffectEvent((showToast?: boolean, targetId?: string) =>
+    checkStatus(showToast, targetId),
   );
 
   // Check status on mount if session exists and not yet approved
@@ -84,11 +103,11 @@ export function VeriffKycStep({
     }
 
     const timer = setTimeout(() => {
-      void checkStatus(false, activeId);
+      void onCheckStatus(false, activeId);
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [initialSessionId, sessionId, kycStatus, checkStatus]);
+  }, [initialSessionId, sessionId, kycStatus, onSessionUpdated]);
 
   // Poll status periodically (every 3s) while verification is in progress
   useEffect(() => {
@@ -97,11 +116,11 @@ export function VeriffKycStep({
     }
 
     const interval = setInterval(() => {
-      checkStatus(false);
+      onCheckStatus(false);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [sessionId, kycStatus, checkStatus]);
+  }, [sessionId, kycStatus, onSessionUpdated]);
 
   async function handleStartVerification() {
     try {
@@ -155,17 +174,7 @@ export function VeriffKycStep({
     }
   }
 
-  const normalizedStatus = (kycStatus || "").toUpperCase();
-  const isVerified = normalizedStatus === "APPROVED";
-  const isDeclined = [
-    "DECLINED",
-    "FAILED",
-    "RESUBMISSION_REQUESTED",
-    "EXPIRED",
-    "ABANDONED",
-  ].includes(normalizedStatus);
-  const isAwaitingApproval =
-    !isVerified && !isDeclined && Boolean(sessionId) && ["SUBMITTED"].includes(normalizedStatus);
+  const { isVerified, isDeclined, isAwaitingApproval } = getKycStatusFlags(kycStatus, sessionId);
 
   return (
     <div className="flex flex-col gap-5">
@@ -195,70 +204,94 @@ export function VeriffKycStep({
 
       {/* Awaiting Approval / In-Review Card (Only if not verified and not declined) */}
       {isAwaitingApproval && (
-        <KycAwaitingApprovalCard
-          applicantName={`${applicant.firstName || "Applicant"} ${applicant.lastName || ""}`}
-        />
+        <KycAwaitingApprovalCard applicantName={getApplicantFullName(applicant)} />
       )}
 
       {/* Primary Verification Action Card (Show if not verified and not already waiting) */}
       {!isVerified && !isAwaitingApproval && (
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <span className="text-[11px] font-bold tracking-wider text-emerald-700 uppercase">
-                  Official Veriff Integration
-                </span>
-                <h3 className="text-sm font-bold text-slate-900 sm:text-base">
-                  {isDeclined ? "Retry Verification: " : "Verify "}
-                  {applicant.firstName} {applicant.lastName}
-                </h3>
-              </div>
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
-                <Lock className="size-3" />
-                256-bit Encrypted
-              </span>
-            </div>
-
-            <p className="text-xs leading-relaxed text-slate-600">
-              {isDeclined
-                ? "Please ensure you have a clear, valid government ID ready (Passport, Driver's License, or Identity Card) with no glare or blur. Veriff will re-open the official camera interface."
-                : "When you click the button below, Veriff will open its official document upload interface. You will be prompted to choose your government ID (Passport, Driver's License, or Identity Card), capture the front & back using your camera, and take a quick selfie."}
-            </p>
-
-            <KycFeatureBadges />
-
-            <div className="mt-2 flex flex-col gap-2.5">
-              <Button
-                type="button"
-                onClick={handleStartVerification}
-                isLoading={createKycSessionMutation.isPending}
-                className="h-12 w-full rounded-xl bg-emerald-700 px-6 text-xs font-bold text-white shadow-md transition-all hover:bg-emerald-800"
-              >
-                <ShieldCheck className="mr-2 size-4.5" />
-                {isDeclined
-                  ? "Re-upload & Start Verification Again"
-                  : "Start Identity Verification with Veriff"}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  onSessionUpdated(sessionId || "bypassed-session", "APPROVED");
-                  setTimeout(() => {
-                    if (onContinue) onContinue();
-                  }, 100);
-                }}
-                className="h-12 w-full rounded-xl border-slate-200 px-6 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50"
-              >
-                <ShieldOff className="mr-2 h-4 w-4" />
-                Bypass Verification
-              </Button>
-            </div>
-          </div>
-        </div>
+        <KycVerificationActionCard
+          applicant={applicant}
+          isDeclined={isDeclined}
+          isStarting={createKycSessionMutation.isPending}
+          onStart={handleStartVerification}
+          onBypass={() => {
+            onSessionUpdated(sessionId || "bypassed-session", "APPROVED");
+            setTimeout(() => {
+              if (onContinue) onContinue();
+            }, 100);
+          }}
+        />
       )}
+    </div>
+  );
+}
+
+interface KycVerificationActionCardProps {
+  applicant: VeriffApplicant;
+  isDeclined: boolean;
+  isStarting: boolean;
+  onStart: () => void;
+  onBypass: () => void;
+}
+
+function KycVerificationActionCard({
+  applicant,
+  isDeclined,
+  isStarting,
+  onStart,
+  onBypass,
+}: KycVerificationActionCardProps) {
+  return (
+    <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span className="text-[11px] font-bold tracking-wider text-emerald-700 uppercase">
+              Official Veriff Integration
+            </span>
+            <h3 className="text-sm font-bold text-slate-900 sm:text-base">
+              {isDeclined ? "Retry Verification: " : "Verify "}
+              {applicant.firstName} {applicant.lastName}
+            </h3>
+          </div>
+          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
+            <Lock className="size-3" />
+            256-bit Encrypted
+          </span>
+        </div>
+
+        <p className="text-xs leading-relaxed text-slate-600">
+          {isDeclined
+            ? "Please ensure you have a clear, valid government ID ready (Passport, Driver's License, or Identity Card) with no glare or blur. Veriff will re-open the official camera interface."
+            : "When you click the button below, Veriff will open its official document upload interface. You will be prompted to choose your government ID (Passport, Driver's License, or Identity Card), capture the front & back using your camera, and take a quick selfie."}
+        </p>
+
+        <KycFeatureBadges />
+
+        <div className="mt-2 flex flex-col gap-2.5">
+          <Button
+            type="button"
+            onClick={onStart}
+            isLoading={isStarting}
+            className="h-12 w-full rounded-xl bg-emerald-700 px-6 text-xs font-bold text-white shadow-md transition hover:bg-emerald-800"
+          >
+            <ShieldCheck className="mr-2 size-4.5" />
+            {isDeclined
+              ? "Re-upload & Start Verification Again"
+              : "Start Identity Verification with Veriff"}
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBypass}
+            className="h-12 w-full rounded-xl border-slate-200 px-6 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+          >
+            <ShieldOff className="mr-2 h-4 w-4" />
+            Bypass Verification
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

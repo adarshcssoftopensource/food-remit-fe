@@ -205,8 +205,8 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
 
                   return (
                     <div
-                      key={doc.url || idx}
-                      className="group flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs transition-all hover:border-emerald-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                      key={doc.url || docName}
+                      className="group flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs transition hover:border-emerald-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
                     >
                       <div className="flex items-start gap-3">
                         <div

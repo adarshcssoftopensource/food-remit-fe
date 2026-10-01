@@ -1,7 +1,7 @@
 import {
   createPackSizeOptionRow,
   type PackSizeOptionRow,
-} from "@/components/common/pack-size-options-field";
+} from "@/components/common/pack-size-options";
 import {
   ITEM_LIMITS,
   ITEM_NUMBER_MAX,

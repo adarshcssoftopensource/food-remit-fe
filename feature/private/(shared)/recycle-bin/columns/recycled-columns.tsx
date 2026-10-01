@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { getStatusColor } from "@/constants/partner.leads";
 import { RecycleEntityType } from "../hooks/use-get-recycled-data";
 import { RecycledEntityActionsCell } from "../components/recycled-entity-actions-cell";
-import { withDeletedByColumn } from "../components/deleted-by-cell";
+import { withDeletedByColumn } from "../components/deleted-by-columns";
 import { usersColumns as rawUsersColumns } from "./recycled-users-columns";
 import { Store, User } from "lucide-react";
 

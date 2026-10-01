@@ -59,7 +59,7 @@ export function getOrderItemColumns(
             <button
               type="button"
               onClick={() => item.productIcon && onPreviewImage(item.productIcon)}
-              className="group hover:ring-primary/40 relative size-11 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:ring-2 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+              className="group hover:ring-primary/40 relative size-11 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:ring-2 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
               title="Click to preview image"
             >
               {item.productIcon ? (
@@ -177,7 +177,7 @@ export function getOrderItemColumns(
             <button
               type="button"
               onClick={() => onPreviewImage(qrCodeUrl)}
-              className="group hover:ring-primary/40 relative size-11 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white p-1 transition-all hover:ring-2 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+              className="group hover:ring-primary/40 relative size-11 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white p-1 transition hover:ring-2 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
               title="Click to preview QR Code"
             >
               <Image

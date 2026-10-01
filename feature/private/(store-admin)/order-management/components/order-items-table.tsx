@@ -113,7 +113,7 @@ export function OrderItemsTable({ items, onImageClick, hideQrCode }: OrderItemsT
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {items.map((item, idx) => {
+                {items.map((item) => {
                   const priceNum = Number(item.price || 0);
                   const qtyNum = Number(item.quantity || 1);
                   const totalFormatted = (priceNum * qtyNum).toFixed(2);
@@ -124,7 +124,7 @@ export function OrderItemsTable({ items, onImageClick, hideQrCode }: OrderItemsT
 
                   return (
                     <tr
-                      key={idx}
+                      key={item.id}
                       className="transition-colors hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
                     >
                       <td className="px-6 py-4">

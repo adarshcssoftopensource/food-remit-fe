@@ -3,6 +3,11 @@
 import { Plus, Star, Trash2 } from "lucide-react";
 
 import { NumericInput } from "@/components/common/numeric-input";
+import {
+  createPackSizeOptionRow,
+  type PackSizeOptionErrors,
+  type PackSizeOptionRow,
+} from "@/components/common/pack-size-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,31 +20,7 @@ import {
 import { ITEM_LIMITS, WEIGHT_UNITS } from "@/lib/catalogue/item-rules";
 import { cn } from "@/lib/utils";
 
-export type PackSizeOptionRow = {
-  key: string;
-  id?: string;
-  optionName: string;
-  quantityPerPack?: string;
-  netWeight?: string;
-  weightUnit: string;
-  price?: string;
-};
-
-export type PackSizeOptionErrors = Partial<Record<keyof PackSizeOptionRow, string>>;
-
-export function createPackSizeOptionRow(
-  overrides: Partial<PackSizeOptionRow> = {},
-): PackSizeOptionRow {
-  return {
-    key: `pack-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    optionName: "",
-    quantityPerPack: "",
-    netWeight: "",
-    weightUnit: "",
-    price: "",
-    ...overrides,
-  };
-}
+export type { PackSizeOptionErrors, PackSizeOptionRow };
 
 type PackSizeOptionsFieldProps = {
   value: PackSizeOptionRow[];
@@ -144,8 +125,11 @@ export function PackSizeOptionsField({
                 </div>
 
                 <div className="col-span-2 md:col-span-1">
-                  <label className={mobileLabelClass}>Option name *</label>
+                  <label htmlFor={`${row.key}-option-name`} className={mobileLabelClass}>
+                    Option name *
+                  </label>
                   <Input
+                    id={`${row.key}-option-name`}
                     value={row.optionName}
                     onChange={(e) => updateRow(row.key, "optionName", e.target.value)}
                     maxLength={ITEM_LIMITS.optionNameMax}
@@ -159,8 +143,11 @@ export function PackSizeOptionsField({
                 </div>
 
                 <div>
-                  <label className={mobileLabelClass}>Qty per pack</label>
+                  <label htmlFor={`${row.key}-quantity-per-pack`} className={mobileLabelClass}>
+                    Qty per pack
+                  </label>
                   <NumericInput
+                    id={`${row.key}-quantity-per-pack`}
                     value={row.quantityPerPack}
                     onValueChange={(v) => updateRow(row.key, "quantityPerPack", v)}
                     placeholder="1"
@@ -173,8 +160,11 @@ export function PackSizeOptionsField({
                 </div>
 
                 <div>
-                  <label className={mobileLabelClass}>Net weight</label>
+                  <label htmlFor={`${row.key}-net-weight`} className={mobileLabelClass}>
+                    Net weight
+                  </label>
                   <NumericInput
+                    id={`${row.key}-net-weight`}
                     decimals={3}
                     value={row.netWeight}
                     onValueChange={(v) => updateRow(row.key, "netWeight", v)}
@@ -188,7 +178,7 @@ export function PackSizeOptionsField({
                 </div>
 
                 <div>
-                  <label className={mobileLabelClass}>Unit</label>
+                  <span className={mobileLabelClass}>Unit</span>
                   <Select
                     value={row.weightUnit || NO_UNIT}
                     onValueChange={(val) =>
@@ -218,7 +208,9 @@ export function PackSizeOptionsField({
                 </div>
 
                 <div>
-                  <label className={mobileLabelClass}>Price *</label>
+                  <label htmlFor={`${row.key}-price`} className={mobileLabelClass}>
+                    Price *
+                  </label>
                   <div className="relative">
                     {currencySymbol && (
                       <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm font-semibold text-slate-400">
@@ -226,6 +218,7 @@ export function PackSizeOptionsField({
                       </span>
                     )}
                     <NumericInput
+                      id={`${row.key}-price`}
                       decimals={2}
                       value={row.price}
                       onValueChange={(v) => updateRow(row.key, "price", v)}

@@ -21,6 +21,15 @@ type BusinessTypesSectionProps = {
   data: LandingPageContent["businessTypes"];
 };
 
+function toKeyedWords(text: string) {
+  const seen = new Map<string, number>();
+  return text.split(" ").map((word) => {
+    const count = (seen.get(word) ?? 0) + 1;
+    seen.set(word, count);
+    return { word, key: `${word}-${count}` };
+  });
+}
+
 export function BusinessTypesSection({ data }: BusinessTypesSectionProps) {
   const getIconForType = (type: string) => {
     const t = type.toLowerCase();
@@ -45,8 +54,8 @@ export function BusinessTypesSection({ data }: BusinessTypesSectionProps) {
             {data.title}
           </p>
           <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#064e3b] sm:text-4xl lg:text-5xl">
-            {data.subtitle.split(" ").map((word, i) => (
-              <span key={i} className="mr-2 inline-block">
+            {toKeyedWords(data.subtitle).map(({ word, key }) => (
+              <span key={key} className="mr-2 inline-block">
                 {word}
               </span>
             ))}

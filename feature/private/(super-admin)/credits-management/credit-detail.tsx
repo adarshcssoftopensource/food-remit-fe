@@ -154,11 +154,9 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
                   </h1>
 
                   {/* Reference Pill with interactive copy */}
-                  <div
-                    role="button"
-                    tabIndex={0}
+                  <button
+                    type="button"
                     onClick={handleCopyRef}
-                    onKeyDown={(e) => e.key === "Enter" && handleCopyRef()}
                     className="group inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100 active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
                     title="Click to copy Reference Number"
                   >
@@ -168,7 +166,7 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
                     ) : (
                       <Copy className="size-3.5 text-slate-400 transition-colors group-hover:text-slate-600 dark:group-hover:text-slate-300" />
                     )}
-                  </div>
+                  </button>
 
                   {/* Status Badge */}
                   {isPending ? (
@@ -200,11 +198,9 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
               </span>
 
               {/* Order ID Pill with Copy */}
-              <div
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
                 onClick={handleCopyOrderId}
-                onKeyDown={(e) => e.key === "Enter" && handleCopyOrderId()}
                 className="group inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200/80 bg-white px-2 py-1 font-mono text-[11px] text-slate-500 shadow-2xs transition hover:border-slate-300 hover:text-slate-800 active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:hover:text-slate-200"
                 title="Click to copy full Order ID"
               >
@@ -214,7 +210,7 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
                 ) : (
                   <Copy className="size-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300" />
                 )}
-              </div>
+              </button>
             </div>
           </div>
 
@@ -224,7 +220,7 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
               isSuperAdmin ? (
                 <Button
                   onClick={() => setShowConfirmPay(true)}
-                  className="h-11 rounded-full bg-rose-600 px-7 text-sm font-bold text-white shadow-lg shadow-rose-600/25 transition-all hover:bg-rose-700 hover:shadow-rose-600/35 active:scale-95"
+                  className="h-11 rounded-full bg-rose-600 px-7 text-sm font-bold text-white shadow-lg shadow-rose-600/25 transition hover:bg-rose-700 hover:shadow-rose-600/35 active:scale-95"
                 >
                   <CreditCard className="mr-2 size-4.5" />
                   Pay Refund ({formattedRefundAmount})

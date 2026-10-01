@@ -61,7 +61,6 @@ export function FoundationFilters({
           toDate={toDate}
           onFromDateChange={onFromDateChange}
           onToDateChange={onToDateChange}
-          maxDate={new Date()}
         />
       </div>
     </ModuleFilters>

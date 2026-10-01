@@ -10,6 +10,22 @@ type ImageNameCellProps = {
   enableZoom?: boolean;
 };
 
+function resolveValidImage(image: string | null | undefined, imageError: boolean) {
+  let validImage: string | null = null;
+  if (image && typeof image === "string" && !imageError) {
+    const trimmed = image.trim();
+    if (
+      trimmed.startsWith("http://") ||
+      trimmed.startsWith("https://") ||
+      trimmed.startsWith("/") ||
+      trimmed.startsWith("data:")
+    ) {
+      validImage = trimmed;
+    }
+  }
+  return validImage;
+}
+
 export function ImageNameCell({
   name,
   image,
@@ -27,18 +43,7 @@ export function ImageNameCell({
 
   const isProfile = type === "profile";
 
-  let validImage: string | null = null;
-  if (image && typeof image === "string" && !imageError) {
-    const trimmed = image.trim();
-    if (
-      trimmed.startsWith("http://") ||
-      trimmed.startsWith("https://") ||
-      trimmed.startsWith("/") ||
-      trimmed.startsWith("data:")
-    ) {
-      validImage = trimmed;
-    }
-  }
+  const validImage = resolveValidImage(image, imageError);
 
   return (
     <div className={`flex items-center ${isProfile ? "gap-2.5" : "gap-3"}`}>
@@ -61,7 +66,7 @@ export function ImageNameCell({
             {enableZoom && onImageClick && (
               <button
                 onClick={() => onImageClick(validImage)}
-                className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/30 group-hover:opacity-100"
+                className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition duration-200 group-hover:bg-black/30 group-hover:opacity-100"
                 title="View full screen"
               >
                 <svg

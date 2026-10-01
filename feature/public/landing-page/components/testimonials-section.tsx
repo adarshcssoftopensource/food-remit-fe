@@ -37,7 +37,13 @@ export function TestimonialsSection({ data }: TestimonialsSectionProps) {
             <div className="shrink-0">
               <div className="relative size-32 overflow-hidden rounded-full md:size-48">
                 {current.image ? (
-                  <Image src={current.image} alt={current.name} fill className="object-cover" />
+                  <Image
+                    src={current.image}
+                    alt={current.name}
+                    fill
+                    sizes="(min-width: 768px) 192px, 128px"
+                    className="object-cover"
+                  />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-slate-200 text-slate-400">
                     No Image
@@ -66,6 +72,7 @@ export function TestimonialsSection({ data }: TestimonialsSectionProps) {
                 type="button"
                 className="pointer-events-auto flex size-10 -translate-x-1/2 items-center justify-center rounded-full bg-[#eef8f3] text-[#0c5942] shadow-sm transition-colors hover:bg-[#d1f0e1]"
                 onClick={prev}
+                aria-label="Previous testimonial"
               >
                 <ChevronLeft className="size-6" strokeWidth={2.5} />
               </button>
@@ -73,6 +80,7 @@ export function TestimonialsSection({ data }: TestimonialsSectionProps) {
                 type="button"
                 className="pointer-events-auto flex size-10 translate-x-1/2 items-center justify-center rounded-full bg-[#eef8f3] text-[#0c5942] shadow-sm transition-colors hover:bg-[#d1f0e1]"
                 onClick={next}
+                aria-label="Next testimonial"
               >
                 <ChevronRight className="size-6" strokeWidth={2.5} />
               </button>
@@ -83,9 +91,9 @@ export function TestimonialsSection({ data }: TestimonialsSectionProps) {
         {/* Pagination Dots */}
         {data.items.length > 1 && (
           <div className="mt-8 flex justify-center gap-2.5">
-            {data.items.map((_, idx) => (
+            {data.items.map((item, idx) => (
               <button
-                key={idx}
+                key={`${item.name}-${item.role}-${item.quote}`}
                 onClick={() => setActiveIndex(idx)}
                 className={`size-3 rounded-full transition-colors ${
                   idx === activeIndex ? "bg-[#0c5942]" : "bg-[#c5e6d4] hover:bg-[#86d0a7]"

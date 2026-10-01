@@ -80,6 +80,7 @@ export function ObjectArrayFields({
               size="icon"
               className="size-8 rounded-lg text-slate-400 hover:text-red-500"
               onClick={() => remove(index)}
+              aria-label={`Remove ${title} ${index + 1}`}
             >
               <Trash2 className="size-4" />
             </Button>
@@ -168,6 +169,7 @@ export function StringArrayFields({
             size="icon"
             className="mt-7 size-12 shrink-0 rounded-xl"
             onClick={() => remove(index)}
+            aria-label={`Remove ${title} ${index + 1}`}
           >
             <Trash2 className="size-4" />
           </Button>

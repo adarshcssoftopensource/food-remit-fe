@@ -11,7 +11,7 @@ import { ChevronDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useUpdateOrderStatus } from "../hooks/use-update-order-status";
 
-export const ORDER_STATUS_OPTIONS = [
+const ORDER_STATUS_OPTIONS = [
   {
     value: 2,
     label: "Processing",

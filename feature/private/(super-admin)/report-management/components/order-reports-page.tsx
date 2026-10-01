@@ -2,23 +2,12 @@
 
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FileSpreadsheet, Loader2, Store, TableProperties } from "lucide-react";
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { useProfile } from "@/components/providers/profile-provider";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { REPORT_SECTION_META } from "@/constants/report-management";
 import { useGetStores } from "@/feature/private/(super-admin)/store-management/hooks/use-get-stores";
 import { exportToExcel } from "@/lib/export-excel";
@@ -26,23 +15,15 @@ import apiClient from "@/lib/api/client";
 import { REPORT_ENDPOINTS } from "@/lib/api/endpoints/reports.endpoints";
 import { useDebounce } from "@/lib/debounce";
 import { OrderReportDetailPage } from "./order-report-detail-page";
+import { OrderReportFilterFields, OrderReportsTableHeader } from "./order-reports-sections";
 import { ReportDateFilters } from "./report-date-filters";
 import { getOrderReportColumns, OrderReportRow } from "../columns/order-report-columns";
 
-const FOOD_TYPE_OPTIONS = [
-  { label: "All Food Types", value: "All" },
-  { label: "Food Sent", value: "1" },
-  { label: "Food Requested", value: "2" },
-  { label: "Food Received", value: "3" },
-];
-
-export function OrderReportsPage() {
-  const meta = REPORT_SECTION_META["orders-report"];
-  const { profile, isSuperAdmin } = useProfile();
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
-
-  const isStoreScoped =
+function getIsStoreScoped(
+  profile: ReturnType<typeof useProfile>["profile"],
+  isSuperAdmin: boolean,
+) {
+  return (
     !isSuperAdmin &&
     (profile?.roleCode === "STORE_MANAGER" ||
       profile?.role === "store_manager" ||
@@ -50,7 +31,36 @@ export function OrderReportsPage() {
       profile?.role === "store_admin" ||
       profile?.roleCode === "EMPLOYEE" ||
       profile?.role === "employee" ||
-      Boolean(profile?.stores && profile.stores.length > 0));
+      Boolean(profile?.stores && profile.stores.length > 0))
+  );
+}
+
+function getHasActiveFilters(
+  appliedFoodType: string,
+  appliedFromDate: Date | undefined,
+  appliedToDate: Date | undefined,
+  isStoreScoped: boolean,
+  appliedStoreId: string,
+) {
+  return (
+    appliedFoodType !== "All" ||
+    Boolean(appliedFromDate) ||
+    Boolean(appliedToDate) ||
+    (!isStoreScoped && appliedStoreId !== "all")
+  );
+}
+
+function getCustomFilterCount(draftFoodType: string, isStoreScoped: boolean, draftStoreId: string) {
+  return (draftFoodType !== "All" ? 1 : 0) + (!isStoreScoped && draftStoreId !== "all" ? 1 : 0);
+}
+
+export function OrderReportsPage() {
+  const meta = REPORT_SECTION_META["orders-report"];
+  const { profile, isSuperAdmin } = useProfile();
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const isStoreScoped = getIsStoreScoped(profile, isSuperAdmin);
 
   const userStoreId = isStoreScoped ? profile?.stores?.[0]?.id : undefined;
   const userStoreName = isStoreScoped ? profile?.stores?.[0]?.storeName : undefined;
@@ -157,11 +167,13 @@ export function OrderReportsPage() {
     setPage(1);
   };
 
-  const hasActiveFilters =
-    appliedFoodType !== "All" ||
-    Boolean(appliedFromDate) ||
-    Boolean(appliedToDate) ||
-    (!isStoreScoped && appliedStoreId !== "all");
+  const hasActiveFilters = getHasActiveFilters(
+    appliedFoodType,
+    appliedFromDate,
+    appliedToDate,
+    isStoreScoped,
+    appliedStoreId,
+  );
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -260,100 +272,31 @@ export function OrderReportsPage() {
         onClear={handleClearFilters}
         hideCountryFilter
         hideCityFilter
-        customFilterCount={
-          (draftFoodType !== "All" ? 1 : 0) + (!isStoreScoped && draftStoreId !== "all" ? 1 : 0)
-        }
+        customFilterCount={getCustomFilterCount(draftFoodType, isStoreScoped, draftStoreId)}
       >
-        {!isStoreScoped && (
-          <div className="min-w-36 flex-1 space-y-1.5 sm:min-w-44">
-            <Label className="block truncate text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              Store
-            </Label>
-            <Select value={draftStoreId} onValueChange={(v) => setDraftStoreId(v ?? "all")}>
-              <SelectTrigger className="h-10 rounded-xl">
-                <SelectValue placeholder="All Stores">
-                  {draftStoreId === "all"
-                    ? "All Stores"
-                    : storesList?.find((s) => s.id === draftStoreId)?.storeName || "Selected Store"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">All Stores</SelectItem>
-                  {storesList?.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.storeName}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-
-        <div className="min-w-36 flex-1 space-y-1.5 sm:min-w-44">
-          <Label className="block truncate text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Food Type
-          </Label>
-          <Select value={draftFoodType} onValueChange={(v) => setDraftFoodType(v ?? "All")}>
-            <SelectTrigger className="h-10 rounded-xl">
-              <SelectValue placeholder="Select Food Type">
-                {FOOD_TYPE_OPTIONS.find((opt) => opt.value === draftFoodType)?.label}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {FOOD_TYPE_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+        <OrderReportFilterFields
+          isStoreScoped={isStoreScoped}
+          draftStoreId={draftStoreId}
+          onDraftStoreIdChange={setDraftStoreId}
+          storesList={storesList}
+          draftFoodType={draftFoodType}
+          onDraftFoodTypeChange={setDraftFoodType}
+        />
       </ReportDateFilters>
 
       {/* Main Table Card */}
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 text-primary ring-primary/20 flex size-10 items-center justify-center rounded-xl ring-1">
-              <TableProperties className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <CardTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                  {meta.title}
-                </CardTitle>
-                {isStoreScoped && userStoreName && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-                    <Store className="size-3.5" />
-                    {userStoreName}
-                  </span>
-                )}
-              </div>
-              <p className="text-muted-foreground text-xs">
-                {pagination.total} total {pagination.total === 1 ? "entry" : "entries"} found
-                {isFetching && (
-                  <span className="text-primary ml-2 font-semibold">(Updating...)</span>
-                )}
-              </p>
-            </div>
-          </div>
-
-          <Button
-            disabled={isExporting || isLoading}
-            onClick={handleExport}
-            className="h-9 gap-2 rounded-full bg-emerald-600 px-4 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700 disabled:opacity-50"
-          >
-            {isExporting ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <FileSpreadsheet className="size-4" />
-            )}
-            <span>Export Excel</span>
-          </Button>
+          <OrderReportsTableHeader
+            title={meta.title}
+            isStoreScoped={isStoreScoped}
+            userStoreName={userStoreName}
+            total={pagination.total}
+            isFetching={isFetching}
+            isExporting={isExporting}
+            isLoading={isLoading}
+            onExport={handleExport}
+          />
         </CardHeader>
 
         <CardContent className="p-4">

@@ -88,6 +88,7 @@ export function getOrderReportColumns(
                     src={senderImage}
                     alt={senderName || "Sender"}
                     fill
+                    sizes="32px"
                     className="object-cover"
                   />
                   {onImageClick && (
@@ -128,6 +129,7 @@ export function getOrderReportColumns(
                     src={receiverImage}
                     alt={receiverName || "Receiver"}
                     fill
+                    sizes="32px"
                     className="object-cover"
                   />
                   {onImageClick && (

@@ -42,10 +42,16 @@ interface FormContentProps {
 function formatDescription(desc: string) {
   if (!desc) return null;
   const parts = desc.split(/(".*?")/g);
-  return parts.map((part, index) => {
+  const occurrences = new Map<string, number>();
+  const keyedParts = parts.map((part) => {
+    const occurrence = (occurrences.get(part) ?? 0) + 1;
+    occurrences.set(part, occurrence);
+    return { part, key: `${part}-${occurrence}` };
+  });
+  return keyedParts.map(({ part, key }) => {
     if (part.startsWith('"') && part.endsWith('"')) {
       return (
-        <span key={index} className="font-semibold text-slate-900 dark:text-slate-100">
+        <span key={key} className="font-semibold text-slate-900 dark:text-slate-100">
           {part}
         </span>
       );
@@ -190,7 +196,7 @@ function AdminPasswordFormContent({
             leftIcon={<Lock className="size-4" />}
             isInvalid={!!errorMessage}
             disabled={isSubmitting}
-            className="h-12 rounded-xl border-slate-200/90 bg-slate-50/70 text-sm transition-all focus-visible:bg-white dark:border-slate-800 dark:bg-slate-900/60 dark:focus-visible:bg-slate-900"
+            className="h-12 rounded-xl border-slate-200/90 bg-slate-50/70 text-sm transition focus-visible:bg-white dark:border-slate-800 dark:bg-slate-900/60 dark:focus-visible:bg-slate-900"
             autoFocus
           />
 

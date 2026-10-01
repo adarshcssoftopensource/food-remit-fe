@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
+import { formatPercentDisplay } from "../lib/format-percent-display";
 import { useGetMarkup } from "../hooks/use-get-markup";
 import { useUpdateMarkup } from "../hooks/use-update-markup";
 import { MarkupFormValues, markupSchema } from "../schema/markup.schema";
@@ -19,19 +20,32 @@ import { MarkupFormValues, markupSchema } from "../schema/markup.schema";
 import { useProfile } from "@/components/providers/profile-provider";
 import { Switch } from "@/components/ui/switch";
 
-export function MarkupManagement({ readOnly: readOnlyProp = false }: { readOnly?: boolean }) {
-  const { profile, isSuperAdmin } = useProfile();
-  const isStoreManager =
+type Profile = ReturnType<typeof useProfile>["profile"];
+
+function isMarkupReadOnly(readOnlyProp: boolean, profile: Profile, isSuperAdmin: boolean) {
+  return (
     readOnlyProp ||
     profile?.roleCode === "STORE_MANAGER" ||
     profile?.role === "store_manager" ||
-    !isSuperAdmin;
+    !isSuperAdmin
+  );
+}
+
+function getCurrentMarkupSettings(markupData: ReturnType<typeof useGetMarkup>["data"]) {
+  return {
+    currentMarkup: markupData?.data?.markupPercentage || "10",
+    currentIsFeeRefundable: (markupData?.data as any)?.isFeeRefundable ?? true,
+  };
+}
+
+export function MarkupManagement({ readOnly: readOnlyProp = false }: { readOnly?: boolean }) {
+  const { profile, isSuperAdmin } = useProfile();
+  const isStoreManager = isMarkupReadOnly(readOnlyProp, profile, isSuperAdmin);
 
   const { data: markupData, isLoading } = useGetMarkup();
   const { mutateAsync: updateMarkup, isPending } = useUpdateMarkup();
 
-  const currentMarkup = markupData?.data?.markupPercentage || "10";
-  const currentIsFeeRefundable = (markupData?.data as any)?.isFeeRefundable ?? true;
+  const { currentMarkup, currentIsFeeRefundable } = getCurrentMarkupSettings(markupData);
 
   const {
     control,
@@ -55,13 +69,7 @@ export function MarkupManagement({ readOnly: readOnlyProp = false }: { readOnly?
   }, [markupData, reset]);
 
   const liveValue = watch("markupPercentage") ?? "";
-  const numericValue = parseFloat(liveValue);
-  const isValid = !isNaN(numericValue) && numericValue >= 0 && numericValue <= 100;
-
-  const rawDisplayValue = isValid ? liveValue || currentMarkup : currentMarkup;
-  const formattedDisplayMarkup = rawDisplayValue
-    ? (Math.round(parseFloat(rawDisplayValue) * 100) / 100).toString()
-    : "0";
+  const formattedDisplayMarkup = formatPercentDisplay(liveValue, currentMarkup);
 
   const onSubmit: SubmitHandler<MarkupFormValues> = async (data) => {
     if (isStoreManager) return;

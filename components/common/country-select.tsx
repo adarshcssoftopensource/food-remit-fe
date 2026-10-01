@@ -43,6 +43,93 @@ type CountrySelectProps = {
   countries?: CountryOption[];
 };
 
+function SelectedCountryIcon({
+  selectedCountry,
+  includeAll,
+}: {
+  selectedCountry: CountryOption | null | undefined;
+  includeAll: boolean;
+}) {
+  return selectedCountry ? (
+    countryFlag(selectedCountry.code || selectedCountry.countryCode) ? (
+      <span aria-hidden="true" className="text-base leading-none">
+        {countryFlag(selectedCountry.code || selectedCountry.countryCode)}
+      </span>
+    ) : (
+      <Flag className="size-4 shrink-0 text-slate-400" />
+    )
+  ) : includeAll ? (
+    <Flag className="size-4 shrink-0 text-slate-400" />
+  ) : null;
+}
+
+function CountryOptionsList({
+  isLoading,
+  countries,
+  value,
+  valueKey,
+  onSelect,
+}: {
+  isLoading: boolean;
+  countries: CountryOption[];
+  value: string;
+  valueKey: "id" | "name";
+  onSelect: (itemValue: string, country: CountryDropdownItem) => void;
+}) {
+  return (
+    <>
+      {isLoading ? (
+        <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-500">
+          <Loader2 className="size-4 animate-spin" />
+          Loading countries...
+        </div>
+      ) : countries.length ? (
+        countries.map((country) => {
+          const itemValue = valueKey === "name" ? country.name : country.id;
+          const isSelected =
+            value === itemValue ||
+            (valueKey === "id" && value === country.id) ||
+            (valueKey === "name" && value === country.name);
+
+          const flag = countryFlag(country.code || country.countryCode);
+
+          return (
+            <Button
+              key={country.id || country.name}
+              variant="ghost"
+              onClick={() =>
+                onSelect(itemValue, {
+                  id: country.id,
+                  name: country.name,
+                  countryName: country.name,
+                  countryCode: country.code || country.countryCode,
+                  currency: country.currency ?? undefined,
+                })
+              }
+              className={cn(
+                "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 capitalize transition-colors hover:bg-slate-100",
+                isSelected && "bg-primary/10 text-primary font-medium",
+              )}
+            >
+              {flag ? (
+                <span aria-hidden="true" className="text-base leading-none">
+                  {flag}
+                </span>
+              ) : (
+                <Flag className="size-4 shrink-0 text-slate-400" />
+              )}
+              <span className="flex-1 truncate capitalize">{country.name}</span>
+              {isSelected && <Check className="size-4" />}
+            </Button>
+          );
+        })
+      ) : (
+        <p className="px-2 py-6 text-center text-sm text-slate-500">No countries found.</p>
+      )}
+    </>
+  );
+}
+
 export function CountrySelect({
   className,
   disabled,
@@ -136,17 +223,7 @@ export function CountrySelect({
             )}
           >
             <span className="flex min-w-0 items-center gap-2 capitalize">
-              {selectedCountry ? (
-                countryFlag(selectedCountry.code || selectedCountry.countryCode) ? (
-                  <span aria-hidden="true" className="text-base leading-none">
-                    {countryFlag(selectedCountry.code || selectedCountry.countryCode)}
-                  </span>
-                ) : (
-                  <Flag className="size-4 shrink-0 text-slate-400" />
-                )
-              ) : includeAll ? (
-                <Flag className="size-4 shrink-0 text-slate-400" />
-              ) : null}
+              <SelectedCountryIcon selectedCountry={selectedCountry} includeAll={includeAll} />
               <span className="truncate">{displayLabel}</span>
             </span>
             {isLoading ? (
@@ -180,56 +257,17 @@ export function CountrySelect({
           onTouchMove={(e) => e.stopPropagation()}
           style={{ overscrollBehavior: "contain" }}
         >
-          {isLoading ? (
-            <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-500">
-              <Loader2 className="size-4 animate-spin" />
-              Loading countries...
-            </div>
-          ) : filteredCountries.length ? (
-            filteredCountries.map((country) => {
-              const itemValue = valueKey === "name" ? country.name : country.id;
-              const isSelected =
-                value === itemValue ||
-                (valueKey === "id" && value === country.id) ||
-                (valueKey === "name" && value === country.name);
-
-              const flag = countryFlag(country.code || country.countryCode);
-
-              return (
-                <Button
-                  key={country.id || country.name}
-                  variant="ghost"
-                  onClick={() => {
-                    onValueChange(itemValue, {
-                      id: country.id,
-                      name: country.name,
-                      countryName: country.name,
-                      countryCode: country.code || country.countryCode,
-                      currency: country.currency ?? undefined,
-                    });
-                    setIsOpen(false);
-                    setSearchQuery("");
-                  }}
-                  className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 capitalize transition-colors hover:bg-slate-100",
-                    isSelected && "bg-primary/10 text-primary font-medium",
-                  )}
-                >
-                  {flag ? (
-                    <span aria-hidden="true" className="text-base leading-none">
-                      {flag}
-                    </span>
-                  ) : (
-                    <Flag className="size-4 shrink-0 text-slate-400" />
-                  )}
-                  <span className="flex-1 truncate capitalize">{country.name}</span>
-                  {isSelected && <Check className="size-4" />}
-                </Button>
-              );
-            })
-          ) : (
-            <p className="px-2 py-6 text-center text-sm text-slate-500">No countries found.</p>
-          )}
+          <CountryOptionsList
+            isLoading={isLoading}
+            countries={filteredCountries}
+            value={value}
+            valueKey={valueKey}
+            onSelect={(itemValue, country) => {
+              onValueChange(itemValue, country);
+              setIsOpen(false);
+              setSearchQuery("");
+            }}
+          />
         </div>
       </PopoverContent>
     </Popover>

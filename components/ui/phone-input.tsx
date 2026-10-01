@@ -1,6 +1,5 @@
 "use client";
 
-import { Country } from "country-state-city";
 import { AsYouType, CountryCode } from "libphonenumber-js";
 import { Check, ChevronDown, Search } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -8,15 +7,16 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  ALL_COUNTRIES,
+  DEFAULT_ISO,
+  findPhoneCountry,
+  isDialOnlyInput,
+  resolveFromValue,
+  type PhoneCountry,
+} from "@/components/ui/phone-input-utils";
 import { getMaxNationalDigits, toPhoneDigits } from "@/lib/phone";
 import { cn } from "@/lib/utils";
-
-type PhoneCountry = {
-  name: string;
-  isoCode: string;
-  flag: string;
-  dialCode: string;
-};
 
 type PhoneChangeData = {
   dialCode: string;
@@ -39,154 +39,87 @@ interface PhoneInputComponentProps {
   disableCountrySelect?: boolean;
 }
 
-const DEFAULT_ISO = "IN";
-
-/** When multiple countries share a dial code, prefer this ISO. */
-const PREFERRED_ISO_BY_DIAL: Record<string, string> = {
-  "1": "US", // USA / Canada / Caribbean — default to USA
-};
-
-function buildCountries(): PhoneCountry[] {
-  return Country.getAllCountries()
-    .map((country) => {
-      const dialCode = toPhoneDigits(country.phonecode);
-      if (!dialCode) return null;
-      return {
-        name: country.name,
-        isoCode: country.isoCode,
-        flag: country.flag,
-        dialCode,
-      };
-    })
-    .filter((country): country is PhoneCountry => Boolean(country))
-    .sort((a, b) => a.name.localeCompare(b.name));
+function getDefaultCountryOverride(
+  defaultCountry: string,
+  countryOverride: PhoneCountry | null,
+): PhoneCountry | undefined {
+  const targetCountry = findPhoneCountry(defaultCountry);
+  if (!targetCountry) return undefined;
+  const dialOnly = isDialOnlyInput(defaultCountry);
+  if (dialOnly && countryOverride && countryOverride.dialCode === targetCountry.dialCode) {
+    // Keep the user's/selected ISO country (US vs CA, etc.)
+    return undefined;
+  }
+  return targetCountry;
 }
 
-const ALL_COUNTRIES = buildCountries();
-const COUNTRIES_BY_ISO = new Map(ALL_COUNTRIES.map((country) => [country.isoCode, country]));
-const DIAL_CODES_DESC = [...ALL_COUNTRIES].sort((a, b) => b.dialCode.length - a.dialCode.length);
+function usePhoneCountry(defaultCountry: string, value: string) {
+  const initialTargetCountry = useMemo(() => findPhoneCountry(defaultCountry), [defaultCountry]);
+  const [countryOverride, setCountryOverride] = useState<PhoneCountry | null>(
+    initialTargetCountry || null,
+  );
+  const [prevDefaultCountry, setPrevDefaultCountry] = useState(defaultCountry);
 
-function isDialOnlyInput(input: string): boolean {
-  const trimmed = input.trim();
-  if (!trimmed) return false;
-  // "+1", "1", "+91" — not "US", "United States", "CA"
-  return /^\+?\d{1,4}$/.test(trimmed);
+  // Sync if defaultCountry prop changes externally — but never replace a locked
+  // country with an ambiguous dial-only code (e.g. "+1" must not override "US").
+  if (defaultCountry && defaultCountry !== prevDefaultCountry) {
+    setPrevDefaultCountry(defaultCountry);
+    const nextOverride = getDefaultCountryOverride(defaultCountry, countryOverride);
+    if (nextOverride) {
+      setCountryOverride(nextOverride);
+    }
+  }
+
+  const activeCountry = countryOverride || initialTargetCountry;
+  const activeIso = activeCountry?.isoCode || defaultCountry || DEFAULT_ISO;
+  const resolved = useMemo(() => resolveFromValue(value, activeIso), [value, activeIso]);
+
+  // Once a country is chosen (override or default ISO), keep that flag while typing.
+  const selectedCountry = useMemo(() => {
+    if (countryOverride) return countryOverride;
+    if (initialTargetCountry) return initialTargetCountry;
+    return resolved.country;
+  }, [countryOverride, initialTargetCountry, resolved.country]);
+
+  return { countryOverride, setCountryOverride, resolved, selectedCountry };
 }
 
-export function findPhoneCountry(input?: string | null): PhoneCountry | undefined {
-  if (!input) return undefined;
-  const trimmed = input.trim();
-  if (!trimmed) return undefined;
+function PhoneCountryList({
+  countries,
+  selectedIsoCode,
+  onSelect,
+}: {
+  countries: PhoneCountry[];
+  selectedIsoCode: string;
+  onSelect: (country: PhoneCountry) => void;
+}) {
+  if (countries.length === 0) {
+    return <p className="px-3 py-6 text-center text-sm text-slate-500">No countries found</p>;
+  }
 
-  // 1. Direct ISO code match (e.g. "IN", "US", "CA", "GB")
-  const upper = trimmed.toUpperCase();
-  const byIso = COUNTRIES_BY_ISO.get(upper);
-  if (byIso) return byIso;
+  return countries.map((country) => {
+    const isSelected = country.isoCode === selectedIsoCode;
 
-  // 2. Common aliases
-  const lower = trimmed.toLowerCase();
-  if (
-    lower === "usa" ||
-    lower === "united states of america" ||
-    lower === "united states" ||
-    lower === "us"
-  )
-    return COUNTRIES_BY_ISO.get("US");
-  if (lower === "canada" || lower === "ca") return COUNTRIES_BY_ISO.get("CA");
-  if (lower === "uk" || lower === "united kingdom" || lower === "gb")
-    return COUNTRIES_BY_ISO.get("GB");
-  if (lower === "uae" || lower === "united arab emirates" || lower === "ae")
-    return COUNTRIES_BY_ISO.get("AE");
-
-  // 3. Exact country name match (case-insensitive)
-  const byName = ALL_COUNTRIES.find((c) => c.name.toLowerCase() === lower);
-  if (byName) return byName;
-
-  // 4. Prefix / substring match (avoid matching dial-only strings as names)
-  if (!isDialOnlyInput(trimmed)) {
-    const byPrefix = ALL_COUNTRIES.find(
-      (c) => lower.startsWith(c.name.toLowerCase()) || c.name.toLowerCase().startsWith(lower),
+    return (
+      <Button
+        key={country.isoCode}
+        type="button"
+        variant="ghost"
+        onClick={() => onSelect(country)}
+        className={cn(
+          "flex h-10 w-full items-center justify-start gap-2.5 rounded-xl px-2.5 text-left text-sm font-normal text-slate-700 hover:bg-slate-100",
+          isSelected && "bg-emerald-50 text-emerald-900 hover:bg-emerald-50",
+        )}
+      >
+        <span aria-hidden className="text-base leading-none">
+          {country.flag}
+        </span>
+        <span className="min-w-0 flex-1 truncate">{country.name}</span>
+        <span className="shrink-0 text-slate-500 tabular-nums">+{country.dialCode}</span>
+        {isSelected && <Check className="size-4 shrink-0 text-emerald-600" />}
+      </Button>
     );
-    if (byPrefix) return byPrefix;
-
-    const cscMatch = Country.getAllCountries().find(
-      (c) =>
-        c.name.toLowerCase() === lower ||
-        c.isoCode.toLowerCase() === lower ||
-        lower.startsWith(c.name.toLowerCase()) ||
-        c.name.toLowerCase().startsWith(lower),
-    );
-    if (cscMatch) {
-      const fromCsc = COUNTRIES_BY_ISO.get(cscMatch.isoCode);
-      if (fromCsc) return fromCsc;
-    }
-  }
-
-  // 5. Dial code match — prefer a canonical country for shared codes (e.g. +1 → US)
-  const cleanDigits = toPhoneDigits(trimmed);
-  if (cleanDigits) {
-    const preferredIso = PREFERRED_ISO_BY_DIAL[cleanDigits];
-    if (preferredIso) {
-      const preferred = COUNTRIES_BY_ISO.get(preferredIso);
-      if (preferred && preferred.dialCode === cleanDigits) return preferred;
-    }
-    const byDial = DIAL_CODES_DESC.find((c) => c.dialCode === cleanDigits);
-    if (byDial) return byDial;
-  }
-
-  return undefined;
-}
-
-export function resolveFromValue(
-  value: string,
-  defaultCountryOrIso = DEFAULT_ISO,
-): { country: PhoneCountry; nationalNumber: string } {
-  const digits = toPhoneDigits(value || "");
-  const fallback = (findPhoneCountry(defaultCountryOrIso) ??
-    COUNTRIES_BY_ISO.get(DEFAULT_ISO) ??
-    ALL_COUNTRIES[0])!;
-
-  if (!digits) {
-    return { country: fallback, nationalNumber: "" };
-  }
-
-  // Prefer the active/default country when its dial matches the value prefix.
-  if (fallback && digits.startsWith(fallback.dialCode)) {
-    return {
-      country: fallback,
-      nationalNumber: digits.slice(fallback.dialCode.length),
-    };
-  }
-
-  // Locked country + national-only digits (fits that country's max length):
-  // keep as national — do not match France (+33) against a US number like 3322...
-  if (fallback) {
-    const maxNat = getMaxNationalDigits(fallback.isoCode);
-    if (digits.length <= maxNat) {
-      return { country: fallback, nationalNumber: digits };
-    }
-  }
-
-  const matched = DIAL_CODES_DESC.find((country) => digits.startsWith(country.dialCode));
-  if (!matched) {
-    return { country: fallback, nationalNumber: digits };
-  }
-
-  const preferredIso = PREFERRED_ISO_BY_DIAL[matched.dialCode];
-  if (preferredIso) {
-    const preferred = COUNTRIES_BY_ISO.get(preferredIso);
-    if (preferred && preferred.dialCode === matched.dialCode) {
-      return {
-        country: preferred,
-        nationalNumber: digits.slice(preferred.dialCode.length),
-      };
-    }
-  }
-
-  return {
-    country: matched,
-    nationalNumber: digits.slice(matched.dialCode.length),
-  };
+  });
 }
 
 export function PhoneInputComponent({
@@ -202,37 +135,8 @@ export function PhoneInputComponent({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const initialTargetCountry = useMemo(() => findPhoneCountry(defaultCountry), [defaultCountry]);
-  const [countryOverride, setCountryOverride] = useState<PhoneCountry | null>(
-    initialTargetCountry || null,
-  );
-  const [prevDefaultCountry, setPrevDefaultCountry] = useState(defaultCountry);
-
-  // Sync if defaultCountry prop changes externally — but never replace a locked
-  // country with an ambiguous dial-only code (e.g. "+1" must not override "US").
-  if (defaultCountry && defaultCountry !== prevDefaultCountry) {
-    setPrevDefaultCountry(defaultCountry);
-    const targetCountry = findPhoneCountry(defaultCountry);
-    if (targetCountry) {
-      const dialOnly = isDialOnlyInput(defaultCountry);
-      if (dialOnly && countryOverride && countryOverride.dialCode === targetCountry.dialCode) {
-        // Keep the user's/selected ISO country (US vs CA, etc.)
-      } else {
-        setCountryOverride(targetCountry);
-      }
-    }
-  }
-
-  const activeCountry = countryOverride || initialTargetCountry;
-  const activeIso = activeCountry?.isoCode || defaultCountry || DEFAULT_ISO;
-  const resolved = useMemo(() => resolveFromValue(value, activeIso), [value, activeIso]);
-
-  // Once a country is chosen (override or default ISO), keep that flag while typing.
-  const selectedCountry = useMemo(() => {
-    if (countryOverride) return countryOverride;
-    if (initialTargetCountry) return initialTargetCountry;
-    return resolved.country;
-  }, [countryOverride, initialTargetCountry, resolved.country]);
+  const { setCountryOverride, resolved, selectedCountry } = usePhoneCountry(defaultCountry, value);
+  const countrySelectDisabled = disabled || disableCountrySelect;
 
   const maxDigits = getMaxNationalDigits(selectedCountry.isoCode);
 
@@ -343,15 +247,15 @@ export function PhoneInputComponent({
         }}
       >
         <PopoverTrigger
-          disabled={disabled || disableCountrySelect}
+          disabled={countrySelectDisabled}
           render={
             <button
               type="button"
-              disabled={disabled || disableCountrySelect}
+              disabled={countrySelectDisabled}
               aria-label="Select country code"
               className={cn(
                 "flex h-full shrink-0 items-center gap-1 border-r border-slate-200/90 px-2.5 text-sm",
-                disabled || disableCountrySelect
+                countrySelectDisabled
                   ? "cursor-not-allowed text-slate-600 hover:bg-transparent"
                   : "text-slate-700 transition-colors hover:bg-slate-50",
                 "focus-visible:ring-2 focus-visible:ring-[#1B3A8C]/25 focus-visible:outline-none",
@@ -394,35 +298,11 @@ export function PhoneInputComponent({
             onWheel={(event) => event.stopPropagation()}
             onTouchMove={(event) => event.stopPropagation()}
           >
-            {filteredCountries.length === 0 ? (
-              <p className="px-3 py-6 text-center text-sm text-slate-500">No countries found</p>
-            ) : (
-              filteredCountries.map((country) => {
-                const isSelected = country.isoCode === selectedCountry.isoCode;
-
-                return (
-                  <Button
-                    key={country.isoCode}
-                    type="button"
-                    variant="ghost"
-                    onClick={() => handleCountrySelect(country)}
-                    className={cn(
-                      "flex h-10 w-full items-center justify-start gap-2.5 rounded-xl px-2.5 text-left text-sm font-normal text-slate-700 hover:bg-slate-100",
-                      isSelected && "bg-emerald-50 text-emerald-900 hover:bg-emerald-50",
-                    )}
-                  >
-                    <span aria-hidden className="text-base leading-none">
-                      {country.flag}
-                    </span>
-                    <span className="min-w-0 flex-1 truncate">{country.name}</span>
-                    <span className="shrink-0 text-slate-500 tabular-nums">
-                      +{country.dialCode}
-                    </span>
-                    {isSelected && <Check className="size-4 shrink-0 text-emerald-600" />}
-                  </Button>
-                );
-              })
-            )}
+            <PhoneCountryList
+              countries={filteredCountries}
+              selectedIsoCode={selectedCountry.isoCode}
+              onSelect={handleCountrySelect}
+            />
           </div>
         </PopoverContent>
       </Popover>

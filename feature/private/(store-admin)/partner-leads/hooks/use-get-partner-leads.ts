@@ -33,60 +33,39 @@ function filterLeadsByPipeline(leads: PartnerLeadData[], pipeline: PartnerLeadPi
   return leads.filter((l) => !TERMINAL.has(l.status));
 }
 
-export function usePartnerLeads(
-  search?: string,
-  sortBy?: string,
-  sortOrder?: string,
-  page?: number,
-  limit?: number,
-  fromDate?: string,
-  toDate?: string,
-  businessType?: string,
-  status?: string,
-  kycStatus?: string,
-  bankStatus?: string,
-  pipeline?: PartnerLeadPipeline,
-) {
-  const resolvedPipeline = pipeline ?? "pending";
-  const resolvedSortOrder = sortOrder ?? "desc";
-  const resolvedPage = page ?? 1;
-  const resolvedLimit = limit ?? 10;
+interface PartnerLeadsQueryParams {
+  search?: string;
+  sortBy?: string;
+  sortOrder: string;
+  page: number;
+  limit: number;
+  fromDate?: string;
+  toDate?: string;
+  businessType?: string;
+  status?: string;
+  kycStatus?: string;
+  bankStatus?: string;
+  pipeline: PartnerLeadPipeline;
+}
 
-  const { data: response, isLoading } = useApiQuery<RawGetPartnerLeadsResponse>(
-    [
-      ...API_CACHE_KEYS.PARTNER_LEADS_LIST,
-      `pipeline:${resolvedPipeline}`,
-      `page:${resolvedPage}`,
-      `limit:${resolvedLimit}`,
-      `sort:${sortBy || "createdAt"}:${resolvedSortOrder}`,
-      `search:${search || ""}`,
-      `from:${fromDate || ""}`,
-      `to:${toDate || ""}`,
-      `businessType:${businessType || ""}`,
-      `status:${status || ""}`,
-      `kyc:${kycStatus || ""}`,
-      `bank:${bankStatus || ""}`,
-    ],
-    PARTNER_LEAD_ENDPOINTS.GET_LEADS(
-      search,
-      sortBy,
-      resolvedSortOrder,
-      resolvedPage,
-      resolvedLimit,
-      fromDate,
-      toDate,
-      businessType,
-      status,
-      kycStatus,
-      bankStatus,
-      resolvedPipeline,
-    ),
-  );
+function buildPartnerLeadsQueryKey(params: PartnerLeadsQueryParams) {
+  return [
+    ...API_CACHE_KEYS.PARTNER_LEADS_LIST,
+    `pipeline:${params.pipeline}`,
+    `page:${params.page}`,
+    `limit:${params.limit}`,
+    `sort:${params.sortBy || "createdAt"}:${params.sortOrder}`,
+    `search:${params.search || ""}`,
+    `from:${params.fromDate || ""}`,
+    `to:${params.toDate || ""}`,
+    `businessType:${params.businessType || ""}`,
+    `status:${params.status || ""}`,
+    `kyc:${params.kycStatus || ""}`,
+    `bank:${params.bankStatus || ""}`,
+  ];
+}
 
-  const apiStats = response?.stats;
-  const rawLeads = response?.data || [];
-  const leadsArray = filterLeadsByPipeline(rawLeads, resolvedPipeline);
-
+function buildPartnerLeadStats(apiStats: Record<string, number> | undefined) {
   const pending =
     (apiStats?.PENDING ?? 0) +
     (apiStats?.NEW ?? 0) +
@@ -113,22 +92,95 @@ export function usePartnerLeads(
     notQualified: apiStats?.NOT_QUALIFIED ?? 0,
   };
 
+  return { stats, pending, rejected, approved };
+}
+
+function buildPartnerLeadsPagination(
+  response: RawGetPartnerLeadsResponse | undefined,
+  pipeline: PartnerLeadPipeline,
+  page: number,
+  limit: number,
+  buckets: { pending: number; rejected: number; approved: number },
+) {
   const bucketTotal =
-    resolvedPipeline === "approved"
-      ? approved
-      : resolvedPipeline === "rejected"
-        ? rejected
-        : pending;
+    pipeline === "approved"
+      ? buckets.approved
+      : pipeline === "rejected"
+        ? buckets.rejected
+        : buckets.pending;
+
+  return {
+    page: response?.pagination?.page ?? page,
+    limit: response?.pagination?.limit ?? limit,
+    total: bucketTotal,
+    totalPages: Math.max(1, Math.ceil(bucketTotal / limit) || 1),
+  };
+}
+
+export function usePartnerLeads(
+  search?: string,
+  sortBy?: string,
+  sortOrder?: string,
+  page?: number,
+  limit?: number,
+  fromDate?: string,
+  toDate?: string,
+  businessType?: string,
+  status?: string,
+  kycStatus?: string,
+  bankStatus?: string,
+  pipeline?: PartnerLeadPipeline,
+) {
+  const resolvedPipeline = pipeline ?? "pending";
+  const resolvedSortOrder = sortOrder ?? "desc";
+  const resolvedPage = page ?? 1;
+  const resolvedLimit = limit ?? 10;
+
+  const { data: response, isLoading } = useApiQuery<RawGetPartnerLeadsResponse>(
+    buildPartnerLeadsQueryKey({
+      search,
+      sortBy,
+      sortOrder: resolvedSortOrder,
+      page: resolvedPage,
+      limit: resolvedLimit,
+      fromDate,
+      toDate,
+      businessType,
+      status,
+      kycStatus,
+      bankStatus,
+      pipeline: resolvedPipeline,
+    }),
+    PARTNER_LEAD_ENDPOINTS.GET_LEADS(
+      search,
+      sortBy,
+      resolvedSortOrder,
+      resolvedPage,
+      resolvedLimit,
+      fromDate,
+      toDate,
+      businessType,
+      status,
+      kycStatus,
+      bankStatus,
+      resolvedPipeline,
+    ),
+  );
+
+  const rawLeads = response?.data || [];
+  const leadsArray = filterLeadsByPipeline(rawLeads, resolvedPipeline);
+  const { stats, ...buckets } = buildPartnerLeadStats(response?.stats);
 
   return {
     leads: leadsArray,
     stats,
-    pagination: {
-      page: response?.pagination?.page ?? resolvedPage,
-      limit: response?.pagination?.limit ?? resolvedLimit,
-      total: bucketTotal,
-      totalPages: Math.max(1, Math.ceil(bucketTotal / resolvedLimit) || 1),
-    },
+    pagination: buildPartnerLeadsPagination(
+      response,
+      resolvedPipeline,
+      resolvedPage,
+      resolvedLimit,
+      buckets,
+    ),
     isLoading,
   };
 }

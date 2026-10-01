@@ -26,6 +26,143 @@ export type StoreSelectProps = {
   initialStoreName?: string;
 };
 
+function isPlaceholderStoreValue(value: string, includeAll: boolean) {
+  return !value || (includeAll && (value === "All" || value === "all"));
+}
+
+function StoreSearchStatus({
+  debouncedSearch,
+  count,
+  isFetching,
+}: {
+  debouncedSearch: string;
+  count: number;
+  isFetching: boolean;
+}) {
+  return (
+    <>
+      <span>
+        {debouncedSearch
+          ? `Found ${count} matching stores in database`
+          : `Showing top ${count} stores (search 100K+ stores)`}
+      </span>
+      {isFetching && (
+        <span className="flex items-center gap-1 text-emerald-600">
+          <Loader2 className="size-2.5 animate-spin" />
+          Searching...
+        </span>
+      )}
+    </>
+  );
+}
+
+function AllStoresOption({
+  value,
+  allLabel,
+  onSelect,
+}: {
+  value: string;
+  allLabel: string;
+  onSelect: () => void;
+}) {
+  const isAllSelected = !value || value === "All" || value === "all";
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        "flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-medium transition-colors",
+        isAllSelected
+          ? "bg-emerald-50 font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200"
+          : "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800/80",
+      )}
+    >
+      <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+        <Store className="size-3.5" />
+      </div>
+      <span className="flex-1 truncate">{allLabel}</span>
+      {isAllSelected && <Check className="size-3.5 shrink-0 text-emerald-600" />}
+    </button>
+  );
+}
+
+function StoreOptionsList({
+  isLoading,
+  stores,
+  value,
+  debouncedSearch,
+  onSelect,
+}: {
+  isLoading: boolean;
+  stores: StoreData[];
+  value: string;
+  debouncedSearch: string;
+  onSelect: (store: StoreData) => void;
+}) {
+  return (
+    <>
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center gap-2 py-8 text-xs text-slate-400">
+          <Loader2 className="size-5 animate-spin text-emerald-600" />
+          <span>Searching database across all stores...</span>
+        </div>
+      ) : stores.length > 0 ? (
+        stores.map((store) => {
+          const isSelected = value === store.id;
+
+          return (
+            <button
+              key={store.id}
+              type="button"
+              onClick={() => onSelect(store)}
+              className={cn(
+                "flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-colors",
+                isSelected
+                  ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100"
+                  : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/60",
+              )}
+            >
+              <div
+                className={cn(
+                  "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                  isSelected
+                    ? "bg-emerald-600 text-white"
+                    : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+                )}
+              >
+                <Store className="size-4" />
+              </div>
+
+              <div className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate font-semibold text-slate-900 dark:text-white">
+                  {store.storeName}
+                </span>
+                <span className="truncate text-[10px] text-slate-400">
+                  {[store.storeCityName, store.storeCountryName, store.storeAddress]
+                    .filter(Boolean)
+                    .join(" • ") || "Active Store"}
+                </span>
+              </div>
+
+              {isSelected && (
+                <Check className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              )}
+            </button>
+          );
+        })
+      ) : (
+        <div className="py-8 text-center text-xs text-slate-400">
+          <p className="font-semibold text-slate-600 dark:text-slate-300">No stores found</p>
+          <p className="mt-0.5 text-[11px]">
+            Try adjusting your search query for &quot;{debouncedSearch}&quot;
+          </p>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function StoreSelect({
   className,
   countryId,
@@ -113,8 +250,7 @@ export function StoreSelect({
             aria-invalid={invalid}
             className={cn(
               "flex h-11 w-full items-center justify-between rounded-xl border border-slate-200/80 bg-white/70 px-3 text-xs font-normal text-slate-900 shadow-xs backdrop-blur-md transition-all hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100",
-              (!value || (includeAll && (value === "All" || value === "all"))) &&
-                "text-slate-500 dark:text-slate-400",
+              isPlaceholderStoreValue(value, includeAll) && "text-slate-500 dark:text-slate-400",
               invalid && "border-red-400 bg-red-50/30",
               className,
             )}
@@ -158,6 +294,7 @@ export function StoreSelect({
             <button
               type="button"
               onClick={() => setSearchQuery("")}
+              aria-label="Clear search"
               className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded-full p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             >
               <X className="size-3.5" />
@@ -167,17 +304,11 @@ export function StoreSelect({
 
         {/* Status indicator bar */}
         <div className="flex shrink-0 items-center justify-between px-2 text-[10px] font-medium text-slate-400">
-          <span>
-            {debouncedSearch
-              ? `Found ${storesList.length} matching stores in database`
-              : `Showing top ${storesList.length} stores (search 100K+ stores)`}
-          </span>
-          {isFetching && (
-            <span className="flex items-center gap-1 text-emerald-600">
-              <Loader2 className="size-2.5 animate-spin" />
-              Searching...
-            </span>
-          )}
+          <StoreSearchStatus
+            debouncedSearch={debouncedSearch}
+            count={storesList.length}
+            isFetching={isFetching}
+          />
         </div>
 
         {/* Scrollable stores list (scrolls after ~8-10 stores) */}
@@ -188,93 +319,30 @@ export function StoreSelect({
           onTouchMove={(e) => e.stopPropagation()}
         >
           {includeAll && (
-            <button
-              type="button"
-              onClick={() => {
+            <AllStoresOption
+              value={value}
+              allLabel={allLabel}
+              onSelect={() => {
                 onValueChange("", undefined);
                 setCachedSelectedStore(null);
                 setIsOpen(false);
                 setSearchQuery("");
               }}
-              className={cn(
-                "flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-medium transition-colors",
-                !value || value === "All" || value === "all"
-                  ? "bg-emerald-50 font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200"
-                  : "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800/80",
-              )}
-            >
-              <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                <Store className="size-3.5" />
-              </div>
-              <span className="flex-1 truncate">{allLabel}</span>
-              {(!value || value === "All" || value === "all") && (
-                <Check className="size-3.5 shrink-0 text-emerald-600" />
-              )}
-            </button>
+            />
           )}
 
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center gap-2 py-8 text-xs text-slate-400">
-              <Loader2 className="size-5 animate-spin text-emerald-600" />
-              <span>Searching database across all stores...</span>
-            </div>
-          ) : storesList.length > 0 ? (
-            storesList.map((store) => {
-              const isSelected = value === store.id;
-
-              return (
-                <button
-                  key={store.id}
-                  type="button"
-                  onClick={() => {
-                    onValueChange(store.id, store);
-                    setCachedSelectedStore(store);
-                    setIsOpen(false);
-                    setSearchQuery("");
-                  }}
-                  className={cn(
-                    "flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-colors",
-                    isSelected
-                      ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100"
-                      : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/60",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors",
-                      isSelected
-                        ? "bg-emerald-600 text-white"
-                        : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
-                    )}
-                  >
-                    <Store className="size-4" />
-                  </div>
-
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate font-semibold text-slate-900 dark:text-white">
-                      {store.storeName}
-                    </span>
-                    <span className="truncate text-[10px] text-slate-400">
-                      {[store.storeCityName, store.storeCountryName, store.storeAddress]
-                        .filter(Boolean)
-                        .join(" • ") || "Active Store"}
-                    </span>
-                  </div>
-
-                  {isSelected && (
-                    <Check className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                  )}
-                </button>
-              );
-            })
-          ) : (
-            <div className="py-8 text-center text-xs text-slate-400">
-              <p className="font-semibold text-slate-600 dark:text-slate-300">No stores found</p>
-              <p className="mt-0.5 text-[11px]">
-                Try adjusting your search query for &quot;{debouncedSearch}&quot;
-              </p>
-            </div>
-          )}
+          <StoreOptionsList
+            isLoading={isLoading}
+            stores={storesList}
+            value={value}
+            debouncedSearch={debouncedSearch}
+            onSelect={(store) => {
+              onValueChange(store.id, store);
+              setCachedSelectedStore(store);
+              setIsOpen(false);
+              setSearchQuery("");
+            }}
+          />
         </div>
       </PopoverContent>
     </Popover>

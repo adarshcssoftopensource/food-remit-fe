@@ -60,8 +60,8 @@ export function MultiLanguageSelect({
         try {
           const countryLangs = countryLanguage.getCountry(countryObj.isoCode).languages;
           if (countryLangs && countryLangs.length > 0) {
-            const countryIsoCodes = countryLangs.map((l: any) => l.iso639_1);
-            const filteredCodes = codes.filter((code) => countryIsoCodes.includes(code));
+            const countryIsoCodes = new Set(countryLangs.map((l: any) => l.iso639_1));
+            const filteredCodes = codes.filter((code) => countryIsoCodes.has(code));
             // Only filter if there are matching languages found, else show all
             if (filteredCodes.length > 0) {
               codes = filteredCodes;
@@ -86,6 +86,8 @@ export function MultiLanguageSelect({
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [countryName]);
+
+  const selectedSet = new Set(selected);
 
   const handleUnselect = (item: string) => {
     onChange(selected.filter((i) => i !== item));
@@ -142,6 +144,7 @@ export function MultiLanguageSelect({
             type="text"
             className="w-full rounded-md border border-slate-200 px-3 py-1.5 text-base outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 md:text-sm"
             placeholder="Search language..."
+            aria-label="Search language"
             onChange={(e) => {
               const val = e.target.value.toLowerCase();
               const items = document.querySelectorAll(".lang-item");
@@ -172,7 +175,7 @@ export function MultiLanguageSelect({
                 data-label={language.label}
                 className="lang-item flex w-full cursor-pointer items-center rounded-lg px-2 py-1.5 text-left text-sm transition-colors hover:bg-slate-100 focus:bg-slate-100 focus:outline-none"
                 onClick={() => {
-                  if (selected.includes(language.value)) {
+                  if (selectedSet.has(language.value)) {
                     onChange(selected.filter((item) => item !== language.value));
                   } else {
                     onChange([...selected, language.value]);
@@ -182,7 +185,7 @@ export function MultiLanguageSelect({
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4 shrink-0 text-emerald-600",
-                    selected.includes(language.value) ? "opacity-100" : "opacity-0",
+                    selectedSet.has(language.value) ? "opacity-100" : "opacity-0",
                   )}
                 />
                 <span className="truncate">{language.label}</span>

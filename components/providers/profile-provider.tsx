@@ -15,7 +15,7 @@ import {
 } from "@/lib/bank-verification-gate";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
@@ -110,11 +110,40 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     return () => setNeedsBankVerification(false);
   }, [needsBankVerification]);
 
-  const hasPermission = (permissionKey: keyof ProfilePermissions | string): boolean => {
-    if (isSuperAdmin) return true;
-    if (!profileData?.permissions) return false;
-    return profileData.permissions[permissionKey] === 1;
-  };
+  const hasPermission = useCallback(
+    (permissionKey: keyof ProfilePermissions | string): boolean => {
+      if (isSuperAdmin) return true;
+      if (!profileData?.permissions) return false;
+      return profileData.permissions[permissionKey] === 1;
+    },
+    [isSuperAdmin, profileData],
+  );
+
+  const refetchProfile = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
+  const contextValue = useMemo<ProfileContextType>(
+    () => ({
+      profile: profileData ?? null,
+      isLoading: false,
+      isError: false,
+      isSuperAdmin,
+      canViewPlatformFees,
+      hasPermission,
+      isReadOnly: profileData?.isReadOnly || false,
+      needsBankVerification,
+      refetchProfile,
+    }),
+    [
+      profileData,
+      isSuperAdmin,
+      canViewPlatformFees,
+      hasPermission,
+      needsBankVerification,
+      refetchProfile,
+    ],
+  );
 
   if (isLoading) {
     return <ProfileLoadingScreen />;
@@ -147,25 +176,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     return <AccessDeniedScreen hasDashboardAccess={hasDashboardAccess} />;
   }
 
-  return (
-    <ProfileContext.Provider
-      value={{
-        profile: profileData,
-        isLoading: false,
-        isError: false,
-        isSuperAdmin,
-        canViewPlatformFees,
-        hasPermission,
-        isReadOnly: profileData.isReadOnly || false,
-        needsBankVerification,
-        refetchProfile: () => {
-          void refetch();
-        },
-      }}
-    >
-      {children}
-    </ProfileContext.Provider>
-  );
+  return <ProfileContext.Provider value={contextValue}>{children}</ProfileContext.Provider>;
 }
 
 export function useProfile() {

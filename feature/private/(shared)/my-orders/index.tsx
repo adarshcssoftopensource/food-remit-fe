@@ -99,7 +99,6 @@ export function OrdersManagementPage() {
             toDate={toDate}
             onFromDateChange={setFromDate}
             onToDateChange={setToDate}
-            maxDate={new Date()}
           />
         </div>
       </ModuleFilters>

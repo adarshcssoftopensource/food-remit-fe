@@ -208,15 +208,14 @@ export function AdditionalDocumentsSection({
       </p>
 
       {!isAtLimit && (
-        <div
+        <label
           onDragOver={(e) => {
             e.preventDefault();
             setIsDragging(true);
           }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
-          onClick={() => !isProcessing && fileInputRef.current?.click()}
-          className={`relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-all ${
+          className={`relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition ${
             isDragging
               ? "border-emerald-500 bg-emerald-50/50"
               : "border-slate-200 bg-slate-50/50 hover:border-emerald-400 hover:bg-slate-50"
@@ -251,7 +250,7 @@ export function AdditionalDocumentsSection({
               </div>
             </div>
           )}
-        </div>
+        </label>
       )}
 
       {error && (
@@ -280,7 +279,7 @@ export function AdditionalDocumentsSection({
               return (
                 <div
                   key={doc.name + idx}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-slate-200/90 bg-white p-3 shadow-2xs transition-all hover:border-slate-300"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-slate-200/90 bg-white p-3 shadow-2xs transition hover:border-slate-300"
                 >
                   <div className="flex items-center gap-3 overflow-hidden">
                     <div

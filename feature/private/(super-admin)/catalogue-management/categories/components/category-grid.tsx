@@ -74,17 +74,14 @@ export function CategoryGrid({
           return (
             <div
               key={category.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => onOpen(category)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onOpen(category);
-                }
-              }}
-              className="group hover:border-primary/40 focus-visible:ring-primary/30 relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white text-left shadow-xs transition-all outline-none hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 dark:border-slate-800 dark:bg-slate-950"
+              className="group hover:border-primary/40 has-[>button:focus-visible]:ring-primary/30 relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white text-left shadow-xs transition outline-none hover:-translate-y-0.5 hover:shadow-md has-[>button:focus-visible]:ring-2 dark:border-slate-800 dark:bg-slate-950"
             >
+              <button
+                type="button"
+                aria-label={category.categoryName}
+                onClick={() => onOpen(category)}
+                className="absolute inset-0 z-[1] cursor-pointer outline-none"
+              />
               <div className="flex items-start gap-3 p-4">
                 <div className="bg-primary/10 text-primary relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl">
                   {icon ? (
@@ -104,7 +101,7 @@ export function CategoryGrid({
                           e.stopPropagation();
                           setLightboxSrc(icon);
                         }}
-                        className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/35 group-hover:opacity-100"
+                        className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition duration-200 group-hover:bg-black/35 group-hover:opacity-100"
                       >
                         <ZoomIn className="h-5 w-5 text-white drop-shadow-md" />
                       </button>
@@ -147,7 +144,7 @@ export function CategoryGrid({
                       e.stopPropagation();
                       onEdit(category);
                     }}
-                    className="h-8 w-8 shrink-0 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-slate-700 focus-visible:opacity-100"
+                    className="relative z-10 h-8 w-8 shrink-0 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-slate-700 focus-visible:opacity-100"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -183,6 +180,7 @@ export function CategoryGrid({
             variant="outline"
             size="icon"
             className="h-9 w-9 rounded-lg"
+            aria-label="Next page"
             disabled={currentPage >= totalPages}
             onClick={() => onPageChange(currentPage + 1)}
           >

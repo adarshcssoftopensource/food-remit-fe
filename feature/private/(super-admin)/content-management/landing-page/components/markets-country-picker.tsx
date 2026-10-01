@@ -51,6 +51,7 @@ export function MarketsCountryPicker({ markets, onChange }: MarketsCountryPicker
               variant="ghost"
               size="icon"
               className="size-5 rounded-full"
+              aria-label={`Remove ${market.name}`}
               onClick={() =>
                 onChange(
                   markets.filter((m) => m.isoCode !== market.isoCode || m.name !== market.name),

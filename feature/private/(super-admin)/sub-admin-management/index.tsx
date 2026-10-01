@@ -150,7 +150,6 @@ export function SubAdminManagement() {
             toDate={toDate}
             onFromDateChange={(d) => setFromDate(d ?? undefined)}
             onToDateChange={(d) => setToDate(d ?? undefined)}
-            maxDate={new Date()}
             loading={isLoading}
           />
         </div>

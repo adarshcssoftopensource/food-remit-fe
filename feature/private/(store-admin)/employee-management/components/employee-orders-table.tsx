@@ -73,6 +73,7 @@ export function EmployeeOrdersTable({
             type="text"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
+            aria-label="Search by order ID or sender / receiver name"
             placeholder="Search by order ID or sender / receiver name…"
             className="w-full rounded-xl border border-slate-200 bg-slate-50/80 py-2.5 pr-4 pl-9 text-sm text-slate-800 placeholder-slate-400 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-900/30"
           />

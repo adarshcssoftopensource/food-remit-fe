@@ -95,9 +95,9 @@ export function FeedbackList() {
         <div className="grid w-full grid-cols-1 items-end gap-4 md:grid-cols-1">
           {/* Date Range Filter */}
           <div className="w-full">
-            <label className="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <p className="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-300">
               Date Range
-            </label>
+            </p>
             <DateRangeFilter
               fromDate={fromDate}
               toDate={toDate}

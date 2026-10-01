@@ -43,6 +43,20 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   PLN: "zł",
 };
 
+const currencyFormatters = new Map<string, Intl.NumberFormat>();
+
+function getCurrencyFormatter(currency: string): Intl.NumberFormat {
+  let formatter = currencyFormatters.get(currency);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat("en", {
+      style: "currency",
+      currency,
+    });
+    currencyFormatters.set(currency, formatter);
+  }
+  return formatter;
+}
+
 export function getCurrencySymbol(symbolOrCode?: string | null, fallback = "₹"): string {
   if (!symbolOrCode) return fallback;
   const trimmed = String(symbolOrCode).trim();
@@ -77,10 +91,7 @@ export function getCurrencySymbol(symbolOrCode?: string | null, fallback = "₹"
   // Dynamic ECMAScript Intl.NumberFormat resolution for any world currency code
   if (/^[A-Z]{3}$/.test(upper)) {
     try {
-      const parts = new Intl.NumberFormat("en", {
-        style: "currency",
-        currency: upper,
-      }).formatToParts(1);
+      const parts = getCurrencyFormatter(upper).formatToParts(1);
       const sym = parts.find((p) => p.type === "currency")?.value;
       if (sym) return sym;
     } catch {

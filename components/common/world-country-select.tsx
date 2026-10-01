@@ -13,6 +13,8 @@ import {
   type WorldCountryOption,
 } from "@/lib/world-locations";
 
+const EMPTY_EXCLUDE_NAMES: string[] = [];
+
 export type WorldCountrySelectProps = {
   value?: string;
   onValueChange: (country: WorldCountryOption) => void;
@@ -32,7 +34,7 @@ export function WorldCountrySelect({
   className,
   id,
   placeholder = "Select a country",
-  excludeNames = [],
+  excludeNames = EMPTY_EXCLUDE_NAMES,
 }: WorldCountrySelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");

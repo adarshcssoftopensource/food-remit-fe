@@ -5,9 +5,17 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { Landmark } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 export function BankVerificationBanner() {
   const { needsBankVerification } = useProfile();
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
+  }, []);
 
   if (!needsBankVerification) return null;
 
@@ -38,6 +46,7 @@ export function BankVerificationBanner() {
           } else {
             // It might take time to render the tab content, poll for it
             let attempts = 0;
+            if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
             const interval = setInterval(() => {
               const el = document.getElementById("bank-verification-section");
               if (el) {
@@ -47,6 +56,7 @@ export function BankVerificationBanner() {
               attempts++;
               if (attempts > 10) clearInterval(interval);
             }, 100);
+            pollIntervalRef.current = interval;
           }
         }}
       >

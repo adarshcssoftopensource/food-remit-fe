@@ -14,7 +14,12 @@ import {
   User,
 } from "lucide-react";
 import { format } from "date-fns";
-import { PartnerLeadData } from "../../types/partner-lead.types";
+import {
+  KycDocument,
+  KycMediaItem,
+  KycPerson,
+  PartnerLeadData,
+} from "../../types/partner-lead.types";
 import Image from "next/image";
 
 function getDocTitle(m: { name?: string; type: string }, i: number) {
@@ -26,15 +31,256 @@ function getDocTitle(m: { name?: string; type: string }, i: number) {
   return m.name || `Document #${i + 1}`;
 }
 
+function getKycDetails(lead: PartnerLeadData) {
+  const kyc = lead.kycVerifications?.[0] || lead.kycData;
+  const kycStatus = (lead.kycStatus || kyc?.status || "NOT_STARTED").toUpperCase();
+
+  return {
+    kyc,
+    kycStatus,
+    sessionId: lead.veriffSessionId || kyc?.veriffSessionId,
+    person: kyc?.person,
+    document: kyc?.document,
+    verifiedDate: lead.kycVerifiedAt || kyc?.createdAt,
+    decisionCode: kyc?.decisionCode,
+  };
+}
+
+function KycStatusBadges({ kycStatus }: { kycStatus: string }) {
+  const isApproved = kycStatus === "APPROVED";
+  const isSubmitted =
+    kycStatus === "SUBMITTED" || kycStatus === "IN_PROGRESS" || kycStatus === "STARTED";
+  const isDeclined = kycStatus === "DECLINED";
+
+  return (
+    <>
+      {isApproved && (
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
+          <CheckCircle2 className="size-3.5 text-emerald-600" />
+          KYC Verified
+        </span>
+      )}
+      {isSubmitted && (
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
+          <Clock className="size-3.5 text-amber-600" />
+          {kycStatus === "SUBMITTED" ? "Under Review" : "In Progress"}
+        </span>
+      )}
+      {isDeclined && (
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-bold text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
+          <AlertCircle className="size-3.5 text-rose-600" />
+          Declined
+        </span>
+      )}
+      {!isApproved && !isSubmitted && !isDeclined && (
+        <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
+          Not Started
+        </span>
+      )}
+    </>
+  );
+}
+
+function KycSessionId({
+  sessionId,
+  copiedSession,
+  onCopy,
+}: {
+  sessionId: string;
+  copiedSession: boolean;
+  onCopy: (text: string) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+        Session:
+      </span>
+      <button
+        type="button"
+        onClick={() => onCopy(sessionId)}
+        className="inline-flex items-center gap-1 rounded bg-slate-200/70 px-2 py-0.5 font-mono text-xs font-semibold text-slate-800 transition hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200"
+        title="Click to copy Session ID"
+      >
+        <span>{sessionId}</span>
+        {copiedSession ? (
+          <Check className="size-3 text-emerald-600" />
+        ) : (
+          <Copy className="size-3 text-slate-400" />
+        )}
+      </button>
+    </div>
+  );
+}
+
+function KycPersonDetails({
+  person,
+  lead,
+}: {
+  person: KycPerson | null | undefined;
+  lead: PartnerLeadData;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-100 p-4 dark:border-slate-800">
+      <div className="mb-3 flex items-center gap-2 border-b border-slate-100 pb-2 text-xs font-bold text-slate-800 uppercase dark:border-slate-800 dark:text-slate-200">
+        <User className="size-3.5 text-emerald-600" />
+        Verified Personal Data
+      </div>
+      <dl className="grid grid-cols-2 gap-3 text-xs">
+        <div>
+          <dt className="text-slate-400">Full Name</dt>
+          <dd className="font-semibold text-slate-900 dark:text-white">
+            {person?.firstName || lead.firstName} {person?.lastName || lead.lastName}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-slate-400">Date of Birth</dt>
+          <dd className="font-semibold text-slate-900 dark:text-white">
+            {person?.dateOfBirth || "N/A"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-slate-400">ID / National Number</dt>
+          <dd className="font-mono font-semibold text-slate-900 dark:text-white">
+            {person?.idNumber || "N/A"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-slate-400">Nationality / Country</dt>
+          <dd className="font-semibold text-slate-900 dark:text-white">
+            {person?.nationality || person?.country || lead.country || "N/A"}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
+
+function KycDocumentDetails({ document }: { document: KycDocument | null | undefined }) {
+  return (
+    <div className="rounded-xl border border-slate-100 p-4 dark:border-slate-800">
+      <div className="mb-3 flex items-center gap-2 border-b border-slate-100 pb-2 text-xs font-bold text-slate-800 uppercase dark:border-slate-800 dark:text-slate-200">
+        <FileText className="size-3.5 text-emerald-600" />
+        Document Credentials
+      </div>
+      <dl className="grid grid-cols-2 gap-3 text-xs">
+        <div>
+          <dt className="text-slate-400">Document Type</dt>
+          <dd className="font-semibold text-slate-900 capitalize dark:text-white">
+            {document?.type ? String(document.type).replace(/_/g, " ") : "Government ID"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-slate-400">Document Number</dt>
+          <dd className="font-mono font-semibold text-slate-900 dark:text-white">
+            {document?.number || "N/A"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-slate-400">Issuing Country</dt>
+          <dd className="font-semibold text-slate-900 dark:text-white">
+            {document?.country || "N/A"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-slate-400">Valid Until</dt>
+          <dd className="font-semibold text-slate-900 dark:text-white">
+            {document?.validUntil || "N/A"}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
+
+function KycDecisionMeta({
+  decisionCode,
+  verifiedDate,
+}: {
+  decisionCode: string | null | undefined;
+  verifiedDate: string | null | undefined;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3 text-xs text-slate-500 dark:border-slate-800">
+      <div className="flex items-center gap-2">
+        {decisionCode && (
+          <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+            Decision Code: {decisionCode}
+          </span>
+        )}
+        {verifiedDate && (
+          <span>Verified: {format(new Date(verifiedDate), "MMM dd, yyyy, hh:mm a")}</span>
+        )}
+      </div>
+      <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+        Biometrics & Liveness Checked
+      </span>
+    </div>
+  );
+}
+
+function KycMediaGallery({ mediaUrls }: { mediaUrls: KycMediaItem[] }) {
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-slate-400">
+          Archived Credentials (S3 Encrypted Storage)
+        </span>
+        <span className="text-[11px] text-slate-400">{mediaUrls.length} files securely stored</span>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        {mediaUrls.map((media, idx) => {
+          const label = getDocTitle(media, idx);
+
+          return (
+            <div
+              key={media.s3Url || label}
+              className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xs transition hover:border-emerald-400 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
+            >
+              <a
+                href={media.s3Url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative flex w-full shrink-0 items-center justify-center overflow-hidden bg-slate-950"
+                style={{ height: 180, minHeight: 180 }}
+              >
+                <Image
+                  src={media.s3Url}
+                  alt={label}
+                  fill
+                  sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  unoptimized
+                  className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="inline-flex h-7 items-center justify-center gap-1 rounded-md bg-white/95 px-2.5 text-xs font-semibold text-slate-800 shadow-sm">
+                    <ExternalLink className="size-3" />
+                    View Full
+                  </span>
+                </div>
+              </a>
+              <div className="p-2.5">
+                <div
+                  className="truncate text-xs font-bold text-slate-800 dark:text-slate-200"
+                  title={label}
+                >
+                  {label}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function KycVerificationCard({ lead }: { lead: PartnerLeadData }) {
   const [copiedSession, setCopiedSession] = useState(false);
 
-  const kyc = lead.kycVerifications?.[0] || lead.kycData;
-  const kycStatus = (lead.kycStatus || kyc?.status || "NOT_STARTED").toUpperCase();
-  const sessionId = lead.veriffSessionId || kyc?.veriffSessionId;
-
-  const person = kyc?.person;
-  const document = kyc?.document;
+  const { kyc, kycStatus, sessionId, person, document, verifiedDate, decisionCode } =
+    getKycDetails(lead);
 
   const mediaUrls = useMemo(() => {
     const raw = kyc?.mediaUrls;
@@ -48,14 +294,6 @@ export function KycVerificationCard({ lead }: { lead: PartnerLeadData }) {
       return true;
     });
   }, [kyc?.mediaUrls]);
-
-  const verifiedDate = lead.kycVerifiedAt || kyc?.createdAt;
-  const decisionCode = kyc?.decisionCode;
-
-  const isApproved = kycStatus === "APPROVED";
-  const isSubmitted =
-    kycStatus === "SUBMITTED" || kycStatus === "IN_PROGRESS" || kycStatus === "STARTED";
-  const isDeclined = kycStatus === "DECLINED";
 
   const handleCopy = (text: string) => {
     void navigator.clipboard.writeText(text);
@@ -76,29 +314,7 @@ export function KycVerificationCard({ lead }: { lead: PartnerLeadData }) {
             </CardTitle>
 
             <div className="flex items-center gap-2">
-              {isApproved && (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
-                  <CheckCircle2 className="size-3.5 text-emerald-600" />
-                  KYC Verified
-                </span>
-              )}
-              {isSubmitted && (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
-                  <Clock className="size-3.5 text-amber-600" />
-                  {kycStatus === "SUBMITTED" ? "Under Review" : "In Progress"}
-                </span>
-              )}
-              {isDeclined && (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-bold text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
-                  <AlertCircle className="size-3.5 text-rose-600" />
-                  Declined
-                </span>
-              )}
-              {!isApproved && !isSubmitted && !isDeclined && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
-                  Not Started
-                </span>
-              )}
+              <KycStatusBadges kycStatus={kycStatus} />
             </div>
           </div>
         </CardHeader>
@@ -127,174 +343,24 @@ export function KycVerificationCard({ lead }: { lead: PartnerLeadData }) {
                   </div>
                 </div>
                 {sessionId && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
-                      Session:
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(sessionId)}
-                      className="inline-flex items-center gap-1 rounded bg-slate-200/70 px-2 py-0.5 font-mono text-xs font-semibold text-slate-800 transition hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200"
-                      title="Click to copy Session ID"
-                    >
-                      <span>{sessionId}</span>
-                      {copiedSession ? (
-                        <Check className="size-3 text-emerald-600" />
-                      ) : (
-                        <Copy className="size-3 text-slate-400" />
-                      )}
-                    </button>
-                  </div>
+                  <KycSessionId
+                    sessionId={sessionId}
+                    copiedSession={copiedSession}
+                    onCopy={handleCopy}
+                  />
                 )}
               </div>
 
               {/* Person & Document Grids */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {/* Person details */}
-                <div className="rounded-xl border border-slate-100 p-4 dark:border-slate-800">
-                  <div className="mb-3 flex items-center gap-2 border-b border-slate-100 pb-2 text-xs font-bold text-slate-800 uppercase dark:border-slate-800 dark:text-slate-200">
-                    <User className="size-3.5 text-emerald-600" />
-                    Verified Personal Data
-                  </div>
-                  <dl className="grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <dt className="text-slate-400">Full Name</dt>
-                      <dd className="font-semibold text-slate-900 dark:text-white">
-                        {person?.firstName || lead.firstName} {person?.lastName || lead.lastName}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-400">Date of Birth</dt>
-                      <dd className="font-semibold text-slate-900 dark:text-white">
-                        {person?.dateOfBirth || "N/A"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-400">ID / National Number</dt>
-                      <dd className="font-mono font-semibold text-slate-900 dark:text-white">
-                        {person?.idNumber || "N/A"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-400">Nationality / Country</dt>
-                      <dd className="font-semibold text-slate-900 dark:text-white">
-                        {person?.nationality || person?.country || lead.country || "N/A"}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-
-                {/* Document details */}
-                <div className="rounded-xl border border-slate-100 p-4 dark:border-slate-800">
-                  <div className="mb-3 flex items-center gap-2 border-b border-slate-100 pb-2 text-xs font-bold text-slate-800 uppercase dark:border-slate-800 dark:text-slate-200">
-                    <FileText className="size-3.5 text-emerald-600" />
-                    Document Credentials
-                  </div>
-                  <dl className="grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <dt className="text-slate-400">Document Type</dt>
-                      <dd className="font-semibold text-slate-900 capitalize dark:text-white">
-                        {document?.type
-                          ? String(document.type).replace(/_/g, " ")
-                          : "Government ID"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-400">Document Number</dt>
-                      <dd className="font-mono font-semibold text-slate-900 dark:text-white">
-                        {document?.number || "N/A"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-400">Issuing Country</dt>
-                      <dd className="font-semibold text-slate-900 dark:text-white">
-                        {document?.country || "N/A"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-400">Valid Until</dt>
-                      <dd className="font-semibold text-slate-900 dark:text-white">
-                        {document?.validUntil || "N/A"}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
+                <KycPersonDetails person={person} lead={lead} />
+                <KycDocumentDetails document={document} />
               </div>
 
-              {/* Decision & Verification Meta */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3 text-xs text-slate-500 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  {decisionCode && (
-                    <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                      Decision Code: {decisionCode}
-                    </span>
-                  )}
-                  {verifiedDate && (
-                    <span>Verified: {format(new Date(verifiedDate), "MMM dd, yyyy, hh:mm a")}</span>
-                  )}
-                </div>
-                <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                  Biometrics & Liveness Checked
-                </span>
-              </div>
+              <KycDecisionMeta decisionCode={decisionCode} verifiedDate={verifiedDate} />
 
               {/* S3 Captured Documents Gallery */}
-              {mediaUrls.length > 0 && (
-                <div>
-                  <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-slate-400">
-                      Archived Credentials (S3 Encrypted Storage)
-                    </span>
-                    <span className="text-[11px] text-slate-400">
-                      {mediaUrls.length} files securely stored
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-                    {mediaUrls.map((media, idx) => {
-                      const label = getDocTitle(media, idx);
-
-                      return (
-                        <div
-                          key={media.s3Url || idx}
-                          className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xs transition-all hover:border-emerald-400 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
-                        >
-                          <a
-                            href={media.s3Url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="relative flex w-full shrink-0 items-center justify-center overflow-hidden bg-slate-950"
-                            style={{ height: 180, minHeight: 180 }}
-                          >
-                            <Image
-                              src={media.s3Url}
-                              alt={label}
-                              fill
-                              unoptimized
-                              className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
-                              loading="lazy"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                              <span className="inline-flex h-7 items-center justify-center gap-1 rounded-md bg-white/95 px-2.5 text-xs font-semibold text-slate-800 shadow-sm">
-                                <ExternalLink className="size-3" />
-                                View Full
-                              </span>
-                            </div>
-                          </a>
-                          <div className="p-2.5">
-                            <div
-                              className="truncate text-xs font-bold text-slate-800 dark:text-slate-200"
-                              title={label}
-                            >
-                              {label}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+              {mediaUrls.length > 0 && <KycMediaGallery mediaUrls={mediaUrls} />}
             </div>
           )}
         </CardContent>

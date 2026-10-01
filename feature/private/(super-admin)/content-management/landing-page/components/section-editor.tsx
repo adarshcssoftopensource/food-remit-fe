@@ -2,8 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { type BaseSyntheticEvent, useRef, useState } from "react";
+import { type Control, type FieldErrors, type UseFormSetValue, useForm } from "react-hook-form";
 
 import { ImageUpload } from "@/components/common/image-upload";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ type SectionEditorProps = {
 export function SectionEditor({ section, initialData, isSaving, onSave }: SectionEditorProps) {
   const schema = SECTION_SCHEMAS[section];
   const defaults = normalizeSectionData(section, initialData);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const imageFileRef = useRef<File | null>(null);
   // Tracks whether the image field was touched at all (including removal → null)
   const [imageChanged, setImageChanged] = useState(false);
 
@@ -66,49 +66,45 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
   const showImage = IMAGE_SECTIONS.has(section);
   const isReadOnlyStats = section === "stats";
 
-  const imageUrl =
-    section === "hero"
-      ? String((defaults as { backgroundImage?: string }).backgroundImage || "")
-      : section === "whyJoin" || section === "success"
-        ? String((defaults as { image?: string }).image || "")
-        : "";
+  const imageUrl = getSectionImageUrl(section, defaults);
 
-  const onSubmit = handleSubmit(async (values) => {
-    if (isReadOnlyStats) return;
-    const payload = pickDirtyFields(values, dirtyFields as Record<string, unknown>);
-    const finalPayload = Object.keys(payload).length === 0 && isDirty ? values : payload;
-    if (Object.keys(finalPayload).length === 0 && !imageChanged) return;
+  const onSubmit = (event?: BaseSyntheticEvent) =>
+    handleSubmit(async (values) => {
+      if (isReadOnlyStats) return;
+      const payload = pickDirtyFields(values, dirtyFields as Record<string, unknown>);
+      const finalPayload = Object.keys(payload).length === 0 && isDirty ? values : payload;
+      if (Object.keys(finalPayload).length === 0 && !imageChanged) return;
 
-    const STRING_ARRAY_FIELDS: Partial<Record<string, string[]>> = {
-      whyJoin: ["points"],
-      businessTypes: ["types"],
-      success: ["investments"],
-    };
-    const strFields = STRING_ARRAY_FIELDS[section] ?? [];
-    const unwrapped = { ...finalPayload } as Record<string, unknown>;
-    for (const field of strFields) {
-      if (Array.isArray(unwrapped[field])) {
-        unwrapped[field] = (unwrapped[field] as { value: string }[]).map((item) => item.value);
-      }
-    }
-
-    const filesToUpload: { fieldname: string; file: File }[] = [];
-    if (imageFile) {
-      filesToUpload.push({ fieldname: "image", file: imageFile });
-    }
-
-    if (section === "testimonials" && Array.isArray(unwrapped.items)) {
-      for (let i = 0; i < unwrapped.items.length; i++) {
-        const item = unwrapped.items[i] as any;
-        if (item.imageFile instanceof File) {
-          filesToUpload.push({ fieldname: `testimonial_image_${i}`, file: item.imageFile });
+      const STRING_ARRAY_FIELDS: Partial<Record<string, string[]>> = {
+        whyJoin: ["points"],
+        businessTypes: ["types"],
+        success: ["investments"],
+      };
+      const strFields = STRING_ARRAY_FIELDS[section] ?? [];
+      const unwrapped = { ...finalPayload } as Record<string, unknown>;
+      for (const field of strFields) {
+        if (Array.isArray(unwrapped[field])) {
+          unwrapped[field] = (unwrapped[field] as { value: string }[]).map((item) => item.value);
         }
-        delete item.imageFile;
       }
-    }
 
-    await onSave(unwrapped, filesToUpload);
-  });
+      const filesToUpload: { fieldname: string; file: File }[] = [];
+      if (imageFileRef.current) {
+        filesToUpload.push({ fieldname: "image", file: imageFileRef.current });
+      }
+
+      if (section === "testimonials" && Array.isArray(unwrapped.items)) {
+        for (let i = 0; i < unwrapped.items.length; i++) {
+          const item = unwrapped.items[i] as any;
+          if (item.imageFile instanceof File) {
+            filesToUpload.push({ fieldname: `testimonial_image_${i}`, file: item.imageFile });
+          }
+          delete item.imageFile;
+        }
+      }
+
+      await onSave(unwrapped, filesToUpload);
+    })(event);
 
   return (
     <form onSubmit={onSubmit} noValidate className="flex min-h-0 flex-col">
@@ -131,52 +127,22 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
           ) : (
             <>
               {showImage ? (
-                <div className="space-y-1.5">
-                  <FieldLabel className="text-sm font-semibold text-slate-700">
-                    {section === "hero" ? "Background image " : "Section image"}
-                  </FieldLabel>
-                  <ImageUpload
-                    multiple={false}
-                    maxFiles={1}
-                    initialImages={imageUrl ? [imageUrl] : []}
-                    onChange={(files) => {
-                      setImageFile(files[0] ?? null);
-                      setImageChanged(true);
-                    }}
-                    label="Upload to S3"
-                    hint="PNG, JPG or WEBP — stored in S3 and saved to DB"
-                  />
-                </div>
+                <SectionImageField
+                  section={section}
+                  imageUrl={imageUrl}
+                  onChange={(files) => {
+                    imageFileRef.current = files[0] ?? null;
+                    setImageChanged(true);
+                  }}
+                />
               ) : null}
 
-              {section === "hero" ? <HeroFields control={control} errors={errors} /> : null}
-              {section === "whyJoin" ? (
-                <WhyJoinFields control={control} setValue={setValue} errors={errors} />
-              ) : null}
-              {section === "revenue" ? <RevenueFields control={control} errors={errors} /> : null}
-              {section === "howItWorks" ? (
-                <HowItWorksFields control={control} errors={errors} />
-              ) : null}
-              {section === "benefits" ? <BenefitsFields control={control} errors={errors} /> : null}
-              {section === "businessTypes" ? (
-                <BusinessTypesFields control={control} setValue={setValue} errors={errors} />
-              ) : null}
-              {section === "opportunity" ? (
-                <OpportunityFields control={control} errors={errors} />
-              ) : null}
-              {section === "different" ? (
-                <DifferentFields control={control} errors={errors} />
-              ) : null}
-              {section === "success" ? (
-                <SuccessFields control={control} setValue={setValue} errors={errors} />
-              ) : null}
-              {section === "trust" ? <TrustFields control={control} errors={errors} /> : null}
-              {section === "testimonials" ? (
-                <TestimonialsFields control={control} errors={errors} setValue={setValue} />
-              ) : null}
-              {section === "faq" ? <FaqFields control={control} errors={errors} /> : null}
-              {section === "join" ? <JoinFields control={control} errors={errors} /> : null}
-              {section === "footer" ? <FooterFields control={control} errors={errors} /> : null}
+              <SectionFields
+                section={section}
+                control={control}
+                setValue={setValue}
+                errors={errors}
+              />
             </>
           )}
         </div>
@@ -196,5 +162,73 @@ export function SectionEditor({ section, initialData, isSaving, onSave }: Sectio
         </div>
       ) : null}
     </form>
+  );
+}
+
+function getSectionImageUrl(section: LandingSectionKey, defaults: unknown) {
+  return section === "hero"
+    ? String((defaults as { backgroundImage?: string }).backgroundImage || "")
+    : section === "whyJoin" || section === "success"
+      ? String((defaults as { image?: string }).image || "")
+      : "";
+}
+
+type SectionImageFieldProps = {
+  section: LandingSectionKey;
+  imageUrl: string;
+  onChange: (files: File[]) => void;
+};
+
+function SectionImageField({ section, imageUrl, onChange }: SectionImageFieldProps) {
+  return (
+    <div className="space-y-1.5">
+      <FieldLabel className="text-sm font-semibold text-slate-700">
+        {section === "hero" ? "Background image " : "Section image"}
+      </FieldLabel>
+      <ImageUpload
+        multiple={false}
+        maxFiles={1}
+        initialImages={imageUrl ? [imageUrl] : []}
+        onChange={onChange}
+        label="Upload to S3"
+        hint="PNG, JPG or WEBP — stored in S3 and saved to DB"
+      />
+    </div>
+  );
+}
+
+type SectionFieldsProps = {
+  section: LandingSectionKey;
+  control: Control<any>;
+  setValue: UseFormSetValue<any>;
+  errors: FieldErrors<any>;
+};
+
+function SectionFields({ section, control, setValue, errors }: SectionFieldsProps) {
+  return (
+    <>
+      {section === "hero" ? <HeroFields control={control} errors={errors} /> : null}
+      {section === "whyJoin" ? (
+        <WhyJoinFields control={control} setValue={setValue} errors={errors} />
+      ) : null}
+      {section === "revenue" ? <RevenueFields control={control} errors={errors} /> : null}
+      {section === "howItWorks" ? <HowItWorksFields control={control} errors={errors} /> : null}
+      {section === "benefits" ? <BenefitsFields control={control} errors={errors} /> : null}
+      {section === "businessTypes" ? (
+        <BusinessTypesFields control={control} setValue={setValue} errors={errors} />
+      ) : null}
+      {section === "opportunity" ? <OpportunityFields control={control} errors={errors} /> : null}
+      {section === "different" ? <DifferentFields control={control} errors={errors} /> : null}
+      {section === "success" ? (
+        <SuccessFields control={control} setValue={setValue} errors={errors} />
+      ) : null}
+      {section === "trust" ? <TrustFields control={control} errors={errors} /> : null}
+      {section === "testimonials" ? (
+        <TestimonialsFields control={control} errors={errors} setValue={setValue} />
+      ) : null}
+      {section === "faq" ? <FaqFields control={control} errors={errors} /> : null}
+      {section === "join" ? <JoinFields control={control} errors={errors} /> : null}
+      {section === "footer" ? <FooterFields control={control} errors={errors} /> : null}
+    </>
   );
 }

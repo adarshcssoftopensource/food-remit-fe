@@ -10,37 +10,29 @@ import { OrderSummaryCard } from "@/feature/private/(store-admin)/order-manageme
 import { OrderPeopleAndStore } from "@/feature/private/(store-admin)/order-management/components/order-people-and-store";
 import { OrderItemsTable } from "@/feature/private/(store-admin)/order-management/components/order-items-table";
 import { OrderStatusBadge } from "@/feature/private/(store-admin)/order-management/components/order-status-badge";
-import { OrderInfoBanner } from "@/feature/private/(store-admin)/order-management/components/order-info-banner";
 import { OrderProgressTimeline } from "@/feature/private/(store-admin)/order-management/components/order-progress-timeline";
 import { OrderAbandonRemarkCard } from "@/feature/private/(store-admin)/order-management/components/order-abandon-remark-card";
-import {
-  OrderLifecycleActionCard,
-  OrderLifecycleActionsHint,
-  OrderWaitingBadge,
-} from "@/feature/private/(store-admin)/order-management/components/order-lifecycle-actions";
+import { OrderWaitingBadge } from "@/feature/private/(store-admin)/order-management/components/order-lifecycle-actions";
 import {
   useMarkOrderCompleted,
   useStartOrder,
 } from "@/feature/private/(store-admin)/order-management/hooks/use-order-lifecycle";
-import {
-  FINAL_STATUS,
-  formatRelativeTime,
-  isAssignedOrder,
-  isPendingOrder,
-  isProcessingOrder,
-  ORDER_STATUS,
-} from "@/feature/private/(store-admin)/order-management/utils/order-workflow";
-import { getInitials } from "@/lib/get-initials";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CompleteOrderByReferenceDialog } from "./components/complete-order-by-reference-dialog";
+import {
+  EmployeeOrderActions,
+  EmployeeOrderBanners,
+  EmployeeOrderOwnershipCard,
+} from "./components/employee-order-detail-sections";
+import {
+  getEmployeeOrderDescription,
+  getEmployeeOrderState,
+} from "./components/employee-order-state";
 import { EmployeeOrderFinancials } from "./components/employee-order-financials";
 import { StartOrderConfirmDialog } from "@/feature/private/(store-admin)/order-management/components/start-order-confirm-dialog";
-import {
-  getOrderReference,
-  maskOrderReference,
-} from "@/feature/private/(store-admin)/order-management/utils/mask-order-reference";
+import { maskOrderReference } from "@/feature/private/(store-admin)/order-management/utils/mask-order-reference";
 
 export function EmployeeOrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
@@ -54,18 +46,8 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
   if (isLoading) return <OrderDetailSkeleton />;
   if (!order) return <OrderNotFound onBack={() => router.back()} />;
 
-  const pending = isPendingOrder(order);
-  const assigned = isAssignedOrder(order);
-  const canStart = pending || assigned;
-  const processing = isProcessingOrder(order);
-  const pickedUp = order.orderStatus === ORDER_STATUS.COMPLETED;
-  const closed = order.orderStatus === ORDER_STATUS.CLOSED;
-  const abandoned = closed && order.finalStatus === FINAL_STATUS.ABANDONED;
-  const handlerName = order.startedByName || order.assignedEmployeeName;
-  const itemCount =
-    order.items?.reduce((s, i) => s + (i.quantity || 0), 0) || order.items?.length || 0;
-  const orderRef = getOrderReference(order);
-  const customerName = order.recieverName || order.userName || "the customer";
+  const state = getEmployeeOrderState(order);
+  const { assigned, pickedUp, closed, handlerName, itemCount, orderRef, customerName } = state;
 
   return (
     <div className="space-y-5">
@@ -73,19 +55,7 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
         <div className="space-y-2">
           <PageHeader
             title={`Order #${maskOrderReference(orderRef)}`}
-            description={
-              pending
-                ? "Paid and waiting to be started."
-                : assigned
-                  ? "Assigned to you by your manager — tap Start Order to begin."
-                  : processing
-                    ? "You are preparing this order."
-                    : pickedUp
-                      ? "Ready for Pickup / Delivery — verify the QR / reference when collected."
-                      : abandoned
-                        ? "This order was abandoned."
-                        : "Order details"
-            }
+            description={getEmployeeOrderDescription(state)}
           />
           <div className="flex flex-wrap items-center gap-2">
             <OrderStatusBadge
@@ -109,28 +79,7 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
         </Button>
       </div>
 
-      {pending && (
-        <OrderInfoBanner
-          variant="employee-start"
-          message="Start this order to claim it. Status becomes Processing and other employees cannot start it."
-        />
-      )}
-      {assigned && (
-        <OrderInfoBanner
-          variant="employee-start"
-          message={`Assigned to you${
-            order.assignedAt ? ` · ${formatRelativeTime(order.assignedAt)}` : ""
-          }. Tap Start Order to move it to Processing.`}
-        />
-      )}
-      {processing && handlerName && (
-        <OrderInfoBanner
-          variant="processing"
-          message={`In Processing · ${handlerName}${
-            order.startedAt ? ` · ${formatRelativeTime(order.startedAt)}` : ""
-          }`}
-        />
-      )}
+      <EmployeeOrderBanners order={order} state={state} />
 
       <OrderAbandonRemarkCard order={order} />
       <OrderProgressTimeline order={order} />
@@ -144,83 +93,24 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-          <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-emerald-50/80 to-white p-4 shadow-xs dark:border-slate-800 dark:from-emerald-950/20 dark:to-slate-900">
-            <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              Order ownership
-            </p>
-            {handlerName ? (
-              <div className="mt-3 flex items-center gap-3">
-                <span className="flex size-11 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white shadow-sm">
-                  {getInitials(handlerName)}
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                    {handlerName}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {order.startedAt
-                      ? `Started ${formatRelativeTime(order.startedAt)}`
-                      : `Assigned ${formatRelativeTime(order.assignedAt) || "—"}`}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <p className="mt-3 text-sm text-slate-500">Nobody has started this order yet.</p>
-            )}
-            <div className="mt-4 grid grid-cols-2 gap-2 border-t border-emerald-100 pt-3 dark:border-emerald-900/40">
-              <div>
-                <p className="text-[10px] font-medium text-slate-400 uppercase">Items</p>
-                <p className="text-sm font-semibold">{itemCount}</p>
-              </div>
-              <div>
-                <p className="text-[10px] font-medium text-slate-400 uppercase">Total</p>
-                <p className="text-sm font-semibold">{order.price || "—"}</p>
-              </div>
-            </div>
-          </div>
+          <EmployeeOrderOwnershipCard
+            order={order}
+            handlerName={handlerName}
+            itemCount={itemCount}
+          />
 
-          <div className="space-y-3">
-            <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Actions</p>
-            {canStart && (
-              <OrderLifecycleActionCard
-                variant="start"
-                title="Start Order"
-                description={
-                  assigned
-                    ? "This order is assigned to you. Start it to move it to Processing."
-                    : "Claim this order and move it to Processing."
-                }
-                loading={starting}
-                onClick={() => setStartOpen(true)}
-              />
-            )}
-            {processing && (
-              <OrderLifecycleActionCard
-                variant="complete"
-                title="Mark as Completed"
-                description="Finishes prep — status becomes Ready for Pickup / Delivery."
-                loading={completing}
-                onClick={async () => {
-                  try {
-                    await markCompleted(order.id);
-                  } catch {}
-                }}
-              />
-            )}
-            {pickedUp && (
-              <OrderLifecycleActionCard
-                variant="close"
-                title="Verify & Close"
-                description="Customer collected — verify the QR / reference. Marks Picked Up and Closes automatically."
-                onClick={() => setCloseOpen(true)}
-              />
-            )}
-            {pickedUp && (
-              <OrderLifecycleActionsHint>
-                Store admin abandons with a remark if nobody collects.
-              </OrderLifecycleActionsHint>
-            )}
-          </div>
+          <EmployeeOrderActions
+            state={state}
+            starting={starting}
+            completing={completing}
+            onStartClick={() => setStartOpen(true)}
+            onMarkCompleted={async () => {
+              try {
+                await markCompleted(order.id);
+              } catch {}
+            }}
+            onCloseClick={() => setCloseOpen(true)}
+          />
         </aside>
       </div>
 

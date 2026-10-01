@@ -6,6 +6,55 @@ import { useGetOrders } from "./use-get-orders";
 import { HistorySubFilter } from "../utils/order-workflow";
 import { FINAL_STATUS } from "../utils/order-workflow";
 
+function getOrderQueryParams(
+  section: OrderSectionKey | undefined,
+  historyFilter: HistorySubFilter,
+) {
+  let workflow: string | undefined;
+  let status: string | undefined;
+  let excludeStatus: string | undefined;
+  let type: string | number | undefined;
+  let finalStatus: number | undefined;
+
+  const normalized =
+    section === "all-orders"
+      ? "all"
+      : section === "completed-orders"
+        ? "completed"
+        : section === "preparing"
+          ? "processing"
+          : section;
+
+  if (normalized === "all") {
+    workflow = "active";
+  } else if (normalized === "requested" || section === "requested-orders") {
+    workflow = "requested";
+  } else if (normalized === "pending") {
+    workflow = "pending";
+  } else if (normalized === "assigned") {
+    workflow = "assigned";
+  } else if (normalized === "processing") {
+    workflow = "processing";
+  } else if (normalized === "completed") {
+    workflow = "completed";
+  } else if (normalized === "history") {
+    workflow = "history";
+    if (historyFilter === "picked-up") finalStatus = FINAL_STATUS.PICKED_UP;
+    if (historyFilter === "abandoned") finalStatus = FINAL_STATUS.ABANDONED;
+  } else if (section === "sent-orders") {
+    type = 1;
+    excludeStatus = "2,5,6,9,11";
+  } else if (section === "partial-orders") {
+    status = "9";
+  }
+
+  return { workflow, status, excludeStatus, type, finalStatus };
+}
+
+function isLocationFilterActive(value: string) {
+  return value !== "all" && value !== "All";
+}
+
 export function useOrderManagement(
   section?: OrderSectionKey,
   historyFilter: HistorySubFilter = "all",
@@ -51,43 +100,10 @@ export function useOrderManagement(
     setCity(appliedCity);
   };
 
-  let workflow: string | undefined;
-  let status: string | undefined;
-  let excludeStatus: string | undefined;
-  let type: string | number | undefined;
-  let finalStatus: number | undefined;
-
-  const normalized =
-    section === "all-orders"
-      ? "all"
-      : section === "completed-orders"
-        ? "completed"
-        : section === "preparing"
-          ? "processing"
-          : section;
-
-  if (normalized === "all") {
-    workflow = "active";
-  } else if (normalized === "requested" || section === "requested-orders") {
-    workflow = "requested";
-  } else if (normalized === "pending") {
-    workflow = "pending";
-  } else if (normalized === "assigned") {
-    workflow = "assigned";
-  } else if (normalized === "processing") {
-    workflow = "processing";
-  } else if (normalized === "completed") {
-    workflow = "completed";
-  } else if (normalized === "history") {
-    workflow = "history";
-    if (historyFilter === "picked-up") finalStatus = FINAL_STATUS.PICKED_UP;
-    if (historyFilter === "abandoned") finalStatus = FINAL_STATUS.ABANDONED;
-  } else if (section === "sent-orders") {
-    type = 1;
-    excludeStatus = "2,5,6,9,11";
-  } else if (section === "partial-orders") {
-    status = "9";
-  }
+  const { workflow, status, excludeStatus, type, finalStatus } = getOrderQueryParams(
+    section,
+    historyFilter,
+  );
 
   const {
     data: response,
@@ -106,15 +122,15 @@ export function useOrderManagement(
     finalStatus,
     fromDate: formattedFromDate,
     toDate: formattedToDate,
-    country: appliedCountry !== "all" && appliedCountry !== "All" ? appliedCountry : undefined,
-    city: appliedCity !== "all" && appliedCity !== "All" ? appliedCity : undefined,
+    country: isLocationFilterActive(appliedCountry) ? appliedCountry : undefined,
+    city: isLocationFilterActive(appliedCity) ? appliedCity : undefined,
   });
 
   const hasFilters = Boolean(
     applied.fromDate ||
     applied.toDate ||
-    (appliedCountry !== "all" && appliedCountry !== "All") ||
-    (appliedCity !== "all" && appliedCity !== "All"),
+    isLocationFilterActive(appliedCountry) ||
+    isLocationFilterActive(appliedCity),
   );
 
   const clearFilters = () => {

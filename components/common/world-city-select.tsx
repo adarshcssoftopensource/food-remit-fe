@@ -1,16 +1,18 @@
 "use client";
 
-import { Check, ChevronDown, MapPin, Plus, Search } from "lucide-react";
+import { Check, MapPin, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { LocationSelectTrigger } from "@/components/common/location-select-trigger";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { findWorldCity, getWorldCitiesByCountryAndState } from "@/lib/world-locations";
 
 const LARGE_CITY_LIST_THRESHOLD = 150;
 const SEARCH_RESULT_LIMIT = 100;
+const EMPTY_EXCLUDE_NAMES: string[] = [];
 
 export type WorldCitySelectProps = {
   countryIsoCode?: string;
@@ -36,7 +38,7 @@ export function WorldCitySelect({
   className,
   id,
   placeholder = "Select a city",
-  excludeNames = [],
+  excludeNames = EMPTY_EXCLUDE_NAMES,
   allowCustom = false,
 }: WorldCitySelectProps) {
   const [open, setOpen] = useState(false);
@@ -81,35 +83,14 @@ export function WorldCitySelect({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        render={
-          <Button
-            id={id}
-            type="button"
-            variant="outline"
-            disabled={isDisabled}
-            aria-invalid={invalid}
-            className={cn(
-              "h-11! w-full justify-between rounded-xl border-slate-200 bg-white px-3 text-sm font-normal text-slate-900 hover:bg-slate-50",
-              !selectedCity && "text-slate-500",
-              invalid && "border-red-400 bg-red-50/30",
-              className,
-            )}
-          >
-            <span className="flex min-w-0 items-center gap-2">
-              <MapPin className="size-4 shrink-0 text-slate-400" />
-              <span className="truncate">
-                {!countryIsoCode ? "Select country first" : (selectedCity?.name ?? placeholder)}
-              </span>
-            </span>
-            <ChevronDown
-              className={cn(
-                "size-4 shrink-0 text-slate-500 transition-transform",
-                open && "rotate-180",
-              )}
-            />
-          </Button>
-        }
+      <LocationSelectTrigger
+        id={id}
+        disabled={isDisabled}
+        invalid={invalid}
+        isPlaceholder={!selectedCity}
+        className={className}
+        label={!countryIsoCode ? "Select country first" : (selectedCity?.name ?? placeholder)}
+        open={open}
       />
 
       <PopoverContent

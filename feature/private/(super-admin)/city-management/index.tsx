@@ -156,7 +156,6 @@ export default function CityManagementPage() {
             toDate={toDate}
             onFromDateChange={setFromDate}
             onToDateChange={setToDate}
-            maxDate={new Date()}
           />
         </div>
       </ModuleFilters>

@@ -72,7 +72,7 @@ export function DataTableRowActions({
             isDestructive && prevItem && prevItem.variant !== "destructive";
 
           return (
-            <div key={`${item.label}-${index}`}>
+            <div key={item.label}>
               {shouldAddSeparator && (
                 <DropdownMenuSeparator className="my-1 border-t border-slate-100 dark:border-slate-800" />
               )}

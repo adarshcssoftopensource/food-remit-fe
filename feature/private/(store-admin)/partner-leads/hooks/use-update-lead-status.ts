@@ -18,6 +18,10 @@ export function useUpdateLeadStatus() {
         url: PARTNER_LEAD_ENDPOINTS.UPDATE_STATUS(id),
         body: { status, remark },
       }),
+    onSuccess: (_data, { id }) => {
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.PARTNER_LEADS_LIST });
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.PARTNER_LEADS_DETAIL(id) });
+    },
   });
 
   const updateLeadStatus = async (id: string, newStatus: string, remark: string) => {
@@ -27,8 +31,6 @@ export function useUpdateLeadStatus() {
         title: "Success",
         description: "Partner lead status updated successfully",
       });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.PARTNER_LEADS_LIST });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.PARTNER_LEADS_DETAIL(id) });
     } catch {}
   };
 

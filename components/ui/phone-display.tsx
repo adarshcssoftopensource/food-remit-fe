@@ -1,6 +1,6 @@
 "use client";
 
-import { findPhoneCountry } from "@/components/ui/phone-input";
+import { findPhoneCountry } from "@/components/ui/phone-input-utils";
 import { cn } from "@/lib/utils";
 
 type PhoneDisplayProps = {
@@ -14,6 +14,48 @@ type PhoneDisplayProps = {
   emptyLabel?: string;
 };
 
+type ResolvedPhoneCountry = ReturnType<typeof findPhoneCountry>;
+
+function resolveDisplayCountry(
+  countryIso?: string | null,
+  countryCode?: string | null,
+  value?: string | null,
+): ResolvedPhoneCountry {
+  return (
+    findPhoneCountry(countryIso) ||
+    findPhoneCountry(countryCode) ||
+    (value ? findPhoneCountry(value) : undefined)
+  );
+}
+
+function resolveDialPrefix(country: ResolvedPhoneCountry, countryCode?: string | null): string {
+  return country?.dialCode
+    ? `+${country.dialCode}`
+    : countryCode
+      ? countryCode.startsWith("+")
+        ? countryCode
+        : `+${countryCode}`
+      : "";
+}
+
+function resolveDisplayNumber(
+  country: ResolvedPhoneCountry,
+  dial: string,
+  phoneNumber?: string | null,
+  value?: string | null,
+): string {
+  const national = (phoneNumber || "").replace(/\D/g, "");
+  return national
+    ? `${dial} ${national}`.trim()
+    : value
+      ? value.startsWith("+")
+        ? value
+        : dial
+          ? `${dial} ${String(value).replace(new RegExp(`^\\+?${country?.dialCode || ""}`), "")}`.trim()
+          : value
+      : "";
+}
+
 /**
  * Consistent phone display with flag everywhere (lists, profile, detail views).
  * Shared dial codes (+1) prefer USA unless countryIso is provided.
@@ -26,29 +68,9 @@ export function PhoneDisplay({
   className,
   emptyLabel = "—",
 }: PhoneDisplayProps) {
-  const country =
-    findPhoneCountry(countryIso) ||
-    findPhoneCountry(countryCode) ||
-    (value ? findPhoneCountry(value) : undefined);
-
-  const dial = country?.dialCode
-    ? `+${country.dialCode}`
-    : countryCode
-      ? countryCode.startsWith("+")
-        ? countryCode
-        : `+${countryCode}`
-      : "";
-
-  const national = (phoneNumber || "").replace(/\D/g, "");
-  const displayNumber = national
-    ? `${dial} ${national}`.trim()
-    : value
-      ? value.startsWith("+")
-        ? value
-        : dial
-          ? `${dial} ${String(value).replace(new RegExp(`^\\+?${country?.dialCode || ""}`), "")}`.trim()
-          : value
-      : "";
+  const country = resolveDisplayCountry(countryIso, countryCode, value);
+  const dial = resolveDialPrefix(country, countryCode);
+  const displayNumber = resolveDisplayNumber(country, dial, phoneNumber, value);
 
   if (!displayNumber && !country) {
     return <span className={cn("text-sm text-slate-500", className)}>{emptyLabel}</span>;

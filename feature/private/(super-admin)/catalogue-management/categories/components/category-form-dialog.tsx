@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { Building2, Loader2 } from "lucide-react";
+import { Building2 } from "lucide-react";
 
 import { CitySelect } from "@/components/common/city-select";
 import { CountrySelect } from "@/components/common/country-select";
 import { ImageUpload } from "@/components/common/image-upload";
 import { useProfile } from "@/components/providers/profile-provider";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { FormDialogFooter } from "../../components/form-dialog-footer";
 import { CategoryFormValues, useCategoryForm } from "../../hooks/useCategoryForm";
 import type { CategoryData } from "../types/category.types";
 
@@ -221,32 +221,12 @@ export function CategoryFormDialog({
               </div>
             </div>
 
-            <div className="flex shrink-0 items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/70 px-6 py-4 sm:px-7 dark:border-slate-800 dark:bg-slate-900/40">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isSubmitting}
-                className="h-10 rounded-xl border-slate-200 bg-white px-5 font-semibold text-slate-600 shadow-none hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
-              >
-                Cancel
-              </Button>
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="h-10 rounded-xl px-5 font-semibold shadow-sm"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {isEditing ? "Updating..." : "Creating..."}
-                  </>
-                ) : (
-                  <>{isEditing ? "Update Category" : "Create Category"}</>
-                )}
-              </Button>
-            </div>
+            <FormDialogFooter
+              onCancel={() => onOpenChange(false)}
+              isSubmitting={isSubmitting}
+              isEditing={isEditing}
+              entityLabel="Category"
+            />
           </form>
         </Form>
       </DialogContent>

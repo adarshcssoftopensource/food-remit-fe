@@ -19,7 +19,7 @@ import {
 } from "@/constants/order-management";
 import { historyOrderColumns, orderColumns } from "./columns/order-columns";
 import { useOrderManagement } from "./hooks/use-order-management";
-import { useWorkflowCounts } from "./hooks/use-workflow-counts";
+import { type WorkflowCounts, useWorkflowCounts } from "./hooks/use-workflow-counts";
 import { useProfile } from "@/components/providers/profile-provider";
 import { OrderInfoBanner } from "./components/order-info-banner";
 import { AssignEmployeeDialog } from "./components/assign-employee-dialog";
@@ -29,6 +29,119 @@ import { HistorySubFilter, isPendingOrder } from "./utils/order-workflow";
 import { getOrderActorRole } from "./utils/order-roles";
 import { OrderData } from "./types/order.types";
 import { cn } from "@/lib/utils";
+
+function getTabCounts(counts: WorkflowCounts | undefined): Record<string, number | undefined> {
+  return {
+    all: counts?.all,
+    requested: counts?.requested,
+    pending: counts?.pending,
+    assigned: counts?.assigned,
+    processing: counts?.processing,
+    completed: counts?.completed,
+    history: counts?.history,
+  };
+}
+
+function getBannerVariant(activeTab: OrderSectionKey, canBulkAssign: boolean) {
+  return activeTab === "history"
+    ? "history"
+    : activeTab === "requested"
+      ? "requested"
+      : activeTab === "processing"
+        ? "processing"
+        : canBulkAssign
+          ? "manager-assign"
+          : "employee-start";
+}
+
+function getOrderColumns(activeTab: OrderSectionKey, showSelectColumn: boolean) {
+  return activeTab === "history"
+    ? historyOrderColumns
+    : showSelectColumn
+      ? orderColumns
+      : orderColumns.filter((c) => c.id !== "select");
+}
+
+function getEmptyMessage(activeTab: OrderSectionKey, historyFilter: HistorySubFilter) {
+  return activeTab === "history"
+    ? historyFilter === "all"
+      ? "No Available Orders"
+      : "No matching orders were found"
+    : "No Available Orders For This Store";
+}
+
+function OrderTabsList({
+  tabCounts,
+  activeTab,
+}: {
+  tabCounts: Record<string, number | undefined>;
+  activeTab: OrderSectionKey;
+}) {
+  return (
+    <TabsList className="inline-flex h-11 w-auto items-center justify-start gap-1 rounded-full bg-slate-100/80 p-1 px-1.5 shadow-inner dark:bg-slate-800/50">
+      {ORDER_TABS.map((tab) => (
+        <TabsTrigger
+          key={tab.value}
+          value={tab.value}
+          className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-5 text-sm font-medium whitespace-nowrap text-slate-600 transition hover:text-slate-900 data-active:shadow-md dark:text-slate-400 dark:hover:text-slate-100"
+        >
+          {tab.label}
+          {typeof tabCounts[tab.value] === "number" && (
+            <span
+              className={cn(
+                "rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                activeTab === tab.value
+                  ? "bg-white/20 text-inherit"
+                  : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
+              )}
+            >
+              {tabCounts[tab.value]}
+            </span>
+          )}
+        </TabsTrigger>
+      ))}
+    </TabsList>
+  );
+}
+
+function HistoryFilterBar({
+  counts,
+  historyFilter,
+  onHistoryFilterChange,
+}: {
+  counts: WorkflowCounts;
+  historyFilter: HistorySubFilter;
+  onHistoryFilterChange: (filter: HistorySubFilter) => void;
+}) {
+  return (
+    <div className="mt-4 space-y-4">
+      <OrderHistoryFlowDiagram />
+      <div className="flex flex-wrap gap-2">
+        {(
+          [
+            { key: "all", label: "All Closed", count: counts.history },
+            { key: "picked-up", label: "Picked Up", count: counts.pickedUp },
+            { key: "abandoned", label: "Abandoned", count: counts.abandoned },
+          ] as const
+        ).map((f) => (
+          <button
+            key={f.key}
+            type="button"
+            onClick={() => onHistoryFilterChange(f.key)}
+            className={cn(
+              "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+              historyFilter === f.key
+                ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
+            )}
+          >
+            {f.label} ({f.count})
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function OrdersManagementPage() {
   const searchParams = useSearchParams();
@@ -80,38 +193,16 @@ export function OrdersManagementPage() {
   }, [fromDate, toDate, country, city]);
 
   const selectedOrders = useMemo(() => {
-    const ids = Object.keys(rowSelection).filter((id) => rowSelection[id]);
-    return filteredData.filter((o) => ids.includes(o.id) && isPendingOrder(o));
+    const ids = new Set(Object.keys(rowSelection).filter((id) => rowSelection[id]));
+    return filteredData.filter((o) => ids.has(o.id) && isPendingOrder(o));
   }, [filteredData, rowSelection]);
 
-  const tabCounts: Record<string, number | undefined> = {
-    all: counts?.all,
-    requested: counts?.requested,
-    pending: counts?.pending,
-    assigned: counts?.assigned,
-    processing: counts?.processing,
-    completed: counts?.completed,
-    history: counts?.history,
-  };
-
-  const bannerVariant =
-    activeTab === "history"
-      ? "history"
-      : activeTab === "requested"
-        ? "requested"
-        : activeTab === "processing"
-          ? "processing"
-          : canBulkAssign
-            ? "manager-assign"
-            : "employee-start";
+  const tabCounts = getTabCounts(counts);
+  const bannerVariant = getBannerVariant(activeTab, canBulkAssign);
 
   const showSelectColumn = canBulkAssign && activeTab !== "history" && activeTab !== "requested";
-  const columns =
-    activeTab === "history"
-      ? historyOrderColumns
-      : showSelectColumn
-        ? orderColumns
-        : orderColumns.filter((c) => c.id !== "select");
+  const columns = getOrderColumns(activeTab, showSelectColumn);
+  const maxDate = new Date();
 
   return (
     <div className="space-y-6">
@@ -159,7 +250,7 @@ export function OrdersManagementPage() {
             toDate={toDate}
             onFromDateChange={setFromDate}
             onToDateChange={setToDate}
-            maxDate={new Date()}
+            maxDate={maxDate}
           />
         </div>
       </ModuleFilters>
@@ -173,58 +264,15 @@ export function OrdersManagementPage() {
         }}
       >
         <div className="overflow-x-auto pb-1">
-          <TabsList className="inline-flex h-11 w-auto items-center justify-start gap-1 rounded-full bg-slate-100/80 p-1 px-1.5 shadow-inner dark:bg-slate-800/50">
-            {ORDER_TABS.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-5 text-sm font-medium whitespace-nowrap text-slate-600 transition-all hover:text-slate-900 data-active:shadow-md dark:text-slate-400 dark:hover:text-slate-100"
-              >
-                {tab.label}
-                {typeof tabCounts[tab.value] === "number" && (
-                  <span
-                    className={cn(
-                      "rounded-full px-1.5 py-0.5 text-[10px] font-bold",
-                      activeTab === tab.value
-                        ? "bg-white/20 text-inherit"
-                        : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
-                    )}
-                  >
-                    {tabCounts[tab.value]}
-                  </span>
-                )}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <OrderTabsList tabCounts={tabCounts} activeTab={activeTab} />
         </div>
 
         {activeTab === "history" && counts && (
-          <div className="mt-4 space-y-4">
-            <OrderHistoryFlowDiagram />
-            <div className="flex flex-wrap gap-2">
-              {(
-                [
-                  { key: "all", label: "All Closed", count: counts.history },
-                  { key: "picked-up", label: "Picked Up", count: counts.pickedUp },
-                  { key: "abandoned", label: "Abandoned", count: counts.abandoned },
-                ] as const
-              ).map((f) => (
-                <button
-                  key={f.key}
-                  type="button"
-                  onClick={() => setHistoryFilter(f.key)}
-                  className={cn(
-                    "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
-                    historyFilter === f.key
-                      ? "border-emerald-500 bg-emerald-50 text-emerald-800"
-                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
-                  )}
-                >
-                  {f.label} ({f.count})
-                </button>
-              ))}
-            </div>
-          </div>
+          <HistoryFilterBar
+            counts={counts}
+            historyFilter={historyFilter}
+            onHistoryFilterChange={setHistoryFilter}
+          />
         )}
 
         <div className="mt-4">
@@ -281,13 +329,7 @@ export function OrdersManagementPage() {
                   enableRowSelection={
                     showSelectColumn ? (row) => isPendingOrder(row.original) : undefined
                   }
-                  emptyMessage={
-                    activeTab === "history"
-                      ? historyFilter === "all"
-                        ? "No Available Orders"
-                        : "No matching orders were found"
-                      : "No Available Orders For This Store"
-                  }
+                  emptyMessage={getEmptyMessage(activeTab, historyFilter)}
                 />
               </CardContent>
             </Card>

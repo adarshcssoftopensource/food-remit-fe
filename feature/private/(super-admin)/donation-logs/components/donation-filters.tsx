@@ -76,7 +76,6 @@ export function DonationFilters({
           toDate={toDate}
           onFromDateChange={onFromDateChange}
           onToDateChange={onToDateChange}
-          maxDate={new Date()}
         />
       </div>
 

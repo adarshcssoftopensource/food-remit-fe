@@ -67,7 +67,7 @@ export function getCreditColumns({
                   alt={displayName}
                   width={32}
                   height={32}
-                  className="size-8 rounded-full object-cover ring-1 ring-slate-200 transition-all hover:ring-emerald-300 dark:ring-slate-700 dark:hover:ring-emerald-600"
+                  className="size-8 rounded-full object-cover ring-1 ring-slate-200 transition hover:ring-emerald-300 dark:ring-slate-700 dark:hover:ring-emerald-600"
                 />
                 <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
                   <ZoomIn className="size-4 text-white" />
@@ -152,8 +152,11 @@ export function getCreditColumns({
                 Unmarked Items ({count})
               </p>
               <div className="max-h-48 space-y-2 overflow-y-auto">
-                {items.map((it, i) => (
-                  <div key={i} className="flex items-center justify-between text-xs">
+                {items.map((it) => (
+                  <div
+                    key={it.id || it.itemId}
+                    className="flex items-center justify-between text-xs"
+                  >
                     <span className="truncate pr-2 font-medium text-slate-700 dark:text-slate-300">
                       {it.itemName}
                     </span>

@@ -30,6 +30,7 @@ export function CompleteOrderDialog({ orderId, open, onOpenChange }: CompleteOrd
   const [unselectedItems, setUnselectedItems] = useState<string[]>([]);
 
   const items = orderData?.items || [];
+  const unselectedItemSet = new Set(unselectedItems);
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
@@ -49,7 +50,7 @@ export function CompleteOrderDialog({ orderId, open, onOpenChange }: CompleteOrd
   const handleComplete = () => {
     const availableItemIds = items
       .map((i: OrderDataItem) => i.id)
-      .filter((id: string) => !unselectedItems.includes(id));
+      .filter((id: string) => !unselectedItemSet.has(id));
 
     completeOrder(
       { orderId, availableItemIds },
@@ -86,7 +87,7 @@ export function CompleteOrderDialog({ orderId, open, onOpenChange }: CompleteOrd
           ) : (
             <div className="space-y-3">
               {items.map((item: OrderDataItem) => {
-                const isSelected = !unselectedItems.includes(item.id);
+                const isSelected = !unselectedItemSet.has(item.id);
                 return (
                   <div
                     key={item.id}

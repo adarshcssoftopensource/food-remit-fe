@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { PhoneDisplay } from "@/components/ui/phone-display";
 import { ROUTES } from "@/config/routes";
@@ -119,7 +120,12 @@ export const customerReportColumns: ColumnDef<CustomerReportRow>[] = [
         href={ROUTES.ADMIN.REPORT_MANAGEMENT.CUSTOMER_REPORT_DETAIL(row.original.id)}
         className={cn(buttonVariants({ variant: "link" }), "p-0")}
       >
-        <Button size="icon" variant="outline" className="h-8 w-8 rounded-full">
+        <Button
+          size="icon"
+          variant="outline"
+          className="h-8 w-8 rounded-full"
+          aria-label="View orders"
+        >
           <Eye size={14} />
         </Button>
       </Link>

@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { resolveFromValue } from "@/components/ui/phone-input";
+import { resolveFromValue } from "@/components/ui/phone-input-utils";
 import { Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useCreateSubAdmin } from "../hooks/use-create-sub-admin";

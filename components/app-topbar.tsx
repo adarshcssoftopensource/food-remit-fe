@@ -10,7 +10,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { NotificationBell } from "@/components/common/notification-bell";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile, type AdminProfile } from "@/components/providers/profile-provider";
 import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";
 import { useLogout } from "@/hooks/use-logout";
@@ -19,6 +19,142 @@ import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
+
+function isEmployeeProfile(profile: AdminProfile | null) {
+  return profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+}
+
+function TopBarProfileSummary({
+  profile,
+  displayName,
+  initials,
+  isProfilePage,
+}: {
+  profile: AdminProfile | null;
+  displayName: string;
+  initials: string;
+  isProfilePage: boolean;
+}) {
+  return (
+    <>
+      <div
+        className={cn(
+          "flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-xl",
+          "bg-linear-to-br from-emerald-600 to-teal-700",
+          "text-white",
+          "text-xs font-bold",
+          "shadow-xs ring-2 ring-emerald-500/20",
+        )}
+      >
+        {profile?.image ? (
+          <Image
+            src={profile.image}
+            alt={displayName}
+            className="h-full w-full object-cover"
+            height={40}
+            width={40}
+          />
+        ) : (
+          initials
+        )}
+      </div>
+
+      <div className="hidden flex-col items-start text-left sm:flex">
+        <span
+          className={cn(
+            "max-w-36 truncate text-sm leading-tight font-semibold",
+            isProfilePage ? "text-white" : "text-slate-900 dark:text-slate-100",
+          )}
+        >
+          {displayName}
+        </span>
+        {isEmployeeProfile(profile) && profile?.stores && profile.stores.length > 0 && (
+          <div
+            className={cn(
+              "mt-1 flex w-fit items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-bold shadow-xs",
+              isProfilePage
+                ? "bg-white/20 text-white"
+                : "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
+            )}
+          >
+            <Store className="h-2.5 w-2.5" />
+            <span className="max-w-36 truncate">
+              {profile.stores.map((s) => s.storeName).join(", ")}
+            </span>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function TopBarProfileMenu({
+  inCmsMode,
+  isProfilePage,
+  hasCMSPermission,
+  onClose,
+  onLogoutClick,
+}: {
+  inCmsMode: boolean;
+  isProfilePage: boolean;
+  hasCMSPermission: boolean;
+  onClose: () => void;
+  onLogoutClick: () => void;
+}) {
+  return (
+    <>
+      <Link
+        href={inCmsMode ? `${ROUTES.ADMIN.PROFILE}?context=cms` : ROUTES.ADMIN.PROFILE}
+        className="w-full"
+        onClick={onClose}
+      >
+        <Button
+          variant={"ghost"}
+          className={cn(
+            "flex w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200",
+            isProfilePage &&
+              "bg-emerald-50 font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
+          )}
+        >
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+            <User className="h-3.5 w-3.5" />
+          </div>
+          Profile
+        </Button>
+      </Link>
+      {hasCMSPermission && (
+        <Link
+          href={inCmsMode ? ROUTES.ADMIN.DASHBOARD : ROUTES.ADMIN.CONTENT_MANAGEMENT.LANDING_PAGE}
+          prefetch={true}
+          className="w-full"
+          onClick={onClose}
+        >
+          <Button
+            variant={"ghost"}
+            className={cn(
+              "flex w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200",
+            )}
+          >
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+              <ArrowLeftRight className="h-3.5 w-3.5" />
+            </div>
+            {inCmsMode ? "Admin Dashboard" : "CMS Dashboard"}
+          </Button>
+        </Link>
+      )}
+      <Button
+        variant={"ghost"}
+        className="flex w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-500/10"
+        onClick={onLogoutClick}
+      >
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-100 dark:bg-red-500/20">
+          <LogOut className="h-3.5 w-3.5 text-red-500" />
+        </div>
+        Logout
+      </Button>
+    </>
+  );
+}
 
 export function AppTopBar() {
   const { profile, isSuperAdmin } = useProfile();
@@ -58,7 +194,7 @@ export function AppTopBar() {
       )}
     >
       <div className="flex items-center gap-3">
-        {profile?.roleCode === "EMPLOYEE" || profile?.role === "employee" ? (
+        {isEmployeeProfile(profile) ? (
           <div className="flex h-10 items-center justify-center pl-2">
             <Image
               src={APP_ASSETS.LOGO.PATH}
@@ -107,18 +243,17 @@ export function AppTopBar() {
               >
                 {primaryStore.cityName || primaryStore.city || "—"}
               </span>
-              {(profile?.roleCode === "EMPLOYEE" || profile?.role === "employee") &&
-                primaryStore.storeName && (
-                  <>
-                    <span className="text-slate-300 dark:text-slate-600">·</span>
-                    <div
-                      className="max-w-30 truncate rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
-                      title={primaryStore.storeName}
-                    >
-                      {primaryStore.storeName}
-                    </div>
-                  </>
-                )}
+              {isEmployeeProfile(profile) && primaryStore.storeName && (
+                <>
+                  <span className="text-slate-300 dark:text-slate-600">·</span>
+                  <div
+                    className="max-w-30 truncate rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                    title={primaryStore.storeName}
+                  >
+                    {primaryStore.storeName}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         );
@@ -136,55 +271,12 @@ export function AppTopBar() {
                 : "hover:bg-slate-100/80 dark:hover:bg-slate-800/80",
             )}
           >
-            <div
-              className={cn(
-                "flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-xl",
-                "bg-linear-to-br from-emerald-600 to-teal-700",
-                "text-white",
-                "text-xs font-bold",
-                "shadow-xs ring-2 ring-emerald-500/20",
-              )}
-            >
-              {profile?.image ? (
-                <Image
-                  src={profile.image}
-                  alt={displayName}
-                  className="h-full w-full object-cover"
-                  height={40}
-                  width={40}
-                />
-              ) : (
-                initials
-              )}
-            </div>
-
-            <div className="hidden flex-col items-start text-left sm:flex">
-              <span
-                className={cn(
-                  "max-w-36 truncate text-sm leading-tight font-semibold",
-                  isProfilePage ? "text-white" : "text-slate-900 dark:text-slate-100",
-                )}
-              >
-                {displayName}
-              </span>
-              {(profile?.roleCode === "EMPLOYEE" || profile?.role === "employee") &&
-                profile?.stores &&
-                profile.stores.length > 0 && (
-                  <div
-                    className={cn(
-                      "mt-1 flex w-fit items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-bold shadow-xs",
-                      isProfilePage
-                        ? "bg-white/20 text-white"
-                        : "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
-                    )}
-                  >
-                    <Store className="h-2.5 w-2.5" />
-                    <span className="max-w-36 truncate">
-                      {profile.stores.map((s) => s.storeName).join(", ")}
-                    </span>
-                  </div>
-                )}
-            </div>
+            <TopBarProfileSummary
+              profile={profile}
+              displayName={displayName}
+              initials={initials}
+              isProfilePage={isProfilePage}
+            />
 
             <ChevronDown
               className={cn(
@@ -201,60 +293,16 @@ export function AppTopBar() {
             sideOffset={8}
             className="w-44 gap-1 rounded-2xl border border-slate-200/80 bg-white/95 p-1.5 shadow-xl backdrop-blur-2xl dark:border-slate-800/80 dark:bg-slate-900/95"
           >
-            <Link
-              href={inCmsMode ? `${ROUTES.ADMIN.PROFILE}?context=cms` : ROUTES.ADMIN.PROFILE}
-              className="w-full"
-              onClick={() => setIsPopoverOpen(false)}
-            >
-              <Button
-                variant={"ghost"}
-                className={cn(
-                  "flex w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200",
-                  isProfilePage &&
-                    "bg-emerald-50 font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
-                )}
-              >
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-                  <User className="h-3.5 w-3.5" />
-                </div>
-                Profile
-              </Button>
-            </Link>
-            {hasCMSPermission && (
-              <Link
-                href={
-                  inCmsMode ? ROUTES.ADMIN.DASHBOARD : ROUTES.ADMIN.CONTENT_MANAGEMENT.LANDING_PAGE
-                }
-                prefetch={true}
-                className="w-full"
-                onClick={() => setIsPopoverOpen(false)}
-              >
-                <Button
-                  variant={"ghost"}
-                  className={cn(
-                    "flex w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200",
-                  )}
-                >
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-                    <ArrowLeftRight className="h-3.5 w-3.5" />
-                  </div>
-                  {inCmsMode ? "Admin Dashboard" : "CMS Dashboard"}
-                </Button>
-              </Link>
-            )}
-            <Button
-              variant={"ghost"}
-              className="flex w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-medium text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-500/10"
-              onClick={() => {
+            <TopBarProfileMenu
+              inCmsMode={inCmsMode}
+              isProfilePage={isProfilePage}
+              hasCMSPermission={hasCMSPermission}
+              onClose={() => setIsPopoverOpen(false)}
+              onLogoutClick={() => {
                 setIsPopoverOpen(false);
                 setIsLogoutConfirmOpen(true);
               }}
-            >
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-100 dark:bg-red-500/20">
-                <LogOut className="h-3.5 w-3.5 text-red-500" />
-              </div>
-              Logout
-            </Button>
+            />
           </PopoverContent>
         </Popover>
       </div>

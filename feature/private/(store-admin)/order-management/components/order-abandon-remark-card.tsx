@@ -3,7 +3,21 @@
 import { FINAL_STATUS, ORDER_STATUS } from "../utils/order-workflow";
 import { OrderData } from "../types/order.types";
 import { Mail, PackageX } from "lucide-react";
-import { parseAbandonRemark, SystemAbandonBadge } from "./abandon-remark-badge";
+import { parseAbandonRemark } from "./abandon-remark";
+import { SystemAbandonBadge } from "./abandon-remark-badge";
+
+function formatAbandonedWhen(when: string | null | undefined) {
+  return when
+    ? ` · ${new Date(when).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })}`
+    : "";
+}
 
 interface OrderAbandonRemarkCardProps {
   order: OrderData;
@@ -17,7 +31,7 @@ export function OrderAbandonRemarkCard({ order }: OrderAbandonRemarkCardProps) {
 
   const { isSystem, remark } = parseAbandonRemark(order.abandonRemark);
   const displayRemark = remark || "No remark was recorded.";
-  const when = order.abandonedAt || order.closedAt;
+  const whenLabel = formatAbandonedWhen(order.abandonedAt || order.closedAt);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-red-200 bg-gradient-to-br from-red-50 via-orange-50/50 to-white shadow-xs dark:border-red-900/40 dark:from-red-950/30 dark:to-slate-900">
@@ -34,16 +48,7 @@ export function OrderAbandonRemarkCard({ order }: OrderAbandonRemarkCardProps) {
             {isSystem
               ? "Automatically closed by store auto-abandon"
               : "Manually abandoned by store admin"}
-            {when
-              ? ` · ${new Date(when).toLocaleString("en-IN", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}`
-              : ""}
+            {whenLabel}
           </p>
         </div>
       </div>

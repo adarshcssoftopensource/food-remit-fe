@@ -58,7 +58,7 @@ export const usersColumns = (onImageClick?: (image: string) => void): ColumnDef<
             {onImageClick && (
               <button
                 onClick={() => row.original.profileImage && onImageClick(row.original.profileImage)}
-                className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/30 group-hover:opacity-100"
+                className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition duration-200 group-hover:bg-black/30 group-hover:opacity-100"
                 title="View full screen"
               >
                 <svg

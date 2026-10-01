@@ -8,6 +8,22 @@ import { toast } from "sonner";
 import { RecycleEntityType } from "../hooks/use-get-recycled-data";
 import { usePermanentDeleteEntity, useRestoreEntity } from "../hooks/use-recycle-bin-actions";
 
+function getRecycledEntityDisplayName(entity: any, entityNameField?: string) {
+  return (
+    (entityNameField && entity[entityNameField]) ||
+    entity.businessName ||
+    entity.storeName ||
+    entity.productName ||
+    entity.departmentName ||
+    entity.categoryName ||
+    entity.title ||
+    `${entity.firstName || ""} ${entity.lastName || ""}`.trim() ||
+    entity.userName ||
+    entity.email ||
+    "this item"
+  );
+}
+
 interface RecycledEntityActionsCellProps {
   entityType: RecycleEntityType;
   entity: any;
@@ -25,18 +41,8 @@ export function RecycledEntityActionsCell({
   const restoreMutation = useRestoreEntity(entityType, entity.id);
   const permanentDeleteMutation = usePermanentDeleteEntity(entityType, entity.id);
 
-  const displayName =
-    (entityNameField && entity[entityNameField]) ||
-    entity.businessName ||
-    entity.storeName ||
-    entity.productName ||
-    entity.departmentName ||
-    entity.categoryName ||
-    entity.title ||
-    `${entity.firstName || ""} ${entity.lastName || ""}`.trim() ||
-    entity.userName ||
-    entity.email ||
-    "this item";
+  const displayName = getRecycledEntityDisplayName(entity, entityNameField);
+  const isMutating = restoreMutation.isPending || permanentDeleteMutation.isPending;
 
   const handleRestore = () => {
     restoreMutation.mutate(undefined, {
@@ -74,7 +80,7 @@ export function RecycledEntityActionsCell({
           size="icon"
           className="size-8 rounded-full text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/30"
           onClick={() => setIsRestoreDialogOpen(true)}
-          disabled={restoreMutation.isPending || permanentDeleteMutation.isPending}
+          disabled={isMutating}
           title="Restore item"
         >
           <RotateCcw className="size-4" />
@@ -85,7 +91,7 @@ export function RecycledEntityActionsCell({
           size="icon"
           className="size-8 rounded-full text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30"
           onClick={() => setIsPermanentDeleteDialogOpen(true)}
-          disabled={restoreMutation.isPending || permanentDeleteMutation.isPending}
+          disabled={isMutating}
           title="Permanently delete item"
         >
           <Trash2 className="size-4" />

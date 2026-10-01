@@ -9,6 +9,16 @@ type ScopeBadgeProps = {
   className?: string;
 };
 
+function resolveScopeLabel(global: boolean, storeName?: string | null, cityName?: string | null) {
+  return global
+    ? "Global (All Cities)"
+    : storeName
+      ? `Store · ${storeName}`
+      : cityName
+        ? `City · ${cityName}`
+        : "City scoped";
+}
+
 export function ScopeBadge({
   isGlobal,
   scopeLabel,
@@ -18,15 +28,7 @@ export function ScopeBadge({
 }: ScopeBadgeProps) {
   const global = isGlobal ?? (!cityName && !storeName);
   const isStore = !!storeName || scopeLabel?.startsWith("Store");
-  const label =
-    scopeLabel ||
-    (global
-      ? "Global (All Cities)"
-      : storeName
-        ? `Store · ${storeName}`
-        : cityName
-          ? `City · ${cityName}`
-          : "City scoped");
+  const label = scopeLabel || resolveScopeLabel(global, storeName, cityName);
 
   return (
     <span

@@ -5,12 +5,11 @@ import { PageHeader } from "@/components/common/page-header";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDebounce } from "@/lib/debounce";
 import { RowSelectionState, SortingState } from "@tanstack/react-table";
-import { Check, Handshake, Store } from "lucide-react";
+import { Handshake, Store } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
-import { DrawerClose } from "@/components/ui/drawer";
-import { Label } from "@/components/ui/label";
+import { ModuleTabPicker } from "../components/module-tab-picker";
 import { HistoryTable } from "./components/history-table";
 import { HistoryEntityType, useGetHistoryData } from "./hooks/use-get-history-data";
 import { useBulkPermanentDeleteFromHistory } from "./hooks/use-history-actions";
@@ -110,35 +109,7 @@ export function HistoryManagement() {
         description="Select the module to view history records."
         hasFilters={true}
       >
-        <div className="min-w-44 flex-1 space-y-3">
-          <Label className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Module
-          </Label>
-          <div className="flex flex-col gap-2">
-            {ENTITY_TABS.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <DrawerClose key={tab.id}>
-                  <button
-                    onClick={() => handleTabChange(tab.id)}
-                    className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
-                      isActive
-                        ? "text-secondary bg-teal-900 shadow-md dark:bg-teal-50 dark:text-teal-900"
-                        : "bg-slate-50 text-slate-600 hover:bg-slate-100 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:bg-slate-800"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className="h-4 w-4" />
-                      {tab.label}
-                    </div>
-                    {isActive && <Check className="h-4 w-4" />}
-                  </button>
-                </DrawerClose>
-              );
-            })}
-          </div>
-        </div>
+        <ModuleTabPicker tabs={ENTITY_TABS} activeTab={activeTab} onTabChange={handleTabChange} />
       </ModuleFilters>
 
       <HistoryTable

@@ -1,75 +1,55 @@
 "use client";
 
-import Image from "next/image";
-import { Building2, MapPin, Phone, Mail, User, ZoomIn } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Building2, MapPin, Phone, Mail, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import type { CreditPartiesCardProps } from "../types/credits.types";
+import type { CreditPartiesCardProps, CreditsStore } from "../types/credits.types";
+import { CreditPartyAvatar, CreditPartyCardHeader } from "./credit-party-card-parts";
 
 const isUuid = (str?: string | null) =>
   Boolean(
     str && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str.trim()),
   );
 
-export function CreditPartiesCard({ customer, store, onImageClick }: CreditPartiesCardProps) {
-  const customerInitials = (customer.name || "Customer").slice(0, 2).toUpperCase();
-  const storeInitials = (store.name || "Store").slice(0, 2).toUpperCase();
-
+function getStoreDisplayAddress(store: CreditsStore) {
   const validCity = !isUuid(store.city) ? store.city : "";
   const validCountry = !isUuid(store.country) ? store.country : "";
   const cityCountry = [validCity, validCountry].filter(Boolean).join(", ");
   const cleanAddress = store.address && !isUuid(store.address) ? store.address : "";
   const cleanFullAddress = store.fullAddress && !isUuid(store.fullAddress) ? store.fullAddress : "";
-  const storeDisplayAddress = cleanAddress || cleanFullAddress || cityCountry || "Location N/A";
+  return cleanAddress || cleanFullAddress || cityCountry || "Location N/A";
+}
+
+export function CreditPartiesCard({ customer, store, onImageClick }: CreditPartiesCardProps) {
+  const customerInitials = (customer.name || "Customer").slice(0, 2).toUpperCase();
+  const storeInitials = (store.name || "Store").slice(0, 2).toUpperCase();
+
+  const storeDisplayAddress = getStoreDisplayAddress(store);
 
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
       {/* Customer Card */}
       <Card className="rounded-3xl border border-slate-200/80 bg-white/80 p-5 shadow-xs backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/80">
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400">
-              <User className="size-3.5" />
-            </div>
-            <span className="text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300">
-              Customer Information
-            </span>
-          </div>
-          <Badge
-            variant="outline"
-            className="border-indigo-200 bg-indigo-50/70 text-[10px] font-semibold text-indigo-700 dark:border-indigo-900/40 dark:bg-indigo-950/20 dark:text-indigo-400"
-          >
-            Payer & Recipient
-          </Badge>
-        </div>
+        <CreditPartyCardHeader
+          icon={User}
+          iconWrapperClassName="flex size-7 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400"
+          title="Customer Information"
+          badgeLabel="Payer & Recipient"
+          badgeClassName="border-indigo-200 bg-indigo-50/70 text-[10px] font-semibold text-indigo-700 dark:border-indigo-900/40 dark:bg-indigo-950/20 dark:text-indigo-400"
+        />
 
         <div className="flex items-start gap-3.5">
           {/* Avatar with ImageLightbox trigger */}
-          <div
-            className={`group relative size-12 shrink-0 overflow-hidden rounded-full ring-2 ring-slate-100 dark:ring-slate-800 ${
-              customer.avatar ? "cursor-pointer" : ""
-            }`}
-            onClick={() => customer.avatar && onImageClick?.(customer.avatar)}
-            title={customer.avatar ? "Click to maximize image" : undefined}
-          >
-            {customer.avatar ? (
-              <>
-                <Image
-                  src={customer.avatar}
-                  alt={customer.name}
-                  fill
-                  className="object-cover transition-transform group-hover:scale-105"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 transition-opacity group-hover:opacity-100">
-                  <ZoomIn className="size-3.5 text-white" />
-                </div>
-              </>
-            ) : (
+          <CreditPartyAvatar
+            image={customer.avatar}
+            alt={customer.name}
+            className="group relative size-12 shrink-0 overflow-hidden rounded-full ring-2 ring-slate-100 dark:ring-slate-800"
+            onImageClick={onImageClick}
+            fallback={
               <div className="flex size-full items-center justify-center bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
                 {customerInitials}
               </div>
-            )}
-          </div>
+            }
+          />
 
           <div className="min-w-0 flex-1 space-y-1">
             <h3 className="truncate text-sm font-bold text-slate-900 dark:text-white">
@@ -102,50 +82,27 @@ export function CreditPartiesCard({ customer, store, onImageClick }: CreditParti
 
       {/* Store Card */}
       <Card className="rounded-3xl border border-slate-200/80 bg-white/80 p-5 shadow-xs backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/80">
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-              <Building2 className="size-3.5" />
-            </div>
-            <span className="text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300">
-              Store Information
-            </span>
-          </div>
-          <Badge
-            variant="outline"
-            className="border-emerald-200 bg-emerald-50/70 text-[10px] font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-400"
-          >
-            Fulfillment Store
-          </Badge>
-        </div>
+        <CreditPartyCardHeader
+          icon={Building2}
+          iconWrapperClassName="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400"
+          title="Store Information"
+          badgeLabel="Fulfillment Store"
+          badgeClassName="border-emerald-200 bg-emerald-50/70 text-[10px] font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-400"
+        />
 
         <div className="flex items-start gap-3.5">
           {/* Store Logo with ImageLightbox trigger */}
-          <div
-            className={`group relative size-12 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 ring-1 ring-slate-100 dark:border-slate-800 dark:bg-slate-800 dark:ring-slate-700 ${
-              store.image ? "cursor-pointer" : ""
-            }`}
-            onClick={() => store.image && onImageClick?.(store.image)}
-            title={store.image ? "Click to maximize image" : undefined}
-          >
-            {store.image ? (
-              <>
-                <Image
-                  src={store.image}
-                  alt={store.name}
-                  fill
-                  className="object-cover transition-transform group-hover:scale-105"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 transition-opacity group-hover:opacity-100">
-                  <ZoomIn className="size-3.5 text-white" />
-                </div>
-              </>
-            ) : (
+          <CreditPartyAvatar
+            image={store.image}
+            alt={store.name}
+            className="group relative size-12 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 ring-1 ring-slate-100 dark:border-slate-800 dark:bg-slate-800 dark:ring-slate-700"
+            onImageClick={onImageClick}
+            fallback={
               <div className="flex size-full items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300">
                 {storeInitials}
               </div>
-            )}
-          </div>
+            }
+          />
 
           <div className="min-w-0 flex-1 space-y-1">
             <h3 className="truncate text-sm font-bold text-slate-900 dark:text-white">

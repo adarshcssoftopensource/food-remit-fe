@@ -136,7 +136,7 @@ export function UserDetailView({ user: initialUser, id }: { user?: UserData; id:
                 <TabsTrigger
                   key={item.value}
                   value={item.value}
-                  className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground inline-flex h-8 items-center justify-center rounded-full px-5 text-sm font-medium whitespace-nowrap text-slate-600 transition-all hover:text-slate-900 data-active:shadow-md dark:text-slate-400 dark:hover:text-slate-100"
+                  className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground inline-flex h-8 items-center justify-center rounded-full px-5 text-sm font-medium whitespace-nowrap text-slate-600 transition hover:text-slate-900 data-active:shadow-md dark:text-slate-400 dark:hover:text-slate-100"
                 >
                   {item.label}
                 </TabsTrigger>

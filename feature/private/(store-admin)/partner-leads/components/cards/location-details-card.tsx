@@ -141,6 +141,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                   : loc.daysOpen || [];
 
                 const openDaysCount = openDaysList.length;
+                const openDaysSet = new Set<string>(openDaysList);
                 const storePhoneRaw =
                   loc.storePhoneNumber || loc.phone || (idx === 0 ? lead.storePhoneNumber : null);
                 const storePhone = storePhoneRaw
@@ -151,8 +152,8 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
 
                 return (
                   <div
-                    key={idx}
-                    className="flex flex-col gap-4 rounded-2xl border border-slate-200/90 bg-white p-4.5 shadow-2xs transition-all hover:border-slate-300 sm:p-5"
+                    key={loc.address}
+                    className="flex flex-col gap-4 rounded-2xl border border-slate-200/90 bg-white p-4.5 shadow-2xs transition hover:border-slate-300 sm:p-5"
                   >
                     {/* Location Header */}
                     <div className="flex flex-col gap-2.5 @md:flex-row @md:items-start @md:justify-between">
@@ -206,7 +207,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                         {/* Visual 7-day pill strip */}
                         <div className="mb-3.5 flex flex-wrap items-center gap-1.5">
                           {ALL_DAYS.map((day) => {
-                            const isOpen = openDaysList.includes(day);
+                            const isOpen = openDaysSet.has(day);
                             return (
                               <span
                                 key={day}
