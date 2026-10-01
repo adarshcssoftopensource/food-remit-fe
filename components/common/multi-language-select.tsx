@@ -134,42 +134,62 @@ export function MultiLanguageSelect({
         }
       />
       <PopoverContent
-        className="w-75 rounded-xl border-slate-200 p-0 shadow-xl sm:w-100"
+        className="flex w-(--anchor-width) flex-col overflow-hidden rounded-xl border-slate-200 p-0 shadow-xl"
         align="start"
       >
-        <Command>
-          <CommandInput placeholder="Search language..." />
-          <CommandList className="custom-scrollbar max-h-62.5 overflow-y-auto">
-            <CommandEmpty>No language found.</CommandEmpty>
-            <CommandGroup>
-              {languages.map((language) => (
-                <CommandItem
-                  key={language.value}
-                  value={language.label}
-                  onSelect={(currentValue) => {
-                    const actualValue =
-                      languages.find((l) => l.label.toLowerCase() === currentValue.toLowerCase())
-                        ?.value || currentValue;
-
-                    if (selected.includes(actualValue)) {
-                      onChange(selected.filter((item) => item !== actualValue));
-                    } else {
-                      onChange([...selected, actualValue]);
-                    }
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4 text-emerald-600",
-                      selected.includes(language.value) ? "opacity-100" : "opacity-0",
-                    )}
-                  />
-                  {language.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+        <div className="border-b border-slate-100 p-2">
+          <input
+            type="text"
+            className="w-full rounded-md border border-slate-200 px-3 py-1.5 text-base outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 md:text-sm"
+            placeholder="Search language..."
+            onChange={(e) => {
+              const val = e.target.value.toLowerCase();
+              const items = document.querySelectorAll(".lang-item");
+              let found = false;
+              items.forEach((item) => {
+                const label = item.getAttribute("data-label")?.toLowerCase() || "";
+                if (label.includes(val)) {
+                  (item as HTMLElement).style.display = "flex";
+                  found = true;
+                } else {
+                  (item as HTMLElement).style.display = "none";
+                }
+              });
+              const empty = document.getElementById("lang-empty");
+              if (empty) empty.style.display = found ? "none" : "block";
+            }}
+          />
+        </div>
+        <div className="custom-scrollbar max-h-62.5 overflow-y-auto p-1">
+          <div id="lang-empty" className="hidden py-6 text-center text-sm text-slate-500">
+            No language found.
+          </div>
+          <div className="flex flex-col">
+            {languages.map((language) => (
+              <button
+                type="button"
+                key={language.value}
+                data-label={language.label}
+                className="lang-item flex w-full cursor-pointer items-center rounded-lg px-2 py-1.5 text-left text-sm transition-colors hover:bg-slate-100 focus:bg-slate-100 focus:outline-none"
+                onClick={() => {
+                  if (selected.includes(language.value)) {
+                    onChange(selected.filter((item) => item !== language.value));
+                  } else {
+                    onChange([...selected, language.value]);
+                  }
+                }}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4 shrink-0 text-emerald-600",
+                    selected.includes(language.value) ? "opacity-100" : "opacity-0",
+                  )}
+                />
+                <span className="truncate">{language.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   );

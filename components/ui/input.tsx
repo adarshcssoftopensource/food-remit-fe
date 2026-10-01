@@ -9,7 +9,7 @@ function Input({ className, type, onKeyDown, ...props }: React.ComponentProps<"i
       type={type}
       data-slot="input"
       className={cn(
-        "h-10 w-full min-w-0 rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-sm text-slate-900 shadow-xs transition-all outline-none",
+        "h-10 w-full min-w-0 rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-base text-slate-900 shadow-xs transition-all outline-none md:text-sm",
         "placeholder:text-slate-400",
         "hover:border-slate-300",
         "focus-visible:border-emerald-500 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-emerald-500/20",

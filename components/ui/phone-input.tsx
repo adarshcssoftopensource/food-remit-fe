@@ -436,7 +436,7 @@ export function PhoneInputComponent({
         onBlur={onBlur}
         placeholder={`${maxDigits}-digit number`}
         className={cn(
-          "h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400",
+          "h-full min-w-0 flex-1 bg-transparent px-3 text-base text-slate-900 outline-none placeholder:text-slate-400 md:text-sm",
           disabled && "cursor-not-allowed text-slate-600",
         )}
       />

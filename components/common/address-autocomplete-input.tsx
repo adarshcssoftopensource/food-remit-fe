@@ -238,7 +238,7 @@ export function AddressAutocompleteInput({
             }}
             placeholder={placeholder}
             className={cn(
-              "h-11 rounded-xl border-slate-200 pr-8 pl-9 text-sm transition-all duration-200",
+              "h-11 rounded-xl border-slate-200 pr-8 pl-9 text-base transition-all duration-200 md:text-sm",
               disabled
                 ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-600 opacity-100 hover:border-slate-200"
                 : "focus-visible:ring-primary/10 bg-white text-slate-900 hover:border-slate-300 focus-visible:bg-white",
@@ -272,7 +272,7 @@ export function AddressAutocompleteInput({
         side="bottom"
         sideOffset={6}
         initialFocus={false}
-        className="z-50 w-(--radix-popover-trigger-width) border-none bg-transparent p-0 shadow-none"
+        className="z-50 w-(--anchor-width) border-none bg-transparent p-0 shadow-none"
       >
         <div
           className={cn(
@@ -287,57 +287,59 @@ export function AddressAutocompleteInput({
             </span>
           </div>
 
-          <Command shouldFilter={false} className="rounded-none! border-none! bg-transparent!">
-            <CommandList className="max-h-65 py-1">
-              <CommandEmpty className="py-4 text-sm text-slate-400">No results found.</CommandEmpty>
+          <div className="flex flex-col rounded-none border-none bg-transparent">
+            <div className="max-h-65 overflow-y-auto py-1">
+              {visibleSuggestions.length === 0 ? (
+                <div className="py-4 text-center text-sm text-slate-400">No results found.</div>
+              ) : (
+                <div className="flex flex-col">
+                  {visibleSuggestions.map((prediction, index) => {
+                    const matchQuery = value.toLowerCase();
+                    const mainLower = prediction.mainText.toLowerCase();
+                    const matchStart = mainLower.indexOf(matchQuery);
 
-              <CommandGroup>
-                {visibleSuggestions.map((prediction, index) => {
-                  const matchQuery = value.toLowerCase();
-                  const mainLower = prediction.mainText.toLowerCase();
-                  const matchStart = mainLower.indexOf(matchQuery);
-
-                  return (
-                    <CommandItem
-                      key={prediction.placeId}
-                      value={`${prediction.placeId}-${index}`}
-                      onSelect={() => void handleSelect(prediction)}
-                      className="flex cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5 aria-selected:bg-slate-50"
-                    >
-                      <span className="aria-selected:bg-primary/10 aria-selected:text-primary mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-colors">
-                        <MapPin className="size-3.5" />
-                      </span>
-
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm leading-snug text-slate-800">
-                          {matchStart >= 0 && matchQuery.length > 0 ? (
-                            <>
-                              {prediction.mainText.slice(0, matchStart)}
-                              <span className="font-semibold text-slate-900">
-                                {prediction.mainText.slice(
-                                  matchStart,
-                                  matchStart + matchQuery.length,
-                                )}
-                              </span>
-                              {prediction.mainText.slice(matchStart + matchQuery.length)}
-                            </>
-                          ) : (
-                            <span className="font-semibold">{prediction.mainText}</span>
-                          )}
+                    return (
+                      <button
+                        type="button"
+                        key={prediction.placeId}
+                        onClick={() => void handleSelect(prediction)}
+                        className="flex w-full cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-slate-50 focus:bg-slate-50 focus:outline-none"
+                      >
+                        <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-colors">
+                          <MapPin className="size-3.5" />
                         </span>
 
-                        {prediction.secondaryText && (
-                          <span className="block truncate text-xs leading-tight text-slate-400">
-                            {prediction.secondaryText}
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm leading-snug text-slate-800">
+                            {matchStart >= 0 && matchQuery.length > 0 ? (
+                              <>
+                                {prediction.mainText.slice(0, matchStart)}
+                                <span className="font-semibold text-slate-900">
+                                  {prediction.mainText.slice(
+                                    matchStart,
+                                    matchStart + matchQuery.length,
+                                  )}
+                                </span>
+                                {prediction.mainText.slice(matchStart + matchQuery.length)}
+                              </>
+                            ) : (
+                              <span className="font-semibold">{prediction.mainText}</span>
+                            )}
                           </span>
-                        )}
-                      </span>
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            </CommandList>
-          </Command>
+
+                          {prediction.secondaryText && (
+                            <span className="block truncate text-xs leading-tight text-slate-400">
+                              {prediction.secondaryText}
+                            </span>
+                          )}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </PopoverContent>
     </Popover>
