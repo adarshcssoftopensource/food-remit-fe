@@ -55,6 +55,7 @@ export interface ItemData {
   upcCode?: string | null;
   itemsPerPack?: number | null;
   stockQuantity?: number | null;
+  quantityOnHand?: number | null;
   netWeight?: number | null;
   weightUnit?: string | null;
   unit?: string | null;
@@ -122,6 +123,7 @@ export interface ItemOptionData {
   price: number;
   stockQuantity?: number | null;
   upcCode?: string | null;
+  sortOrder?: number;
 }
 
 export interface UseGetItemsArgs {
@@ -155,26 +157,26 @@ export interface GetItemsResponse {
   };
 }
 
+export interface ItemPackOptionPayload {
+  id?: string;
+  optionName: string;
+  quantityPerPack?: number;
+  netWeight?: number;
+  weightUnit?: string;
+  price: number;
+}
+
+/** Category-first: categoryId is the active workspace category, never picked in the form */
 export interface CreateItemPayload {
-  countryId: string;
-  departmentId?: string | null;
   categoryId: string;
-  placements: Array<{
-    countryId: string;
-    departmentId?: string | null;
-    categoryId: string;
-    price: number;
-  }>;
+  options: ItemPackOptionPayload[];
   productName: string;
   description?: string;
   productInfo?: string;
   nutritionInfo?: string;
   upcCode?: string;
-  itemsPerPack?: number;
-  stockQuantity?: number;
-  netWeight?: number;
-  weightUnit?: string;
-  unit?: string;
+  itemNumber?: string;
+  quantityOnHand: number;
   discountPercentage?: number;
   status?: ItemStatus;
   isPerishable?: boolean;

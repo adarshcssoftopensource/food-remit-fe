@@ -9,49 +9,75 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Download, FileSpreadsheet, ImageIcon } from "lucide-react";
+import { ITEM_LIMITS, WEIGHT_UNITS } from "@/lib/catalogue/item-rules";
+import { Download, FileSpreadsheet, Layers, ShieldCheck } from "lucide-react";
 
-const CSV_COLUMNS = [
-  { name: "productName", required: true, note: "Item Name (min 2 characters)" },
-  { name: "description", required: true, note: "Item description" },
-  { name: "discountPercent", required: false, note: "0–100" },
+type CsvColumn = {
+  name: string;
+  /** Other header names that are accepted for this column */
+  aliases?: string;
+  required: boolean | "category";
+  note: string;
+};
+
+const CSV_COLUMNS: CsvColumn[] = [
+  {
+    name: "categoryName",
+    required: "category",
+    note: "Matched to your store's categories by name; created automatically if it doesn't exist.",
+  },
+  {
+    name: "itemNumber",
+    aliases: "sku, itemCode",
+    required: false,
+    note: "Your own code for the item. Rows with the same item number become one item with several packs. Re-importing a number updates that item.",
+  },
+  {
+    name: "itemName",
+    aliases: "productName",
+    required: true,
+    note: `${ITEM_LIMITS.productNameMin}–${ITEM_LIMITS.productNameMax} characters.`,
+  },
+  { name: "description", required: false, note: "Optional text." },
+  {
+    name: "upcEan",
+    aliases: "upcCode, barcode",
+    required: false,
+    note: "8 to 14 digits. Format the column as Text in Excel so barcodes aren't turned into 4.8E+12.",
+  },
+  {
+    name: "stockQuantity",
+    aliases: "quantityOnHand",
+    required: false,
+    note: "Quantity on hand for the item. Whole number, 0 or more. Blank = 0 (saved as inactive).",
+  },
+  { name: "discountPercent", required: false, note: "0 to 100." },
+  { name: "isPerishable", required: false, note: "yes / no (blank = no)." },
   {
     name: "productImage",
     required: false,
-    note: "Filename or full URL (max 5). Use Upload Images first, e.g. user1.jpg",
+    note: `Optional — you can add images later. Up to ${ITEM_LIMITS.maxImages} filenames or URLs, separated by commas.`,
   },
-  { name: "productInfo", required: true, note: "Product information" },
+  { name: "productInfo", required: false, note: "Optional text." },
+  { name: "productInfoImage", required: false, note: "Optional. One filename or URL." },
+  { name: "nutritionInfo", required: false, note: "Optional text." },
+  { name: "nutritionInfoImage", required: false, note: "Optional. One filename or URL." },
   {
-    name: "productInfoImage",
+    name: "optionName",
     required: false,
-    note: "Additional image filename/URL (shows under Additional Images)",
+    note: 'Pack / size name, e.g. "Single" or "6 Pack". Built from weight / quantity if blank.',
   },
-  { name: "nutritionInfo", required: false, note: "Optional nutrition text" },
-  {
-    name: "nutritionInfoImage",
-    required: false,
-    note: "Nutrition image filename/URL (Additional Images)",
-  },
-  { name: "itemsPerPack", required: false, note: "Optional number ≥ 0" },
-  { name: "stockQuantity", required: true, note: "Whole number ≥ 0" },
+  { name: "quantityPerPack", required: false, note: "Whole number, 1 or more." },
+  { name: "netWeight", required: false, note: "Greater than 0. Needs a weightUnit." },
   {
     name: "weightUnit",
     required: false,
-    note: "Optional: kg, g, mg, ltr, ml, pcs, dozen, box, pack, set, pair, bottle, can, bag",
+    note: `${WEIGHT_UNITS.join(", ")} (any case; litre, kgs, pieces… also work).`,
   },
-  { name: "netWeight", required: false, note: "Optional number ≥ 0" },
-  { name: "upcCode", required: false, note: "8–12 digits (SKU / barcode)" },
   {
-    name: "isPerishable",
-    required: false,
-    note: "true/false, yes/no, 1/0 — default false (blank = non-perishable)",
-  },
-  { name: "price", required: true, note: "Valid number ≥ 0" },
-
-  {
-    name: "categoryName",
+    name: "price",
     required: true,
-    note: "Created if missing",
+    note: "Price of this pack. Greater than 0, up to 2 decimals. The item's first pack is its base price.",
   },
 ];
 
@@ -59,12 +85,17 @@ type CsvFormatHelpDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onDownloadTemplate: () => void;
+  /** When importing from a category workspace, categoryName becomes optional. */
+  categoryName?: string | null;
 };
+
+const code = "rounded bg-slate-100 px-1 py-0.5 font-mono text-[11px] dark:bg-slate-800";
 
 export function CsvFormatHelpDialog({
   open,
   onOpenChange,
   onDownloadTemplate,
+  categoryName,
 }: CsvFormatHelpDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -77,33 +108,38 @@ export function CsvFormatHelpDialog({
               </div>
               <div className="space-y-1">
                 <DialogTitle className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                  CSV Import Format
+                  Import items from CSV or Excel
                 </DialogTitle>
                 <DialogDescription className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                  Columns match the Add Item form. Upload images first, then paste the returned
-                  filename or URL into the CSV.
+                  {categoryName
+                    ? `Rows without a categoryName are added to ${categoryName}.`
+                    : "Download the template, fill one row per pack / size, then import it."}
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
 
-          <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-emerald-200/70 bg-white/80 px-3.5 py-3 text-xs text-slate-600 dark:border-emerald-900/40 dark:bg-slate-950/40 dark:text-slate-300">
-            <ImageIcon className="mt-0.5 size-4 shrink-0 text-emerald-600" />
-            <p>
-              <span className="font-semibold text-slate-800 dark:text-slate-100">Images:</span>{" "}
-              <code className="rounded bg-slate-100 px-1 py-0.5 font-mono text-[11px] dark:bg-slate-800">
-                productImage
-              </code>{" "}
-              is the main gallery.{" "}
-              <code className="rounded bg-slate-100 px-1 py-0.5 font-mono text-[11px] dark:bg-slate-800">
-                productInfoImage
-              </code>{" "}
-              /{" "}
-              <code className="rounded bg-slate-100 px-1 py-0.5 font-mono text-[11px] dark:bg-slate-800">
-                nutritionInfoImage
-              </code>{" "}
-              appear under Additional Images.
-            </p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            <div className="flex items-start gap-2.5 rounded-xl border border-emerald-200/70 bg-white/80 px-3.5 py-3 text-xs leading-5 text-slate-600 dark:border-emerald-900/40 dark:bg-slate-950/40 dark:text-slate-300">
+              <Layers className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+              <p>
+                <span className="font-semibold text-slate-800 dark:text-slate-100">
+                  Several packs?
+                </span>{" "}
+                Add one row per pack with the same <code className={code}>itemNumber</code>. Item
+                details (name, stock, description) are read from the first row.
+              </p>
+            </div>
+            <div className="flex items-start gap-2.5 rounded-xl border border-emerald-200/70 bg-white/80 px-3.5 py-3 text-xs leading-5 text-slate-600 dark:border-emerald-900/40 dark:bg-slate-950/40 dark:text-slate-300">
+              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+              <p>
+                <span className="font-semibold text-slate-800 dark:text-slate-100">
+                  Safe import.
+                </span>{" "}
+                If any row has a problem nothing is saved, and you get a list of rows to fix. Up to{" "}
+                {ITEM_LIMITS.maxCsvRows.toLocaleString()} rows per file.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -124,31 +160,47 @@ export function CsvFormatHelpDialog({
                 </tr>
               </thead>
               <tbody>
-                {CSV_COLUMNS.map((col) => (
-                  <tr
-                    key={col.name}
-                    className="border-b border-slate-100 last:border-0 dark:border-slate-800"
-                  >
-                    <td className="px-3 py-2 font-mono text-[11px] text-slate-800 dark:text-slate-200">
-                      {col.name}
-                    </td>
-                    <td className="px-3 py-2">
-                      <span
-                        className={
-                          col.required
-                            ? "rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-                            : "rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-                        }
-                      >
-                        {col.required ? "Yes" : "No"}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-slate-500 dark:text-slate-400">{col.note}</td>
-                  </tr>
-                ))}
+                {CSV_COLUMNS.map((col) => {
+                  const required =
+                    col.required === "category" ? !categoryName : (col.required as boolean);
+                  return (
+                    <tr
+                      key={col.name}
+                      className="border-b border-slate-100 last:border-0 dark:border-slate-800"
+                    >
+                      <td className="px-3 py-2 align-top">
+                        <span className="font-mono text-[11px] text-slate-800 dark:text-slate-200">
+                          {col.name}
+                        </span>
+                        {col.aliases ? (
+                          <span className="block text-[10px] text-slate-400">or {col.aliases}</span>
+                        ) : null}
+                      </td>
+                      <td className="px-3 py-2">
+                        <span
+                          className={
+                            required
+                              ? "rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                              : "rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                          }
+                        >
+                          {required ? "Yes" : "No"}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 leading-5 text-slate-500 dark:text-slate-400">
+                        {col.note}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
+          <p className="mt-2 text-[11px] text-slate-400">
+            Extra columns in your spreadsheet are ignored, so you can keep your own sheet and just
+            rename the columns above. Department is no longer used. Negative numbers are never
+            accepted, and column names are not case-sensitive.
+          </p>
         </div>
 
         <DialogFooter className="gap-2 border-t border-slate-100 px-6 py-4 sm:gap-2 dark:border-slate-800">
@@ -163,7 +215,7 @@ export function CsvFormatHelpDialog({
             }}
           >
             <Download className="size-4" />
-            Download Template
+            Download template
           </Button>
         </DialogFooter>
       </DialogContent>

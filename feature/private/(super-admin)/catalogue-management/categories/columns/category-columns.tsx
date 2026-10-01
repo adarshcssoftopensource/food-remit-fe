@@ -3,6 +3,7 @@ import { ScopeBadge } from "@/components/common/scope-badge";
 import { StatusBadge } from "@/components/common/status-badge";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
+import { ArrowRight } from "lucide-react";
 import { CategoryActionsCell } from "../components/category-actions-cell";
 import { CategoryData } from "../types/category.types";
 
@@ -45,6 +46,22 @@ export function getCategoryColumns(
       ),
     },
 
+    {
+      id: "itemCount",
+      header: "Items",
+      cell: ({ row }) => (
+        <button
+          type="button"
+          onClick={() => onView(row.original)}
+          className="group text-primary hover:bg-primary/5 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-semibold"
+          title="Open items workspace"
+        >
+          {row.original.itemCount ?? 0}
+          <span className="group-hover:text-primary text-xs font-medium text-slate-400">Open</span>
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+        </button>
+      ),
+    },
     {
       id: "createdBy",
       header: "Created By",

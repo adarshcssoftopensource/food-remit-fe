@@ -12,6 +12,9 @@ export function useUpdateItem(id: string) {
     {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ITEMS });
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.CATEGORIES });
+        queryClient.invalidateQueries({ queryKey: ["category"] });
+        queryClient.invalidateQueries({ queryKey: ["item", id] });
       },
     },
   );

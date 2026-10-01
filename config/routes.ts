@@ -27,7 +27,12 @@ export const ROUTES = {
       ROOT: "/catalogue-management",
       DEPARTMENTS: "/catalogue-management/departments",
       CATEGORIES: "/catalogue-management/categories",
+      CATEGORY_WORKSPACE: (id: string) => `/catalogue-management/categories/${id}`,
+      NEW_ITEM: (categoryId: string) => `/catalogue-management/categories/${categoryId}/items/new`,
       ITEMS: "/catalogue-management/items",
+      ITEM_DETAILS: (id: string) => `/catalogue-management/items/${id}`,
+      EDIT_ITEM: (id: string, returnTo?: string) =>
+        `/catalogue-management/items/${id}/edit${returnTo ? `?from=${encodeURIComponent(returnTo)}` : ""}`,
     },
     PRODUCT_BOXES: "/product-boxes",
     STORE_MANAGEMENT: {

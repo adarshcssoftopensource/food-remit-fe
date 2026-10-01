@@ -2,9 +2,10 @@
 
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
+import { useProfile } from "@/components/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
-import { ArrowLeft, Package } from "lucide-react";
+import { ArrowLeft, Package, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ItemDetailsCard } from "./components/item-details-card";
@@ -22,6 +23,12 @@ interface ItemViewProps {
 
 export function ItemView({ id }: ItemViewProps) {
   const router = useRouter();
+  const { profile, needsBankVerification } = useProfile();
+  const isStoreScoped =
+    profile?.role === "store_manager" ||
+    profile?.role === "employee" ||
+    profile?.roleCode === "STORE_MANAGER" ||
+    profile?.roleCode === "EMPLOYEE";
   const { data: response, isLoading } = useGetItemById(id);
   const item = response?.data;
 
@@ -92,9 +99,35 @@ export function ItemView({ id }: ItemViewProps) {
           <PageHeader
             breadcrumbs={[
               { label: "Catalogue Management" },
-              { label: "Items", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS },
-              { label: "Item Details" },
+              { label: "Categories", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES },
+              ...(item.category
+                ? [
+                    {
+                      label: item.category.categoryName,
+                      href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(item.category.id),
+                    },
+                  ]
+                : []),
+              { label: item.productName },
             ]}
+            action={
+              !needsBankVerification ? (
+                <Button
+                  onClick={() =>
+                    router.push(
+                      ROUTES.ADMIN.CATALOGUE_MANAGEMENT.EDIT_ITEM(
+                        item.id,
+                        ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item.id),
+                      ),
+                    )
+                  }
+                  className="gap-2 rounded-xl"
+                >
+                  <Pencil className="h-4 w-4" />
+                  Edit item
+                </Button>
+              ) : undefined
+            }
           />
         </div>
 
@@ -124,9 +157,11 @@ export function ItemView({ id }: ItemViewProps) {
           <ItemInfoSection item={item} />
         </div>
 
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <ItemPlacementsCard item={item} />
-        </div>
+        {!isStoreScoped && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <ItemPlacementsCard item={item} />
+          </div>
+        )}
       </div>
     </>
   );

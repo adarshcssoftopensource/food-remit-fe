@@ -58,6 +58,7 @@ interface DataTableProps<TData, TValue> {
   enableRowSelection?: boolean | ((row: Row<TData>) => boolean);
   getRowClassName?: (row: Row<TData>) => string | undefined;
   emptyMessage?: string;
+  searchPlaceholder?: string;
 }
 
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
@@ -85,6 +86,7 @@ export function DataTable<TData, TValue>({
   enableRowSelection = true,
   getRowClassName,
   emptyMessage = "No Data Found",
+  searchPlaceholder = "Search...",
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -189,7 +191,7 @@ export function DataTable<TData, TValue>({
           <div className="relative w-full sm:max-w-sm">
             <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-slate-400" />
             <Input
-              placeholder="Search..."
+              placeholder={searchPlaceholder}
               value={
                 onSearchChange
                   ? searchValue

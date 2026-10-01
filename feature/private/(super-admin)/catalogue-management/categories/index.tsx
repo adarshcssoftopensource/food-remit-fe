@@ -10,15 +10,17 @@ import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/config/routes";
 import { CATEGORY_STAT_CONFIG } from "@/constants/catalogue-management";
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
-import { Building2, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Building2, LayoutGrid, List, Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { getCategoryColumns } from "./columns/category-columns";
 import { CategoryFormDialog } from "./components/category-form-dialog";
+import { CategoryGrid } from "./components/category-grid";
 import { useGetCategories, type UseGetCategoriesArgs } from "./hooks/use-get-categories";
 import { useProfile } from "@/components/providers/profile-provider";
 import type { CategoryData } from "./types/category.types";
@@ -73,6 +75,7 @@ export function CategoriesManagement() {
   const [editingCategory, setEditingCategory] = useState<CategoryData | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   const router = useRouter();
 
@@ -154,7 +157,7 @@ export function CategoriesManagement() {
 
   const handleViewDetails = useCallback(
     (category: CategoryData) => {
-      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES}/${category.id}`);
+      router.push(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(category.id));
     },
     [router],
   );
@@ -176,7 +179,7 @@ export function CategoriesManagement() {
 
       <PageHeader
         title="Categories"
-        description="Manage all catalogue categories across countries and stores."
+        description="Select a category to open its item workspace. Items you add there are saved under that category."
         action={
           canWrite ? (
             <Button
@@ -257,29 +260,84 @@ export function CategoriesManagement() {
                   </CardTitle>
                 </div>
                 <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
-                  {categories.length} categories found
+                  {res?.pagination?.total ?? categories.length} categories found
                 </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {viewMode === "grid" && (
+                <div className="relative w-full sm:w-64">
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    placeholder="Search categories..."
+                    className="h-10 rounded-xl pl-9"
+                  />
+                </div>
+              )}
+              <div className="flex shrink-0 items-center rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-950">
+                {(
+                  [
+                    { mode: "grid", Icon: LayoutGrid, label: "Grid view" },
+                    { mode: "table", Icon: List, label: "Table view" },
+                  ] as const
+                ).map(({ mode, Icon, label }) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    title={label}
+                    aria-label={label}
+                    aria-pressed={viewMode === mode}
+                    onClick={() => setViewMode(mode)}
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
+                      viewMode === mode
+                        ? "bg-primary text-white shadow-sm"
+                        : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800",
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="p-4">
-          <DataTable
-            columns={columns}
-            data={categories}
-            loading={isLoading}
-            searchKey="categoryName"
-            searchValue={searchQuery}
-            onSearchChange={setSearchQuery}
-            onSortingChange={setSorting}
-            manualSorting
-            currentPage={currentPage}
-            totalPages={res?.pagination?.totalPages ?? 1}
-            rowsPerPage={pageSize}
-            onPageChange={setCurrentPage}
-            onRowsPerPageChange={setPageSize}
-          />
+          {viewMode === "grid" ? (
+            <CategoryGrid
+              categories={categories}
+              loading={isLoading}
+              canWrite={canWrite}
+              onOpen={handleViewDetails}
+              onEdit={handleEdit}
+              currentPage={currentPage}
+              totalPages={res?.pagination?.totalPages ?? 1}
+              onPageChange={setCurrentPage}
+            />
+          ) : (
+            <DataTable
+              columns={columns}
+              data={categories}
+              loading={isLoading}
+              searchKey="categoryName"
+              searchValue={searchQuery}
+              onSearchChange={setSearchQuery}
+              onSortingChange={setSorting}
+              manualSorting
+              currentPage={currentPage}
+              totalPages={res?.pagination?.totalPages ?? 1}
+              rowsPerPage={pageSize}
+              onPageChange={setCurrentPage}
+              onRowsPerPageChange={setPageSize}
+            />
+          )}
         </CardContent>
       </Card>
 

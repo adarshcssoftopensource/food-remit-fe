@@ -9,6 +9,8 @@ export function useCreateItem() {
   return useApiMutation<any, FormData>("post", CATALOGUE_MANAGEMENT_ENDPOINTS.GET_ITEMS, {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ITEMS });
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.CATEGORIES });
+      queryClient.invalidateQueries({ queryKey: ["category"] });
     },
   });
 }

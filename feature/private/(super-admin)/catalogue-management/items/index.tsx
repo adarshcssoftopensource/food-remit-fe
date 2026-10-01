@@ -8,7 +8,6 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { useProfile } from "@/components/providers/profile-provider";
-import { errorToast } from "@/components/toaster";
 import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,36 +15,23 @@ import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/config/routes";
 import { ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
-import apiClient from "@/lib/api/client";
-import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
-import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-management.endpoints";
-import { useQueryClient } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
-import { Download, Image as ImageIcon, Package, Plus, Upload } from "lucide-react";
+import { Package, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
+import { CategoryPickerDialog } from "../categories/components/category-picker-dialog";
 import { getItemColumns } from "./columns/item-columns";
-import { CsvFormatHelpDialog } from "./components/csv-format-help-dialog";
-import { CsvImportResult, CsvImportResultDialog } from "./components/csv-import-result-dialog";
-import { ItemFormDialog } from "./components/item-form-dialog";
+import { ItemCsvToolbar } from "./components/item-csv-toolbar";
 import { useGetItems } from "./hooks/use-get-items";
-import { uploadItemCsvFile } from "./hooks/use-upload-item-csv";
 import { ItemData } from "./types/item.types";
 
 export function ItemsManagement() {
   const { profile, needsBankVerification, canViewPlatformFees } = useProfile();
-  const queryClient = useQueryClient();
   const isStoreManager =
     profile?.role === "store_manager" ||
     profile?.roleCode === "STORE_MANAGER" ||
     profile?.role === "store_admin" ||
     profile?.roleCode === "STORE_ADMIN";
   const canWrite = !needsBankVerification;
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isUploadingCsv, setIsUploadingCsv] = useState(false);
-  const [csvFormatOpen, setCsvFormatOpen] = useState(false);
-  const [csvResultOpen, setCsvResultOpen] = useState(false);
-  const [csvResult, setCsvResult] = useState<CsvImportResult | null>(null);
   const {
     fromDate,
     setFromDate,
@@ -86,8 +72,8 @@ export function ItemsManagement() {
     setCity(appliedCity);
     setCategory(appliedCategory);
   };
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<ItemData | null>(null);
+  const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
+  const [isOpeningEditor, startNavigation] = useTransition();
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
   const {
@@ -144,15 +130,19 @@ export function ItemsManagement() {
     return count;
   }, [applied.fromDate, applied.toDate, appliedCountry, appliedCity, appliedCategory]);
 
-  const handleEdit = useCallback((item: ItemData) => {
-    setEditingItem(item);
-    setDialogOpen(true);
-  }, []);
+  const handleEdit = useCallback(
+    (item: ItemData) =>
+      router.push(
+        ROUTES.ADMIN.CATALOGUE_MANAGEMENT.EDIT_ITEM(
+          item.id,
+          ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS,
+        ),
+      ),
+    [router],
+  );
 
   const handleViewDetails = useCallback(
-    (item: ItemData) => {
-      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS}/${item.id}`);
-    },
+    (item: ItemData) => router.push(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item.id)),
     [router],
   );
 
@@ -179,7 +169,7 @@ export function ItemsManagement() {
   );
 
   const getRowClassName = useCallback((row: import("@tanstack/react-table").Row<ItemData>) => {
-    const qty = row.original.stockQuantity;
+    const qty = row.original.quantityOnHand ?? row.original.stockQuantity;
     if (qty === null || qty === undefined) return undefined;
     if (qty <= 0) {
       return "bg-rose-50/30 hover:bg-rose-50/60! dark:bg-rose-950/10 dark:hover:bg-rose-950/25!";
@@ -190,129 +180,9 @@ export function ItemsManagement() {
     return undefined;
   }, []);
 
-  const handleDownloadCsv = async () => {
-    try {
-      const response = await apiClient.get(CATALOGUE_MANAGEMENT_ENDPOINTS.DOWNLOAD_ITEM_CSV, {
-        responseType: "blob",
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "item_import_template.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch {
-      // Axios interceptor will handle the error toast
-    }
-  };
-
-  const showCsvResult = (result: CsvImportResult) => {
-    setCsvResult(result);
-    setCsvResultOpen(true);
-  };
-
-  const handleCsvFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.name.toLowerCase().endsWith(".csv") && !file.name.toLowerCase().match(/\.xlsx?$/)) {
-      errorToast({
-        description: "Please upload a .csv or Excel file.",
-      });
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      return;
-    }
-
-    setIsUploadingCsv(true);
-    try {
-      const res = await uploadItemCsvFile(file);
-      const data = res?.data;
-      const errors = data?.errors || [];
-      const successCount = data?.successCount ?? 0;
-      const errorCount = data?.errorCount ?? errors.length;
-
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ITEMS }),
-        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.DEPARTMENTS }),
-        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.CATEGORIES }),
-      ]);
-
-      showCsvResult({
-        title: errorCount > 0 ? "Import completed with errors." : "Import completed successfully.",
-        description: res?.message,
-        successCount,
-        errorCount,
-        departmentsCreated: data?.departmentsCreated ?? 0,
-        categoriesCreated: data?.categoriesCreated ?? 0,
-        errors,
-        isError: errorCount > 0 && successCount === 0,
-      });
-    } catch (err) {
-      const axiosError = err as AxiosError<{
-        message?: string | string[];
-        errors?: string[];
-        data?: {
-          successCount?: number;
-          errorCount?: number;
-          departmentsCreated?: number;
-          categoriesCreated?: number;
-          errors?: string[];
-        };
-      }>;
-      const payload = axiosError.response?.data;
-      const errors =
-        payload?.errors ||
-        payload?.data?.errors ||
-        (Array.isArray(payload?.message)
-          ? payload.message
-          : payload?.message
-            ? [String(payload.message)]
-            : ["CSV import failed. Please check your file and try again."]);
-
-      showCsvResult({
-        title: "CSV import failed validation.",
-        description: Array.isArray(payload?.message)
-          ? payload.message[0]
-          : typeof payload?.message === "string"
-            ? payload.message
-            : "Please fix the listed rows and upload again.",
-        successCount: payload?.data?.successCount ?? 0,
-        errorCount: payload?.data?.errorCount ?? errors.length,
-        departmentsCreated: payload?.data?.departmentsCreated ?? 0,
-        categoriesCreated: payload?.data?.categoriesCreated ?? 0,
-        errors,
-        isError: true,
-      });
-    } finally {
-      setIsUploadingCsv(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
   return (
     <div className="space-y-6">
       <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
-      <input
-        type="file"
-        accept=".csv,.xlsx,.xls"
-        className="hidden"
-        ref={fileInputRef}
-        onChange={handleCsvFileChange}
-      />
-      <CsvFormatHelpDialog
-        open={csvFormatOpen}
-        onOpenChange={setCsvFormatOpen}
-        onDownloadTemplate={handleDownloadCsv}
-      />
-      <CsvImportResultDialog
-        open={csvResultOpen}
-        onOpenChange={setCsvResultOpen}
-        result={csvResult}
-      />
 
       <PageHeader
         title="Items"
@@ -320,46 +190,15 @@ export function ItemsManagement() {
         action={
           canWrite ? (
             <div className="flex flex-wrap items-center gap-2">
-              {isStoreManager && (
-                <>
-                  <Button
-                    onClick={() => setCsvFormatOpen(true)}
-                    variant="outline"
-                    className="gap-2 rounded-xl"
-                  >
-                    <Download className="h-4 w-4" />
-                    Format
-                  </Button>
-                  <Button
-                    onClick={() => fileInputRef.current?.click()}
-                    variant="outline"
-                    className="gap-2 rounded-xl"
-                    disabled={isUploadingCsv}
-                  >
-                    <Upload className="h-4 w-4" />
-                    {isUploadingCsv ? "Importing..." : "Import CSV"}
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      router.push(`${ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS}/upload-images`)
-                    }
-                    variant="outline"
-                    className="gap-2 rounded-xl"
-                  >
-                    <ImageIcon className="h-4 w-4" />
-                    Upload Images
-                  </Button>
-                </>
-              )}
+              {isStoreManager && <ItemCsvToolbar className="contents" />}
               <Button
-                onClick={() => {
-                  setEditingItem(null);
-                  setDialogOpen(true);
-                }}
+                onClick={() => setCategoryPickerOpen(true)}
+                disabled={isOpeningEditor}
+                isLoading={isOpeningEditor}
                 className="gap-2 rounded-xl"
               >
-                <Plus className="h-4 w-4" />
-                Add Item
+                {!isOpeningEditor && <Plus className="h-4 w-4" />}
+                {isOpeningEditor ? "Opening…" : "Add Item"}
               </Button>
             </div>
           ) : undefined
@@ -456,7 +295,8 @@ export function ItemsManagement() {
                   </span>
                 </div>
                 <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
-                  {filteredData.length} items found
+                  {pagination.total.toLocaleString()} {pagination.total === 1 ? "item" : "items"}
+                  {hasFilters || statusTab !== "all" ? " match your filters" : " in the catalogue"}
                 </p>
               </div>
             </div>
@@ -468,6 +308,12 @@ export function ItemsManagement() {
             columns={columns}
             data={filteredData}
             searchKey="itemDisplayName"
+            searchPlaceholder="Search by name, item number or UPC"
+            emptyMessage={
+              hasFilters || statusTab !== "all"
+                ? "No items match your filters"
+                : "No items yet — use Add Item or Import CSV to get started"
+            }
             searchValue={search}
             onSearchChange={setSearch}
             loading={isLoading}
@@ -475,13 +321,27 @@ export function ItemsManagement() {
             totalPages={pagination.totalPages}
             rowsPerPage={pagination.limit}
             onPageChange={(p) => setPage(p)}
-            onRowsPerPageChange={(l) => setLimit(l)}
+            onRowsPerPageChange={(l) => {
+              setLimit(l);
+              setPage(1);
+            }}
             getRowClassName={getRowClassName}
           />
         </CardContent>
       </Card>
 
-      <ItemFormDialog open={dialogOpen} onOpenChange={setDialogOpen} item={editingItem} />
+      <CategoryPickerDialog
+        open={categoryPickerOpen}
+        onOpenChange={setCategoryPickerOpen}
+        title="Add Item — Select Category"
+        description="Items are created inside a category. Pick the category this item belongs to."
+        onSelect={(selected) => {
+          setCategoryPickerOpen(false);
+          startNavigation(() =>
+            router.push(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.NEW_ITEM(selected.id)),
+          );
+        }}
+      />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { successToast } from "@/components/toaster";
 import { Switch } from "@/components/ui/switch";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { FolderOpen, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
 import { useDeleteCategory } from "../hooks/use-delete-category";
@@ -25,8 +25,7 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
   const [deleteOpen, setDeleteOpen] = useState(false);
   const { mutateAsync: updateStatus, isPending } = useUpdateCategoryStatus(category.id);
   const { mutateAsync: deleteCategory, isPending: isDeleting } = useDeleteCategory(category.id);
-  const { profile, needsBankVerification } = useProfile();
-  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+  const { needsBankVerification } = useProfile();
   const canWrite = !needsBankVerification;
 
   const handleStatusChange = async (checked: boolean) => {
@@ -53,10 +52,9 @@ export function CategoryActionsCell({ category, onEdit, onView }: CategoryAction
 
   const actionItems: DataTableRowActionItem[] = [
     {
-      label: "View Details",
-      icon: <Eye className="size-4" />,
+      label: "Open Items Workspace",
+      icon: <FolderOpen className="size-4" />,
       onClick: () => onView(category),
-      hidden: isStoreScoped,
     },
     {
       label: "Edit Category",

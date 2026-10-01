@@ -33,6 +33,22 @@ export interface CategoryData {
   city?: { id: string; name: string } | null;
   parent?: { id: string; categoryName: string } | null;
   children?: any[];
+
+  storeId?: string | null;
+  store?: { id: string; storeName: string } | null;
+  itemCount?: number;
+  /** Returned by the category detail endpoint for the item workspace */
+  currency?: string | null;
+  currencySymbol?: string | null;
+  pricingCountry?: { id: string; name: string } | null;
+}
+
+/** Category context an item is created in (Category-first workflow) */
+export interface ActiveCategory {
+  id: string;
+  categoryName: string;
+  categoryIcon?: string | null;
+  currencySymbol?: string | null;
 }
 
 export interface CategoryDropdownItem {

@@ -18,6 +18,7 @@ export const CATALOGUE_MANAGEMENT_ENDPOINTS = {
   // Categories
   GET_CATEGORIES: "/admin/categories",
   GET_CATEGORY: (id: string) => `/admin/categories/${id}`,
+  CATEGORY_PICKER: "/admin/categories/picker",
   CREATE_CATEGORY: "/admin/categories",
   UPDATE_CATEGORY: (id: string) => `/admin/categories/${id}`,
   UPDATE_CATEGORY_STATUS: (id: string) => `/admin/categories/${id}/status`,

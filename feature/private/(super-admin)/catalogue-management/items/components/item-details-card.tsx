@@ -1,28 +1,105 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useProfile } from "@/components/providers/profile-provider";
+import { ROUTES } from "@/config/routes";
 import { formatDate } from "@/lib/date";
 import {
+  Barcode,
+  Boxes,
   Building2,
   Calendar,
-  Clock,
-  Layers,
-  MapPin,
-  Scale,
-  QrCode,
+  Check,
   CheckCircle2,
+  Clock,
+  Copy,
+  FolderOpen,
+  Hash,
+  Leaf,
+  MapPin,
   Percent,
+  QrCode,
+  Scale,
+  Tag,
 } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+import { toast } from "sonner";
 import type { ItemData } from "../types/item.types";
+import { formatPackSize, getItemOptions, getItemPriceSummary } from "../utils/item-display";
 import { InfoCard } from "./info-card";
+
+function IdentifierTile({
+  icon,
+  label,
+  value,
+  emptyText,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value?: string | null;
+  emptyText: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    if (!value) return;
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      toast.success(`${label} copied`);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Couldn't copy to the clipboard");
+    }
+  };
+
+  return (
+    <div className="flex min-w-0 items-center gap-3 rounded-xl border border-dashed border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900/40">
+      <div className="text-primary bg-primary/10 flex size-9 shrink-0 items-center justify-center rounded-lg">
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">{label}</p>
+        {value ? (
+          <p className="truncate font-mono text-sm font-semibold text-slate-900 dark:text-white">
+            {value}
+          </p>
+        ) : (
+          <p className="text-sm text-slate-400">{emptyText}</p>
+        )}
+      </div>
+      {value ? (
+        <button
+          type="button"
+          onClick={copy}
+          aria-label={`Copy ${label}`}
+          className="hover:text-primary hover:bg-primary/10 rounded-md p-1.5 text-slate-400 transition-colors"
+        >
+          {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+        </button>
+      ) : null}
+    </div>
+  );
+}
 
 interface ItemDetailsCardProps {
   item: ItemData;
 }
 
+type CategoryWithLocation = {
+  city?: { name?: string | null } | null;
+  store?: { storeName?: string | null; city?: string | null } | null;
+};
+
 export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
-  const codeVal = item.barcodeValue || item.upcCode || item.id;
-  const { canViewPlatformFees } = useProfile();
+  const quantityOnHand = item.quantityOnHand ?? item.stockQuantity;
+  const categoryMeta = item.category as CategoryWithLocation | undefined;
+  const options = getItemOptions(item);
+  const hasPackOptions = options.length > 0;
+  const defaultOption = options[0];
+  const priceSummary = getItemPriceSummary(item);
+  const categoryId = item.category?.id || item.categoryId;
+  const storeName = item.storeName || item.store?.storeName || categoryMeta?.store?.storeName;
+  const discount = Number(item.discountPercentage) || 0;
 
   return (
     <Card className="flex h-full flex-col rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 lg:col-span-2 dark:bg-slate-950 dark:shadow-none">
@@ -30,13 +107,13 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
         <CardTitle className="flex items-center gap-3 text-base font-bold text-slate-900 dark:text-white">
           <div className="h-4 w-1.5 rounded-full bg-orange-500" />
           Information Overview
-          {item.stockQuantity !== null &&
-            item.stockQuantity !== undefined &&
-            (item.stockQuantity <= 0 ? (
+          {quantityOnHand !== null &&
+            quantityOnHand !== undefined &&
+            (quantityOnHand <= 0 ? (
               <span className="rounded-md bg-red-100 px-2 py-1 text-[10px] font-bold tracking-wider text-red-600 uppercase dark:bg-red-500/20 dark:text-red-400">
                 Out of Stock
               </span>
-            ) : item.stockQuantity <= 5 ? (
+            ) : quantityOnHand <= 5 ? (
               <span className="rounded-md bg-amber-100 px-2 py-1 text-[10px] font-bold tracking-wider text-amber-700 uppercase dark:bg-amber-500/20 dark:text-amber-400">
                 Low Stock
               </span>
@@ -45,91 +122,116 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col justify-between gap-5 p-5">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <IdentifierTile
+            icon={<Hash className="size-4" />}
+            label="Item number / SKU"
+            value={item.itemNumber}
+            emptyText="Not set — add one when editing"
+          />
+          <IdentifierTile
+            icon={<Barcode className="size-4" />}
+            label="UPC / barcode"
+            value={item.upcCode}
+            emptyText="No barcode"
+          />
+        </div>
+
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <InfoCard
-            icon={<MapPin className="h-4 w-4 text-orange-500" />}
-            label="Country"
-            value={item.country?.name || "-"}
+            icon={<FolderOpen className="h-4 w-4 text-purple-500" />}
+            label="Category"
+            value={item.category?.categoryName || "-"}
+            href={
+              categoryId
+                ? ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(categoryId)
+                : undefined
+            }
           />
-          <InfoCard
-            icon={<MapPin className="h-4 w-4 text-sky-500" />}
-            label="City"
-            value={(item.category as any)?.city?.name || (item.category as any)?.store?.city || "-"}
-          />
-          {(item.category as any)?.store?.storeName && (
+          {storeName && (
             <InfoCard
               icon={<Building2 className="h-4 w-4 text-indigo-500" />}
               label="Store"
-              value={(item.category as any).store.storeName || "-"}
+              value={storeName}
             />
           )}
           <InfoCard
-            icon={<Layers className="h-4 w-4 text-purple-500" />}
-            label="Category"
-            value={item.category?.categoryName || "-"}
-          />
-          <InfoCard
-            icon={<Scale className="h-4 w-4 text-emerald-500" />}
-            label="Items Per Pack"
+            icon={<MapPin className="h-4 w-4 text-sky-500" />}
+            label="City / Country"
             value={
-              item.options && item.options.length > 1
-                ? "Multiple Variants"
-                : item.itemsPerPack && item.unit
-                  ? `${item.itemsPerPack} ${item.unit}`
-                  : "-"
+              [categoryMeta?.city?.name || categoryMeta?.store?.city, item.country?.name]
+                .filter(Boolean)
+                .join(", ") || "-"
             }
           />
           <InfoCard
-            icon={<Layers className="h-4 w-4 text-orange-500" />}
-            label="Perishable Item"
-            value={item.isPerishable ? "Yes" : "No"}
+            icon={<Tag className="h-4 w-4 text-emerald-500" />}
+            label={priceSummary.min !== priceSummary.max ? "Price range" : "Base price"}
+            value={priceSummary.label}
           />
+          {defaultOption && (
+            <InfoCard
+              icon={<Boxes className="h-4 w-4 text-orange-500" />}
+              label={options.length > 1 ? `Default pack (of ${options.length})` : "Pack / size"}
+              value={[defaultOption.optionName, formatPackSize(defaultOption)]
+                .filter(Boolean)
+                .join(" · ")}
+            />
+          )}
           <InfoCard
-            icon={<Layers className="h-4 w-4 text-orange-500" />}
-            label="Quantity on Hand"
+            icon={<Boxes className="h-4 w-4 text-slate-500" />}
+            label="Quantity on hand"
             value={
-              item.options && item.options.length > 1
-                ? "Multiple Variants"
-                : item.stockQuantity !== null && item.stockQuantity !== undefined
-                  ? item.unit
-                    ? `${item.stockQuantity} `
-                    : String(item.stockQuantity)
-                  : "-"
+              quantityOnHand !== null && quantityOnHand !== undefined
+                ? quantityOnHand.toLocaleString()
+                : "-"
             }
           />
+          {!hasPackOptions && (
+            <>
+              <InfoCard
+                icon={<Scale className="h-4 w-4 text-emerald-500" />}
+                label="Quantity per pack"
+                value={item.itemsPerPack ? String(item.itemsPerPack) : "-"}
+              />
+              <InfoCard
+                icon={<Scale className="h-4 w-4 text-slate-500" />}
+                label="Net weight"
+                value={
+                  item.netWeight !== null && item.netWeight !== undefined
+                    ? `${item.netWeight} ${item.weightUnit || item.unit || ""}`.trim()
+                    : "-"
+                }
+              />
+            </>
+          )}
           <InfoCard
-            icon={<Scale className="h-4 w-4 text-slate-500" />}
-            label="Net Weight"
-            value={
-              item.options && item.options.length > 1
-                ? "Multiple Variants"
-                : item.netWeight !== null && item.netWeight !== undefined
-                  ? String(item.netWeight)
-                  : "-"
-            }
+            icon={<Leaf className="h-4 w-4 text-green-500" />}
+            label="Perishable"
+            value={item.isPerishable ? "Yes — short pickup window" : "No"}
           />
           <InfoCard
-            icon={<Scale className="h-4 w-4 text-teal-500" />}
-            label="Weight Unit"
-            value={item.options && item.options.length > 1 ? "Multiple Variants" : item.unit || "-"}
+            icon={<Percent className="h-4 w-4 text-rose-500" />}
+            label="Discount"
+            value={discount > 0 ? `${discount}% off` : "No discount"}
           />
+          {item.pricing && (
+            <InfoCard
+              icon={<Percent className="h-4 w-4 text-amber-500" />}
+              label="Store commission"
+              value={`${item.pricing.commissionPercent.toFixed(2)}%`}
+            />
+          )}
           <InfoCard
             icon={<Calendar className="h-4 w-4 text-slate-400" />}
-            label="Added On"
+            label="Added on"
             value={formatDate(item.createdAt)}
           />
           <InfoCard
             icon={<Clock className="h-4 w-4 text-slate-400" />}
-            label="Modified On"
+            label="Modified on"
             value={formatDate(item.updatedAt)}
           />
-          {item.pricing && (
-            <InfoCard
-              icon={<Percent className="h-4 w-4 text-rose-500" />}
-              label="Store Commission"
-              value={`${item.pricing.commissionPercent.toFixed(2)}%`}
-            />
-          )}
         </div>
 
         {/* Bottom QR Code Digital Verification Banner */}

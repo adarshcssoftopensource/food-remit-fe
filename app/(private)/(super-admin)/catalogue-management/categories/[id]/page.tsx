@@ -1,4 +1,4 @@
-import { CategoryView } from "@/feature/private/(super-admin)/catalogue-management/categories/view";
+import { CategoryItemsWorkspace } from "@/feature/private/(super-admin)/catalogue-management/categories/workspace";
 
 interface PageProps {
   params: Promise<{
@@ -6,7 +6,7 @@ interface PageProps {
   }>;
 }
 
-export default async function CategoryViewPage({ params }: PageProps) {
-  const resolvedParams = await params;
-  return <CategoryView id={resolvedParams.id} />;
+export default async function CategoryItemsWorkspacePage({ params }: PageProps) {
+  const { id } = await params;
+  return <CategoryItemsWorkspace key={id} id={id} />;
 }

@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Expand, Eye, Package } from "lucide-react";
+import { Expand, Eye, Hash, Leaf, Package } from "lucide-react";
 import Image from "next/image";
+import type { ItemData } from "../types/item.types";
+import { getItemPriceSummary } from "../utils/item-display";
 
 interface ItemMediaCardProps {
-  item: any;
+  item: ItemData;
   mainImage: { src: string; label: string; type: string } | null;
   productGalleryThumbnails: { src: string; label: string; type: string; originalIndex: number }[];
   additionalThumbnails: { src: string; label: string; type: string; originalIndex: number }[];
@@ -61,7 +63,7 @@ export function ItemMediaCard({
             {item.description || "-"}
           </p>
 
-          <div className="mt-3 flex justify-center gap-2">
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur-sm transition-colors ${
                 item.status === "ACTIVE"
@@ -79,7 +81,22 @@ export function ItemMediaCard({
               </span>
               {item.status === "ACTIVE" ? "Active" : "Inactive"}
             </span>
+            {item.itemNumber ? (
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-slate-100 px-2.5 py-1 font-mono text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                <Hash className="size-3 text-slate-400" />
+                {item.itemNumber}
+              </span>
+            ) : null}
+            {item.isPerishable ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <Leaf className="size-3" />
+                Perishable
+              </span>
+            ) : null}
           </div>
+          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 tabular-nums dark:text-white">
+            {getItemPriceSummary(item).label}
+          </p>
         </div>
       </CardHeader>
 

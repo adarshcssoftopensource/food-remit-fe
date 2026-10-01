@@ -1,85 +1,145 @@
-import type { ItemPlacementRow } from "@/components/common/item-placements-field";
-import { resolveCurrencyDisplay } from "@/lib/currency";
+import {
+  createPackSizeOptionRow,
+  type PackSizeOptionRow,
+} from "@/components/common/pack-size-options-field";
+import {
+  ITEM_LIMITS,
+  ITEM_NUMBER_MAX,
+  ITEM_NUMBER_MESSAGE,
+  ITEM_NUMBER_PATTERN,
+  UPC_MESSAGE,
+  UPC_PATTERN,
+} from "@/lib/catalogue/item-rules";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import type { ActiveCategory } from "../categories/types/category.types";
 import { useCreateItem } from "../items/hooks/use-create-item";
 import { useUpdateItem } from "../items/hooks/use-update-item";
 import { ItemData } from "../items/types/item.types";
 
-const placementSchema = z.object({
+type NumberRule = {
+  label: string;
+  required?: boolean;
+  integer?: boolean;
+  min: number;
+  /** `min` itself is not allowed (e.g. price must be greater than 0) */
+  exclusiveMin?: boolean;
+  max: number;
+  decimals?: number;
+};
+
+/**
+ * Number fields are kept as strings in the form (empty = not provided) and
+ * validated here so every field, optional or required, rejects negatives.
+ */
+function numberField(rule: NumberRule) {
+  return z
+    .string()
+    .trim()
+    .optional()
+    .superRefine((raw, ctx) => {
+      const value = raw ?? "";
+      const fail = (message: string) => ctx.addIssue({ code: "custom", message });
+      if (!value) {
+        if (rule.required) fail(`${rule.label} is required`);
+        return;
+      }
+      if (!/^\d+(\.\d+)?$/.test(value)) {
+        fail(value.startsWith("-") ? `${rule.label} cannot be negative` : "Enter a valid number");
+        return;
+      }
+      const num = Number(value);
+      if (rule.integer && !Number.isInteger(num)) return fail("Enter a whole number");
+      if (rule.exclusiveMin ? num <= rule.min : num < rule.min) {
+        return fail(
+          rule.exclusiveMin
+            ? `${rule.label} must be greater than ${rule.min}`
+            : `${rule.label} must be at least ${rule.min}`,
+        );
+      }
+      if (num > rule.max) return fail(`${rule.label} cannot exceed ${rule.max.toLocaleString()}`);
+      if (rule.decimals !== undefined && (value.split(".")[1]?.length ?? 0) > rule.decimals) {
+        fail(`Use at most ${rule.decimals} decimal places`);
+      }
+    });
+}
+
+const packOptionSchema = z.object({
   key: z.string(),
-  countryId: z.string().min(1),
-  categoryId: z.string().min(1),
-  price: z.string().min(1, "Price is required"),
-  currency: z.string(),
-  currencySymbol: z.string(),
-  countryName: z.string(),
-  categoryName: z.string(),
+  id: z.string().optional(),
+  optionName: z
+    .string()
+    .trim()
+    .min(1, "Option name is required")
+    .max(ITEM_LIMITS.optionNameMax, `Keep it under ${ITEM_LIMITS.optionNameMax} characters`),
+  quantityPerPack: numberField({
+    label: "Quantity",
+    integer: true,
+    min: 1,
+    max: ITEM_LIMITS.maxQuantity,
+  }),
+  netWeight: numberField({
+    label: "Net weight",
+    min: 0,
+    exclusiveMin: true,
+    max: ITEM_LIMITS.maxNetWeight,
+    decimals: 3,
+  }),
+  weightUnit: z.string(),
+  price: numberField({
+    label: "Price",
+    required: true,
+    min: 0,
+    exclusiveMin: true,
+    max: ITEM_LIMITS.maxPrice,
+    decimals: 2,
+  }),
 });
 
-const optionSchema = z.object({
-  id: z.string().optional(),
-  optionName: z.string().min(1, "Option name is required"),
-  price: z.string().min(1, "Price is required"),
-  quantityPerPack: z.string().optional(),
-  netWeight: z.string().optional(),
-  weightUnit: z.string().optional(),
-  stockQuantity: z.string().optional(),
-  upcCode: z.string().optional(),
-});
+const optionalText = (label: string) =>
+  z
+    .string()
+    .max(ITEM_LIMITS.textMax, `${label} must be ${ITEM_LIMITS.textMax} characters or fewer`)
+    .optional();
 
 const itemSchema = z
   .object({
-    productName: z.string().min(2, "Item name must be at least 2 characters"),
-    description: z.string().optional(),
+    productName: z
+      .string()
+      .trim()
+      .min(ITEM_LIMITS.productNameMin, "Item name must be at least 2 characters")
+      .max(ITEM_LIMITS.productNameMax, `Keep it under ${ITEM_LIMITS.productNameMax} characters`),
+    description: optionalText("Description"),
+    itemNumber: z
+      .string()
+      .trim()
+      .max(ITEM_NUMBER_MAX, `Keep it under ${ITEM_NUMBER_MAX} characters`)
+      .refine((value) => value === "" || ITEM_NUMBER_PATTERN.test(value), ITEM_NUMBER_MESSAGE)
+      .optional(),
     upcCode: z
       .string()
       .trim()
-      .refine(
-        (value) => value === "" || /^\d{8,12}$/.test(value),
-        "UPC code must be between 8 and 12 digits",
-      )
+      .refine((value) => value === "" || UPC_PATTERN.test(value), UPC_MESSAGE)
       .optional(),
-    productInfo: z.string().optional(),
-    nutritionInfo: z.string().optional(),
-    discountPercentage: z
-      .string()
-      .optional()
-      .refine(
-        (val) => {
-          if (!val) return true;
-          const num = parseFloat(val);
-          return !isNaN(num) && num >= 0 && num <= 100;
-        },
-        {
-          message: "Please enter a valid percentage between 0 and 100",
-        },
-      ),
-
-    itemsPerPack: z
-      .string()
-      .optional()
-      .refine((val) => !val || Number(val) >= 0, "Cannot be negative"),
-    stockQuantity: z
-      .string()
-      .min(1, "Quantity on hand is required")
-      .refine((val) => Number(val) >= 0, "Cannot be negative"),
-    netWeight: z
-      .string()
-      .optional()
-      .refine((val) => !val || Number(val) >= 0, "Cannot be negative"),
-    weightUnit: z.string().optional(),
-    unit: z.string().optional(),
+    productInfo: optionalText("Product information"),
+    nutritionInfo: optionalText("Nutrition information"),
+    discountPercentage: numberField({ label: "Discount", min: 0, max: 100, decimals: 2 }),
+    quantityOnHand: numberField({
+      label: "Quantity on hand",
+      required: true,
+      integer: true,
+      min: 0,
+      max: ITEM_LIMITS.maxQuantity,
+    }),
     isPerishable: z.boolean(),
-    placements: z.array(placementSchema).min(1, "Add at least one country price"),
-    options: z.array(optionSchema).optional(),
-    productImageFile: z
-      .array(z.instanceof(File))
-      .max(5, "Maximum 5 product images allowed")
-      .optional(),
+    options: z
+      .array(packOptionSchema)
+      .min(1, "Add at least one pack / size option")
+      .max(ITEM_LIMITS.maxOptions, `Add at most ${ITEM_LIMITS.maxOptions} pack / size options`),
+    productImageFile: z.array(z.instanceof(File)).optional(),
     productInfoImageFile: z.array(z.instanceof(File)).optional(),
     nutritionInfoImageFile: z.array(z.instanceof(File)).optional(),
     existingProductImages: z.array(z.string()).optional(),
@@ -87,331 +147,248 @@ const itemSchema = z
     existingNutritionInfoImage: z.string().nullable().optional(),
   })
   .superRefine((data, ctx) => {
-    const existingCount = data.existingProductImages?.length || 0;
-    const newFilesCount = data.productImageFile?.length || 0;
-    const totalCount = existingCount + newFilesCount;
+    const totalImages =
+      (data.existingProductImages?.length || 0) + (data.productImageFile?.length || 0);
 
-    if (totalCount === 0) {
+    if (totalImages === 0) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["productImageFile"],
-        message: "Product image is required (at least 1 image)",
+        message: "Add at least one product image",
       });
     }
-    if (totalCount > 5) {
+    if (totalImages > ITEM_LIMITS.maxImages) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["productImageFile"],
-        message: "Maximum 5 product images allowed",
+        message: `Add at most ${ITEM_LIMITS.maxImages} product images`,
       });
     }
 
-    data.placements.forEach((row) => {
-      const price = Number(row.price);
-      if (!row.price.trim() || Number.isNaN(price) || price < 0) {
+    const seen = new Set<string>();
+    data.options.forEach((opt, index) => {
+      const name = opt.optionName.trim().toLowerCase();
+      if (!name) return;
+      if (seen.has(name)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["placements"],
-          message: "Enter a valid price for every country row",
+          code: "custom",
+          path: ["options", index, "optionName"],
+          message: "Each option needs a different name",
+        });
+      }
+      seen.add(name);
+
+      if (opt.netWeight && !opt.weightUnit) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["options", index, "weightUnit"],
+          message: "Pick a unit",
         });
       }
     });
   });
 
 export type ItemFormValues = z.infer<typeof itemSchema>;
+export type ItemSubmitMode = "close" | "createAnother";
 
-function mapItemPlacements(item?: ItemData | null): ItemPlacementRow[] {
-  if (!item) return [];
+function toInputString(value: number | string | null | undefined) {
+  return value === null || value === undefined ? "" : String(value);
+}
 
-  if (item.placements && item.placements.length > 0) {
-    return item.placements.map((placement, index) => {
-      const currencyMeta = resolveCurrencyDisplay({
-        currency: placement.currency,
-        countryName: placement.country?.name,
-      });
-      return {
-        key: placement.id || `existing-${index}`,
-        countryId: placement.countryId,
-        categoryId: placement.categoryId,
-        price: String(placement.price ?? ""),
-        currency: placement.currency || currencyMeta.code,
-        currencySymbol: placement.currencySymbol || currencyMeta.symbol,
-        countryName: placement.country?.name || "Country",
-        categoryName: placement.category?.categoryName || "Category",
-      };
-    });
+function mapItemOptions(item?: ItemData | null): PackSizeOptionRow[] {
+  if (item && Array.isArray(item.options) && item.options.length > 0) {
+    return item.options.map((opt) =>
+      createPackSizeOptionRow({
+        id: opt.id,
+        optionName: opt.optionName || "",
+        quantityPerPack: toInputString(opt.quantityPerPack),
+        netWeight: toInputString(opt.netWeight),
+        weightUnit: opt.weightUnit || "",
+        price: toInputString(opt.price),
+      }),
+    );
   }
 
-  if (item.countryId && item.categoryId) {
-    const currencyMeta = resolveCurrencyDisplay({
-      countryName: item.country?.name,
-    });
+  if (item) {
+    // Legacy items stored pack details on the item and price on the placement
+    const unit = item.weightUnit || item.unit || "";
+    const netWeight = toInputString(item.netWeight);
     return [
-      {
-        key: `legacy-${item.id}`,
-        countryId: item.countryId,
-        categoryId: item.categoryId,
-        price: "",
-        currency: currencyMeta.code,
-        currencySymbol: currencyMeta.symbol,
-        countryName: item.country?.name || "Country",
-        categoryName: item.category?.categoryName || "Category",
-      },
+      createPackSizeOptionRow({
+        optionName: netWeight ? `${netWeight}${unit ? ` ${unit}` : ""}` : "Standard",
+        quantityPerPack: toInputString(item.itemsPerPack),
+        netWeight,
+        weightUnit: unit,
+        price: toInputString(item.placements?.[0]?.price),
+      }),
     ];
   }
 
+  return [createPackSizeOptionRow()];
+}
+
+export function getInitialProductImages(item?: ItemData | null) {
+  if (item?.productImageUrls && item.productImageUrls.length > 0) return item.productImageUrls;
+  if (item?.productImageUrl) return [item.productImageUrl];
+  if (item?.productImages && item.productImages.length > 0) return item.productImages;
   return [];
 }
 
-function mapItemOptions(item?: ItemData | null) {
-  if (!item || !Array.isArray(item.options)) return [];
-  return item.options.map((opt) => ({
-    id: opt.id,
-    optionName: opt.optionName || "",
-    price: String(opt.price ?? ""),
-    quantityPerPack: opt.quantityPerPack ? String(opt.quantityPerPack) : "",
-    netWeight: opt.netWeight ? String(opt.netWeight) : "",
-    weightUnit: opt.weightUnit || "",
-    stockQuantity: opt.stockQuantity ? String(opt.stockQuantity) : "",
-    upcCode: opt.upcCode || "",
-  }));
+export function getInitialInfoImage(item?: ItemData | null) {
+  return item?.productInfoImageUrl || item?.productInfoImage || "";
 }
 
-export function useItemForm(
-  open: boolean,
+export function getInitialNutritionImage(item?: ItemData | null) {
+  return item?.nutritionInfoImageUrl || item?.nutritionInfoImage || "";
+}
+
+function buildDefaultValues(item?: ItemData | null): ItemFormValues {
+  const quantity = item?.quantityOnHand ?? item?.stockQuantity;
+  return {
+    productName: item?.productName ?? "",
+    description: item?.description ?? "",
+    itemNumber: item?.itemNumber ?? "",
+    upcCode: item?.upcCode ?? "",
+    productInfo: item?.productInfo ?? "",
+    nutritionInfo: item?.nutritionInfo ?? "",
+    discountPercentage: item?.discountPercentage ? String(item.discountPercentage) : "",
+    quantityOnHand: quantity !== null && quantity !== undefined ? String(quantity) : "",
+    isPerishable: item?.isPerishable ?? false,
+    options: mapItemOptions(item),
+    productImageFile: [],
+    productInfoImageFile: [],
+    nutritionInfoImageFile: [],
+    existingProductImages: getInitialProductImages(item),
+    existingProductInfoImage: getInitialInfoImage(item) || null,
+    existingNutritionInfoImage: getInitialNutritionImage(item) || null,
+  };
+}
+
+function buildFormData(
+  values: ItemFormValues,
   item: ItemData | null | undefined,
-  onOpenChange: (open: boolean) => void,
-  onSubmitCallback?: (values: ItemFormValues) => void,
+  categoryId: string | undefined,
 ) {
+  const formData = new FormData();
+  if (categoryId) formData.append("categoryId", categoryId);
+
+  formData.append(
+    "options",
+    JSON.stringify(
+      values.options.map((opt) => ({
+        ...(opt.id ? { id: opt.id } : {}),
+        optionName: opt.optionName.trim(),
+        quantityPerPack: opt.quantityPerPack ? Number(opt.quantityPerPack) : null,
+        netWeight: opt.netWeight ? Number(opt.netWeight) : null,
+        weightUnit: opt.weightUnit || null,
+        price: Number(opt.price),
+      })),
+    ),
+  );
+
+  formData.append("productName", values.productName.trim());
+  formData.append("description", values.description?.trim() || "");
+  formData.append("productInfo", values.productInfo?.trim() || "");
+  formData.append("nutritionInfo", values.nutritionInfo?.trim() || "");
+  formData.append("upcCode", values.upcCode?.trim() || "");
+  formData.append("itemNumber", values.itemNumber?.trim() || "");
+
+  const pct = values.discountPercentage ? Number(values.discountPercentage) : 0;
+  formData.append("discountPercentage", String(pct));
+  formData.append("discountAvailability", pct > 0 ? "true" : "false");
+
+  formData.append("quantityOnHand", values.quantityOnHand || "0");
+  formData.append("isPerishable", values.isPerishable ? "true" : "false");
+
+  if (item && values.existingProductImages !== undefined) {
+    formData.append("existingProductImages", JSON.stringify(values.existingProductImages));
+  }
+  values.productImageFile?.forEach((file) => formData.append("productImageFile", file));
+
+  if (values.productInfoImageFile && values.productInfoImageFile.length > 0) {
+    formData.append("productInfoImageFile", values.productInfoImageFile[0]);
+  } else if (item && getInitialInfoImage(item) && !values.existingProductInfoImage) {
+    formData.append("productInfoImage", "");
+  }
+
+  if (values.nutritionInfoImageFile && values.nutritionInfoImageFile.length > 0) {
+    formData.append("nutritionInfoImageFile", values.nutritionInfoImageFile[0]);
+  } else if (item && getInitialNutritionImage(item) && !values.existingNutritionInfoImage) {
+    formData.append("nutritionInfoImage", "");
+  }
+
+  return formData;
+}
+
+interface UseItemFormArgs {
+  /** Item being edited. Omit when creating. */
+  item?: ItemData | null;
+  /** Active category the new item is created in. Required when creating. */
+  category?: ActiveCategory | null;
+  onSaved?: (mode: ItemSubmitMode) => void;
+}
+
+export function useItemForm({ item, category, onSaved }: UseItemFormArgs) {
   const { mutateAsync: createItem, isPending: isCreating } = useCreateItem();
   const { mutateAsync: updateItem, isPending: isUpdating } = useUpdateItem(item?.id ?? "");
-
   const isSubmitting = isCreating || isUpdating;
 
-  const getInitialImages = (currentItem?: ItemData | null) => {
-    if (currentItem?.productImageUrls && currentItem.productImageUrls.length > 0) {
-      return currentItem.productImageUrls;
-    }
-    if (currentItem?.productImageUrl) {
-      return [currentItem.productImageUrl];
-    }
-    if (currentItem?.productImages && currentItem.productImages.length > 0) {
-      return currentItem.productImages;
-    }
-    return [];
-  };
-
-  const getInitialInfoImage = (currentItem?: ItemData | null) => {
-    return currentItem?.productInfoImageUrl || currentItem?.productInfoImage || "";
-  };
-
-  const getInitialNutritionImage = (currentItem?: ItemData | null) => {
-    return currentItem?.nutritionInfoImageUrl || currentItem?.nutritionInfoImage || "";
-  };
+  /** Changes on every reset so uncontrolled children (image pickers) remount clean */
+  const [formKey, setFormKey] = useState(0);
+  const [savedCount, setSavedCount] = useState(0);
 
   const form = useForm<ItemFormValues>({
     resolver: zodResolver(itemSchema),
-    mode: "onSubmit",
-    defaultValues: {
-      productName: item?.productName ?? "",
-      description: item?.description ?? "",
-      upcCode: item?.upcCode ?? "",
-      productInfo: item?.productInfo ?? "",
-      nutritionInfo: item?.nutritionInfo ?? "",
-      discountPercentage:
-        item?.discountPercentage !== null && item?.discountPercentage !== undefined
-          ? item.discountPercentage.toString()
-          : "",
-      itemsPerPack: item?.itemsPerPack?.toString() ?? "",
-      stockQuantity: item?.stockQuantity?.toString() ?? "0",
-      netWeight: item?.netWeight?.toString() ?? "",
-      weightUnit: item?.weightUnit ?? "",
-      unit: item?.unit ?? "",
-      isPerishable: item?.isPerishable ?? false,
-      placements: mapItemPlacements(item),
-      options: mapItemOptions(item),
-      productImageFile: [],
-      productInfoImageFile: [],
-      nutritionInfoImageFile: [],
-      existingProductImages: getInitialImages(item),
-      existingProductInfoImage: getInitialInfoImage(item),
-      existingNutritionInfoImage: getInitialNutritionImage(item),
-    },
+    mode: "onTouched",
+    defaultValues: buildDefaultValues(item),
   });
 
-  useEffect(() => {
-    if (open) {
-      form.clearErrors();
-      form.reset(
-        {
-          productName: item?.productName ?? "",
-          description: item?.description ?? "",
-          upcCode: item?.upcCode ?? "",
-          productInfo: item?.productInfo ?? "",
-          nutritionInfo: item?.nutritionInfo ?? "",
-          discountPercentage:
-            item?.discountPercentage !== null && item?.discountPercentage !== undefined
-              ? item.discountPercentage.toString()
-              : "0",
-          itemsPerPack: item?.itemsPerPack?.toString() ?? "",
-          stockQuantity: item?.stockQuantity?.toString() ?? "0",
-          netWeight: item?.netWeight?.toString() ?? "",
-          weightUnit: item?.weightUnit ?? "",
-          unit: item?.unit ?? "",
-          isPerishable: item?.isPerishable ?? false,
-          placements: mapItemPlacements(item),
-          options: mapItemOptions(item),
-          productImageFile: [],
-          productInfoImageFile: [],
-          nutritionInfoImageFile: [],
-          existingProductImages: getInitialImages(item),
-          existingProductInfoImage: getInitialInfoImage(item),
-          existingNutritionInfoImage: getInitialNutritionImage(item),
-        },
-        { keepErrors: false },
-      );
+  const submitValues = async (values: ItemFormValues, mode: ItemSubmitMode) => {
+    const categoryId = item ? undefined : category?.id;
+    if (!item && !categoryId) {
+      toast.error("Select a category before adding items.");
+      return;
     }
-  }, [open, item, form]);
 
-  const handleSubmit = async (values: ItemFormValues) => {
+    const formData = buildFormData(values, item, categoryId);
+
     try {
-      const placements = Array.isArray(values.placements) ? values.placements : [];
-      if (placements.length === 0) {
-        toast.error("Add at least one country price");
+      const response = (await (item
+        ? updateItem(formData as unknown as Parameters<typeof updateItem>[0])
+        : createItem(formData as unknown as Parameters<typeof createItem>[0]))) as {
+        status?: boolean | string;
+        message?: string;
+      };
+
+      if (response?.status === false) {
+        toast.error(response.message || `Couldn't ${item ? "update" : "create"} the item`);
         return;
       }
 
-      const primary = placements[0];
-      if (!primary?.countryId || !primary?.categoryId) {
-        toast.error("Each placement needs country and category");
-        return;
-      }
-
-      // If there are variants, the base placement price is governed by the first variant's price
-      if (values.options && values.options.length > 0) {
-        const basePrice = values.options[0].price;
-        placements.forEach((p) => {
-          p.price = String(basePrice);
-        });
-      }
-
-      const formData = new FormData();
-      formData.append("countryId", primary.countryId);
-      formData.append("categoryId", primary.categoryId);
-      formData.append(
-        "placements",
-        JSON.stringify(
-          placements.map((row) => ({
-            countryId: row.countryId,
-            categoryId: row.categoryId,
-            price: Number(row.price),
-          })),
-        ),
+      toast.success(
+        item
+          ? `"${values.productName.trim()}" updated`
+          : `"${values.productName.trim()}" added to ${category?.categoryName}`,
       );
 
-      if (values.options && values.options.length > 0) {
-        formData.append(
-          "options",
-          JSON.stringify(
-            values.options.map((opt) => ({
-              id: opt.id,
-              optionName: opt.optionName,
-              price: Number(opt.price),
-              quantityPerPack: opt.quantityPerPack ? Number(opt.quantityPerPack) : undefined,
-              netWeight: opt.netWeight ? Number(opt.netWeight) : undefined,
-              weightUnit: opt.weightUnit || undefined,
-              stockQuantity: opt.stockQuantity ? Number(opt.stockQuantity) : undefined,
-              upcCode: opt.upcCode || undefined,
-            })),
-          ),
-        );
-      }
-      formData.append("productName", values.productName);
-      formData.append("description", values.description || "");
-      formData.append("upcCode", values.upcCode || "");
-      formData.append("productInfo", values.productInfo || "");
-      if (values.nutritionInfo) formData.append("nutritionInfo", values.nutritionInfo);
-      if (values.discountPercentage !== undefined && values.discountPercentage !== "") {
-        formData.append("discountPercentage", values.discountPercentage);
-        const pct = Number(values.discountPercentage);
-        formData.append("discountAvailability", !Number.isNaN(pct) && pct > 0 ? "true" : "false");
+      if (!item && mode === "createAnother") {
+        setSavedCount((count) => count + 1);
+        form.reset(buildDefaultValues(null));
+        setFormKey((key) => key + 1);
       } else {
-        formData.append("discountPercentage", "0");
-        formData.append("discountAvailability", "false");
+        form.reset(values);
       }
-      formData.append("stockQuantity", values.stockQuantity);
-      if (values.itemsPerPack !== undefined && values.itemsPerPack !== "") {
-        formData.append("itemsPerPack", values.itemsPerPack);
-      }
-      if (values.netWeight) formData.append("netWeight", values.netWeight);
-      if (values.weightUnit) formData.append("weightUnit", values.weightUnit);
-      if (values.unit) formData.append("unit", values.unit);
-      formData.append("isPerishable", values.isPerishable ? "true" : "false");
-
-      if (item && values.existingProductImages !== undefined) {
-        formData.append("existingProductImages", JSON.stringify(values.existingProductImages));
-      }
-
-      if (values.productImageFile && values.productImageFile.length > 0) {
-        values.productImageFile.forEach((file) => {
-          formData.append("productImageFile", file);
-        });
-      }
-
-      if (values.productInfoImageFile && values.productInfoImageFile.length > 0) {
-        formData.append("productInfoImageFile", values.productInfoImageFile[0]);
-      } else if (item) {
-        const hadInitialInfo = !!getInitialInfoImage(item);
-        if (hadInitialInfo && !values.existingProductInfoImage) {
-          formData.append("productInfoImage", "");
-        }
-      }
-
-      if (values.nutritionInfoImageFile && values.nutritionInfoImageFile.length > 0) {
-        formData.append("nutritionInfoImageFile", values.nutritionInfoImageFile[0]);
-      } else if (item) {
-        const hadInitialNutrition = !!getInitialNutritionImage(item);
-        if (hadInitialNutrition && !values.existingNutritionInfoImage) {
-          formData.append("nutritionInfoImage", "");
-        }
-      }
-
-      if (item) {
-        const response = (await updateItem(
-          formData as unknown as Parameters<typeof updateItem>[0],
-        )) as {
-          status?: boolean | string;
-          message?: string;
-        };
-        if (response?.status === false) {
-          toast.error(response.message || "Failed to update item");
-          return;
-        }
-        toast.success(response?.message || "Item updated successfully");
-      } else {
-        const response = (await createItem(
-          formData as unknown as Parameters<typeof createItem>[0],
-        )) as {
-          status?: boolean | string;
-          message?: string;
-        };
-        if (response?.status === false) {
-          toast.error(response.message || "Failed to create item");
-          return;
-        }
-        toast.success(response?.message || "Item created successfully");
-      }
-
-      onSubmitCallback?.(values);
-      onOpenChange(false);
+      onSaved?.(mode);
     } catch {
       // Axios interceptor already shows the error toast — avoid duplicate messages (WEB-0008)
     }
   };
 
-  return {
-    form,
-    isSubmitting,
-    handleSubmit: form.handleSubmit(handleSubmit),
-  };
+  const submit = (mode: ItemSubmitMode) =>
+    form.handleSubmit(
+      (values) => submitValues(values, mode),
+      () => toast.error("Please fix the highlighted fields before saving."),
+    )();
+
+  return { form, formKey, savedCount, isSubmitting, submit };
 }
