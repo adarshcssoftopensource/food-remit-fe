@@ -540,4 +540,96 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
     ],
     true,
   ),
+  "sub-admins": withDeletedByColumn(
+    [
+      createSNoColumn(),
+      createSelectColumn(),
+      {
+        accessorKey: "name",
+        header: "User Name",
+        enableSorting: true,
+        cell: ({ row }) => {
+          const name = row.original.name || row.original.userName || "Admin";
+          const initials = name
+            .split(/[\s-_]/)
+            .map((w: string) => w[0]?.toUpperCase())
+            .slice(0, 2)
+            .join("");
+          return (
+            <div className="flex items-center gap-2.5">
+              <div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+                {initials}
+              </div>
+              <span className="text-sm font-medium text-slate-800 capitalize dark:text-slate-200">
+                {name}
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "role",
+        header: "Type",
+        enableSorting: true,
+        cell: ({ row }) => {
+          const isCoAdmin =
+            row.original.role === "CO_ADMIN" ||
+            row.original.userType === "CO_ADMIN" ||
+            row.original.userType === 1;
+          return (
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                isCoAdmin ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
+              }`}
+            >
+              {isCoAdmin ? "Co Admin" : "Sub Admin"}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "email",
+        header: "Email Address",
+        enableSorting: true,
+        cell: ({ row }) => (
+          <span className="text-sm text-blue-600 hover:underline">{row.original.email}</span>
+        ),
+      },
+      {
+        accessorKey: "phoneNumber",
+        header: "Contact Number",
+        enableSorting: true,
+        cell: ({ row }) => (
+          <span className="text-sm text-slate-700 dark:text-slate-300">
+            {row.original.phoneNumber || row.original.contactNumber || "N/A"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Created",
+        enableSorting: true,
+        cell: ({ row }) => {
+          const date = row.original.createdAt ? new Date(row.original.createdAt) : null;
+          return (
+            <span className="text-sm text-slate-700 dark:text-slate-300">
+              {date && !isNaN(date.getTime()) ? format(date, "MMM dd, yyyy") : "N/A"}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <RecycledEntityActionsCell
+            entityType="sub-admins"
+            entity={row.original}
+            entityNameField="name"
+          />
+        ),
+      },
+    ],
+    true,
+  ),
 };

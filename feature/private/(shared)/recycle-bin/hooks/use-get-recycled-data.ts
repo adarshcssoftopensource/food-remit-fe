@@ -7,9 +7,9 @@ import { buildCacheKey, buildUrl } from "@/lib/build-query-string";
 import { useApiQuery } from "@/hooks/useApi";
 import { useMemo } from "react";
 import { normalizeUser } from "@/feature/private/(super-admin)/users-management/lib/normalize-user";
-
 import { EMPLOYEE_ENDPOINTS } from "@/lib/api/endpoints/employee.endpoints";
 import { PARTNER_LEAD_ENDPOINTS } from "@/lib/api/endpoints/partner-lead.endpoints";
+import { SUB_ADMIN_ENDPOINTS } from "@/lib/api/endpoints/sub-admin.endpoints";
 
 export type RecycleEntityType =
   | "users"
@@ -20,7 +20,8 @@ export type RecycleEntityType =
   | "country-managers"
   | "employees"
   | "partner-leads"
-  | "product-boxes";
+  | "product-boxes"
+  | "sub-admins";
 
 export interface RecycledQueryArgs {
   page?: number;
@@ -60,6 +61,7 @@ const ENDPOINT_MAP: Record<RecycleEntityType, string> = {
   employees: EMPLOYEE_ENDPOINTS.GET_RECYCLED_EMPLOYEES,
   "partner-leads": PARTNER_LEAD_ENDPOINTS.GET_RECYCLED_LEADS,
   "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.GET_RECYCLED_PRODUCT_BOXES,
+  "sub-admins": SUB_ADMIN_ENDPOINTS.GET_RECYCLED_SUB_ADMINS,
 };
 
 export function useGetRecycledData(entityType: RecycleEntityType, args: RecycledQueryArgs = {}) {

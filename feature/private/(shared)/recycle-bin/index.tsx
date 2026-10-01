@@ -14,6 +14,7 @@ import {
   Handshake,
   MapPin,
   Package,
+  ShieldCheck,
   Store,
   Users,
   UserCog,
@@ -37,6 +38,7 @@ const ALL_ENTITY_TABS: {
   icon: any;
 }[] = [
   { id: "users", label: "Users", icon: Users },
+  { id: "sub-admins", label: "Sub/Co Admins", icon: ShieldCheck },
   { id: "stores", label: "Stores", icon: Store },
   { id: "items", label: "Items", icon: Package },
   { id: "categories", label: "Categories", icon: FolderTree },
