@@ -1,9 +1,19 @@
 "use client";
 
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ArrowRight, ChevronLeft, ChevronRight, FolderOpen, Package, Pencil } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  FolderOpen,
+  Package,
+  Pencil,
+  ZoomIn,
+} from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 import type { CategoryData } from "../types/category.types";
 
 interface CategoryGridProps {
@@ -27,6 +37,7 @@ export function CategoryGrid({
   totalPages,
   onPageChange,
 }: CategoryGridProps) {
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   if (loading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
@@ -77,13 +88,27 @@ export function CategoryGrid({
               <div className="flex items-start gap-3 p-4">
                 <div className="bg-primary/10 text-primary relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl">
                   {icon ? (
-                    <Image
-                      src={icon}
-                      alt={category.categoryName}
-                      fill
-                      sizes="56px"
-                      className="object-cover"
-                    />
+                    <>
+                      <Image
+                        src={icon}
+                        alt={category.categoryName}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                      />
+
+                      <button
+                        type="button"
+                        aria-label="View full image"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLightboxSrc(icon);
+                        }}
+                        className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/35 group-hover:opacity-100"
+                      >
+                        <ZoomIn className="h-5 w-5 text-white drop-shadow-md" />
+                      </button>
+                    </>
                   ) : (
                     <FolderOpen className="h-6 w-6" />
                   )}
@@ -165,6 +190,8 @@ export function CategoryGrid({
           </Button>
         </div>
       )}
+
+      <ImageLightbox src={lightboxSrc} alt="Category image" onClose={() => setLightboxSrc(null)} />
     </div>
   );
 }

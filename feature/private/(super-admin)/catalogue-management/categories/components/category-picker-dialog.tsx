@@ -1,5 +1,6 @@
 "use client";
 
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   AlertCircle,
@@ -11,6 +12,7 @@ import {
   Loader2,
   Search,
   X,
+  ZoomIn,
 } from "lucide-react";
 import Image from "next/image";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
@@ -89,6 +91,7 @@ function CategoryPickerBody({
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search.trim(), 250);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [prevSearch, setPrevSearch] = useState(debouncedSearch);
   if (prevSearch !== debouncedSearch) {
     setPrevSearch(debouncedSearch);
@@ -255,6 +258,7 @@ function CategoryPickerBody({
                       index={row.index}
                       onHover={setActiveIndex}
                       onSelect={onSelect}
+                      onZoom={setLightboxSrc}
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center gap-2 text-xs text-slate-400">
@@ -280,6 +284,8 @@ function CategoryPickerBody({
           </div>
         )}
       </div>
+
+      <ImageLightbox src={lightboxSrc} alt="Category image" onClose={() => setLightboxSrc(null)} />
 
       <div className="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-2.5 text-[11px] text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
         <span>
@@ -315,6 +321,7 @@ const CategoryRow = memo(function CategoryRow({
   index,
   onHover,
   onSelect,
+  onZoom,
 }: {
   category: CategoryPickerItem;
   query: string;
@@ -323,6 +330,7 @@ const CategoryRow = memo(function CategoryRow({
   index: number;
   onHover: (index: number) => void;
   onSelect: (category: CategoryPickerItem) => void;
+  onZoom: (src: string) => void;
 }) {
   return (
     <button
@@ -339,7 +347,26 @@ const CategoryRow = memo(function CategoryRow({
     >
       <div className="bg-primary/10 text-primary relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg">
         {category.categoryIconUrl ? (
-          <Image src={category.categoryIconUrl} alt="" fill sizes="40px" className="object-cover" />
+          <>
+            <Image
+              src={category.categoryIconUrl}
+              alt=""
+              fill
+              sizes="40px"
+              className="object-cover"
+            />
+            <button
+              type="button"
+              aria-label="View full image"
+              onClick={(e) => {
+                e.stopPropagation();
+                onZoom(category.categoryIconUrl!);
+              }}
+              className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-black/0 opacity-0 transition-all duration-200 hover:bg-black/40 hover:opacity-100"
+            >
+              <ZoomIn className="h-4 w-4 text-white drop-shadow-md" />
+            </button>
+          </>
         ) : (
           <FolderOpen className="h-4 w-4" />
         )}
