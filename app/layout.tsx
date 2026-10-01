@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryProvider } from "@/components/providers/query-provider";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { AppToaster } from "@/components/toaster/app-toaster";
-import NextTopLoader from "nextjs-toploader";
+import { AppProviders } from "@/core/providers/app-providers";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -40,13 +36,7 @@ export default function RootLayout({
         className="bg-background text-foreground flex min-h-screen flex-col"
         suppressHydrationWarning
       >
-        <NuqsAdapter>
-          <QueryProvider>
-            <TooltipProvider>{children}</TooltipProvider>
-            <AppToaster />
-            <NextTopLoader color="#219113" showSpinner={false} />
-          </QueryProvider>
-        </NuqsAdapter>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

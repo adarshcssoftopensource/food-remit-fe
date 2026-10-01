@@ -114,7 +114,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
           </>
         ) : (
           <div className="py-6 text-center">
-            <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-green-400/10 to-green-500/20 shadow-inner ring-1 ring-green-500/20">
+            <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-[1.25rem] bg-linear-to-br from-green-400/10 to-green-500/20 shadow-inner ring-1 ring-green-500/20">
               <CheckCircle2 className="size-10 text-green-600" />
             </div>
             <h2 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
