@@ -83,7 +83,9 @@ export function StoreInformation() {
       storeAddress: "",
       address2: "",
       storeCountry: "",
+      storeState: "",
       storeCity: "",
+      storeZipCode: "",
       sameDayDelivery: false,
       orderProcessingTime: "",
     },
@@ -114,14 +116,34 @@ export function StoreInformation() {
         return result || "";
       };
 
+      const getStoreLeadAddress = () => {
+        try {
+          const locsRaw = storeData?.partnerLead?.locations;
+          if (!locsRaw) return null;
+          let locs = locsRaw;
+          if (typeof locsRaw === "string") {
+            locs = JSON.parse(locsRaw);
+          }
+          return Array.isArray(locs) && locs[0] ? locs[0].address : null;
+        } catch {
+          return null;
+        }
+      };
+
       reset({
         storeImage: storeData.storeImage,
         storeName: storeData.storeName || "",
         storePhoneCode: activeCountryCode,
         storePhoneNumber: cleanPhone(activeCountryCode, storeData.storePhoneNumber),
-        storeAddress: storeData.storeAddress || "",
+        storeAddress: getStoreLeadAddress() || storeData.address || storeData.storeAddress || "",
         storeCountry: storeData.country || "",
+        storeState:
+          storeData.state ||
+          storeData.partnerLead?.stateProvince ||
+          storeData.partnerLead?.stateProvinceRegion ||
+          "",
         storeCity: storeData.city || "",
+        storeZipCode: storeData.zipCode || storeData.partnerLead?.zipCode || "",
         sameDayDelivery: storeData.sameDayDelivery ?? false,
         orderProcessingTime: storeData.orderProcessingTime || "",
       });

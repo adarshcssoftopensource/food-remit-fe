@@ -35,12 +35,28 @@ export function getProfileFormValues(profile: any) {
     (profile as any)?.city ||
     "";
 
+  const getLeadAddress = () => {
+    try {
+      const locsRaw = (profile as any)?.partnerLead?.locations;
+      if (!locsRaw) return null;
+      let locs = locsRaw;
+      if (typeof locsRaw === "string") {
+        locs = JSON.parse(locsRaw);
+      }
+      return Array.isArray(locs) && locs[0] ? locs[0].address : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const rawAddress = getLeadAddress() || profile?.address || "";
+
   const values: ProfileDetailsValues = {
     firstName,
     lastName,
     email: profile?.email || "",
     contactNumber: buildProfileContactNumber(profile?.phoneNumber, (profile as any)?.countryCode),
-    address: formatAddress(profile?.address) || "",
+    address: formatAddress(rawAddress) || "",
     country: resolvedCountry,
     state: (profile as any)?.state || "",
     city: resolvedCity || (profile as any)?.city || "",

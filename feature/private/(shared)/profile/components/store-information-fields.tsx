@@ -1,6 +1,6 @@
 "use client";
 
-import { Control, Controller, FieldErrors, UseFormSetValue } from "react-hook-form";
+import { Control, Controller, FieldErrors, UseFormSetValue, useWatch } from "react-hook-form";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
 
 import { FieldLabel } from "@/components/ui/field";
@@ -15,10 +15,12 @@ import { ImageUpload } from "@/components/common/image-upload";
 import { PhoneInputComponent } from "@/components/ui/phone-input";
 import { findPhoneCountry } from "@/components/ui/phone-input-utils";
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
-import { CountryCityFields } from "@/feature/private/(super-admin)/store-management/components/country-city-fields";
+import { CountrySelect } from "@/components/common/country-select";
+import { CitySelect } from "@/components/common/city-select";
 import { cn } from "@/lib/utils";
 import { ORDER_PROCESSING_TIME_OPTIONS } from "@/constants/become-a-partner";
 import type { StoreInfoValues } from "../schema/store-info.schema";
+import { Input } from "@/components/ui/input";
 
 interface StoreFieldsProps {
   control: Control<StoreInfoValues>;
@@ -142,43 +144,10 @@ export function StoreLocationFields({
   setValue,
   onPhoneIsoChange,
 }: StoreLocationFieldsProps) {
+  const countryValue = useWatch({ control, name: "storeCountry" });
+
   return (
     <>
-      <Controller
-        name="storeCountry"
-        control={control}
-        render={({ field: countryField }) => (
-          <Controller
-            name="storeCity"
-            control={control}
-            render={({ field: cityField }) => (
-              <CountryCityFields
-                prefix="store"
-                countryValue={countryField.value || ""}
-                cityValue={cityField.value || ""}
-                onCountryChange={(val, countryObj) => {
-                  countryField.onChange(val);
-                  cityField.onChange("");
-                  const cName = countryObj?.name || countryObj?.countryName;
-                  if (cName) {
-                    const matched = findPhoneCountry(cName);
-                    if (matched) {
-                      onPhoneIsoChange(matched.isoCode);
-                      setValue("storePhoneCode", `+${matched.dialCode}`);
-                    }
-                  }
-                }}
-                onCityChange={cityField.onChange}
-                countryError={errors.storeCountry?.message}
-                cityError={errors.storeCity?.message}
-                disabled={true}
-                countryDisabled={true}
-              />
-            )}
-          />
-        )}
-      />
-
       <Controller
         name="storeAddress"
         control={control}
@@ -201,6 +170,108 @@ export function StoreLocationFields({
           </div>
         )}
       />
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <Controller
+          name="storeCountry"
+          control={control}
+          render={({ field }) => (
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel className="text-sm font-semibold">
+                Country <span className="text-red-500">*</span>
+              </FieldLabel>
+              <CountrySelect
+                value={field.value || ""}
+                onValueChange={(val, countryObj) => {
+                  field.onChange(val);
+                  setValue("storeCity", "");
+                  const cName = countryObj?.name || countryObj?.countryName;
+                  if (cName) {
+                    const matched = findPhoneCountry(cName);
+                    if (matched) {
+                      onPhoneIsoChange(matched.isoCode);
+                      setValue("storePhoneCode", `+${matched.dialCode}`);
+                    }
+                  }
+                }}
+                placeholder="Select Country"
+                includeAll={false}
+                disabled={true}
+                invalid={!!errors.storeCountry}
+                className={errors.storeCountry ? "border-red-500 bg-red-50" : ""}
+              />
+              {errors.storeCountry && (
+                <p className="text-xs font-medium text-red-500">{errors.storeCountry.message}</p>
+              )}
+            </div>
+          )}
+        />
+
+        <Controller
+          name="storeState"
+          control={control}
+          render={({ field }) => (
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel className="text-sm font-semibold">State</FieldLabel>
+              <Input
+                {...field}
+                value={field.value || ""}
+                placeholder="Enter State"
+                disabled={true}
+                className="h-11 cursor-not-allowed rounded-xl border-slate-200 bg-slate-100 text-slate-600 disabled:cursor-not-allowed disabled:opacity-75"
+              />
+              {errors.storeState && (
+                <p className="text-xs font-medium text-red-500">{errors.storeState.message}</p>
+              )}
+            </div>
+          )}
+        />
+
+        <Controller
+          name="storeCity"
+          control={control}
+          render={({ field }) => (
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel className="text-sm font-semibold">
+                City <span className="text-red-500">*</span>
+              </FieldLabel>
+              <CitySelect
+                countryId={countryValue || ""}
+                value={field.value || ""}
+                onValueChange={(v) => field.onChange(v)}
+                disabled={true}
+                placeholder="Select City"
+                includeAll={false}
+                invalid={!!errors.storeCity}
+                className={errors.storeCity ? "border-red-500 bg-red-50" : ""}
+              />
+              {errors.storeCity && (
+                <p className="text-xs font-medium text-red-500">{errors.storeCity.message}</p>
+              )}
+            </div>
+          )}
+        />
+
+        <Controller
+          name="storeZipCode"
+          control={control}
+          render={({ field }) => (
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel className="text-sm font-semibold">Zipcode</FieldLabel>
+              <Input
+                {...field}
+                value={field.value || ""}
+                placeholder="Enter Zipcode"
+                disabled={true}
+                className="h-11 cursor-not-allowed rounded-xl border-slate-200 bg-slate-100 text-slate-600 disabled:cursor-not-allowed disabled:opacity-75"
+              />
+              {errors.storeZipCode && (
+                <p className="text-xs font-medium text-red-500">{errors.storeZipCode.message}</p>
+              )}
+            </div>
+          )}
+        />
+      </div>
     </>
   );
 }

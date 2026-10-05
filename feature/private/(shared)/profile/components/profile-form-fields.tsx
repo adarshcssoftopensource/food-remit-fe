@@ -303,7 +303,7 @@ export function StoreManagerLocationFields({ control, errors }: ProfileFieldsPro
         name="zipCode"
         control={control}
         render={({ field }) => (
-          <div className="flex flex-col gap-1.5 md:col-span-2">
+          <div className="flex flex-col gap-1.5">
             <FieldLabel htmlFor="zipCode" className="text-sm font-semibold">
               Zipcode
             </FieldLabel>

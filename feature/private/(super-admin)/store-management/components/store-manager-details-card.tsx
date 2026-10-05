@@ -167,60 +167,62 @@ export function StoreManagerDetailsCard({
         )}
       />
 
-      <Controller
-        name="managerCountry"
-        control={control}
-        render={({ field: cField }) => (
-          <Controller
-            name="managerState"
-            control={control}
-            render={({ field: sField }) => (
-              <Controller
-                name="managerCity"
-                control={control}
-                render={({ field: cityField }) => (
-                  <ManagerLocationFields
-                    countryValue={cField.value}
-                    onCountryChange={(v) => {
-                      cField.onChange(v);
-                      const info = getCountryPhoneInfo(v, apiCountries);
-                      if (info?.dialCode) {
-                        setValue("managerPhoneCode", info.dialCode, {
-                          shouldValidate: true,
-                        });
-                      }
-                    }}
-                    stateValue={sField.value}
-                    onStateChange={sField.onChange}
-                    cityValue={cityField.value}
-                    onCityChange={cityField.onChange}
-                    countryError={errors.managerCountry?.message}
-                    stateError={errors.managerState?.message}
-                    cityError={errors.managerCity?.message}
-                    disabled={isNonCommissionDisabled}
-                  />
-                )}
-              />
-            )}
-          />
-        )}
-      />
-
-      <Controller
-        name="managerZipCode"
-        control={control}
-        render={({ field }) => (
-          <FormField label="Zipcode" error={errors.managerZipCode?.message}>
-            <Input
-              {...field}
-              id="managerZipCode"
-              placeholder="Enter Zipcode"
-              disabled={isNonCommissionDisabled}
-              className="h-11 rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Controller
+          name="managerCountry"
+          control={control}
+          render={({ field: cField }) => (
+            <Controller
+              name="managerState"
+              control={control}
+              render={({ field: sField }) => (
+                <Controller
+                  name="managerCity"
+                  control={control}
+                  render={({ field: cityField }) => (
+                    <ManagerLocationFields
+                      countryValue={cField.value}
+                      onCountryChange={(v) => {
+                        cField.onChange(v);
+                        const info = getCountryPhoneInfo(v, apiCountries);
+                        if (info?.dialCode) {
+                          setValue("managerPhoneCode", info.dialCode, {
+                            shouldValidate: true,
+                          });
+                        }
+                      }}
+                      stateValue={sField.value}
+                      onStateChange={sField.onChange}
+                      cityValue={cityField.value}
+                      onCityChange={cityField.onChange}
+                      countryError={errors.managerCountry?.message}
+                      stateError={errors.managerState?.message}
+                      cityError={errors.managerCity?.message}
+                      disabled={isNonCommissionDisabled}
+                    />
+                  )}
+                />
+              )}
             />
-          </FormField>
-        )}
-      />
+          )}
+        />
+
+        <Controller
+          name="managerZipCode"
+          control={control}
+          render={({ field }) => (
+            <FormField label="Zipcode" error={errors.managerZipCode?.message}>
+              <Input
+                {...field}
+                id="managerZipCode"
+                placeholder="Enter Zipcode"
+                disabled={isNonCommissionDisabled}
+                className="h-11 rounded-xl border-slate-200 bg-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
+              />
+            </FormField>
+          )}
+        />
+      </div>
     </StoreFormCard>
   );
 }

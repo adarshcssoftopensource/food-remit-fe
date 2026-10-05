@@ -110,37 +110,6 @@ export function StoreDetailsCard({
       />
 
       <Controller
-        name="storeCountry"
-        control={control}
-        render={({ field: cField }) => (
-          <Controller
-            name="storeCity"
-            control={control}
-            render={({ field: cityField }) => (
-              <CountryCityFields
-                prefix="store"
-                countryValue={cField.value}
-                onCountryChange={(v, countryItem) => {
-                  cField.onChange(v);
-                  const info = getCountryPhoneInfo(countryItem?.name || v, apiCountries);
-                  if (info?.dialCode) {
-                    setValue("storePhoneCode", info.dialCode, { shouldValidate: true });
-                  }
-                }}
-                stateValue=""
-                onStateChange={() => {}}
-                cityValue={cityField.value}
-                onCityChange={cityField.onChange}
-                countryError={errors.storeCountry?.message}
-                cityError={errors.storeCity?.message}
-                disabled={isNonCommissionDisabled}
-              />
-            )}
-          />
-        )}
-      />
-
-      <Controller
         name="storeAddress"
         control={control}
         render={({ field }) => (
@@ -157,6 +126,39 @@ export function StoreDetailsCard({
           </FormField>
         )}
       />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Controller
+          name="storeCountry"
+          control={control}
+          render={({ field: cField }) => (
+            <Controller
+              name="storeCity"
+              control={control}
+              render={({ field: cityField }) => (
+                <CountryCityFields
+                  prefix="store"
+                  countryValue={cField.value}
+                  onCountryChange={(v, countryItem) => {
+                    cField.onChange(v);
+                    const info = getCountryPhoneInfo(countryItem?.name || v, apiCountries);
+                    if (info?.dialCode) {
+                      setValue("storePhoneCode", info.dialCode, { shouldValidate: true });
+                    }
+                  }}
+                  stateValue=""
+                  onStateChange={() => {}}
+                  cityValue={cityField.value}
+                  onCityChange={cityField.onChange}
+                  countryError={errors.storeCountry?.message}
+                  cityError={errors.storeCity?.message}
+                  disabled={isNonCommissionDisabled}
+                />
+              )}
+            />
+          )}
+        />
+      </div>
 
       <Controller
         name="address2"

@@ -9,7 +9,9 @@ export const storeInfoSchema = z
     storeAddress: z.string().optional(),
     address2: z.string().optional(),
     storeCountry: z.string().optional(),
+    storeState: z.string().optional(),
     storeCity: z.string().optional(),
+    storeZipCode: z.string().optional(),
     sameDayDelivery: z.boolean().optional(),
     orderProcessingTime: z.string().optional(),
   })
