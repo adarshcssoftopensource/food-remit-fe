@@ -4,6 +4,7 @@ import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { StatusBadge } from "@/components/common/status-badge";
 import { type StoreData } from "@/feature/private/(super-admin)/store-management/types/store-management";
+import { formatAddress } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { StoreActionsCell } from "../components/store-actions-cell";
 
@@ -82,7 +83,9 @@ export const storeColumns = (
       cell: ({ row }) => (
         <TruncatedTextCell
           maxWords={1}
-          text={`${row.original.storeAddress}${row.original.address2 ? `, ${row.original.address2}` : ""}`}
+          text={formatAddress(
+            `${row.original.storeAddress}${row.original.address2 ? `, ${row.original.address2}` : ""}`,
+          )}
           className="max-w-45 cursor-default text-sm"
         />
       ),

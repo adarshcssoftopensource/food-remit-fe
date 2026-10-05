@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Clock, Calendar, CheckCircle2, AlertTriangle, Store, Phone } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatAddress } from "@/lib/utils";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
 const ALL_DAYS = [
@@ -166,7 +166,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                             Store #{idx + 1}
                           </span>
                           <p className="mt-0.5 text-sm leading-snug font-bold text-slate-900">
-                            {loc.address}
+                            {formatAddress(loc.address)}
                           </p>
                           {storePhone && (
                             <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-600">

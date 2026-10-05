@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { PhoneDisplay } from "@/components/ui/phone-display";
 import { cn } from "@/lib/utils";
+import { formatAddress } from "@/lib/utils";
 import { getInitials } from "@/lib/get-initials";
 import {
   Building2,
@@ -170,7 +171,7 @@ export function EmployeeProfileCard({ employee, totalOrders }: EmployeeProfileCa
           <div className="grid grid-cols-1 gap-3 p-5 sm:grid-cols-2">
             <LocationField
               label="Address"
-              value={employee.address}
+              value={formatAddress(employee.address)}
               icon={<Home className="size-3.5" />}
             />
             <LocationField

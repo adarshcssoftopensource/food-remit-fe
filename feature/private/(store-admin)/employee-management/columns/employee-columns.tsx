@@ -4,6 +4,7 @@ import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { StatusBadge } from "@/components/common/status-badge";
 import { PhoneDisplay } from "@/components/ui/phone-display";
+import { formatAddress } from "@/lib/utils";
 import { type Employee } from "@/feature/private/(store-admin)/employee-management/types/employee-management";
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeActionsCell } from "../components/employee-actions-cell";
@@ -60,7 +61,7 @@ export const employeeColumns = (onImageClick?: (image: string) => void): ColumnD
     header: "Address",
     cell: ({ row }) => (
       <TruncatedTextCell
-        text={row.original.address || "-"}
+        text={formatAddress(row.original.address) || "-"}
         className="max-w-45 cursor-default text-sm"
       />
     ),
