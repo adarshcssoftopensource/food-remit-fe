@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatAddress } from "@/lib/utils";
 import { MapPin, Phone, Store, User } from "lucide-react";
 import type { OrderData } from "../types/order.types";
 
@@ -41,7 +42,7 @@ function PersonCard({ role, name, phone, address }: PersonCardProps) {
         </p>
         <p className="flex items-start text-slate-600 dark:text-slate-300">
           <MapPin className={`mr-2 size-3.5 shrink-0 text-${color}-500`} />
-          {address || "N/A"}
+          {formatAddress(address) || "N/A"}
         </p>
       </div>
     </div>
@@ -108,7 +109,7 @@ export function OrderPeopleAndStore({ order }: OrderPeopleAndStoreProps) {
                 <div>
                   <p className="font-semibold text-slate-800 dark:text-slate-200">Store Address</p>
                   <p className="text-slate-600 dark:text-slate-300">
-                    {order.storeAddress || "N/A"}
+                    {formatAddress(order.storeAddress) || "N/A"}
                   </p>
                 </div>
               </div>
