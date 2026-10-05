@@ -73,7 +73,7 @@ interface OrderPeopleAndStoreProps {
 
 export function OrderPeopleAndStore({ order }: OrderPeopleAndStoreProps) {
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
       {/* Sender & Receiver */}
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
@@ -82,7 +82,7 @@ export function OrderPeopleAndStore({ order }: OrderPeopleAndStoreProps) {
             Sender &amp; Receiver Details
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2">
+        <CardContent className="grid grid-cols-1 gap-4 p-6 lg:grid-cols-2">
           <PersonCard
             role="Sender"
             name={order.userName || ""}

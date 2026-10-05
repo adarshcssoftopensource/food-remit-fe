@@ -279,7 +279,7 @@ export function OrderFinancials({ order }: OrderFinancialsProps) {
 
   return (
     <div
-      className={`grid grid-cols-1 gap-6 ${canViewPlatformFees ? "md:grid-cols-3" : "md:grid-cols-2"}`}
+      className={`grid grid-cols-1 gap-6 ${canViewPlatformFees ? "lg:grid-cols-2 xl:grid-cols-3" : "lg:grid-cols-2"}`}
     >
       <FinancialCard
         step={1}
