@@ -83,6 +83,7 @@ export function ManagerLocationFields({
           disabled={disabled}
           invalid={!!countryError}
         />
+        {disabled && <p className="text-[11px] text-slate-400">Country cannot be changed</p>}
         {countryError && <p className="text-xs font-medium text-red-500">{countryError}</p>}
       </div>
 
@@ -115,6 +116,7 @@ export function ManagerLocationFields({
             </SelectGroup>
           </SelectContent>
         </Select>
+        {disabled && <p className="text-[11px] text-slate-400">State cannot be changed</p>}
         {stateError && <p className="text-xs font-medium text-red-500">{stateError}</p>}
       </div>
 
@@ -146,6 +148,7 @@ export function ManagerLocationFields({
             </SelectGroup>
           </SelectContent>
         </Select>
+        {disabled && <p className="text-[11px] text-slate-400">City cannot be changed</p>}
         {cityError && <p className="text-xs font-medium text-red-500">{cityError}</p>}
       </div>
     </>

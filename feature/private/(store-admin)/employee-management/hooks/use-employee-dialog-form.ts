@@ -13,13 +13,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-function getEmptyEmployeeValues(defaultDialCode: string): EmployeeFormValues {
+function getEmptyEmployeeValues(
+  defaultDialCode: string,
+  targetCountryName?: string,
+): EmployeeFormValues {
   return {
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
     countryCode: defaultDialCode,
+    country: targetCountryName || "",
     address: "",
     city: "",
     state: "",
@@ -35,6 +39,7 @@ function getEmployeeValues(employee: Employee, defaultDialCode: string): Employe
     email: employee.email,
     phoneNumber: employee.phoneNumber || "",
     countryCode: employee.countryCode || defaultDialCode,
+    country: (employee as any).country || "",
     address: employee.address || "",
     city: employee.city || "",
     state: employee.state || "",
@@ -112,7 +117,7 @@ export function useEmployeeDialogForm(open: boolean, employee: Employee | undefi
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(EmployeeFormSchema),
-    defaultValues: getEmptyEmployeeValues(defaultDialCode || "+1"),
+    defaultValues: getEmptyEmployeeValues(defaultDialCode || "+1", targetCountryName),
   });
 
   // Reset form when dialog opens (render-time adjust — avoids setState-in-effect lint).
@@ -126,7 +131,7 @@ export function useEmployeeDialogForm(open: boolean, employee: Employee | undefi
         form.reset(getEmployeeValues(employee, defaultDialCode));
       } else {
         setPhoneIso(targetCountryIso);
-        form.reset(getEmptyEmployeeValues(defaultDialCode));
+        form.reset(getEmptyEmployeeValues(defaultDialCode, targetCountryName));
       }
     }
   }

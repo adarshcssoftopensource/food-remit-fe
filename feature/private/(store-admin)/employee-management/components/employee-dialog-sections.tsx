@@ -1,6 +1,8 @@
 "use client";
 
 import { AddressAutocompleteInput } from "@/components/common/address-autocomplete-input";
+import { CountrySelect } from "@/components/common/country-select";
+import { WorldCitySelect } from "@/components/common/world-city-select";
 import { ImageUpload } from "@/components/common/image-upload";
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -10,7 +12,9 @@ import PhoneInputComponent from "@/components/ui/phone-input";
 import { EmployeeFormValues } from "@/feature/private/(store-admin)/employee-management/schema/employee.schema";
 import { toPhoneDigits } from "@/lib/phone";
 import { Contact, Globe2, MapPin, Save, UserCircle, UserPen, UserPlus, X } from "lucide-react";
+import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { findPhoneCountry } from "@/components/ui/phone-input-utils";
 
 type EmployeeForm = UseFormReturn<EmployeeFormValues>;
 
@@ -221,6 +225,8 @@ export function EmployeeLocationSection({
   targetCountryName,
   onPlaceSelect,
 }: EmployeeLocationSectionProps) {
+  const [countryIso, setCountryIso] = useState<string>(targetCountryIso || "");
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
@@ -241,7 +247,38 @@ export function EmployeeLocationSection({
         )}
       </div>
       <div className="space-y-6 p-6">
-        <div className="w-full">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-semibold text-slate-700">
+                  Country <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <CountrySelect
+                    value={field.value}
+                    valueKey="name"
+                    disabled={true}
+                    onValueChange={(val, country) => {
+                      field.onChange(val);
+                      const newIso = country?.countryCode || findPhoneCountry(val)?.isoCode || "";
+                      setCountryIso(newIso);
+                      form.setValue("address", "");
+                      form.setValue("city", "");
+                      form.setValue("state", "");
+                      form.setValue("zipCode", "");
+                    }}
+                    placeholder="Select Country"
+                    className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                  />
+                </FormControl>
+                <p className="text-[11px] text-slate-400">Country cannot be changed</p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="address"
@@ -250,11 +287,16 @@ export function EmployeeLocationSection({
                 <FormLabel className="font-semibold text-slate-700">Address</FormLabel>
                 <FormControl className="w-full">
                   <AddressAutocompleteInput
-                    countryCode={targetCountryIso}
+                    countryCode={countryIso}
                     value={field.value || ""}
                     onChange={field.onChange}
-                    onPlaceSelect={onPlaceSelect}
-                    placeholder={`Search for an address in ${targetCountryName}`}
+                    onPlaceSelect={(place) => {
+                      onPlaceSelect(place);
+                      if (place.country) {
+                        form.setValue("country", place.country, { shouldDirty: true });
+                      }
+                    }}
+                    placeholder={`Search for an address`}
                   />
                 </FormControl>
                 <FormMessage />
@@ -263,15 +305,23 @@ export function EmployeeLocationSection({
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
             control={form.control}
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-slate-700">City</FormLabel>
+                <FormLabel className="font-semibold text-slate-700">
+                  City <span className="text-red-500">*</span>
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="City" className="h-11 rounded-xl bg-slate-50" {...field} />
+                  <WorldCitySelect
+                    value={field.value}
+                    countryIsoCode={countryIso}
+                    onValueChange={(val) => field.onChange(val)}
+                    placeholder="Select City"
+                    className="h-11 rounded-xl border-slate-200 bg-slate-50"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

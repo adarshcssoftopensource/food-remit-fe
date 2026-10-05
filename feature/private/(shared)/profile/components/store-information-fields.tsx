@@ -200,6 +200,7 @@ export function StoreLocationFields({
                 invalid={!!errors.storeCountry}
                 className={errors.storeCountry ? "border-red-500 bg-red-50" : ""}
               />
+              <p className="text-[11px] text-slate-400">Country cannot be changed</p>
               {errors.storeCountry && (
                 <p className="text-xs font-medium text-red-500">{errors.storeCountry.message}</p>
               )}
@@ -220,6 +221,7 @@ export function StoreLocationFields({
                 disabled={true}
                 className="h-11 cursor-not-allowed rounded-xl border-slate-200 bg-slate-100 text-slate-600 disabled:cursor-not-allowed disabled:opacity-75"
               />
+              <p className="text-[11px] text-slate-400">State cannot be changed</p>
               {errors.storeState && (
                 <p className="text-xs font-medium text-red-500">{errors.storeState.message}</p>
               )}
@@ -245,6 +247,7 @@ export function StoreLocationFields({
                 invalid={!!errors.storeCity}
                 className={errors.storeCity ? "border-red-500 bg-red-50" : ""}
               />
+              <p className="text-[11px] text-slate-400">City cannot be changed</p>
               {errors.storeCity && (
                 <p className="text-xs font-medium text-red-500">{errors.storeCity.message}</p>
               )}
@@ -265,6 +268,7 @@ export function StoreLocationFields({
                 disabled={true}
                 className="h-11 cursor-not-allowed rounded-xl border-slate-200 bg-slate-100 text-slate-600 disabled:cursor-not-allowed disabled:opacity-75"
               />
+              <p className="text-[11px] text-slate-400">Zipcode cannot be changed</p>
               {errors.storeZipCode && (
                 <p className="text-xs font-medium text-red-500">{errors.storeZipCode.message}</p>
               )}

@@ -35,6 +35,7 @@ function buildEmployeeFormData(data: EmployeeFormValues) {
   if (data.city) formData.append("city", data.city);
   if (data.state) formData.append("state", data.state);
   if (data.zipCode) formData.append("zipCode", data.zipCode);
+  if (data.country) formData.append("country", data.country);
   if (data.accountStatus) formData.append("accountStatus", data.accountStatus);
 
   if (data.image instanceof File) {
@@ -92,6 +93,10 @@ export function EmployeeDialog({
       shouldDirty: true,
     });
     form.setValue("zipCode", place.postalCode || "", {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    form.setValue("country", place.country || "", {
       shouldValidate: true,
       shouldDirty: true,
     });

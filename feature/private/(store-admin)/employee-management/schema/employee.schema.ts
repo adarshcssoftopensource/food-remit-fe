@@ -9,9 +9,10 @@ export const EmployeeFormSchema = z
     phoneNumber: z.string().min(1, "Phone number is required"),
     countryCode: z.string().min(1, "Select country code"),
     address: z.string().optional(),
-    city: z.string().optional(),
+    city: z.string().min(1, "City is required"),
     state: z.string().optional(),
     zipCode: z.string().optional(),
+    country: z.string().min(1, "Country is required"),
     image: z.union([z.instanceof(File), z.string()]).optional(),
     accountStatus: z.enum(["ACTIVE", "INACTIVE"]).optional(),
   })

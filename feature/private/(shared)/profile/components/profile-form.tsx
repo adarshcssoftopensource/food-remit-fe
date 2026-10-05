@@ -40,7 +40,7 @@ export function ProfileForm() {
     formState: { errors, isDirty },
     reset,
   } = useForm<ProfileDetailsValues>({
-    resolver: zodResolver(getProfileDetailsSchema(isStoreManager)),
+    resolver: zodResolver(getProfileDetailsSchema()),
     values,
     mode: "onChange",
   });
@@ -115,14 +115,19 @@ export function ProfileForm() {
               />
 
               {isEmployee ? (
-                <EmployeeLocationSection control={control} errors={errors} setValue={setValue} />
-              ) : (
+                <EmployeeLocationSection
+                  control={control}
+                  errors={errors}
+                  setValue={setValue}
+                  fallbackCountry={phoneFallbackCountry}
+                />
+              ) : isStoreManager ? (
                 <ProfileAddressField
                   control={control}
                   errors={errors}
                   isStoreManager={isStoreManager}
                 />
-              )}
+              ) : null}
 
               {isStoreManager && <StoreManagerLocationFields control={control} errors={errors} />}
             </div>

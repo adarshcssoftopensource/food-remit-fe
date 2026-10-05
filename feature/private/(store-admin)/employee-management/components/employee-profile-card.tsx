@@ -15,6 +15,7 @@ import {
   MapPin,
   Package,
   Phone,
+  Globe2,
 } from "lucide-react";
 import type { Employee } from "@/feature/private/(store-admin)/employee-management/types/employee-management";
 import { LocationSectionHeader } from "@/feature/private/(shared)/components/location-section-header";
@@ -188,6 +189,11 @@ export function EmployeeProfileCard({ employee, totalOrders }: EmployeeProfileCa
               label="Zip Code"
               value={employee.zipCode}
               icon={<Hash className="size-3.5" />}
+            />
+            <LocationField
+              label="Country"
+              value={(employee as any).country}
+              icon={<Globe2 className="size-3.5" />}
             />
           </div>
         </div>

@@ -1,7 +1,6 @@
-import { getFullPhoneError } from "@/lib/phone";
 import { z } from "zod";
 
-export const getProfileDetailsSchema = (isStoreAdmin: boolean) =>
+export const getProfileDetailsSchema = () =>
   z.object({
     firstName: z
       .string()
@@ -16,9 +15,9 @@ export const getProfileDetailsSchema = (isStoreAdmin: boolean) =>
     contactNumber: z.string().optional(),
 
     address: z.string().max(200, "Maximum 200 characters are allowed").optional(),
-    country: z.string().optional(),
+    country: z.string().min(1, "Country is required"),
     state: z.string().optional(),
-    city: z.string().optional(),
+    city: z.string().min(1, "City is required"),
     zipCode: z.string().optional(),
     image: z.any().optional(),
   });
