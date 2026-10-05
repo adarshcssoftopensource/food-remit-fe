@@ -264,9 +264,14 @@ export function UpdateStatusDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="overflow-hidden rounded-[2rem] border-slate-200 p-0 shadow-2xl sm:max-w-120">
-        <form onSubmit={handleSubmit(onSubmit)} noValidate suppressHydrationWarning>
-          <DialogHeader className="border-b border-slate-100 bg-linear-to-br from-slate-50 to-white px-8 py-6">
+      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden rounded-[2rem] border-slate-200 p-0 shadow-2xl sm:max-w-120">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          suppressHydrationWarning
+          className="flex h-full flex-col overflow-hidden"
+        >
+          <DialogHeader className="shrink-0 border-b border-slate-100 bg-linear-to-br from-slate-50 to-white px-8 py-6">
             <DialogTitle className="flex items-center gap-3 text-xl font-extrabold tracking-tight text-slate-900">
               <div
                 className={`flex h-10 w-10 items-center justify-center rounded-xl border shadow-inner ${styles.iconBox}`}
@@ -302,7 +307,7 @@ export function UpdateStatusDialog({
                       id="remark"
                       placeholder={styles.placeholder}
                       aria-invalid={!!errors.remark}
-                      className={`min-h-30 resize-none rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium transition-colors duration-300 placeholder:text-slate-400 hover:border-slate-300 hover:bg-slate-50 ${styles.focusClass} ${
+                      className={`max-h-64 min-h-30 resize-none overflow-y-auto rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium transition-colors duration-300 placeholder:text-slate-400 hover:border-slate-300 hover:bg-slate-50 ${styles.focusClass} ${
                         errors.remark
                           ? "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15"
                           : ""
@@ -318,7 +323,7 @@ export function UpdateStatusDialog({
               />
             </div>
           </div>
-          <DialogFooter className="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/80 px-8 py-5 backdrop-blur-sm">
+          <DialogFooter className="flex shrink-0 items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/80 px-8 py-5 backdrop-blur-sm">
             <Button
               type="button"
               variant="outline"
