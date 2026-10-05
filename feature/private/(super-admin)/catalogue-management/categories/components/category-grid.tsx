@@ -10,11 +10,15 @@ import {
   FolderOpen,
   Package,
   Pencil,
+  Trash2,
   ZoomIn,
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import type { CategoryData } from "../types/category.types";
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
+import { useDeleteCategory } from "../hooks/use-delete-category";
+import { successToast } from "@/components/toaster";
 
 interface CategoryGridProps {
   categories: CategoryData[];
@@ -38,6 +42,23 @@ export function CategoryGrid({
   onPageChange,
 }: CategoryGridProps) {
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<CategoryData | null>(null);
+  const { mutateAsync: deleteCategory, isPending: isDeleting } = useDeleteCategory(
+    categoryToDelete?.id ?? "",
+  );
+
+  const handleDelete = async () => {
+    if (!categoryToDelete) return;
+    try {
+      const response = await deleteCategory();
+      setCategoryToDelete(null);
+      successToast({
+        title: "Category Deleted",
+        description: response?.message || "Category has been deleted successfully.",
+      });
+    } catch {}
+  };
+
   if (loading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
@@ -135,19 +156,34 @@ export function CategoryGrid({
                   </div>
                 </div>
                 {canWrite && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    title="Edit category"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(category);
-                    }}
-                    className="relative z-10 h-8 w-8 shrink-0 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-slate-700 focus-visible:opacity-100"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
+                  <div className="relative z-10 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      title="Edit category"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(category);
+                      }}
+                      className="h-8 w-8 shrink-0 text-slate-400 hover:text-slate-700"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      title="Delete category"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCategoryToDelete(category);
+                      }}
+                      className="h-8 w-8 shrink-0 text-slate-400 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 )}
               </div>
 
@@ -190,6 +226,17 @@ export function CategoryGrid({
       )}
 
       <ImageLightbox src={lightboxSrc} alt="Category image" onClose={() => setLightboxSrc(null)} />
+
+      <ConfirmationDialog
+        open={!!categoryToDelete}
+        onOpenChange={(open) => !open && setCategoryToDelete(null)}
+        title="Delete Category"
+        description={`Are you sure you want to delete ${categoryToDelete?.categoryName}? It will be moved to the Recycle Bin and can be restored later.`}
+        confirmLabel="Delete Category"
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        variant="destructive"
+      />
     </div>
   );
 }

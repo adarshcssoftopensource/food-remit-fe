@@ -12,13 +12,13 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { type ItemCsvErrorPayload, uploadItemCsvFile } from "../hooks/use-upload-item-csv";
 import { CsvFormatHelpDialog } from "./csv-format-help-dialog";
-import { type CsvImportResult, CsvImportResultDialog } from "./csv-import-result-dialog";
+import { CsvImportResultDialog } from "./csv-import-result-dialog";
+import { CsvImportResult } from "../types/csv-import-types";
 
 const MAX_FILE_MB = 10;
 const ACCEPTED = /\.(csv|xlsx|xls)$/i;
 
 type ItemCsvToolbarProps = {
-  /** Import into this category (rows without a categoryName land here). */
   category?: { id: string; categoryName: string } | null;
   className?: string;
 };

@@ -190,7 +190,7 @@ export function AppTopBar() {
         "bg-white/85 backdrop-blur-xl dark:bg-slate-950/85",
         "px-4 lg:px-6",
         "shadow-xs",
-        "bg-transparent transition-all duration-200",
+        "transition-all duration-200",
       )}
     >
       <div className="flex items-center gap-3">
@@ -226,7 +226,7 @@ export function AppTopBar() {
         const primaryStore = profile?.stores?.[0];
         if (!primaryStore) return null;
         return (
-          <div className="mr-2 flex items-center">
+          <div className="mr-2 hidden items-center md:flex">
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1.5 shadow-xs dark:border-slate-700/80 dark:bg-slate-900">
               <Globe2 className="h-3.5 w-3.5 shrink-0 text-slate-400" />
               <span

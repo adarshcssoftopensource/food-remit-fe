@@ -105,14 +105,14 @@ export function StatusTabs({
   };
 
   return (
-    <div className={cn("w-fit max-w-full overflow-x-auto", className)}>
+    <div className={cn("scrollbar-hide w-full overflow-x-auto pb-1", className)}>
       <Tabs
         value={displayedTab}
         onValueChange={(val) => {
           if (val) handleTabClick(val as StatusTabValue);
         }}
       >
-        <TabsList className="inline-flex h-auto items-center gap-1.5 rounded-2xl border border-slate-200/80 bg-white/80 p-1.5 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/80">
+        <TabsList className="flex h-auto w-max min-w-0 items-center gap-1.5 rounded-2xl border border-slate-200/80 bg-white/80 p-1.5 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/80">
           {STATUS_TAB_ITEMS.map((item) => {
             const isSelected = displayedTab === item.value;
             const isPending = pendingTab === item.value;
@@ -131,7 +131,7 @@ export function StatusTabs({
                 value={item.value}
                 disabled={Boolean(pendingTab && !isPending)}
                 className={cn(
-                  "relative inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold tracking-tight transition-all duration-200 select-none sm:text-sm",
+                  "relative flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold tracking-tight whitespace-nowrap transition-all duration-200 select-none sm:text-sm",
                   "text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-100",
                   "focus-visible:ring-2 focus-visible:ring-emerald-500/40",
                   "data-active:bg-linear-to-r data-active:from-emerald-600 data-active:to-teal-600 data-active:font-semibold data-active:text-white data-active:shadow-md data-active:shadow-emerald-600/20",

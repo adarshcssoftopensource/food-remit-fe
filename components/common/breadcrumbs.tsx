@@ -21,15 +21,15 @@ export function Breadcrumbs({ items, className, showHome = true }: BreadcrumbsPr
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn("inline-flex items-center overflow-x-auto py-0.5", className)}
+      className={cn("scrollbar-hide block w-full overflow-x-auto py-0.5", className)}
     >
-      <ol className="inline-flex items-center gap-1.5 rounded-2xl border border-white/80 bg-white/80 p-1.5 shadow-xs backdrop-blur-xl transition-colors dark:border-slate-800/80 dark:bg-slate-900/70">
+      <ol className="inline-flex min-w-max items-center gap-1.5 rounded-2xl border border-white/80 bg-white/80 p-1.5 shadow-xs backdrop-blur-xl transition-colors dark:border-slate-800/80 dark:bg-slate-900/70">
         {showHome && (
-          <li className="inline-flex items-center">
+          <li className="flex shrink-0 items-center">
             <Link
               href={ROUTES.ADMIN.DASHBOARD}
               title="Dashboard"
-              className="group flex h-7 w-7 items-center justify-center rounded-xl text-slate-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400"
+              className="group flex h-7 w-7 shrink-0 items-center justify-center rounded-xl text-slate-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400"
             >
               <Home className="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110" />
               <span className="sr-only">Dashboard</span>
@@ -43,24 +43,24 @@ export function Breadcrumbs({ items, className, showHome = true }: BreadcrumbsPr
           const isActive = item.active || isLast;
 
           return (
-            <li key={item.href || item.label} className="inline-flex items-center gap-1.5">
+            <li key={item.href || item.label} className="flex shrink-0 items-center gap-1.5">
               {isActive ? (
                 <span
                   aria-current="page"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-3 py-1 text-[13px] font-semibold text-white shadow-xs shadow-emerald-600/20"
+                  className="flex shrink-0 items-center gap-1.5 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-3 py-1 text-[13px] font-semibold whitespace-nowrap text-white shadow-xs shadow-emerald-600/20"
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white/90" />
                   {item.label}
                 </span>
               ) : item.href ? (
                 <Link
                   href={item.href}
-                  className="inline-flex items-center rounded-xl px-2.5 py-1 text-[13px] font-medium text-slate-600 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-emerald-300"
+                  className="flex shrink-0 items-center rounded-xl px-2.5 py-1 text-[13px] font-medium whitespace-nowrap text-slate-600 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-emerald-300"
                 >
                   {item.label}
                 </Link>
               ) : (
-                <span className="inline-flex items-center px-2 py-1 text-[13px] font-medium text-slate-500 dark:text-slate-400">
+                <span className="flex shrink-0 items-center px-2 py-1 text-[13px] font-medium whitespace-nowrap text-slate-500 dark:text-slate-400">
                   {item.label}
                 </span>
               )}

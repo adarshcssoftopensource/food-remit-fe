@@ -6,9 +6,7 @@ interface InfoCardProps {
   icon: React.ReactNode;
   label: string;
   value: React.ReactNode;
-  /** Makes the whole card a link (e.g. to the category workspace) */
   href?: string;
-  /** Codes such as item numbers keep their exact casing in a monospace font */
   mono?: boolean;
   className?: string;
 }

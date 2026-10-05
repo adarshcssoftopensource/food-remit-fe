@@ -9,77 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ITEM_LIMITS, WEIGHT_UNITS } from "@/lib/catalogue/item-rules";
+import { ITEM_LIMITS } from "@/lib/catalogue/item-rules";
 import { Download, FileSpreadsheet, Layers, ShieldCheck } from "lucide-react";
 
-type CsvColumn = {
-  name: string;
-  /** Other header names that are accepted for this column */
-  aliases?: string;
-  required: boolean | "category";
-  note: string;
-};
-
-const CSV_COLUMNS: CsvColumn[] = [
-  {
-    name: "categoryName",
-    required: "category",
-    note: "Matched to your store's categories by name; created automatically if it doesn't exist.",
-  },
-  {
-    name: "itemNumber",
-    aliases: "sku, itemCode",
-    required: false,
-    note: "Your own code for the item. Rows with the same item number become one item with several packs. Re-importing a number updates that item.",
-  },
-  {
-    name: "itemName",
-    aliases: "productName",
-    required: true,
-    note: `${ITEM_LIMITS.productNameMin}–${ITEM_LIMITS.productNameMax} characters.`,
-  },
-  { name: "description", required: false, note: "Optional text." },
-  {
-    name: "upcEan",
-    aliases: "upcCode, barcode",
-    required: false,
-    note: "8 to 14 digits. Format the column as Text in Excel so barcodes aren't turned into 4.8E+12.",
-  },
-  {
-    name: "stockQuantity",
-    aliases: "quantityOnHand",
-    required: false,
-    note: "Quantity on hand for the item. Whole number, 0 or more. Blank = 0 (saved as inactive).",
-  },
-  { name: "discountPercent", required: false, note: "0 to 100." },
-  { name: "isPerishable", required: false, note: "yes / no (blank = no)." },
-  {
-    name: "productImage",
-    required: false,
-    note: `Optional — you can add images later. Up to ${ITEM_LIMITS.maxImages} filenames or URLs, separated by commas.`,
-  },
-  { name: "productInfo", required: false, note: "Optional text." },
-  { name: "productInfoImage", required: false, note: "Optional. One filename or URL." },
-  { name: "nutritionInfo", required: false, note: "Optional text." },
-  { name: "nutritionInfoImage", required: false, note: "Optional. One filename or URL." },
-  {
-    name: "optionName",
-    required: false,
-    note: 'Pack / size name, e.g. "Single" or "6 Pack". Built from weight / quantity if blank.',
-  },
-  { name: "quantityPerPack", required: false, note: "Whole number, 1 or more." },
-  { name: "netWeight", required: false, note: "Greater than 0. Needs a weightUnit." },
-  {
-    name: "weightUnit",
-    required: false,
-    note: `${WEIGHT_UNITS.join(", ")} (any case; litre, kgs, pieces… also work).`,
-  },
-  {
-    name: "price",
-    required: true,
-    note: "Price of this pack. Greater than 0, up to 2 decimals. The item's first pack is its base price.",
-  },
-];
+import { CSV_COLUMNS } from "../columns/csv-format-columns";
 
 type CsvFormatHelpDialogProps = {
   open: boolean;
@@ -99,8 +32,8 @@ export function CsvFormatHelpDialog({
 }: CsvFormatHelpDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl overflow-hidden rounded-2xl p-0 sm:max-w-2xl">
-        <div className="bg-linear-to-br from-emerald-500/10 via-teal-500/5 to-transparent px-6 pt-6 pb-4">
+      <DialogContent className="flex max-h-[90vh] w-[95%] max-w-[95%] flex-col overflow-hidden rounded-2xl p-0 sm:w-full sm:max-w-2xl">
+        <div className="shrink-0 bg-linear-to-br from-emerald-500/10 via-teal-500/5 to-transparent px-6 pt-6 pb-4">
           <DialogHeader className="gap-3 text-left">
             <div className="flex items-start gap-3">
               <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 ring-1 ring-emerald-500/20">
@@ -118,11 +51,13 @@ export function CsvFormatHelpDialog({
               </div>
             </div>
           </DialogHeader>
+        </div>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <div className="min-w-0 flex-1 overflow-y-auto px-6 pb-4">
+          <div className="mb-4 grid gap-2 sm:grid-cols-2">
             <div className="flex items-start gap-2.5 rounded-xl border border-emerald-200/70 bg-white/80 px-3.5 py-3 text-xs leading-5 text-slate-600 dark:border-emerald-900/40 dark:bg-slate-950/40 dark:text-slate-300">
               <Layers className="mt-0.5 size-4 shrink-0 text-emerald-600" />
-              <p>
+              <p className="min-w-0 wrap-break-word">
                 <span className="font-semibold text-slate-800 dark:text-slate-100">
                   Several packs?
                 </span>{" "}
@@ -132,7 +67,7 @@ export function CsvFormatHelpDialog({
             </div>
             <div className="flex items-start gap-2.5 rounded-xl border border-emerald-200/70 bg-white/80 px-3.5 py-3 text-xs leading-5 text-slate-600 dark:border-emerald-900/40 dark:bg-slate-950/40 dark:text-slate-300">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" />
-              <p>
+              <p className="min-w-0 wrap-break-word">
                 <span className="font-semibold text-slate-800 dark:text-slate-100">
                   Safe import.
                 </span>{" "}
@@ -141,11 +76,9 @@ export function CsvFormatHelpDialog({
               </p>
             </div>
           </div>
-        </div>
 
-        <div className="px-6 pb-2">
-          <div className="max-h-72 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-800">
-            <table className="w-full text-left text-xs">
+          <div className="w-full max-w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+            <table className="w-full min-w-150 text-left text-xs">
               <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-900">
                 <tr className="border-b border-slate-200 dark:border-slate-800">
                   <th className="px-3 py-2.5 font-semibold text-slate-700 dark:text-slate-200">
@@ -203,7 +136,7 @@ export function CsvFormatHelpDialog({
           </p>
         </div>
 
-        <DialogFooter className="gap-2 border-t border-slate-100 px-6 py-4 sm:gap-2 dark:border-slate-800">
+        <DialogFooter className="shrink-0 gap-2 border-t border-slate-100 px-6 py-4 sm:gap-2 dark:border-slate-800">
           <Button variant="outline" className="rounded-xl" onClick={() => onOpenChange(false)}>
             Close
           </Button>
