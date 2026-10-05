@@ -56,6 +56,8 @@ export function useGetStoresDropdown(args?: UseGetStoresDropdownArgs) {
       storePhoneNumber: item.storePhoneNumber ?? "",
       storeTax: item.storeTax ?? 0,
       foodRemitCommission: item.foodRemitCommission ?? 0,
+      sameDayDelivery: item.sameDayDelivery,
+      orderProcessingTime: item.orderProcessingTime,
       assignedCityManager: item.assignedCityManager,
       status: item.status === "ACTIVE" ? "Active" : "Inactive",
       createdAt: item.addedOn ?? new Date().toISOString(),

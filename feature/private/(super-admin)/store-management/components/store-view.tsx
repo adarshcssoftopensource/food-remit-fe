@@ -13,6 +13,7 @@ import { OperationalPreferencesCard } from "@/feature/private/(store-admin)/part
 import { ViewStatusMeta } from "@/feature/private/(super-admin)/city-management/components/shared/view-status-meta";
 import { useGetStore } from "@/feature/private/(super-admin)/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
+import { formatAddress } from "@/lib/utils";
 import { Building2, Expand, Mail, MapPin, Phone, UserCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -34,7 +35,6 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 export default function StoreViewPage({ params }: StoreViewPageProps) {
   const router = useRouter();
   const { id } = use(params);
-  const { canViewPlatformFees } = useProfile();
 
   const { data: store, isLoading } = useGetStore(id);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -56,15 +56,12 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
 
   const managerName = `${store.managerFirstName} ${store.managerLastName}`;
 
-  const storeFullAddress = [store.storeAddress].filter(Boolean).join(", ");
-  const managerFullAddress = [
-    store.managerAddress,
-    store.managerState,
-    store.managerCountry,
-    store.managerZipCode,
-  ]
-    .filter(Boolean)
-    .join(", ");
+  const storeFullAddress = formatAddress([store.storeAddress].filter(Boolean).join(", "));
+  const managerFullAddress = formatAddress(
+    [store.managerAddress, store.managerState, store.managerCountry, store.managerZipCode]
+      .filter(Boolean)
+      .join(", "),
+  );
   return (
     <div>
       <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
@@ -201,7 +198,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                     <Button
                       variant="ghost"
                       onClick={() => setLightboxSrc(store.managerImage || null)}
-                      className="absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-colors transition-opacity transition-transform duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
+                      className="absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-colors duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-black/70"
                       title="View full screen"
                     >
                       <Expand className="h-2.5 w-2.5" />

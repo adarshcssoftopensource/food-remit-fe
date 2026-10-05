@@ -16,7 +16,7 @@ interface PartnerLeadSuccessProps {
 const NEXT_STEPS = [
   {
     step: "01",
-    title: "Review Business Information",
+    title: "Review Business Application",
     description: "We review your business profile and location coverage.",
   },
   {
@@ -58,7 +58,7 @@ export function PartnerLeadSuccess({
         </h1>
         <p className="mt-2 text-sm text-slate-600 sm:text-base">
           We’ve received your partnership request. A member of the Food Remit team will review your
-          information and contact you regarding the next steps.
+          application and contact you regarding the next steps.
         </p>
       </div>
 

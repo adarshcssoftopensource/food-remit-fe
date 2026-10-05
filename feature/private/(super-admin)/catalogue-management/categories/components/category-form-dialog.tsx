@@ -62,7 +62,7 @@ export function CategoryFormDialog({
       <DialogContent className="max-h-[92vh] max-w-xl! overflow-hidden rounded-[28px] border border-slate-200/80 bg-white p-0 sm:w-full">
         <div className="from-primary/10 via-primary to-primary/10 absolute inset-x-0 top-0 z-20 h-0.5" />
 
-        <DialogHeader className="border-b border-slate-100 bg-linear-to-br from-slate-50 via-white to-white px-6 py-6 sm:px-7 dark:border-slate-800 dark:from-slate-900/80 dark:via-slate-950 dark:to-slate-950">
+        <DialogHeader className="border-b border-slate-100 bg-linear-to-br from-slate-50 via-white px-6 py-6 sm:px-7 dark:to-slate-950">
           <div className="flex items-start gap-4">
             <div className="bg-primary/10 text-primary ring-primary/10 relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1">
               <Building2 className="h-5.5 w-5.5" />
@@ -82,7 +82,7 @@ export function CategoryFormDialog({
               <DialogDescription className="mt-1.5 max-w-xl text-sm leading-5 text-slate-500 dark:text-slate-400">
                 {isEditing
                   ? "Update the category information and keep your organization directory current."
-                  : "Create a new category and add it to your organization directory."}
+                  : "Create a new category to organize items in your store catalogue."}
               </DialogDescription>
             </div>
           </div>
@@ -162,7 +162,7 @@ export function CategoryFormDialog({
 
                       <FormControl>
                         <Input
-                          placeholder="e.g. Engineering"
+                          placeholder="e.g. Dairy"
                           className="h-11 rounded-xl border-slate-200 bg-slate-50/50 px-3.5 text-sm font-medium shadow-none transition-colors placeholder:text-slate-400 hover:bg-white focus:bg-white dark:border-slate-700 dark:bg-slate-900/50 dark:hover:bg-slate-900"
                           {...field}
                         />

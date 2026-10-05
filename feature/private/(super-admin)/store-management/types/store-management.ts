@@ -142,6 +142,8 @@ export interface RawStore {
   foodRemitCommission?: number;
   autoAbandonDays?: number | null;
   autoAbandonRemark?: string | null;
+  sameDayDelivery?: boolean;
+  orderProcessingTime?: string | null;
   status?: string;
   addedOn?: string;
   assignedCityManager?: string | null;

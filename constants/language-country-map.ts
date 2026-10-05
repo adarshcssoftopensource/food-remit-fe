@@ -1,7 +1,7 @@
 // Maps ISO 639-1 language code to ISO 3166-1 alpha-2 country code
 // Used to display the most representative flag for a language
 export const languageToCountry: Record<string, string> = {
-  en: "GB",
+  en: "US",
   es: "ES",
   fr: "FR",
   de: "DE",

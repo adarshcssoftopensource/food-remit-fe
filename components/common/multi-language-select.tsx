@@ -2,14 +2,6 @@ import * as React from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import isoLangs from "@cospired/i18n-iso-languages";
@@ -20,6 +12,7 @@ import { Country } from "country-state-city";
 isoLangs.registerLocale(enLocale);
 
 import { languageToCountry } from "@/constants/language-country-map";
+import { COUNTRY_LANGUAGES_CONFIG } from "@/constants/country-languages";
 
 function getFlagEmoji(countryCode: string) {
   if (!countryCode) return "🌐";
@@ -58,9 +51,18 @@ export function MultiLanguageSelect({
       const countryObj = countries.find((c) => c.name === countryName);
       if (countryObj) {
         try {
-          const countryLangs = countryLanguage.getCountry(countryObj.isoCode).languages;
-          if (countryLangs && countryLangs.length > 0) {
-            const countryIsoCodes = new Set(countryLangs.map((l: any) => l.iso639_1));
+          let countryIsoCodes = new Set<string>();
+
+          if (COUNTRY_LANGUAGES_CONFIG[countryObj.isoCode]) {
+            countryIsoCodes = new Set(COUNTRY_LANGUAGES_CONFIG[countryObj.isoCode]);
+          } else {
+            const countryLangs = countryLanguage.getCountry(countryObj.isoCode).languages;
+            if (countryLangs && countryLangs.length > 0) {
+              countryIsoCodes = new Set(countryLangs.map((l: any) => l.iso639_1));
+            }
+          }
+
+          if (countryIsoCodes.size > 0) {
             const filteredCodes = codes.filter((code) => countryIsoCodes.has(code));
             // Only filter if there are matching languages found, else show all
             if (filteredCodes.length > 0) {
