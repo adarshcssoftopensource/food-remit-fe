@@ -64,6 +64,14 @@ export function useCategoryForm(
 
       if (values.iconFile && values.iconFile[0]) {
         formData.append("categoryIcon", values.iconFile[0]);
+      } else if (values.hasExistingIcon && category) {
+        const existingUrl = category.categoryIcon || category.categoryIconUrl;
+        if (existingUrl) {
+          formData.append("categoryIcon", existingUrl);
+        }
+      } else if (!values.hasExistingIcon) {
+        // Explicitly send a flag to delete the image on the backend
+        formData.append("categoryIcon", "DELETE_IMAGE");
       }
 
       if (category) {
