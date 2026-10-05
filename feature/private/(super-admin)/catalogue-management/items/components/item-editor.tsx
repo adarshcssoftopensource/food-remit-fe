@@ -128,9 +128,18 @@ export function ItemEditor(props: ItemEditorProps) {
   const isEditing = props.mode === "edit";
   const item = isEditing ? props.item : null;
 
-  const category: ActiveCategory | null =
+  const initialCategory: ActiveCategory | null =
     props.category ??
-    (item?.category ? { id: item.category.id, categoryName: item.category.categoryName } : null);
+    (item?.category
+      ? {
+          id: item.category.id,
+          categoryName: item.category.categoryName,
+          categoryIcon: item.category.categoryIcon,
+        }
+      : null);
+  const [selectedCategory, setSelectedCategory] = useState<ActiveCategory | null>(initialCategory);
+
+  const category = selectedCategory;
   const workspaceHref = category
     ? ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(category.id)
     : ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS;
@@ -257,18 +266,16 @@ export function ItemEditor(props: ItemEditorProps) {
               {categoryName}
             </p>
           </div>
-          {!isEditing && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setPickerOpen(true)}
-              className="text-primary hover:text-primary ml-1 h-8 gap-1.5 rounded-lg px-2.5 text-xs font-semibold"
-            >
-              <ArrowLeftRight className="h-3.5 w-3.5" />
-              Change
-            </Button>
-          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setPickerOpen(true)}
+            className="text-primary hover:text-primary ml-1 h-8 gap-1.5 rounded-lg px-2.5 text-xs font-semibold"
+          >
+            <ArrowLeftRight className="h-3.5 w-3.5" />
+            Change
+          </Button>
         </div>
       </div>
 
@@ -760,17 +767,26 @@ export function ItemEditor(props: ItemEditorProps) {
         }}
       />
 
-      {!isEditing && category && (
+      {category && (
         <CategoryPickerDialog
           open={pickerOpen}
           onOpenChange={setPickerOpen}
           activeCategoryId={category.id}
-          title="Add item to another category"
-          description="New items will be saved in the category you pick."
+          title={isEditing ? "Move item to another category" : "Add item to another category"}
+          description={
+            isEditing
+              ? "The item will be moved when you save changes."
+              : "New items will be saved in the category you pick."
+          }
           onSelect={(next) => {
             setPickerOpen(false);
             if (next.id !== category.id) {
-              leave(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.NEW_ITEM(next.id));
+              if (isEditing) {
+                setSelectedCategory(next);
+                form.setValue("categoryId" as any, next.id, { shouldDirty: true });
+              } else {
+                leave(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.NEW_ITEM(next.id));
+              }
             }
           }}
         />

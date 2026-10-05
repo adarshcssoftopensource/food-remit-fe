@@ -86,7 +86,7 @@ export interface ItemData {
 
   country?: { id: string; name: string };
   department?: { id: string; departmentName: string } | null;
-  category?: { id: string; categoryName: string };
+  category?: { id: string; categoryName: string; categoryIcon?: string | null };
   store?: { id: string; storeName: string } | null;
 
   createdBy?: string | null;

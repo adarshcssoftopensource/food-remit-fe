@@ -344,7 +344,7 @@ export function useItemForm({ item, category, onSaved }: UseItemFormArgs) {
   });
 
   const submitValues = async (values: ItemFormValues, mode: ItemSubmitMode) => {
-    const categoryId = item ? undefined : category?.id;
+    const categoryId = category?.id;
     if (!item && !categoryId) {
       toast.error("Select a category before adding items.");
       return;
