@@ -153,7 +153,7 @@ export function ModuleFilters({
             </div>
 
             {(onClearFilters || onApplyFilters) && (
-              <DrawerFooter className="flex-row justify-end gap-3 border-t border-slate-100 px-6 py-4 dark:border-slate-800">
+              <DrawerFooter className="flex-col justify-end gap-3 border-t border-slate-100 p-4 sm:flex-row sm:px-6 dark:border-slate-800">
                 {onClearFilters && (
                   <Button
                     variant="outline"
@@ -162,7 +162,7 @@ export function ModuleFilters({
                       setIsOpen(false);
                     }}
                     disabled={!hasFilters}
-                    className="h-10 rounded-xl px-4"
+                    className="h-10 w-full rounded-xl px-4 sm:w-auto"
                   >
                     <RotateCcw className="mr-2 h-4 w-4" />
                     Reset Filters
@@ -170,7 +170,7 @@ export function ModuleFilters({
                 )}
                 {onApplyFilters && (
                   <Button
-                    className="h-10 rounded-xl px-8"
+                    className="h-10 w-full rounded-xl px-8 sm:w-auto"
                     onClick={() => {
                       setIsApplying(true);
                       onApplyFilters();

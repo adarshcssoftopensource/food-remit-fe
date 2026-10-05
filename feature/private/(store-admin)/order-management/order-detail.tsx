@@ -93,9 +93,9 @@ export function OrderDetailPage({ id }: { id: string }) {
                   : "View order information and journey.";
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-2">
+        <div className="min-w-0 space-y-2">
           <p className="text-xs text-slate-500">
             Orders #{order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}
           </p>
@@ -158,7 +158,7 @@ export function OrderDetailPage({ id }: { id: string }) {
       <OrderProgressTimeline order={order} />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <OrderSummaryCard order={order} />
           <OrderFinancials order={order} />
           <OrderPeopleAndStore order={order} />

@@ -93,15 +93,19 @@ export function PartnerLeadNotificationCard({
             </div>
             <div className="space-y-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">
               {parsedLead.email && (
-                <div className="flex items-center gap-1.5">
-                  <Mail className="size-3 text-slate-400" />
-                  <span>{parsedLead.email}</span>
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <Mail className="size-3 shrink-0 text-slate-400" />
+                  <span className="truncate" title={parsedLead.email}>
+                    {parsedLead.email}
+                  </span>
                 </div>
               )}
               {parsedLead.phone && (
-                <div className="flex items-center gap-1.5">
-                  <Phone className="size-3 text-slate-400" />
-                  <span>{parsedLead.phone}</span>
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <Phone className="size-3 shrink-0 text-slate-400" />
+                  <span className="truncate" title={parsedLead.phone}>
+                    {parsedLead.phone}
+                  </span>
                 </div>
               )}
             </div>

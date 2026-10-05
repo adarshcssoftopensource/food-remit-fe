@@ -56,7 +56,10 @@ function PersonCard({
         <div className="flex items-start text-slate-600 dark:text-slate-300">
           <MapPin className={`mr-2 size-3.5 shrink-0 text-${color}-500 mt-0.5`} />
           <div className="flex flex-col gap-1">
-            <span>{formatAddress(address) || "N/A"}</span>
+            <span>
+              {formatAddress([address, city, state, country, zipCode].filter(Boolean).join(", ")) ||
+                "N/A"}
+            </span>
           </div>
         </div>
       </div>
