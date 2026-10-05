@@ -10,9 +10,22 @@ interface PersonCardProps {
   name: string;
   phone: string;
   address: string;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  zipCode?: string | null;
 }
 
-function PersonCard({ role, name, phone, address }: PersonCardProps) {
+function PersonCard({
+  role,
+  name,
+  phone,
+  address,
+  city,
+  state,
+  country,
+  zipCode,
+}: PersonCardProps) {
   const isSender = role === "Sender";
   const color = isSender ? "blue" : "amber";
 
@@ -40,10 +53,12 @@ function PersonCard({ role, name, phone, address }: PersonCardProps) {
           <Phone className={`mr-2 size-3.5 shrink-0 text-${color}-500`} />
           {phone || "N/A"}
         </p>
-        <p className="flex items-start text-slate-600 dark:text-slate-300">
-          <MapPin className={`mr-2 size-3.5 shrink-0 text-${color}-500`} />
-          {formatAddress(address) || "N/A"}
-        </p>
+        <div className="flex items-start text-slate-600 dark:text-slate-300">
+          <MapPin className={`mr-2 size-3.5 shrink-0 text-${color}-500 mt-0.5`} />
+          <div className="flex flex-col gap-1">
+            <span>{formatAddress(address) || "N/A"}</span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -70,12 +85,20 @@ export function OrderPeopleAndStore({ order }: OrderPeopleAndStoreProps) {
             name={order.userName || ""}
             phone={order.senderPhoneNumber || ""}
             address={order.senderAddress || ""}
+            city={order.senderCity}
+            state={order.senderState}
+            country={order.senderCountry}
+            zipCode={order.senderZipCode}
           />
           <PersonCard
             role="Receiver"
             name={order.recieverName || ""}
             phone={order.receiverPhoneNumber || ""}
             address={order.receiverAddress || ""}
+            city={order.receiverCity}
+            state={order.receiverState}
+            country={order.receiverCountry}
+            zipCode={order.receiverZipCode}
           />
         </CardContent>
       </Card>

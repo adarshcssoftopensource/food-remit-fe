@@ -48,8 +48,16 @@ export interface OrderData {
   recurringDateList?: { date: string; status: number; paidOn?: string | null }[];
   senderPhoneNumber?: string;
   senderAddress?: string;
+  senderCity?: string | null;
+  senderState?: string | null;
+  senderCountry?: string | null;
+  senderZipCode?: string | null;
   receiverPhoneNumber?: string;
   receiverAddress?: string;
+  receiverCity?: string | null;
+  receiverState?: string | null;
+  receiverCountry?: string | null;
+  receiverZipCode?: string | null;
   storeAddress?: string;
   customerPayment?: {
     vendorBaseSubtotal?: string;
