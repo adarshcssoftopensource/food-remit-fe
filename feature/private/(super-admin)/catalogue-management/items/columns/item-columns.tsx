@@ -91,10 +91,10 @@ export function getItemColumns(
       cell: ({ row }) => {
         const pct = Number(row.original.discountPercentage) || 0;
         return (
-          <div className="flex flex-col items-center gap-0.5">
+          <div className="relative flex justify-center">
             <ItemDiscountAvailabilityCell item={row.original} />
             {pct > 0 ? (
-              <span className="text-[10px] font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
+              <span className="absolute top-full mt-0.5 text-[10px] font-semibold whitespace-nowrap text-emerald-600 tabular-nums dark:text-emerald-400">
                 {pct}% off
               </span>
             ) : null}
