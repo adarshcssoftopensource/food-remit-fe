@@ -1,4 +1,5 @@
 import { toPhoneDigits } from "@/lib/phone";
+import { formatAddress } from "@/lib/utils";
 import type { ProfileDetailsValues } from "../schema/profile.schema";
 
 function buildProfileContactNumber(
@@ -39,7 +40,7 @@ export function getProfileFormValues(profile: any) {
     lastName,
     email: profile?.email || "",
     contactNumber: buildProfileContactNumber(profile?.phoneNumber, (profile as any)?.countryCode),
-    address: profile?.address || "",
+    address: formatAddress(profile?.address) || "",
     country: resolvedCountry,
     state: (profile as any)?.state || "",
     city: resolvedCity || (profile as any)?.city || "",

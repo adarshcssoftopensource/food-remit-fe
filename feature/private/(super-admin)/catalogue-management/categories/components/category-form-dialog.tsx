@@ -81,7 +81,7 @@ export function CategoryFormDialog({
 
               <DialogDescription className="mt-1.5 max-w-xl text-sm leading-5 text-slate-500 dark:text-slate-400">
                 {isEditing
-                  ? "Update the category information and keep your organization directory current."
+                  ? "Update the category to organize items in your store catalogue."
                   : "Create a new category to organize items in your store catalogue."}
               </DialogDescription>
             </div>
