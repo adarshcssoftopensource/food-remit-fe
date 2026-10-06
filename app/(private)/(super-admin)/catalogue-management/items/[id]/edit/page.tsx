@@ -1,4 +1,4 @@
-import { EditItemPage } from "@/feature/private/(super-admin)/catalogue-management/items/item-editor-pages";
+import { EditItemPage } from "@/feature/private/(super-admin)/catalogue-management/items/components/editor/item-editor-pages";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

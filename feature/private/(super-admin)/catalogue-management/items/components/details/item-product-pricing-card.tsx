@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProfile } from "@/components/providers/profile-provider";
 import { cn } from "@/lib/utils";
 import { Hash, Info, MapPin, Receipt, Wallet } from "lucide-react";
-import type { ItemData } from "../types/item.types";
+import type { ItemData } from "../../types/item.types";
 import { useState, useMemo } from "react";
 import {
   Select,

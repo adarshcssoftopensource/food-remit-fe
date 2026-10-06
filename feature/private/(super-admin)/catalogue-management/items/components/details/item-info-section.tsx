@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Apple, FileText } from "lucide-react";
-import type { ItemData } from "../types/item.types";
+import type { ItemData } from "../../types/item.types";
 
 interface ItemInfoSectionProps {
   item: ItemData;

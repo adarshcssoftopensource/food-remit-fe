@@ -10,26 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { resolveCurrencyDisplay } from "@/lib/currency";
-import { Banknote, MapPin } from "lucide-react";
-import type { ItemData, ItemPlacementData } from "../types/item.types";
+import { MapPin } from "lucide-react";
+import type { ItemData } from "../../types/item.types";
 
 type ItemPlacementsCardProps = {
   item: ItemData;
 };
-
-function formatPrice(row: ItemPlacementData) {
-  const meta = resolveCurrencyDisplay({
-    currency: row.currency,
-    countryName: row.country?.name,
-  });
-  const symbol = row.currency || meta.code || row.currencySymbol;
-  const code = row.currencySymbol || meta.symbol || row.currency;
-  const amount = Number(row.price);
-  const priceText = Number.isFinite(amount) ? amount.toLocaleString() : "-";
-
-  return { symbol, code, priceText };
-}
 
 export function ItemPlacementsCard({ item }: ItemPlacementsCardProps) {
   const placements = Array.isArray(item.placements) ? item.placements : [];

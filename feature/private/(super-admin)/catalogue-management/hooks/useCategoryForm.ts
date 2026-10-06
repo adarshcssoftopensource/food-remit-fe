@@ -1,8 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ROUTES } from "@/config/routes";
 import { useCreateCategory } from "../categories/hooks/use-create-category";
 import { useUpdateCategory } from "../categories/hooks/use-update-category";
 import { CategoryData } from "../categories/types/category.types";
@@ -23,6 +25,7 @@ export function useCategoryForm(
   onOpenChange: (open: boolean) => void,
   onSubmitCallback?: (values: CategoryFormValues) => void,
 ) {
+  const router = useRouter();
   const { mutateAsync: createCategory, isPending: isCreating } = useCreateCategory();
   const { mutateAsync: updateCategory, isPending: isUpdating } = useUpdateCategory(
     category?.id ?? "",
@@ -54,6 +57,7 @@ export function useCategoryForm(
   }, [open, category, form]);
 
   const handleSubmit = async (values: CategoryFormValues) => {
+    let createdId: string | undefined;
     try {
       const formData = new FormData();
       formData.append("categoryName", values.categoryName);
@@ -88,16 +92,21 @@ export function useCategoryForm(
         const response = (await createCategory(formData as any)) as {
           status?: boolean | string;
           message?: string;
+          data?: { id?: string };
         };
         if (response?.status === false) {
           toast.error(response.message || "Failed to create category");
           return;
         }
         toast.success(response?.message || "Category created successfully");
+        createdId = response?.data?.id;
       }
 
       onSubmitCallback?.(values);
       onOpenChange(false);
+      if (createdId) {
+        router.push(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(createdId));
+      }
     } catch {
       // Axios interceptor already shows the error toast — avoid duplicates
     }

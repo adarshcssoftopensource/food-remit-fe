@@ -33,10 +33,10 @@ export const CSV_COLUMNS: CsvColumn[] = [
     note: "8 to 14 digits. Format the column as Text in Excel so barcodes aren't turned into 4.8E+12.",
   },
   {
-    name: "stockQuantity",
-    aliases: "quantityOnHand",
+    name: "quantityOnHand",
+    aliases: "Quantity On Hand, stockQuantity",
     required: false,
-    note: "Quantity on hand for the item. Whole number, 0 or more. Blank = 0 (saved as inactive).",
+    note: "Whole number, 0 or more. Blank = 0 (saved as inactive).",
   },
   { name: "discountPercent", required: false, note: "0 to 100." },
   { name: "isPerishable", required: false, note: "yes / no (blank = no)." },

@@ -8,7 +8,7 @@ import { Barcode, ChevronDown, FolderOpen, Hash, Leaf, Maximize2, Star } from "l
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import type { ItemData } from "../types/item.types";
+import type { ItemData } from "../../types/item.types";
 import {
   formatPackSize,
   formatPrice,
@@ -16,7 +16,7 @@ import {
   getItemOptions,
   getItemPriceSummary,
   getItemPrimaryImage,
-} from "../utils/item-display";
+} from "../../utils/item-display";
 
 function ItemThumbnail({
   name,

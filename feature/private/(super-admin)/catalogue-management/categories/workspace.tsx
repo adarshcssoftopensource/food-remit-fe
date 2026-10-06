@@ -26,7 +26,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { getItemColumns } from "../items/columns/item-columns";
-import { ItemCsvToolbar } from "../items/components/item-csv-toolbar";
+import { ItemCsvToolbar } from "../items/components/csv/item-csv-toolbar";
 import { useGetItems } from "../items/hooks/use-get-items";
 import type { ItemData } from "../items/types/item.types";
 import { CategoryPickerDialog } from "./components/category-picker-dialog";

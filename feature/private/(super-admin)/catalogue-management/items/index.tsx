@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { CategoryPickerDialog } from "../categories/components/category-picker-dialog";
 import { getItemColumns } from "./columns/item-columns";
-import { ItemCsvToolbar } from "./components/item-csv-toolbar";
+import { ItemCsvToolbar } from "./components/csv/item-csv-toolbar";
 import { useGetItems } from "./hooks/use-get-items";
 import { ItemData } from "./types/item.types";
 

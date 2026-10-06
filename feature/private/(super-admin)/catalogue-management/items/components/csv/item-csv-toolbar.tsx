@@ -10,10 +10,10 @@ import type { AxiosError } from "axios";
 import { FileSpreadsheet, Image as ImageIcon, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { type ItemCsvErrorPayload, uploadItemCsvFile } from "../hooks/use-upload-item-csv";
+import { type ItemCsvErrorPayload, uploadItemCsvFile } from "../../hooks/use-upload-item-csv";
 import { CsvFormatHelpDialog } from "./csv-format-help-dialog";
 import { CsvImportResultDialog } from "./csv-import-result-dialog";
-import { CsvImportResult } from "../types/csv-import-types";
+import { CsvImportResult } from "../../types/csv-import-types";
 
 const MAX_FILE_MB = 10;
 const ACCEPTED = /\.(csv|xlsx|xls)$/i;

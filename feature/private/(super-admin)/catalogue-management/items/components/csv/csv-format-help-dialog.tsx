@@ -12,7 +12,7 @@ import {
 import { ITEM_LIMITS } from "@/lib/catalogue/item-rules";
 import { Download, FileSpreadsheet, Layers, ShieldCheck } from "lucide-react";
 
-import { CSV_COLUMNS } from "../columns/csv-format-columns";
+import { CSV_COLUMNS } from "../../columns/csv-format-columns";
 
 type CsvFormatHelpDialogProps = {
   open: boolean;

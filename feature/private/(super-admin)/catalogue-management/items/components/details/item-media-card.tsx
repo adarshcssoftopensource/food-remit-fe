@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Expand, Eye, Hash, Leaf, Package } from "lucide-react";
 import Image from "next/image";
-import type { ItemData } from "../types/item.types";
-import { getItemPriceSummary } from "../utils/item-display";
+import type { ItemData } from "../../types/item.types";
+import { getItemPriceSummary } from "../../utils/item-display";
 
 interface ItemMediaCardProps {
   item: ItemData;

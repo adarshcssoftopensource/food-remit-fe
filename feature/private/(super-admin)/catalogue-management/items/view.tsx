@@ -8,13 +8,13 @@ import { ROUTES } from "@/config/routes";
 import { ArrowLeft, Package, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { ItemDetailsCard } from "./components/item-details-card";
-import { ItemInfoSection } from "./components/item-info-section";
-import { ItemMediaCard } from "./components/item-media-card";
-import { ItemOptionsCard } from "./components/item-options-card";
-import { ItemPlacementsCard } from "./components/item-placements-card";
-import { ItemProductPricingCard } from "./components/item-product-pricing-card";
-import { ItemViewSkeleton } from "./components/item-view-skeleton";
+import { ItemDetailsCard } from "./components/details/item-details-card";
+import { ItemInfoSection } from "./components/details/item-info-section";
+import { ItemMediaCard } from "./components/details/item-media-card";
+import { ItemOptionsCard } from "./components/details/item-options-card";
+import { ItemPlacementsCard } from "./components/details/item-placements-card";
+import { ItemProductPricingCard } from "./components/details/item-product-pricing-card";
+import { ItemViewSkeleton } from "./components/details/item-view-skeleton";
 import { useGetItemById } from "./hooks/use-get-item-by-id";
 
 interface ItemViewProps {

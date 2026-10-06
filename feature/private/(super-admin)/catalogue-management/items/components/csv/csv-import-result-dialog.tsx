@@ -19,7 +19,7 @@ import {
   RefreshCw,
   XCircle,
 } from "lucide-react";
-import { CsvImportResult } from "../types/csv-import-types";
+import { CsvImportResult } from "../../types/csv-import-types";
 import { SummaryStat } from "./csv-import-summary-stat";
 
 type CsvImportResultDialogProps = {

@@ -6,9 +6,9 @@ import { Switch } from "@/components/ui/switch";
 import { useProfile } from "@/components/providers/profile-provider";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useDeleteItem } from "../hooks/use-delete-item";
-import { useUpdateItemStatus } from "../hooks/use-update-item-status";
-import { ItemData } from "../types/item.types";
+import { useDeleteItem } from "../../hooks/use-delete-item";
+import { useUpdateItemStatus } from "../../hooks/use-update-item-status";
+import { ItemData } from "../../types/item.types";
 
 import {
   DataTableRowActions,

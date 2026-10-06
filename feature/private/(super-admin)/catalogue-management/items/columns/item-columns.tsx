@@ -5,13 +5,13 @@ import {
   ItemAdminShareCell,
   ItemAvailabilityCell,
   ItemDiscountAvailabilityCell,
-} from "../components/item-actions-cell";
+} from "../components/shared/item-actions-cell";
 import {
   ItemCategoryCell,
   ItemIdentityCell,
   ItemPacksPriceCell,
-} from "../components/item-table-cells";
-import { StockIndicator } from "../components/stock-indicator";
+} from "../components/shared/item-table-cells";
+import { StockIndicator } from "../components/shared/stock-indicator";
 import { ItemData } from "../types/item.types";
 
 export function getItemColumns(

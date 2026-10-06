@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { Hash, Star } from "lucide-react";
-import type { ItemData } from "../types/item.types";
+import type { ItemData } from "../../types/item.types";
 import {
   formatPackSize,
   formatPrice,
   getItemCurrencySymbol,
   getItemOptions,
-} from "../utils/item-display";
+} from "../../utils/item-display";
 
 type ItemOptionsCardProps = {
   item: ItemData;
@@ -77,7 +77,7 @@ export function ItemOptionsCard({ item }: ItemOptionsCardProps) {
                 const isDefault = index === 0;
                 const size = formatPackSize(opt);
                 return (
-                  <TableRow key={opt.id || index} className={cn(isDefault && "bg-primary/[0.03]")}>
+                  <TableRow key={opt.id || index} className={cn(isDefault && "bg-primary/3")}>
                     <TableCell>
                       <span
                         className={cn(

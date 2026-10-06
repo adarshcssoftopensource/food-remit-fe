@@ -7,10 +7,10 @@ import { type ReactNode, useMemo } from "react";
 import { useProfile } from "@/components/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
-import { useGetCategory } from "../categories/hooks/use-get-category";
-import type { ActiveCategory } from "../categories/types/category.types";
-import { ItemEditor } from "./components/item-editor";
-import { useGetItemById } from "./hooks/use-get-item-by-id";
+import { useGetCategory } from "../../../categories/hooks/use-get-category";
+import type { ActiveCategory } from "../../../categories/types/category.types";
+import { ItemEditor } from "./item-editor";
+import { useGetItemById } from "../../hooks/use-get-item-by-id";
 
 const CATALOGUE_PREFIX = "/catalogue-management";
 

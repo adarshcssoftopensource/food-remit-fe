@@ -24,8 +24,8 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
-import type { ItemData } from "../types/item.types";
-import { formatPackSize, getItemOptions, getItemPriceSummary } from "../utils/item-display";
+import type { ItemData } from "../../types/item.types";
+import { formatPackSize, getItemOptions, getItemPriceSummary } from "../../utils/item-display";
 import { InfoCard } from "./info-card";
 
 function IdentifierTile({
@@ -234,8 +234,7 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           />
         </div>
 
-        {/* Bottom QR Code Digital Verification Banner */}
-        <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50 via-slate-50/70 to-orange-50/30 p-4 sm:p-5 dark:border-slate-800 dark:from-slate-900/80 dark:to-slate-900/40">
+        <div className="rounded-2xl border border-slate-200/80 bg-linear-to-br from-slate-50 via-slate-50/70 to-orange-50/30 p-4 sm:p-5 dark:border-slate-800 dark:from-slate-900/80 dark:to-slate-900/40">
           <div className="flex flex-col items-center gap-5 sm:flex-row">
             {/* Left QR Code Container */}
             <div className="relative flex shrink-0 flex-col items-center justify-center rounded-xl bg-white p-3.5 shadow-sm ring-1 ring-slate-200/80 dark:bg-slate-950 dark:ring-slate-800">
