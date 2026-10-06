@@ -93,7 +93,7 @@ export function ImageNameCell({
       </div>
       <div className="flex flex-col">
         <TruncatedTextCell
-          maxWords={2}
+          maxWords={1}
           text={name || "-"}
           className={`font-medium ${isProfile ? "text-sm text-slate-800" : "font-semibold text-slate-900"}`}
         />

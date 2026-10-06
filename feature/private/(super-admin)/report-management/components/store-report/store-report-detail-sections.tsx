@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatAddress } from "@/lib/utils";
 import type { StoreReportRow } from "@/constants/report-management";
 
 const FOOD_TYPE_OPTIONS = [
@@ -89,6 +90,19 @@ interface StoreReportInfoProps {
 }
 
 export function StoreReportInfo({ store, totalOrdersCount }: StoreReportInfoProps) {
+  const fullStoreAddress = formatAddress(
+    [
+      store.address,
+      store.manager?.zipCode &&
+      store.manager.zipCode !== "-" &&
+      !store.address?.includes(store.manager.zipCode)
+        ? store.manager.zipCode
+        : null,
+    ]
+      .filter(Boolean)
+      .join(", "),
+  );
+
   return (
     <div className="flex flex-col justify-between space-y-4 md:col-span-7 lg:col-span-8">
       <div>
@@ -115,7 +129,7 @@ export function StoreReportInfo({ store, totalOrdersCount }: StoreReportInfoProp
                 Store Address
               </p>
               <p className="line-clamp-2 font-semibold text-slate-800 dark:text-slate-200">
-                {store.address || "No address provided"}
+                {fullStoreAddress || "No address provided"}
               </p>
             </div>
           </div>

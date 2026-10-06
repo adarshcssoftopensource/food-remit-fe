@@ -17,21 +17,17 @@ export function TruncatedTextCell({
 }: TruncatedTextCellProps) {
   const textString = String(text ?? "").trim();
 
-  let shouldTruncate = false;
-  let truncatedText = textString;
+  const displayText = textString.split("_")[0];
 
-  if (maxChars !== undefined) {
-    shouldTruncate = textString.length > maxChars;
-    truncatedText = shouldTruncate ? `${textString.slice(0, maxChars)}...` : textString;
-  } else {
+  let truncatedText = displayText;
+
+  if (maxChars !== undefined && !textString.includes("_")) {
+    truncatedText = textString.slice(0, maxChars) + "...";
+  } else if (!textString.includes("_")) {
     const limit = maxWords ?? 6;
-    const words = textString.split(/\s+/).filter(Boolean);
-    shouldTruncate = words.length > limit;
-    truncatedText = shouldTruncate ? `${words.slice(0, limit).join(" ")}...` : textString;
-  }
+    const words = textString.split(/[\s._-]+/).filter(Boolean);
 
-  if (!shouldTruncate) {
-    return <span className={className}>{textString || "-"}</span>;
+    truncatedText = words.length > limit ? `${words.slice(0, limit).join(" ")}...` : textString;
   }
 
   return (

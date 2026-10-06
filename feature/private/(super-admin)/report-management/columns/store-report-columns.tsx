@@ -5,7 +5,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { ROUTES } from "@/config/routes";
 import type { StoreReportRow } from "@/constants/report-management";
-import { cn } from "@/lib/utils";
+import { cn, formatAddress } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye } from "lucide-react";
 import Link from "next/link";
@@ -40,13 +40,20 @@ export const storeReportColumns: ColumnDef<StoreReportRow>[] = [
   {
     accessorKey: "address",
     header: "Address",
-    cell: ({ row }) => (
-      <TruncatedTextCell
-        text={row.original.address}
-        maxWords={5}
-        className="text-xs font-medium text-slate-600 dark:text-slate-400"
-      />
-    ),
+    cell: ({ row }) => {
+      const addr = row.original.address;
+      const zip = row.original.manager?.zipCode;
+      const fullAddress = formatAddress(
+        [addr, zip && zip !== "-" && !addr?.includes(zip) ? zip : null].filter(Boolean).join(", "),
+      );
+      return (
+        <TruncatedTextCell
+          text={fullAddress || "-"}
+          maxWords={2}
+          className="text-xs font-medium text-slate-600 dark:text-slate-400"
+        />
+      );
+    },
   },
   { accessorKey: "totalOrder", header: "Total Order" },
   {

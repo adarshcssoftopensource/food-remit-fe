@@ -80,15 +80,20 @@ export const storeColumns = (
     {
       accessorKey: "storeAddress",
       header: "Store Address",
-      cell: ({ row }) => (
-        <TruncatedTextCell
-          maxWords={1}
-          text={formatAddress(
-            `${row.original.storeAddress}${row.original.address2 ? `, ${row.original.address2}` : ""}`,
-          )}
-          className="max-w-45 cursor-default text-sm"
-        />
-      ),
+      cell: ({ row }) => {
+        const fullAddress = formatAddress(
+          [row.original.storeAddress, row.original.address2, row.original.managerZipCode]
+            .filter(Boolean)
+            .join(", "),
+        );
+        return (
+          <TruncatedTextCell
+            maxWords={1}
+            text={fullAddress || "-"}
+            className="max-w-45 cursor-default text-sm"
+          />
+        );
+      },
     },
     {
       accessorKey: "storeCountry",
