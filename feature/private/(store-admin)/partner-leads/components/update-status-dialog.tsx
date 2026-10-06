@@ -8,8 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { SanitizedTextarea } from "@/components/common/sanitized-textarea";
 import { getStatusColor } from "@/constants/partner.leads";
 import { ROUTES } from "@/config/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +20,7 @@ import { useEffect } from "react";
 import { useApprovePartnerLead } from "../hooks/use-approve-partner-lead";
 import { useUpdateLeadStatus } from "../hooks/use-update-lead-status";
 import { updateLeadStatusSchema, UpdateLeadStatusValues } from "../schema/update-status.schema";
+import { sanitizeText } from "@/lib/utils/text-sanitizer";
 
 const DEFAULT_REMARKS: Record<string, string> = {
   APPROVED:
@@ -229,9 +229,11 @@ export function UpdateStatusDialog({
   }, [watchStatus, setValue]);
 
   const onSubmit = async (data: UpdateLeadStatusValues) => {
+    const cleanRemark = sanitizeText(data.remark);
+
     if (data.status === "APPROVED") {
       try {
-        await approveLead({ remark: data.remark });
+        await approveLead({ remark: cleanRemark });
         toast.success(
           `"${leadName || "Partner lead"}" has been approved. Store and Admin created.`,
         );
@@ -242,7 +244,7 @@ export function UpdateStatusDialog({
         toast.error(`Failed to approve "${leadName || "lead"}".`);
       }
     } else {
-      await updateLeadStatus(leadId, data.status, data.remark);
+      await updateLeadStatus(leadId, data.status, cleanRemark);
       onOpenChange(false);
       reset();
       if (
@@ -290,35 +292,20 @@ export function UpdateStatusDialog({
                 name="remark"
                 control={control}
                 render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <Label
-                      htmlFor="remark"
-                      className="flex justify-between text-sm font-bold text-slate-700"
-                    >
-                      <span>
-                        {styles.remarkLabel} <span className="text-red-500">*</span>
-                      </span>
+                  <SanitizedTextarea
+                    {...field}
+                    id="remark"
+                    label={styles.remarkLabel}
+                    required
+                    subLabel={
                       <span className={`text-xs font-semibold ${styles.emailNoteClass}`}>
                         Included in Partner Email
                       </span>
-                    </Label>
-                    <Textarea
-                      {...field}
-                      id="remark"
-                      placeholder={styles.placeholder}
-                      aria-invalid={!!errors.remark}
-                      className={`max-h-64 min-h-30 resize-none overflow-y-auto rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium transition-colors duration-300 placeholder:text-slate-400 hover:border-slate-300 hover:bg-slate-50 ${styles.focusClass} ${
-                        errors.remark
-                          ? "border-red-400 bg-red-50 focus-visible:border-red-400 focus-visible:shadow-[0_0_0_4px_rgba(248,113,113,0.1)] focus-visible:ring-red-400/15"
-                          : ""
-                      }`}
-                    />
-                    {errors.remark && (
-                      <p className="mt-1 text-xs font-semibold text-red-500">
-                        {errors.remark.message}
-                      </p>
-                    )}
-                  </div>
+                    }
+                    placeholder={styles.placeholder}
+                    error={errors.remark?.message}
+                    className={`max-h-64 min-h-30 overflow-y-auto ${styles.focusClass}`}
+                  />
                 )}
               />
             </div>
