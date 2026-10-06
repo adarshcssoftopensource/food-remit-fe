@@ -329,9 +329,15 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
         (Array.isArray(currentLogo) && currentLogo[0] instanceof File);
 
       if (!isCustomFile) {
-        const defaultImg = getDefaultStoreImageForBusinessType(businessType);
-        if (defaultImg) {
-          setValue("storeLogo", defaultImg.imageUrl, { shouldDirty: true });
+        if (businessType === "Other") {
+          setValue("storeLogo", "/default-store.svg", { shouldDirty: true });
+        } else {
+          const defaultImg = getDefaultStoreImageForBusinessType(businessType);
+          if (defaultImg) {
+            setValue("storeLogo", defaultImg.imageUrl, { shouldDirty: true });
+          } else {
+            setValue("storeLogo", "/default-store.svg", { shouldDirty: true });
+          }
         }
       }
     }
@@ -497,11 +503,15 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
         formData.append("storeLogo", data.storeLogo[0], data.storeLogo[0].name);
       } else if (typeof data.storeLogo === "string" && data.storeLogo.trim()) {
         formData.append("storeLogo", data.storeLogo.trim());
-      } else if (data.businessType) {
+      } else if (data.businessType && data.businessType !== "Other") {
         const defaultImg = getDefaultStoreImageForBusinessType(data.businessType);
         if (defaultImg) {
           formData.append("storeLogo", defaultImg.imageUrl);
+        } else {
+          formData.append("storeLogo", "/default-store.svg");
         }
+      } else {
+        formData.append("storeLogo", "/default-store.svg");
       }
       if (data.profileImage instanceof File) {
         formData.append("profileImage", data.profileImage, data.profileImage.name);

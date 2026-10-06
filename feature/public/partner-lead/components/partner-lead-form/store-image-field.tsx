@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ImagePlus, RefreshCw, Sparkles, Store, Upload, X } from "lucide-react";
+import { Check, ImagePlus, Sparkles, Store, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
@@ -21,8 +21,9 @@ type StoreImageFieldProps = Pick<PartnerLeadFormState, "control" | "watch" | "se
 export function StoreImageField({ control, watch, setValue }: StoreImageFieldProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const businessType = watch("businessType");
+  const isOther = businessType === "Other";
 
-  const recommendedImage = getDefaultStoreImageForBusinessType(businessType);
+  const recommendedImage = isOther ? undefined : getDefaultStoreImageForBusinessType(businessType);
 
   return (
     <Controller
@@ -38,13 +39,19 @@ export function StoreImageField({ control, watch, setValue }: StoreImageFieldPro
 
         if (isCustomFile) {
           activeUrl = getFilePreviewUrl(logoFile);
-        } else if (typeof field.value === "string" && field.value.trim()) {
+        } else if (
+          typeof field.value === "string" &&
+          field.value.trim() &&
+          field.value !== "/default-store.svg" &&
+          !isOther
+        ) {
           activeUrl = field.value.trim();
           activeDefaultItem = DEFAULT_STORE_IMAGES.find((img) => img.imageUrl === activeUrl);
         } else if (recommendedImage) {
           activeUrl = recommendedImage.imageUrl;
           activeDefaultItem = recommendedImage;
         } else {
+          // In "Other" or initial state, use the generic default store image
           activeUrl = "/default-store.svg";
         }
 
@@ -62,15 +69,26 @@ export function StoreImageField({ control, watch, setValue }: StoreImageFieldPro
           field.onChange(file);
         }
 
-        function handleSelectDefault(imageUrl: string) {
+        function handleSelectDefault(imageUrl: string, newBusinessType?: string) {
           field.onChange(imageUrl);
+          const targetType =
+            newBusinessType ||
+            DEFAULT_STORE_IMAGES.find((img) => img.imageUrl === imageUrl)?.businessType;
+          if (targetType) {
+            setValue("businessType", targetType, {
+              shouldValidate: true,
+              shouldDirty: true,
+            });
+          }
         }
 
         function handleResetToRecommended() {
-          if (recommendedImage) {
+          if (isOther) {
+            field.onChange("/default-store.svg");
+          } else if (recommendedImage) {
             field.onChange(recommendedImage.imageUrl);
           } else {
-            field.onChange(undefined);
+            field.onChange("/default-store.svg");
           }
         }
 
@@ -110,7 +128,9 @@ export function StoreImageField({ control, watch, setValue }: StoreImageFieldPro
                     unoptimized
                     className={cn(
                       "transition-transform duration-300 group-hover:scale-105",
-                      isCustomFile ? "object-contain p-2" : "object-cover",
+                      isCustomFile || activeUrl === "/default-store.svg"
+                        ? "object-contain p-2"
+                        : "object-cover",
                     )}
                   />
                   <div className="backdrop-blur-2xs absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
@@ -128,10 +148,15 @@ export function StoreImageField({ control, watch, setValue }: StoreImageFieldPro
                         <Check className="size-3.5 stroke-3 text-emerald-600" />
                         Custom Logo Uploaded
                       </span>
+                    ) : isOther || !activeDefaultItem ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs">
+                        <Store className="size-3.5 text-emerald-600" />
+                        Default Store Picture
+                      </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs">
                         <Store className="size-3.5 text-emerald-600" />
-                        Default Image: {activeDefaultItem?.label || "General Store"}
+                        Default Image: {activeDefaultItem.label}
                       </span>
                     )}
 
@@ -152,7 +177,9 @@ export function StoreImageField({ control, watch, setValue }: StoreImageFieldPro
                   <p className="text-xs text-slate-500">
                     {isCustomFile
                       ? "Custom store logo will be displayed on your store profile and customer storefront."
-                      : "Representative storefront image for your business. You can choose any of the 9 built-in images or upload your own store logo."}
+                      : isOther
+                        ? "Using generic default store picture for Other business type. You can also pick a specific storefront image below or upload your custom logo."
+                        : "Representative storefront image for your business. Selecting an image also automatically updates your Business Type above."}
                   </p>
 
                   {/* Actions Row */}
@@ -206,7 +233,7 @@ export function StoreImageField({ control, watch, setValue }: StoreImageFieldPro
               <div className="border-t border-slate-200/60 pt-3">
                 <div className="flex items-center justify-between pb-2">
                   <span className="text-[11px] font-semibold text-slate-600">
-                    Quick Select Default Store Image:
+                    Quick Select Default Store Image (Auto-syncs Business Type):
                   </span>
                   <button
                     type="button"
@@ -226,7 +253,7 @@ export function StoreImageField({ control, watch, setValue }: StoreImageFieldPro
                       <button
                         key={img.id}
                         type="button"
-                        onClick={() => handleSelectDefault(img.imageUrl)}
+                        onClick={() => handleSelectDefault(img.imageUrl, img.businessType)}
                         className={cn(
                           "group relative flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all",
                           isSelected

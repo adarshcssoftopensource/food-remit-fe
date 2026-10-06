@@ -24,7 +24,7 @@ interface DefaultStoreImageDialogProps {
   onOpenChange: (open: boolean) => void;
   selectedImageUrl?: string | null;
   businessType?: string | null;
-  onSelectImage: (imageUrl: string) => void;
+  onSelectImage: (imageUrl: string, businessType?: string) => void;
 }
 
 export function DefaultStoreImageDialog({
@@ -36,11 +36,12 @@ export function DefaultStoreImageDialog({
 }: DefaultStoreImageDialogProps) {
   const [tempSelected, setTempSelected] = useState<string | null>(selectedImageUrl ?? null);
 
-  const recommended = getDefaultStoreImageForBusinessType(businessType);
+  const isOther = businessType === "Other";
+  const recommended = isOther ? undefined : getDefaultStoreImageForBusinessType(businessType);
 
   function handleSelect(img: DefaultStoreImage) {
     setTempSelected(img.imageUrl);
-    onSelectImage(img.imageUrl);
+    onSelectImage(img.imageUrl, img.businessType);
     onOpenChange(false);
   }
 
@@ -58,7 +59,8 @@ export function DefaultStoreImageDialog({
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-500">
                 Choose a representative storefront image for your store (
-                {DEFAULT_STORE_IMAGES.length} business types available).
+                {DEFAULT_STORE_IMAGES.length} business types available). Selecting an image also
+                updates your Business Type.
               </DialogDescription>
             </div>
           </div>

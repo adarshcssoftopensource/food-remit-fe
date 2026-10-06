@@ -49,14 +49,17 @@ export function ReviewStep({ control, errors, getValues, watch }: ReviewStepProp
   const summary = getReviewSummary(getValues);
   const storeLogo = watch("storeLogo");
   const businessType = getValues("businessType");
+  const isOther = businessType === "Other";
   const logoFile = storeLogo instanceof File ? storeLogo : null;
   const isCustomFile = !!logoFile;
-  const defaultImg = getDefaultStoreImageForBusinessType(businessType);
+  const defaultImg = isOther ? undefined : getDefaultStoreImageForBusinessType(businessType);
   const logoUrl = isCustomFile
     ? getFilePreviewUrl(logoFile)
-    : typeof storeLogo === "string" && storeLogo.trim()
-      ? storeLogo.trim()
-      : defaultImg?.imageUrl || "/default-store.svg";
+    : isOther
+      ? "/default-store.svg"
+      : typeof storeLogo === "string" && storeLogo.trim() && storeLogo !== "/default-store.svg"
+        ? storeLogo.trim()
+        : defaultImg?.imageUrl || "/default-store.svg";
 
   return (
     <div className="flex flex-col gap-4">
@@ -85,13 +88,19 @@ export function ReviewStep({ control, errors, getValues, watch }: ReviewStepProp
                 fill
                 sizes="40px"
                 unoptimized
-                className={isCustomFile ? "object-contain p-1" : "object-cover"}
+                className={
+                  isCustomFile || logoUrl === "/default-store.svg"
+                    ? "object-contain p-1"
+                    : "object-cover"
+                }
               />
             </div>
             <span className="min-w-0 font-semibold break-words text-slate-900 md:text-right">
               {isCustomFile
                 ? `Custom Logo (${logoFile.name})`
-                : `Default Image (${defaultImg?.label || businessType || "Store"})`}
+                : isOther || !defaultImg
+                  ? "Default Store Picture"
+                  : `Default Image (${defaultImg.label})`}
             </span>
           </div>
         </div>
