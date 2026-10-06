@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Store, User, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { OrderStatusBadge } from "../components/order-status-badge";
+import { OrderStatusBadge } from "../components/order-report/order-status-badge";
 import type { CustomerOrderRow } from "../hooks/use-get-customer-orders";
 
 interface GetCustomerOrdersColumnsOptions {

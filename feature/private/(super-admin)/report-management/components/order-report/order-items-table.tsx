@@ -6,7 +6,7 @@ import { Package } from "lucide-react";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getOrderItemColumns, OrderItemRow } from "../columns/order-item-columns";
+import { getOrderItemColumns, OrderItemRow } from "../../columns/order-item-columns";
 
 export type OrderItem = OrderItemRow;
 

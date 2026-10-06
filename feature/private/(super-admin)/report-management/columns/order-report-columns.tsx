@@ -8,7 +8,7 @@ import { TruncatedTextCell } from "@/components/common/data-table/truncated-text
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/date";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
-import { OrderStatusBadge } from "../components/order-status-badge";
+import { OrderStatusBadge } from "../components/order-report/order-status-badge";
 
 export interface OrderReportRow {
   sno: number;

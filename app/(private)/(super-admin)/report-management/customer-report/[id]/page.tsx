@@ -1,4 +1,4 @@
-import { CustomerReportDetail } from "@/feature/private/(super-admin)/report-management/components/customer-report-detail";
+import { CustomerReportDetail } from "@/feature/private/(super-admin)/report-management/components/customer-report/customer-report-detail";
 
 interface CustomerReportDetailPageProps {
   params: Promise<{ id: string }>;

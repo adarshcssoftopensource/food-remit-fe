@@ -10,10 +10,10 @@ import { REPORT_SECTION_META } from "@/constants/report-management";
 import { exportToExcel } from "@/lib/export-excel";
 import apiClient from "@/lib/api/client";
 import { REPORT_ENDPOINTS } from "@/lib/api/endpoints/reports.endpoints";
-import { customerReportColumns } from "../columns/customer-report-columns";
-import { ReportDateFilters } from "./report-date-filters";
-import { getEntriesFoundLabel, ReportTableCardHeader } from "./report-table-card-header";
-import { useCustomerReport } from "../hooks/use-customer-report";
+import { customerReportColumns } from "../../columns/customer-report-columns";
+import { ReportDateFilters } from "../shared/report-date-filters";
+import { getEntriesFoundLabel, ReportTableCardHeader } from "../shared/report-table-card-header";
+import { useCustomerReport } from "../../hooks/use-customer-report";
 
 export function CustomerReportsPage() {
   const meta = REPORT_SECTION_META["customer-report"];

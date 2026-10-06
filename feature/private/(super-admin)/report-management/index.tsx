@@ -33,12 +33,15 @@ import {
   orderReportColumns,
 } from "./columns/other-report-columns";
 import { storeReportColumns } from "./columns/store-report-columns";
-import { ReportDateFilters } from "./components/report-date-filters";
+import { ReportDateFilters } from "./components/shared/report-date-filters";
 import { useReportDateFilters } from "./hooks/use-report-date-filters";
 import { useStoreReport } from "./hooks/use-store-report";
-import { OrderReportsPage } from "./components/order-reports-page";
-import { CustomerReportsPage } from "./components/customer-reports-page";
-import { getEntriesFoundLabel, ReportTableCardHeader } from "./components/report-table-card-header";
+import { OrderReportsPage } from "./components/order-report/order-reports-page";
+import { CustomerReportsPage } from "./components/customer-report/customer-reports-page";
+import {
+  getEntriesFoundLabel,
+  ReportTableCardHeader,
+} from "./components/shared/report-table-card-header";
 
 type ReportManagementPageProps = {
   section: ReportSectionKey;

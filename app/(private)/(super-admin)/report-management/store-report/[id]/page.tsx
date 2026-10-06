@@ -1,4 +1,4 @@
-import { StoreReportDetail } from "@/feature/private/(super-admin)/report-management/components/store-report-detail";
+import { StoreReportDetail } from "@/feature/private/(super-admin)/report-management/components/store-report/store-report-detail";
 
 interface StoreReportDetailPageProps {
   params: Promise<{ id: string }>;

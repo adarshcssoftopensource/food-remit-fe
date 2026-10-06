@@ -5,7 +5,7 @@ import { Building2, Calendar, Globe, Mail, MapPin, Phone, UserCheck } from "luci
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
-import type { CustomerReportDetailData } from "../hooks/use-get-customer-report-detail";
+import type { CustomerReportDetailData } from "../../hooks/use-get-customer-report-detail";
 
 type ReportCustomer = CustomerReportDetailData["customer"];
 

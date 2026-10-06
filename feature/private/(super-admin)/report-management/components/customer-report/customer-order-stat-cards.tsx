@@ -2,7 +2,7 @@ import { ArrowDownLeft, ArrowUpRight, CheckCircle2, ShoppingBag } from "lucide-r
 
 import { Card } from "@/components/ui/card";
 
-import type { CustomerReportDetailData } from "../hooks/use-get-customer-report-detail";
+import type { CustomerReportDetailData } from "../../hooks/use-get-customer-report-detail";
 
 interface CustomerOrderStatCardsProps {
   stats?: CustomerReportDetailData["stats"];

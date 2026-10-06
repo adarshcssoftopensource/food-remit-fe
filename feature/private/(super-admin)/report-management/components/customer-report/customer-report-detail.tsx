@@ -31,11 +31,11 @@ import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/config/routes";
 import { useTableFilters } from "@/hooks/use-table-filters";
 
-import { getCustomerOrdersColumns } from "../columns/customer-orders-columns";
-import { useGetCustomerReportDetail } from "../hooks/use-get-customer-report-detail";
-import { useGetCustomerOrders, CustomerOrderRow } from "../hooks/use-get-customer-orders";
+import { getCustomerOrdersColumns } from "../../columns/customer-orders-columns";
+import { useGetCustomerReportDetail } from "../../hooks/use-get-customer-report-detail";
+import { useGetCustomerOrders, CustomerOrderRow } from "../../hooks/use-get-customer-orders";
 import { CustomerReportDetailSkeleton } from "./customer-report-detail-skeleton";
-import { OrderReportDetailPage } from "./order-report-detail-page";
+import { OrderReportDetailPage } from "../order-report/order-report-detail-page";
 
 interface CustomerReportDetailProps {
   customerId: string;

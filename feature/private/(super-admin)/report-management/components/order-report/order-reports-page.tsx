@@ -16,8 +16,8 @@ import { REPORT_ENDPOINTS } from "@/lib/api/endpoints/reports.endpoints";
 import { useDebounce } from "@/lib/debounce";
 import { OrderReportDetailPage } from "./order-report-detail-page";
 import { OrderReportFilterFields, OrderReportsTableHeader } from "./order-reports-sections";
-import { ReportDateFilters } from "./report-date-filters";
-import { getOrderReportColumns, OrderReportRow } from "../columns/order-report-columns";
+import { ReportDateFilters } from "../shared/report-date-filters";
+import { getOrderReportColumns, OrderReportRow } from "../../columns/order-report-columns";
 
 function getIsStoreScoped(
   profile: ReturnType<typeof useProfile>["profile"],

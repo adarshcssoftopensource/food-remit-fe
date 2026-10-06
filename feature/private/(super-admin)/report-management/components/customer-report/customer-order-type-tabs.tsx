@@ -1,4 +1,4 @@
-import type { CustomerReportDetailData } from "../hooks/use-get-customer-report-detail";
+import type { CustomerReportDetailData } from "../../hooks/use-get-customer-report-detail";
 
 interface CustomerOrderTypeTabsProps {
   stats?: CustomerReportDetailData["stats"];

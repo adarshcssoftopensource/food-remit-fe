@@ -29,12 +29,12 @@ import { useTableFilters } from "@/hooks/use-table-filters";
 import { exportToExcel } from "@/lib/export-excel";
 import apiClient from "@/lib/api/client";
 import { REPORT_ENDPOINTS } from "@/lib/api/endpoints/reports.endpoints";
-import { ReportDateFilters } from "../components/report-date-filters";
-import { useReportDateFilters } from "../hooks/use-report-date-filters";
-import { useGetStoreReportDetail } from "../hooks/use-get-store-report-detail";
-import { useGetStoreOrders } from "../hooks/use-get-store-orders";
-import { getOrderReportColumns, OrderReportRow } from "../columns/order-report-columns";
-import { OrderReportDetailPage } from "./order-report-detail-page";
+import { ReportDateFilters } from "../shared/report-date-filters";
+import { useReportDateFilters } from "../../hooks/use-report-date-filters";
+import { useGetStoreReportDetail } from "../../hooks/use-get-store-report-detail";
+import { useGetStoreOrders } from "../../hooks/use-get-store-orders";
+import { getOrderReportColumns, OrderReportRow } from "../../columns/order-report-columns";
+import { OrderReportDetailPage } from "../order-report/order-report-detail-page";
 import { StoreReportDetailSkeleton } from "./store-report-detail-skeleton";
 import {
   StoreManagerOverviewCard,
@@ -53,7 +53,7 @@ function getStoreManagerRows(store: StoreReportRow | undefined): StoreManagerRow
         { label: "Manager Name", value: store.manager?.name, icon: User },
         { label: "Email Address", value: store.manager?.email, icon: Mail },
         { label: "Phone Number", value: store.manager?.phone, icon: Phone },
-        { label: "Address", value: store.manager?.address, icon: MapPin },
+        // { label: "Address", value: store.manager?.address, icon: MapPin },
         { label: "Country", value: store.manager?.country || store.country, icon: Globe },
         { label: "State", value: store.manager?.state || store.state, icon: Map },
         { label: "City", value: store.manager?.city || store.city, icon: Building2 },
