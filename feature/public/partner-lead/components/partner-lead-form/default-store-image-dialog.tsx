@@ -3,12 +3,10 @@
 import { Check, Sparkles, Store } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -181,17 +179,6 @@ export function DefaultStoreImageDialog({
             })}
           </div>
         </div>
-
-        <DialogFooter className="border-t border-slate-100 bg-slate-50/60 px-6 py-3 sm:justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            className="rounded-xl text-xs font-semibold"
-          >
-            Close
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
