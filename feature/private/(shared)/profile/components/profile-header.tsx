@@ -6,14 +6,15 @@ import { errorToast, successToast } from "@/components/toaster";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { formatRole } from "@/lib/formatRole";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Camera, Loader2, Mail, Maximize2, ShieldCheck, Store } from "lucide-react";
 import { useRef, useState } from "react";
+import { fetcher } from "@/hooks/useApi";
 import { useUpdateStore } from "@/feature/private/(super-admin)/store-management/hooks/use-update-store";
 import { useUpdateProfile } from "../hooks/use-update-profile";
 
 export function ProfileHeader() {
-  const { profile, needsBankVerification } = useProfile();
+  const { profile, needsBankVerification, refetchProfile } = useProfile();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const updateProfileMutation = useUpdateProfile();
   const queryClient = useQueryClient();
@@ -27,6 +28,24 @@ export function ProfileHeader() {
   const storeId = profile?.stores?.[0]?.id || "";
   const updateStoreMutation = useUpdateStore(storeId);
 
+  const { data: storeData } = useQuery({
+    queryKey: ["store", storeId],
+    queryFn: async () => {
+      if (!storeId) return null;
+      const res = await fetcher<any>({
+        url: `/admin/stores/${storeId}`,
+        method: "get",
+      });
+      return res.data;
+    },
+    enabled: !!storeId,
+  });
+
+  const currentStore = storeData || profile?.stores?.[0];
+  const currentStoreImage =
+    storeData?.storeImage !== undefined ? storeData.storeImage : profile?.stores?.[0]?.storeImage;
+  const currentStoreName = currentStore?.storeName || profile?.stores?.[0]?.storeName || "";
+
   const handleStoreImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file || !storeId || !canEditStoreImage) return;
@@ -36,8 +55,12 @@ export function ProfileHeader() {
       formData.append("storeImage", file);
       await updateStoreMutation.mutateAsync(formData as any);
       successToast({ title: "Store image updated successfully!" });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.STORES });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE }),
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.STORES }),
+        queryClient.invalidateQueries({ queryKey: ["store", storeId] }),
+      ]);
+      refetchProfile();
     } catch {
       errorToast({ title: "Failed to update store image." });
     }
@@ -50,7 +73,9 @@ export function ProfileHeader() {
   const displayName = profile?.name || "Admin User";
   const displayRole = formatRole(profile?.role || "");
   const displayEmail = profile?.email || "admin@foodremit.com";
-  const displayStores = profile?.stores ? profile.stores.map((s) => s.storeName).join(", ") : null;
+  const displayStores =
+    storeData?.storeName ||
+    (profile?.stores ? profile.stores.map((s) => s.storeName).join(", ") : null);
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -62,6 +87,7 @@ export function ProfileHeader() {
       await updateProfileMutation.mutateAsync(formData);
       successToast({ title: "Profile image updated successfully!" });
       queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE });
+      refetchProfile();
     } catch {
       errorToast({ title: "Failed to update profile image." });
     }
@@ -85,21 +111,19 @@ export function ProfileHeader() {
         profile?.roleCode === "EMPLOYEE" ||
         profile?.role === "employee" ||
         profile?.role === "store_manager") &&
-      profile?.stores?.[0] ? (
+      (profile?.stores?.[0] || storeData) ? (
         <div
           className="group/banner relative flex h-24 w-full items-center justify-center bg-cover bg-center bg-no-repeat transition-all sm:h-32"
           style={{
-            backgroundImage: profile.stores[0].storeImage
-              ? `url(${profile.stores[0].storeImage})`
-              : undefined,
+            backgroundImage: currentStoreImage ? `url(${currentStoreImage})` : undefined,
           }}
         >
           <div
-            className={`absolute inset-0 transition-all ${profile.stores[0].storeImage ? "bg-emerald-950/40 backdrop-blur-[1px] group-hover/banner:bg-emerald-950/60 group-hover/banner:backdrop-blur-sm" : "bg-linear-to-r from-emerald-600/30 via-teal-600/20 to-emerald-500/10 group-hover/banner:bg-emerald-600/40"}`}
+            className={`absolute inset-0 transition-all ${currentStoreImage ? "bg-emerald-950/40 backdrop-blur-[1px] group-hover/banner:bg-emerald-950/60 group-hover/banner:backdrop-blur-sm" : "bg-linear-to-r from-emerald-600/30 via-teal-600/20 to-emerald-500/10 group-hover/banner:bg-emerald-600/40"}`}
           />
 
           <div className="absolute z-10 flex items-center gap-4 opacity-0 transition-opacity group-hover/banner:opacity-100">
-            {profile.stores[0].storeImage && (
+            {currentStoreImage && (
               <button
                 onClick={() => setLightboxOpen(true)}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-white/30"
@@ -188,11 +212,11 @@ export function ProfileHeader() {
         </div>
       </div>
 
-      {lightboxOpen && profile?.stores?.[0]?.storeImage && (
+      {lightboxOpen && currentStoreImage && (
         <ImageLightbox
-          src={profile.stores[0].storeImage}
+          src={currentStoreImage}
           onClose={() => setLightboxOpen(false)}
-          alt={profile.stores[0].storeName}
+          alt={currentStoreName}
         />
       )}
     </div>

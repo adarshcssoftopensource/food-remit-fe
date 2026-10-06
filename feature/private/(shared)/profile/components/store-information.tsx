@@ -21,7 +21,9 @@ import { useProfile } from "@/components/providers/profile-provider";
 import { useUpdateStore } from "@/feature/private/(super-admin)/store-management/hooks/use-update-store";
 import { successToast } from "@/components/toaster";
 import { fetcher } from "@/hooks/useApi";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
+import { getDefaultStoreImageForBusinessType } from "@/constants/default-store-images";
 import { cn } from "@/lib/utils";
 import { storeInfoSchema, type StoreInfoValues } from "../schema/store-info.schema";
 import {
@@ -32,7 +34,8 @@ import {
 } from "./store-information-fields";
 
 export function StoreInformation() {
-  const { profile, needsBankVerification } = useProfile();
+  const { profile, needsBankVerification, refetchProfile } = useProfile();
+  const queryClient = useQueryClient();
   const storeId = profile?.stores?.[0]?.id;
   const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
   const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
@@ -49,6 +52,12 @@ export function StoreInformation() {
     },
     enabled: !!storeId,
   });
+
+  const businessType =
+    storeData?.partnerLead?.businessType ||
+    profile?.partnerLead?.businessType ||
+    storeData?.businessType ||
+    "";
 
   const detectedTargetCountry = useMemo(() => {
     if (!storeData) return undefined;
@@ -169,15 +178,39 @@ export function StoreInformation() {
         ? values.storeImage[0]
         : values.storeImage;
 
+      const defaultStoreImage =
+        businessType && businessType !== "Other"
+          ? getDefaultStoreImageForBusinessType(businessType)?.imageUrl || "/default-store.svg"
+          : "/default-store.svg";
+
       if (storeImageFile instanceof File) {
         formData.append("storeImage", storeImageFile);
-      } else if (typeof storeImageFile === "string" && storeImageFile !== storeData?.storeImage) {
-        formData.append("storeImage", storeImageFile);
+      } else if (typeof storeImageFile === "string" && storeImageFile.trim()) {
+        formData.append("storeImage", storeImageFile.trim());
+      } else {
+        // Image cut or cleared: save default store image according to business type
+        formData.append("storeImage", defaultStoreImage);
       }
 
-      await updateStoreMutation.mutateAsync(formData as any);
+      const res = await updateStoreMutation.mutateAsync(formData as any);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["store", storeId] }),
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE }),
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.STORES }),
+        queryClient.invalidateQueries({ queryKey: ["stores"] }),
+      ]);
+      refetchProfile();
       successToast({ title: "Store information updated successfully!" });
-      reset(values);
+      const newStoreImage =
+        (res as any)?.data?.storeImage ||
+        (res as any)?.storeImage ||
+        (typeof storeImageFile === "string" && storeImageFile.trim()
+          ? storeImageFile
+          : defaultStoreImage);
+      reset({
+        ...values,
+        storeImage: newStoreImage,
+      });
     } catch {}
   };
 
@@ -219,6 +252,7 @@ export function StoreInformation() {
               errors={errors}
               needsBankVerification={needsBankVerification}
               isEmployee={isEmployee}
+              businessType={businessType}
             />
 
             <div className="space-y-6">

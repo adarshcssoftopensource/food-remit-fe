@@ -9,6 +9,7 @@ import {
 } from "../types/store-management";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 
 export function useUpdateStoreManager(id: string) {
   const queryClient = useQueryClient();
@@ -34,6 +35,7 @@ export function useUpdateStore(id: string) {
         queryClient.invalidateQueries({ queryKey: ["stores"] });
         queryClient.invalidateQueries({ queryKey: ["store", id] });
         queryClient.invalidateQueries({ queryKey: ["store-dashboard"] });
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE });
       },
     },
   );
