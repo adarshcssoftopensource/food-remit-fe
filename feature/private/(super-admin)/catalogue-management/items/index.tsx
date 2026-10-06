@@ -308,7 +308,7 @@ export function ItemsManagement() {
             columns={columns}
             data={filteredData}
             searchKey="itemDisplayName"
-            searchPlaceholder="Search by name, item number or UPC"
+            searchPlaceholder="Search by product name, store name, item number, or UPC..."
             emptyMessage={
               hasFilters || statusTab !== "all"
                 ? "No items match your filters"

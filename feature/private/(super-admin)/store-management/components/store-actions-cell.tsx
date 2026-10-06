@@ -76,7 +76,7 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
       onClick: () => setEditOpen(true),
     },
     {
-      label: "Go to portal",
+      label: "Go to Store",
       icon: <ExternalLink className="size-4" />,
       onClick: handleImpersonate,
       disabled: impersonate.isPending,

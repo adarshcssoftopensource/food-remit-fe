@@ -536,7 +536,7 @@ function WorkspaceItemsSection({
             columns={columns}
             data={items}
             searchKey="itemDisplayName"
-            searchPlaceholder="Search by name, item number or UPC"
+            searchPlaceholder="Search by product name, store name, item number, or UPC..."
             emptyMessage="No items match your filters"
             searchValue={search}
             onSearchChange={onSearchChange}
