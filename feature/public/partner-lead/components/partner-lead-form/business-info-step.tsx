@@ -46,6 +46,8 @@ export function BusinessInfoStep({
         control={control}
         errors={errors}
         isOtherBusinessType={isOtherBusinessType}
+        watch={watch}
+        setValue={setValue}
       />
 
       {/* Geographical Section Container */}

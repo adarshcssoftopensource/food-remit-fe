@@ -1,15 +1,15 @@
 import { Building2, CheckCircle2, Landmark, ShieldCheck, Store, User } from "lucide-react";
 
 export const BUSINESS_TYPES = [
-  "Independent Grocery Store",
-  "Supermarket",
-  "Restaurant",
   "Convenience Store",
-  "Specialty / Ethnic Grocery Store",
-  "Wholesale Distributor",
-  "Retail Chain",
-  "Franchise",
+  "Ethnic Grocery",
   "Food Manufacturer",
+  "Franchise",
+  "Grocery",
+  "Restaurant",
+  "Retail Chain",
+  "Supermarket",
+  "Wholesale Distributor",
   "Other",
 ] as const;
 

@@ -1,8 +1,11 @@
+import Image from "next/image";
 import { CheckCircle2, Clock, ShieldCheck } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { getDefaultStoreImageForBusinessType } from "@/constants/default-store-images";
 import { cn } from "@/lib/utils";
 import type { PartnerLeadFormState } from "../../hooks/use-partner-lead-form";
+import { getFilePreviewUrl } from "../../utils/file-preview-url";
 
 type ReviewStepProps = Pick<PartnerLeadFormState, "control" | "errors" | "getValues" | "watch">;
 
@@ -44,6 +47,16 @@ function getReviewSummary(getValues: PartnerLeadFormState["getValues"]) {
 
 export function ReviewStep({ control, errors, getValues, watch }: ReviewStepProps) {
   const summary = getReviewSummary(getValues);
+  const storeLogo = watch("storeLogo");
+  const businessType = getValues("businessType");
+  const logoFile = storeLogo instanceof File ? storeLogo : null;
+  const isCustomFile = !!logoFile;
+  const defaultImg = getDefaultStoreImageForBusinessType(businessType);
+  const logoUrl = isCustomFile
+    ? getFilePreviewUrl(logoFile)
+    : typeof storeLogo === "string" && storeLogo.trim()
+      ? storeLogo.trim()
+      : defaultImg?.imageUrl || "/default-store.svg";
 
   return (
     <div className="flex flex-col gap-4">
@@ -61,6 +74,26 @@ export function ReviewStep({ control, errors, getValues, watch }: ReviewStepProp
           <span className="min-w-0 font-semibold break-words text-slate-900 md:text-right">
             {summary.businessName} ({summary.businessTypeLabel}){summary.bankAccountLabel}
           </span>
+        </div>
+        <div className="flex flex-col gap-2 border-b border-slate-200/60 pb-2 md:flex-row md:items-center md:justify-between md:gap-4">
+          <span className="font-medium text-slate-500">Store Image / Logo:</span>
+          <div className="flex items-center gap-2.5">
+            <div className="relative size-10 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xs">
+              <Image
+                src={logoUrl}
+                alt="Store Image Preview"
+                fill
+                sizes="40px"
+                unoptimized
+                className={isCustomFile ? "object-contain p-1" : "object-cover"}
+              />
+            </div>
+            <span className="min-w-0 font-semibold break-words text-slate-900 md:text-right">
+              {isCustomFile
+                ? `Custom Logo (${logoFile.name})`
+                : `Default Image (${defaultImg?.label || businessType || "Store"})`}
+            </span>
+          </div>
         </div>
         <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-2 md:flex-row md:items-start md:justify-between md:gap-4">
           <span className="font-medium text-slate-500">Locations &amp; Country:</span>

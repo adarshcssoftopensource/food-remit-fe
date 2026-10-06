@@ -35,7 +35,11 @@ export const getPartnerLeadColumns = (
             fill
             sizes="32px"
             unoptimized
-            className="object-contain p-0.5"
+            className={
+              row.original.storeLogo?.startsWith("/images/default-stores/")
+                ? "object-cover"
+                : "object-contain p-0.5"
+            }
           />
         </div>
         <TruncatedTextCell

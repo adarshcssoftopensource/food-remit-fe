@@ -7,6 +7,7 @@ import { useDebounce } from "@/lib/debounce";
 import { DEFAULT_WEEKLY_SCHEDULE } from "@/components/common/store-schedule-utils";
 import { errorToast, successToast } from "@/components/toaster";
 import { STEPS } from "@/constants/become-a-partner";
+import { getDefaultStoreImageForBusinessType } from "@/constants/default-store-images";
 import { useCreatePartnerLead } from "./create-partner";
 import { PartnerLeadFormValues, partnerLeadSchema } from "../schema/partner-lead.schema";
 import { checkEmailExists } from "./use-check-email";
@@ -317,6 +318,25 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
     }
   }, [hasOtherWorkPreference, getValues, setValue]);
 
+  // Synchronize default store image recommendation when businessType changes (if not custom file)
+  const prevBusinessTypeRef = useRef(businessType);
+  useEffect(() => {
+    if (businessType && businessType !== prevBusinessTypeRef.current) {
+      prevBusinessTypeRef.current = businessType;
+      const currentLogo = getValues("storeLogo");
+      const isCustomFile =
+        currentLogo instanceof File ||
+        (Array.isArray(currentLogo) && currentLogo[0] instanceof File);
+
+      if (!isCustomFile) {
+        const defaultImg = getDefaultStoreImageForBusinessType(businessType);
+        if (defaultImg) {
+          setValue("storeLogo", defaultImg.imageUrl, { shouldDirty: true });
+        }
+      }
+    }
+  }, [businessType, getValues, setValue]);
+
   // Auto-detect Currency logic
   const selectedCountryName = watch("country");
   useEffect(() => {
@@ -477,6 +497,11 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
         formData.append("storeLogo", data.storeLogo[0], data.storeLogo[0].name);
       } else if (typeof data.storeLogo === "string" && data.storeLogo.trim()) {
         formData.append("storeLogo", data.storeLogo.trim());
+      } else if (data.businessType) {
+        const defaultImg = getDefaultStoreImageForBusinessType(data.businessType);
+        if (defaultImg) {
+          formData.append("storeLogo", defaultImg.imageUrl);
+        }
       }
       if (data.profileImage instanceof File) {
         formData.append("profileImage", data.profileImage, data.profileImage.name);

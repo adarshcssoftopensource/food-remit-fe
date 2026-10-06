@@ -29,22 +29,32 @@ export function BusinessOverviewCard({ lead }: { lead: PartnerLeadData }) {
               fill
               sizes="56px"
               unoptimized
-              className="object-contain p-1.5"
+              className={
+                lead.storeLogo?.startsWith("/images/default-stores/")
+                  ? "object-cover"
+                  : "object-contain p-1.5"
+              }
             />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold tracking-wider text-slate-900 uppercase">
-                Store Logo
+                Store Image
               </span>
-              <span className="py-0.2 rounded-full border border-slate-200 bg-white px-2 text-[10px] font-semibold text-slate-500">
-                {lead.storeLogo ? "Custom Uploaded" : "Default Image"}
+              <span className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                {lead.storeLogo?.startsWith("/images/default-stores/")
+                  ? "Default Store Image"
+                  : lead.storeLogo
+                    ? "Custom Uploaded"
+                    : "Default Store Image"}
               </span>
             </div>
             <p className="mt-0.5 text-xs text-slate-500">
-              {lead.storeLogo
-                ? "Partner provided a custom store logo"
-                : "Using system default store image"}
+              {lead.storeLogo?.startsWith("/images/default-stores/")
+                ? "Using selected default business storefront image"
+                : lead.storeLogo
+                  ? "Partner provided custom store logo/image"
+                  : "Using system default store image"}
             </p>
           </div>
         </div>
