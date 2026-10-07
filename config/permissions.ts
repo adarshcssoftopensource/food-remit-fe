@@ -37,6 +37,11 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   [ROUTES.ADMIN.EMPLOYEE_MANAGEMENT]: "employeeManagement",
 };
 
+// Older backend builds send the legacy key name.
+const PERMISSION_KEY_ALIASES: Record<string, string> = {
+  basketManagement: "productBoxesManagement",
+};
+
 function isAlwaysAllowedRoute(pathname: string): boolean {
   return ALWAYS_ALLOWED_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
@@ -84,5 +89,8 @@ export function hasPathPermission(
   if (!matchedKey) return false;
 
   const permissionKey = ROUTE_PERMISSION_MAP[matchedKey as keyof typeof ROUTE_PERMISSION_MAP];
-  return permissionKey ? permissions[permissionKey] === 1 : false;
+  if (!permissionKey) return false;
+  if (permissions[permissionKey] === 1) return true;
+  const alias = PERMISSION_KEY_ALIASES[permissionKey];
+  return alias ? permissions[alias] === 1 : false;
 }
