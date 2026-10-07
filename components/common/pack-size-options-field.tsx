@@ -65,7 +65,14 @@ export function PackSizeOptionsField({
     );
   };
 
-  const removeRow = (key: string) => onChange(rows.filter((row) => row.key !== key));
+  const removeRow = (key: string) => {
+    const next = rows.filter((row) => row.key !== key);
+    if (next.length <= 1) {
+      onChange(next.map((r) => ({ ...r, _isSingleReadOnly: true })));
+    } else {
+      onChange(next);
+    }
+  };
 
   const makeDefault = (key: string) => {
     const row = rows.find((r) => r.key === key);
@@ -155,11 +162,11 @@ export function PackSizeOptionsField({
                     placeholder="e.g. 1 Litre Bottle"
                     disabled={disabled}
                     readOnly={!allowMultiple}
-                    aria-invalid={!!errors?.optionName}
+                    aria-invalid={allowMultiple && !!errors?.optionName}
                     aria-label={`Option ${index + 1} name`}
                     className={cn(fieldClass, !allowMultiple && "cursor-not-allowed opacity-70")}
                   />
-                  <FieldError message={errors?.optionName} />
+                  <FieldError message={allowMultiple ? errors?.optionName : undefined} />
                 </div>
 
                 <div>

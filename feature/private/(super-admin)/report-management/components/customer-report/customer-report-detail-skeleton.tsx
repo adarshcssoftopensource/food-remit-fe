@@ -46,6 +46,13 @@ export function CustomerReportDetailSkeleton() {
                   </div>
                 </div>
               ))}
+              <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-2.5 sm:col-span-2 lg:col-span-3 dark:border-slate-800/60 dark:bg-slate-800/40">
+                <Skeleton className="size-8 shrink-0 rounded-lg" />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <Skeleton className="h-3 w-28" />
+                  <Skeleton className="h-4 w-64" />
+                </div>
+              </div>
             </div>
           </div>
         </div>

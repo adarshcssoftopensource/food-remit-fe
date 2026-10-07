@@ -58,7 +58,9 @@ export type CustomerReportRow = {
   ordersSent: number;
   ordersRequested: number;
   country: string;
+  state?: string;
   city: string;
+  zipCode?: string;
 };
 
 export type OrderReportRow = {

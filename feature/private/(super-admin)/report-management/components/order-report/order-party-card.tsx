@@ -2,14 +2,19 @@
 
 import { Building2, FileSignature, MapPin, Phone, UserCheck, ZoomIn } from "lucide-react";
 
-import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatAddress } from "@/lib/utils";
 
 interface PartyDetails {
   fullName?: string;
   fullPhone?: string;
   fullAddress?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zipCode?: string;
   customerSignature?: string | null;
 }
 
@@ -30,7 +35,13 @@ export function OrderPartyCard({ type, details, onPreviewSignature }: OrderParty
 
   const fullName = details?.fullName || "N/A";
   const fullPhone = details?.fullPhone || "N/A";
-  const fullAddress = details?.fullAddress || "N/A";
+  const rawAddress =
+    details?.fullAddress && details.fullAddress !== "N/A"
+      ? details.fullAddress
+      : [details?.address, details?.city, details?.state, details?.country, details?.zipCode]
+          .filter(Boolean)
+          .join(", ");
+  const resolvedAddress = formatAddress(rawAddress) || "N/A";
   const customerSignature = details?.customerSignature;
 
   return (
@@ -64,15 +75,17 @@ export function OrderPartyCard({ type, details, onPreviewSignature }: OrderParty
           </span>
         </div>
 
-        <div className="flex items-center justify-between py-2">
-          <span className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+        <div className="flex items-start justify-between gap-3 py-2">
+          <span className="flex shrink-0 items-center gap-2 pt-0.5 text-xs font-medium text-slate-500 dark:text-slate-400">
             <MapPin className={`size-3.5 ${iconColor}`} /> Location / Address
           </span>
-          <div className="max-w-[220px] text-right">
-            <TruncatedTextCell
-              text={fullAddress}
-              className="text-xs font-medium text-slate-800 dark:text-slate-200"
-            />
+          <div className="max-w-[340px] text-right">
+            <span
+              className="text-xs leading-relaxed font-semibold text-slate-800 dark:text-slate-200"
+              title={resolvedAddress}
+            >
+              {resolvedAddress}
+            </span>
           </div>
         </div>
       </CardContent>
