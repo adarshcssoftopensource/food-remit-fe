@@ -73,9 +73,9 @@ export function SummarySection({ pricing, issues, onJump, statusNote }: SummaryS
   return (
     <SectionCard
       id="summary"
-      step={7}
+      step={6}
       title="Basket Summary"
-      description="Review your basket details before creating. You can still make changes above."
+      description="Review your basket details before creating. Go back to any step to make changes."
     >
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <SummaryTile

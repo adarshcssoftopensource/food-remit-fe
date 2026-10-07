@@ -1,9 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, Loader2, Save, Store } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Save, Store } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import type { z } from "zod";
 
@@ -19,7 +19,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { ROUTES } from "@/config/routes";
-import { cn } from "@/lib/utils";
 
 import { useActiveBasketStore } from "../../hooks/use-active-basket-store";
 import { useBasketPricingPreview } from "../../hooks/use-basket-pricing-preview";
@@ -39,11 +38,10 @@ import { formatMoney } from "../../utils/basket-format";
 import { BasketStatusBadge } from "../shared/basket-badges";
 import { BasketStoreSwitcher } from "../shared/basket-store-switcher";
 import { BasketPublished } from "./basket-published";
-import { sectionDomId } from "./section-card";
+import { BASKET_STEPS, BasketStepper, stepIdOf } from "./basket-stepper";
 import { AvailabilitySection } from "./sections/availability-section";
 import { ContentsSection } from "./sections/contents-section";
 import { ImageSection } from "./sections/image-section";
-import { InformationSection } from "./sections/information-section";
 import { PricingSection } from "./sections/pricing-section";
 import { SummarySection } from "./sections/summary-section";
 import { TemplateSection } from "./sections/template-section";
@@ -52,10 +50,14 @@ interface BasketBuilderProps {
   basket?: BasketDetail;
 }
 
-const scrollToSection = (id: BasketSectionId) =>
-  document.getElementById(sectionDomId(id))?.scrollIntoView({ behavior: "smooth", block: "start" });
+const LAST_STEP = BASKET_STEPS.length - 1;
+const stepIndexOf = (id: BasketSectionId) =>
+  Math.max(
+    0,
+    BASKET_STEPS.findIndex((s) => s.id === stepIdOf(id)),
+  );
 
-/** Single guided page to create a basket, edit a draft, or edit a published basket */
+/** Step-by-step flow to create a basket, edit a draft, or edit a published basket */
 export function BasketBuilder({ basket }: BasketBuilderProps) {
   const router = useRouter();
   const {
@@ -68,6 +70,9 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
   const [published, setPublished] = useState<BasketDetail | null>(null);
   const [showIssues, setShowIssues] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const [step, setStep] = useState(0);
+  const [maxReached, setMaxReached] = useState(basket ? LAST_STEP : 0);
+  const topRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<BasketFormValues, unknown, z.output<typeof basketFormSchema>>({
     resolver: zodResolver(basketFormSchema),
@@ -97,7 +102,10 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
   const pricing = items.length > 0 ? pricingQuery.data : undefined;
 
   const issues = getPublishIssues(values, pricing);
-  const issueSections = new Set(showIssues ? issues.map((i) => i.section) : []);
+  const issueSections = useMemo(() => new Set(issues.map((i) => stepIdOf(i.section))), [issues]);
+  const currentStep = BASKET_STEPS[step] ?? BASKET_STEPS[0]!;
+  const isLastStep = step === LAST_STEP;
+  const hasIssue = showIssues && issueSections.has(currentStep.id);
   const save = useSaveBasket();
   const busy = save.isPending;
 
@@ -107,6 +115,45 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [formState.isDirty, published]);
+
+  const goTo = (index: number) => {
+    const next = Math.min(Math.max(index, 0), LAST_STEP);
+    setStep(next);
+    setMaxReached((reached) => Math.max(reached, next));
+    requestAnimationFrame(() => {
+      const el = topRef.current;
+      if (el && el.getBoundingClientRect().top < 0) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  };
+
+  const flagIssues = (blocking: ReturnType<typeof getPublishIssues>) => {
+    setShowIssues(true);
+    for (const issue of blocking) {
+      if (issue.field === "name" || issue.field === "description") {
+        setError(issue.field, { message: issue.message });
+      }
+    }
+  };
+
+  const handleNext = async () => {
+    const valid = await trigger();
+    const blocking = getPublishIssues(getValues(), pricing).filter(
+      (issue) => stepIdOf(issue.section) === currentStep.id,
+    );
+    if (!valid || blocking.length) {
+      flagIssues(blocking);
+      errorToast({
+        description: blocking[0]
+          ? `${blocking[0].message} to continue.`
+          : "Fix the highlighted fields to continue.",
+      });
+      return;
+    }
+    setShowIssues(false);
+    goTo(step + 1);
+  };
 
   const persist = async (publish: boolean) => {
     const current = getValues();
@@ -130,15 +177,10 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
     const current = getValues();
     const blocking = getPublishIssues(current, pricing);
     if (!valid || blocking.length) {
-      setShowIssues(true);
-      for (const issue of blocking) {
-        if (issue.field === "name" || issue.field === "description") {
-          setError(issue.field, { message: issue.message });
-        }
-      }
+      flagIssues(blocking);
       const first = blocking[0];
       if (first) {
-        scrollToSection(first.section);
+        goTo(stepIndexOf(first.section));
         errorToast({
           description: isPublished
             ? `Fix before saving: ${first.message}.`
@@ -161,6 +203,8 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
     reset(EMPTY_BASKET_FORM);
     setPublished(null);
     setShowIssues(false);
+    setStep(0);
+    setMaxReached(0);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -193,48 +237,74 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
       })
     : activeStore;
 
-  const actions = (size: "header" | "footer") => (
-    <div className={cn("flex items-center gap-2", size === "footer" && "ml-auto")}>
-      <Button
-        type="button"
-        variant="outline"
-        onClick={cancel}
-        disabled={busy}
-        className="h-10 rounded-xl"
-      >
-        Cancel
-      </Button>
-      {!isPublished && (
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleSaveDraft}
-          disabled={busy}
-          className="text-primary h-10 rounded-xl border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900"
-        >
-          {busy && save.variables?.payload.publish === false ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Save className="size-4" />
-          )}
-          <span className={size === "footer" ? "hidden sm:inline" : ""}>Save as Draft</span>
-        </Button>
+  const saveDraftButton = (
+    <Button
+      type="button"
+      variant="outline"
+      onClick={handleSaveDraft}
+      disabled={busy}
+      className="text-primary h-11 rounded-xl border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900"
+    >
+      {busy && save.variables?.payload.publish === false ? (
+        <Loader2 className="size-4 animate-spin" />
+      ) : (
+        <Save className="size-4" />
       )}
-      <Button
-        type="button"
-        onClick={handleSubmit}
-        disabled={busy}
-        className="h-10 rounded-xl px-5 shadow-md shadow-emerald-600/20"
-      >
-        {busy && save.variables?.payload.publish !== false ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <CheckCircle2 className="size-4" />
-        )}
-        {submitLabel}
-      </Button>
-    </div>
+      <span className="hidden sm:inline">Save as Draft</span>
+    </Button>
   );
+
+  const submitButton = (primary: boolean) => (
+    <Button
+      type="button"
+      variant={primary ? "default" : "outline"}
+      onClick={handleSubmit}
+      disabled={busy}
+      className={
+        primary
+          ? "h-11 rounded-xl px-6 shadow-md shadow-emerald-600/20"
+          : "text-primary h-11 rounded-xl border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900"
+      }
+    >
+      {busy && save.variables?.payload.publish !== false ? (
+        <Loader2 className="size-4 animate-spin" />
+      ) : (
+        <CheckCircle2 className="size-4" />
+      )}
+      <span className={primary ? undefined : "hidden sm:inline"}>{submitLabel}</span>
+    </Button>
+  );
+
+  const sectionContent = (() => {
+    switch (currentStep.id) {
+      case "template":
+      case "information":
+        return <TemplateSection hasIssue={hasIssue} />;
+      case "contents":
+        return <ContentsSection storeId={storeId} pricing={pricing} hasIssue={hasIssue} />;
+      case "pricing":
+        return (
+          <PricingSection pricing={pricing} loading={pricingQuery.isFetching} hasIssue={hasIssue} />
+        );
+      case "availability":
+        return <AvailabilitySection hasIssue={hasIssue} />;
+      case "image":
+        return <ImageSection />;
+      case "summary":
+        return (
+          <SummarySection
+            pricing={pricing}
+            issues={issues}
+            onJump={(id) => goTo(stepIndexOf(id))}
+            statusNote={
+              isPublished
+                ? `${basket?.status === "ACTIVE" ? "Active" : "Inactive"} · status unchanged`
+                : "Active · Visible to customers"
+            }
+          />
+        );
+    }
+  })();
 
   return (
     <FormProvider {...form}>
@@ -264,8 +334,8 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
                 {basket && <BasketStatusBadge status={basket.status} />}
               </div>
               <p className="text-muted-foreground mt-1 text-sm">
-                Build a ready-to-buy basket by selecting a template, adding items, setting pricing,
-                availability, and image.
+                Follow the steps to choose a template, add items, set pricing, availability and an
+                image. Save as a draft at any time.
               </p>
             </div>
             <BasketStoreSwitcher
@@ -276,40 +346,53 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
               disabled={Boolean(basket) || items.length > 0}
             />
           </div>
-          <div className="hidden lg:block">{actions("header")}</div>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={cancel}
+              disabled={busy}
+              className="h-10 rounded-xl"
+            >
+              Cancel
+            </Button>
+            {!isPublished && <div className="hidden lg:block">{saveDraftButton}</div>}
+          </div>
         </header>
 
-        <TemplateSection hasIssue={issueSections.has("template")} />
-        <InformationSection hasIssue={issueSections.has("information")} />
-        <ContentsSection
-          storeId={storeId}
-          pricing={pricing}
-          hasIssue={issueSections.has("contents")}
-        />
-        <PricingSection
-          pricing={pricing}
-          loading={pricingQuery.isFetching}
-          hasIssue={issueSections.has("pricing")}
-        />
-        <AvailabilitySection hasIssue={issueSections.has("availability")} />
-        <ImageSection />
-        <SummarySection
-          pricing={pricing}
-          issues={issues}
-          onJump={scrollToSection}
-          statusNote={
-            isPublished
-              ? `${basket?.status === "ACTIVE" ? "Active" : "Inactive"} · status unchanged`
-              : "Active · Visible to customers"
-          }
-        />
+        <div ref={topRef} className="scroll-mt-20">
+          <BasketStepper
+            current={step}
+            maxReachable={maxReached}
+            sectionsWithIssues={issueSections}
+            onSelect={goTo}
+          />
+        </div>
+
+        <div
+          key={currentStep.id}
+          className="animate-in fade-in slide-in-from-right-4 min-w-0 duration-300"
+        >
+          {sectionContent}
+        </div>
       </div>
 
       <div className="sticky bottom-3 z-30 mt-5">
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/90 px-3 py-3 shadow-xl shadow-slate-900/10 backdrop-blur-md sm:px-4 dark:border-slate-800 dark:bg-slate-950/95">
-          <div className="hidden min-w-0 sm:block">
+        <div className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/90 px-3 py-3 shadow-xl shadow-slate-900/10 backdrop-blur-md sm:gap-3 sm:px-4 dark:border-slate-800 dark:bg-slate-950/95">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => goTo(step - 1)}
+            disabled={step === 0 || busy}
+            className="h-11 rounded-xl"
+          >
+            <ArrowLeft className="size-4" />
+            <span className="hidden sm:inline">Back</span>
+          </Button>
+
+          <div className="hidden min-w-0 border-l border-slate-200 pl-3 md:block dark:border-slate-800">
             <p className="text-[10px] font-semibold text-slate-500 uppercase">
-              Final customer price
+              Step {step + 1} of {BASKET_STEPS.length} · {items.length} items
             </p>
             <p className="text-sm font-black tabular-nums">
               {pricing ? formatMoney(pricing.customerPrice, pricing.currencySymbol) : "—"}
@@ -318,15 +401,32 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
                   {pricing.savingsPercent}% off
                 </span>
               )}
+              {pricing && (
+                <span className="text-muted-foreground ml-2 text-xs font-medium">
+                  You receive {formatMoney(pricing.estimatedPayout, pricing.currencySymbol)}
+                </span>
+              )}
             </p>
           </div>
-          <span className="text-muted-foreground hidden text-xs md:inline">
-            {items.length} items
-            {pricing
-              ? ` · You receive ${formatMoney(pricing.estimatedPayout, pricing.currencySymbol)}`
-              : ""}
-          </span>
-          {actions("footer")}
+
+          <div className="ml-auto flex items-center gap-2">
+            {isPublished ? submitButton(isLastStep) : saveDraftButton}
+            {isLastStep ? (
+              !isPublished && submitButton(true)
+            ) : (
+              <Button
+                type="button"
+                onClick={handleNext}
+                disabled={busy}
+                className="h-11 rounded-xl px-6 shadow-md shadow-emerald-600/20"
+              >
+                <span>
+                  Next<span className="hidden sm:inline">: {BASKET_STEPS[step + 1]?.label}</span>
+                </span>
+                <ArrowRight className="size-4" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

@@ -169,7 +169,7 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
   return (
     <SectionCard
       id="pricing"
-      step={4}
+      step={3}
       title="Basket Pricing Summary"
       description="Set a discount to offer a great value basket for your customers."
       hasIssue={hasIssue}
@@ -311,7 +311,7 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
           />
           <SummaryRow
             label="Vendor Basket Price"
-            hint="Amount payable to you (after vendor discount)."
+            hint="Your price for the basket after the vendor discount."
             value={money(pricing?.vendorBasketPrice)}
             tone="primary"
             emphasis
@@ -333,12 +333,20 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
             tone="primary"
             emphasis
           />
+          {pricing && pricing.commissionAmount > 0 && (
+            <SummaryRow
+              label={`Food Remit Commission (${pricing.commissionPercent}%)`}
+              hint="Deducted from your vendor basket price. It doesn't change the customer price."
+              value={`−${formatMoney(pricing.commissionAmount, symbol)}`}
+              tone="negative"
+            />
+          )}
           <SummaryRow
             label="Estimated Vendor Payout"
             hint={
               pricing && pricing.commissionAmount > 0
-                ? `You will receive this amount for this basket (after vendor discount and ${pricing.commissionPercent}% Food Remit commission).`
-                : "You will receive this amount for this basket (after vendor discount)."
+                ? "Vendor basket price minus Food Remit commission. Markup and taxes are not deducted from you."
+                : "You receive the full vendor basket price. Markup and taxes are not deducted from you."
             }
             value={money(pricing?.estimatedPayout)}
           />

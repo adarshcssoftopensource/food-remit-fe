@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Plus } from "lucide-react";
+import { Check, PencilLine, Plus, Sparkles, Users } from "lucide-react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ import type { BasketFormValues } from "../../../schema/basket-form.schema";
 import type { BasketType } from "../../../types/basket.types";
 import { BasketImage } from "../../shared/basket-image";
 import { SectionCard } from "../section-card";
+import { InformationFields } from "./information-section";
 
 export function TemplateSection({ hasIssue }: { hasIssue?: boolean }) {
   const { control, setValue, getValues } = useFormContext<BasketFormValues>();
@@ -40,10 +41,19 @@ export function TemplateSection({ hasIssue }: { hasIssue?: boolean }) {
     <SectionCard
       id="template"
       step={1}
-      title="Basket Type / Template"
-      description="Choose a template to get started. You can customise the name and contents later."
+      title="Template & Basket Details"
+      description="Pick the template closest to your basket. We prefill the name and description, and you can edit both."
       hasIssue={hasIssue}
     >
+      <p className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-100">
+        <span className="bg-primary/10 text-primary flex size-6 items-center justify-center rounded-full text-xs">
+          A
+        </span>
+        Choose a template
+        <span className="text-muted-foreground text-xs font-medium">
+          · only one can be selected
+        </span>
+      </p>
       <div
         role="radiogroup"
         aria-label="Basket template"
@@ -91,17 +101,53 @@ export function TemplateSection({ hasIssue }: { hasIssue?: boolean }) {
                   {isSelected && <Check className="size-3 text-white" strokeWidth={3.5} />}
                 </span>
               </div>
-              <div className="flex flex-1 flex-col gap-1 p-3">
+              {isSelected && (
+                <span className="bg-primary absolute top-2 right-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shadow">
+                  Selected
+                </span>
+              )}
+              <div className="flex flex-1 flex-col gap-1.5 p-3">
                 <p className="text-sm leading-tight font-bold text-slate-900 dark:text-white">
                   {option.label}
                 </p>
-                <p className="text-muted-foreground line-clamp-3 text-xs leading-snug">
+                <p className="text-muted-foreground line-clamp-2 text-xs leading-snug">
                   {option.description}
                 </p>
+                <span
+                  className={cn(
+                    "mt-auto inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                    isSelected
+                      ? "bg-primary/10 text-primary"
+                      : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
+                  )}
+                >
+                  {isCustom ? <Sparkles className="size-3" /> : <Users className="size-3" />}
+                  {option.tagline}
+                </span>
               </div>
             </button>
           );
         })}
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <p className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-100">
+            <span className="bg-primary/10 text-primary flex size-6 items-center justify-center rounded-full text-xs">
+              B
+            </span>
+            Basket details
+          </p>
+          {selected && (
+            <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
+              <PencilLine className="size-3.5" />
+              {selected === "CUSTOM"
+                ? "Custom basket: enter your own name and description"
+                : `Prefilled from ${BASKET_TYPE_MAP[selected].label}. Edit freely.`}
+            </span>
+          )}
+        </div>
+        <InformationFields />
       </div>
     </SectionCard>
   );

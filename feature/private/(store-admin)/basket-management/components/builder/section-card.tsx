@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 import type { BasketSectionId } from "../../schema/basket-form.schema";
+import { BASKET_STEPS } from "./basket-stepper";
 
 interface SectionCardProps {
   id: BasketSectionId;
@@ -18,7 +19,7 @@ interface SectionCardProps {
 
 export const sectionDomId = (id: BasketSectionId) => `basket-section-${id}`;
 
-/** Numbered step of the guided Create Basket page */
+/** One step of the Create Basket stepper */
 export function SectionCard({
   id,
   step,
@@ -41,15 +42,18 @@ export function SectionCard({
         className,
       )}
     >
-      <header className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-start gap-3">
-          <span className="bg-primary flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-black text-white shadow-md shadow-emerald-600/25">
+      <header className="mb-5 flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
+        <div className="flex items-center gap-3.5">
+          <span className="bg-primary flex size-11 shrink-0 items-center justify-center rounded-2xl text-base font-black text-white shadow-lg shadow-emerald-600/25">
             {step}
           </span>
           <div className="min-w-0">
+            <p className="text-primary text-[11px] font-bold tracking-wider uppercase">
+              Step {step} of {BASKET_STEPS.length}
+            </p>
             <h2
               id={`${sectionDomId(id)}-title`}
-              className="text-lg leading-tight font-bold text-slate-900 dark:text-white"
+              className="text-xl leading-tight font-black tracking-tight text-slate-900 dark:text-white"
             >
               {title}
             </h2>

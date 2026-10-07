@@ -61,7 +61,7 @@ export function ImageSection() {
   return (
     <SectionCard
       id="image"
-      step={6}
+      step={5}
       title="Basket Image"
       description="Choose from our food basket images or upload your own. The selected image is shown to customers."
     >
