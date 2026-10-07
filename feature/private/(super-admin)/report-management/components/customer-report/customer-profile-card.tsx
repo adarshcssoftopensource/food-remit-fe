@@ -1,6 +1,16 @@
 import Image from "next/image";
 import { format } from "date-fns";
-import { Building2, Calendar, Globe, Mail, MapPin, Phone, UserCheck } from "lucide-react";
+import {
+  Building,
+  Building2,
+  Calendar,
+  Globe,
+  Hash,
+  Mail,
+  MapPin,
+  Phone,
+  UserCheck,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -57,16 +67,40 @@ function CustomerContactGrid({ customer }: { customer: ReportCustomer }) {
           <MapPin className="size-4" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
-            City & State
-          </p>
+          <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">State</p>
           <p className="truncate text-xs font-semibold text-slate-800 dark:text-slate-200">
-            {[customer.city, customer.state].filter(Boolean).join(", ") || "—"}
+            {customer.state || "—"}
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/60 bg-white/80 p-2.5 backdrop-blur-xs sm:col-span-2 dark:border-slate-800/80 dark:bg-slate-800/60">
+      <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/60 bg-white/80 p-2.5 backdrop-blur-xs dark:border-slate-800/80 dark:bg-slate-800/60">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400">
+          <Building className="size-4" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">City</p>
+          <p className="truncate text-xs font-semibold text-slate-800 dark:text-slate-200">
+            {customer.city || "—"}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/60 bg-white/80 p-2.5 backdrop-blur-xs dark:border-slate-800/80 dark:bg-slate-800/60">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-950/50 dark:text-violet-400">
+          <Hash className="size-4" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
+            Zip Code
+          </p>
+          <p className="truncate text-xs font-semibold text-slate-800 dark:text-slate-200">
+            {customer.zipCode || customer.zipcode || "—"}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/60 bg-white/80 p-2.5 backdrop-blur-xs sm:col-span-2 lg:col-span-3 dark:border-slate-800/80 dark:bg-slate-800/60">
         <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400">
           <Building2 className="size-4" />
         </div>

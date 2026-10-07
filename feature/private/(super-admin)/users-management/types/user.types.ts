@@ -16,6 +16,7 @@ export type UserData = {
   state: string;
   city: string;
   address: string;
+  zipCode?: string;
   deletedByAdmin?: {
     id?: string;
     name?: string | null;

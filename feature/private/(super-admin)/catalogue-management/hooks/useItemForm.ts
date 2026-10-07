@@ -165,12 +165,16 @@ const itemSchema = z
       });
     }
 
+    const isMultipleEnabled =
+      data.options.length > 1 ||
+      (data.options.length === 1 && data.options[0]?._isSingleReadOnly === false);
+
     const seen = new Set<string>();
     data.options.forEach((opt, index) => {
       const name = opt.optionName.trim().toLowerCase();
 
-      // Require option name unless it's explicitly the single read-only mode
-      if (!name && !opt._isSingleReadOnly) {
+      // Require option name ONLY when multiple pack / size options is enabled
+      if (isMultipleEnabled && !name) {
         ctx.addIssue({
           code: "custom",
           path: ["options", index, "optionName"],

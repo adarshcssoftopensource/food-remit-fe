@@ -18,6 +18,8 @@ export interface CustomerReportDetailData {
     country: string;
     countryCode: string;
     address: string;
+    zipCode?: string;
+    zipcode?: string;
     userStatus: "ACTIVE" | "INACTIVE" | "PENDING" | "DENIED";
     emailVerifyStatus: "VERIFIED" | "UNVERIFIED";
     createdAt: string;

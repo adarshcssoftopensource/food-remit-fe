@@ -103,12 +103,34 @@ export const customerReportColumns: ColumnDef<CustomerReportRow>[] = [
     ),
   },
   {
+    accessorKey: "state",
+    id: "state",
+    header: "State",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-xs text-slate-700 dark:text-slate-300">
+        {row.original.state || "—"}
+      </span>
+    ),
+  },
+  {
     accessorKey: "city",
     id: "city",
     header: "City",
     enableSorting: true,
     cell: ({ row }) => (
       <span className="text-xs text-slate-700 dark:text-slate-300">{row.original.city}</span>
+    ),
+  },
+  {
+    accessorKey: "zipCode",
+    id: "zipCode",
+    header: "Zip Code",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="text-xs text-slate-700 dark:text-slate-300">
+        {row.original.zipCode || "—"}
+      </span>
     ),
   },
   {

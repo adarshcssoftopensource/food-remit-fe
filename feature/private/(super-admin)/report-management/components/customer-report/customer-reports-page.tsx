@@ -75,7 +75,9 @@ export function CustomerReportsPage() {
         { label: "No of orders Sent", key: "ordersSent" },
         { label: "No of orders Requested", key: "ordersRequested" },
         { label: "Country", key: "country" },
+        { label: "State", key: "state" },
         { label: "City", key: "city" },
+        { label: "Zip Code", key: "zipCode" },
       ]);
     } catch {
       const pageStartSno = (page - 1) * pageSize;
@@ -87,7 +89,9 @@ export function CustomerReportsPage() {
         { label: "No of orders Sent", key: "ordersSent" },
         { label: "No of orders Requested", key: "ordersRequested" },
         { label: "Country", key: "country" },
+        { label: "State", key: "state" },
         { label: "City", key: "city" },
+        { label: "Zip Code", key: "zipCode" },
       ]);
     } finally {
       setIsExporting(false);

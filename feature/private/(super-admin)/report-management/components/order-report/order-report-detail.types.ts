@@ -55,8 +55,11 @@ export interface OrderDetailResponse {
     phoneNumber: string;
     countryCode: string;
     fullPhone: string;
+    address?: string;
     city: string;
+    state?: string;
     country: string;
+    zipCode?: string;
     fullAddress: string;
   };
   receiver: {
@@ -66,8 +69,11 @@ export interface OrderDetailResponse {
     phoneNumber: string;
     countryCode: string;
     fullPhone: string;
+    address?: string;
     city: string;
+    state?: string;
     country: string;
+    zipCode?: string;
     fullAddress: string;
     customerSignature: string | null;
   };
