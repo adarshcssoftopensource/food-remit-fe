@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Expand, QrCode, Receipt, ShoppingBag } from "lucide-react";
 import { getCurrencySymbol } from "@/lib/utils/currency";
-import type { OrderDataItem } from "../types/order.types";
+import type { OrderDataItem } from "../../types/order.types";
 
 interface OrderItemsTableProps {
   items: OrderDataItem[];

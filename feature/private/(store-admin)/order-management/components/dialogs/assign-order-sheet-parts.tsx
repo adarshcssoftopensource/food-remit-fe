@@ -6,8 +6,8 @@ import { type Employee } from "@/feature/private/(store-admin)/employee-manageme
 import { getInitials } from "@/lib/get-initials";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { OrderData } from "../types/order.types";
-import { ORDER_STATUS } from "../utils/order-workflow";
+import { OrderData } from "../../types/order.types";
+import { ORDER_STATUS } from "../../utils/order-workflow";
 
 export function AssignOrderSummary({ order }: { order: OrderData }) {
   const itemCount =

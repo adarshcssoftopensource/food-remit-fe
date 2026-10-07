@@ -8,22 +8,22 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useGetOrder } from "./hooks/use-get-order";
-import { OrderDetailSkeleton } from "./components/order-detail-skeleton";
-import { OrderNotFound } from "./components/order-not-found";
-import { OrderSummaryCard } from "./components/order-summary-card";
-import { OrderFinancials } from "./components/order-financials";
-import { OrderPeopleAndStore } from "./components/order-people-and-store";
-import { OrderItemsTable } from "./components/order-items-table";
-import { OrderStatusBadge } from "./components/order-status-badge";
-import { OrderInfoBanner } from "./components/order-info-banner";
-import { OrderProgressTimeline } from "./components/order-progress-timeline";
-import { OrderAbandonRemarkCard } from "./components/order-abandon-remark-card";
+import { OrderDetailSkeleton } from "./components/details/order-detail-skeleton";
+import { OrderNotFound } from "./components/details/order-not-found";
+import { OrderSummaryCard } from "./components/details/order-summary-card";
+import { OrderFinancials } from "./components/details/order-financials";
+import { OrderPeopleAndStore } from "./components/details/order-people-and-store";
+import { OrderItemsTable } from "./components/details/order-items-table";
+import { OrderStatusBadge } from "./components/shared/order-status-badge";
+import { OrderInfoBanner } from "./components/details/order-info-banner";
+import { OrderProgressTimeline } from "./components/details/order-progress-timeline";
+import { OrderAbandonRemarkCard } from "./components/details/order-abandon-remark-card";
 import {
   OrderLifecycleActionCard,
   OrderLifecycleActionsHint,
   OrderWaitingBadge,
-} from "./components/order-lifecycle-actions";
-import { AbandonOrderDialog } from "./components/abandon-order-dialog";
+} from "./components/details/order-lifecycle-actions";
+import { AbandonOrderDialog } from "./components/dialogs/abandon-order-dialog";
 import { useMarkOrderCompleted, useStartOrder } from "./hooks/use-order-lifecycle";
 import {
   FINAL_STATUS,
@@ -41,7 +41,7 @@ import { CompleteOrderByReferenceDialog } from "@/feature/private/(shared)/my-or
 import { getOrderReference } from "./utils/mask-order-reference";
 import { getInitials } from "@/lib/get-initials";
 import { getOrderActorRole } from "./utils/order-roles";
-import { StartOrderConfirmDialog } from "./components/start-order-confirm-dialog";
+import { StartOrderConfirmDialog } from "./components/dialogs/start-order-confirm-dialog";
 
 export function OrderDetailPage({ id }: { id: string }) {
   const router = useRouter();

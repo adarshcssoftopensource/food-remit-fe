@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Shield } from "lucide-react";
-import { maskOrderReferenceParts } from "../utils/mask-order-reference";
+import { maskOrderReferenceParts } from "../../utils/mask-order-reference";
 
 type MaskedReferenceBadgeProps = {
   reference?: string | null;

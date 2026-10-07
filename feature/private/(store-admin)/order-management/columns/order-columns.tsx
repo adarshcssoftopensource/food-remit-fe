@@ -5,12 +5,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { UserCheck } from "lucide-react";
 import { OrderData } from "../types/order.types";
-import { OrderActionsCell } from "../components/order-actions-cell";
-import { OrderStatusBadge } from "../components/order-status-badge";
-import { OrderHandlerCell } from "../components/order-handler-cell";
+import { OrderActionsCell } from "../components/shared/order-actions-cell";
+import { OrderStatusBadge } from "../components/shared/order-status-badge";
+import { OrderHandlerCell } from "../components/shared/order-handler-cell";
 import { FINAL_STATUS, isPendingOrder } from "../utils/order-workflow";
-import { parseAbandonRemark } from "../components/abandon-remark";
-import { SystemAbandonBadge } from "../components/abandon-remark-badge";
+import { parseAbandonRemark } from "../components/shared/abandon-remark";
+import { SystemAbandonBadge } from "../components/shared/abandon-remark-badge";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 function formatTimePlaced(iso?: string) {
   if (!iso) return "—";

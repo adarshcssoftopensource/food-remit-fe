@@ -1,6 +1,6 @@
 "use client";
 
-import { FINAL_STATUS, getDisplayStatus, getFinalStatusLabel } from "../utils/order-workflow";
+import { FINAL_STATUS, getDisplayStatus, getFinalStatusLabel } from "../../utils/order-workflow";
 
 const TONE_STYLES: Record<string, { colorClass: string; dotClass: string }> = {
   requested: {

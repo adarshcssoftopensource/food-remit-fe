@@ -1,9 +1,9 @@
 "use client";
 
 import { getInitials } from "@/lib/get-initials";
-import { OrderData } from "../types/order.types";
-import { formatRelativeTime } from "../utils/order-workflow";
-import { OrderDetailState, formatBannerStamp } from "../utils/order-detail-state";
+import { OrderData } from "../../types/order.types";
+import { formatRelativeTime } from "../../utils/order-workflow";
+import { OrderDetailState, formatBannerStamp } from "../../utils/order-detail-state";
 import { OrderInfoBanner } from "./order-info-banner";
 import {
   OrderLifecycleActionCard,

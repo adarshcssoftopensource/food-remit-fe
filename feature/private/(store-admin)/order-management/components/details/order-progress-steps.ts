@@ -8,8 +8,8 @@ import {
   isProcessingOrder,
   isRejectedRequest,
   isRequestedOrder,
-} from "../utils/order-workflow";
-import { OrderData } from "../types/order.types";
+} from "../../utils/order-workflow";
+import { OrderData } from "../../types/order.types";
 import {
   CreditCard,
   HandPlatter,

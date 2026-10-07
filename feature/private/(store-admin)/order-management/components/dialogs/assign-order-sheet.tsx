@@ -13,8 +13,8 @@ import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { useGetEmployees } from "@/feature/private/(store-admin)/employee-management/hooks/use-get-employees";
 import { useAssignOrder } from "@/feature/private/(store-admin)/employee-management/hooks/use-assign-order";
 import { useMemo, useState } from "react";
-import { OrderData } from "../types/order.types";
-import { useGetOrders } from "../hooks/use-get-orders";
+import { OrderData } from "../../types/order.types";
+import { useGetOrders } from "../../hooks/use-get-orders";
 import { toast } from "sonner";
 import {
   AssignEmployeeList,

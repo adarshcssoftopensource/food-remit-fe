@@ -1,10 +1,10 @@
 "use client";
 
-import { FINAL_STATUS, ORDER_STATUS } from "../utils/order-workflow";
-import { OrderData } from "../types/order.types";
+import { FINAL_STATUS, ORDER_STATUS } from "../../utils/order-workflow";
+import { OrderData } from "../../types/order.types";
 import { Mail, PackageX } from "lucide-react";
-import { parseAbandonRemark } from "./abandon-remark";
-import { SystemAbandonBadge } from "./abandon-remark-badge";
+import { parseAbandonRemark } from "../shared/abandon-remark";
+import { SystemAbandonBadge } from "../shared/abandon-remark-badge";
 
 function formatAbandonedWhen(when: string | null | undefined) {
   return when

@@ -3,7 +3,7 @@
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeOrderActionsCell } from "../components/employee-order-actions-cell";
-import { OrderStatusBadge } from "@/feature/private/(store-admin)/order-management/components/order-status-badge";
+import { OrderStatusBadge } from "@/feature/private/(store-admin)/order-management/components/shared/order-status-badge";
 
 interface GetEmployeeOrderColumnsOptions {
   _employeeId: string;

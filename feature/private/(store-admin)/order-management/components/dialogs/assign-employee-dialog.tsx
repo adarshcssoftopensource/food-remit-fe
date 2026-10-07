@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useDebounce } from "@/lib/debounce";
-import { OrderData } from "../types/order.types";
+import { OrderData } from "../../types/order.types";
 import { useAssignOrder } from "@/feature/private/(store-admin)/employee-management/hooks/use-assign-order";
 
 interface AssignEmployeeDialogProps {

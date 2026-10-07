@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatAddress } from "@/lib/utils";
 import { MapPin, Phone, Store, User } from "lucide-react";
-import type { OrderData } from "../types/order.types";
+import type { OrderData } from "../../types/order.types";
 
 interface PersonCardProps {
   role: "Sender" | "Receiver";

@@ -1,10 +1,10 @@
 "use client";
 
-import { OrderInfoBanner } from "@/feature/private/(store-admin)/order-management/components/order-info-banner";
+import { OrderInfoBanner } from "@/feature/private/(store-admin)/order-management/components/details/order-info-banner";
 import {
   OrderLifecycleActionCard,
   OrderLifecycleActionsHint,
-} from "@/feature/private/(store-admin)/order-management/components/order-lifecycle-actions";
+} from "@/feature/private/(store-admin)/order-management/components/details/order-lifecycle-actions";
 import { OrderData } from "@/feature/private/(store-admin)/order-management/types/order.types";
 import { formatRelativeTime } from "@/feature/private/(store-admin)/order-management/utils/order-workflow";
 import { getInitials } from "@/lib/get-initials";

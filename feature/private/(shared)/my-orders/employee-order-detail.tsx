@@ -4,15 +4,15 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { useGetOrder } from "@/feature/private/(store-admin)/order-management/hooks/use-get-order";
-import { OrderDetailSkeleton } from "@/feature/private/(store-admin)/order-management/components/order-detail-skeleton";
-import { OrderNotFound } from "@/feature/private/(store-admin)/order-management/components/order-not-found";
-import { OrderSummaryCard } from "@/feature/private/(store-admin)/order-management/components/order-summary-card";
-import { OrderPeopleAndStore } from "@/feature/private/(store-admin)/order-management/components/order-people-and-store";
-import { OrderItemsTable } from "@/feature/private/(store-admin)/order-management/components/order-items-table";
-import { OrderStatusBadge } from "@/feature/private/(store-admin)/order-management/components/order-status-badge";
-import { OrderProgressTimeline } from "@/feature/private/(store-admin)/order-management/components/order-progress-timeline";
-import { OrderAbandonRemarkCard } from "@/feature/private/(store-admin)/order-management/components/order-abandon-remark-card";
-import { OrderWaitingBadge } from "@/feature/private/(store-admin)/order-management/components/order-lifecycle-actions";
+import { OrderDetailSkeleton } from "@/feature/private/(store-admin)/order-management/components/details/order-detail-skeleton";
+import { OrderNotFound } from "@/feature/private/(store-admin)/order-management/components/details/order-not-found";
+import { OrderSummaryCard } from "@/feature/private/(store-admin)/order-management/components/details/order-summary-card";
+import { OrderPeopleAndStore } from "@/feature/private/(store-admin)/order-management/components/details/order-people-and-store";
+import { OrderItemsTable } from "@/feature/private/(store-admin)/order-management/components/details/order-items-table";
+import { OrderStatusBadge } from "@/feature/private/(store-admin)/order-management/components/shared/order-status-badge";
+import { OrderProgressTimeline } from "@/feature/private/(store-admin)/order-management/components/details/order-progress-timeline";
+import { OrderAbandonRemarkCard } from "@/feature/private/(store-admin)/order-management/components/details/order-abandon-remark-card";
+import { OrderWaitingBadge } from "@/feature/private/(store-admin)/order-management/components/details/order-lifecycle-actions";
 import {
   useMarkOrderCompleted,
   useStartOrder,
@@ -31,7 +31,7 @@ import {
   getEmployeeOrderState,
 } from "./components/employee-order-state";
 import { EmployeeOrderFinancials } from "./components/employee-order-financials";
-import { StartOrderConfirmDialog } from "@/feature/private/(store-admin)/order-management/components/start-order-confirm-dialog";
+import { StartOrderConfirmDialog } from "@/feature/private/(store-admin)/order-management/components/dialogs/start-order-confirm-dialog";
 import { maskOrderReference } from "@/feature/private/(store-admin)/order-management/utils/mask-order-reference";
 
 export function EmployeeOrderDetailPage({ id }: { id: string }) {

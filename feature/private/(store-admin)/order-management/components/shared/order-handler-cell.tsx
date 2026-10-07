@@ -3,8 +3,8 @@
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { getInitials } from "@/lib/get-initials";
 import { useState } from "react";
-import { OrderData } from "../types/order.types";
-import { formatRelativeTime, ORDER_STATUS } from "../utils/order-workflow";
+import { OrderData } from "../../types/order.types";
+import { formatRelativeTime, ORDER_STATUS } from "../../utils/order-workflow";
 
 /**
  * Shows who started or was assigned the order.

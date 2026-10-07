@@ -3,9 +3,9 @@
 import { Card } from "@/components/ui/card";
 import { BarChart3, CreditCard, Landmark } from "lucide-react";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
-import type { OrderData } from "../types/order.types";
+import type { OrderData } from "../../types/order.types";
 import { useProfile } from "@/components/providers/profile-provider";
-import { isAwaitingPayment, isRejectedRequest } from "../utils/order-workflow";
+import { isAwaitingPayment, isRejectedRequest } from "../../utils/order-workflow";
 
 interface FinancialRowProps {
   label: string;

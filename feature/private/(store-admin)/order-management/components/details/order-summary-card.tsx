@@ -3,8 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/date";
 import { CheckCircle2, Clock, Package, Repeat, ShieldCheck, Tag, Calendar } from "lucide-react";
-import { OrderStatusBadge } from "./order-status-badge";
-import type { OrderData } from "../types/order.types";
+import { OrderStatusBadge } from "../shared/order-status-badge";
+import type { OrderData } from "../../types/order.types";
 
 interface OrderSummaryCardProps {
   order: OrderData;

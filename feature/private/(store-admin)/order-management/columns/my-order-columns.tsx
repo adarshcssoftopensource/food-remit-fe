@@ -1,9 +1,9 @@
 "use client";
 
 import { CompleteOrderByReferenceDialog } from "@/feature/private/(shared)/my-orders/components/complete-order-by-reference-dialog";
-import { OrderHandlerCell } from "../components/order-handler-cell";
-import { OrderStatusBadge } from "../components/order-status-badge";
-import { StartOrderConfirmDialog } from "../components/start-order-confirm-dialog";
+import { OrderHandlerCell } from "../components/shared/order-handler-cell";
+import { OrderStatusBadge } from "../components/shared/order-status-badge";
+import { StartOrderConfirmDialog } from "../components/dialogs/start-order-confirm-dialog";
 import { useMarkOrderCompleted, useStartOrder } from "../hooks/use-order-lifecycle";
 import { OrderData } from "../types/order.types";
 import {

@@ -21,10 +21,10 @@ import { historyOrderColumns, orderColumns } from "./columns/order-columns";
 import { useOrderManagement } from "./hooks/use-order-management";
 import { type WorkflowCounts, useWorkflowCounts } from "./hooks/use-workflow-counts";
 import { useProfile } from "@/components/providers/profile-provider";
-import { OrderInfoBanner } from "./components/order-info-banner";
-import { AssignEmployeeDialog } from "./components/assign-employee-dialog";
-import { ManagerAssignmentSummaryCards } from "./components/manager-assignment-summary-cards";
-import { WorkflowSummaryCards } from "./components/workflow-summary-cards";
+import { OrderInfoBanner } from "./components/details/order-info-banner";
+import { AssignEmployeeDialog } from "./components/dialogs/assign-employee-dialog";
+import { ManagerAssignmentSummaryCards } from "./components/details/manager-assignment-summary-cards";
+import { WorkflowSummaryCards } from "./components/details/workflow-summary-cards";
 import { HistorySubFilter, isPendingOrder } from "./utils/order-workflow";
 import { getOrderActorRole } from "./utils/order-roles";
 import { OrderData } from "./types/order.types";
@@ -385,7 +385,7 @@ function OrderHistoryFlowDiagram() {
       <p className="mb-3 text-xs font-semibold tracking-wide text-slate-500 uppercase">
         Order lifecycle (after preparation)
       </p>
-      <div className="flex min-w-[720px] items-stretch gap-2">
+      <div className="flex min-w-180 items-stretch gap-2">
         {stages.map((s, i) => (
           <div key={s.label} className="flex flex-1 items-center gap-2">
             <div className={`flex-1 rounded-xl border px-3 py-2 ${s.color}`}>

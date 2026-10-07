@@ -1,10 +1,10 @@
 "use client";
 
-import { OrderData } from "../types/order.types";
+import { OrderData } from "../../types/order.types";
 import { cn } from "@/lib/utils";
 import { Check, CircleDot, Clock3 } from "lucide-react";
-import { parseAbandonRemark } from "./abandon-remark";
-import { SystemAbandonBadge } from "./abandon-remark-badge";
+import { parseAbandonRemark } from "../shared/abandon-remark";
+import { SystemAbandonBadge } from "../shared/abandon-remark-badge";
 import {
   StepState,
   TimelineFlags,

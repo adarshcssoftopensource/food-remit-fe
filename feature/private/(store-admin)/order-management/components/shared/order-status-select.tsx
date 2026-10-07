@@ -9,7 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { useUpdateOrderStatus } from "../hooks/use-update-order-status";
+import { useUpdateOrderStatus } from "../../hooks/use-update-order-status";
 
 const ORDER_STATUS_OPTIONS = [
   {
