@@ -9,6 +9,7 @@ export interface Employee {
   city?: string;
   state?: string;
   zipCode?: string;
+  country?: string;
   image?: string;
   accountStatus: "ACTIVE" | "INACTIVE";
   addedOnTimestamp?: string;

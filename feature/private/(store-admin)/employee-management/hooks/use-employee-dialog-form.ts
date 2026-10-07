@@ -32,14 +32,24 @@ function getEmptyEmployeeValues(
   };
 }
 
-function getEmployeeValues(employee: Employee, defaultDialCode: string): EmployeeFormValues {
+function getEmployeeValues(
+  employee: Employee,
+  defaultDialCode: string,
+  targetCountryName?: string,
+): EmployeeFormValues {
+  const resolvedCountry =
+    employee.country?.trim() ||
+    targetCountryName ||
+    findPhoneCountry(employee.countryCode)?.name ||
+    "";
+
   return {
     firstName: employee.firstName,
     lastName: employee.lastName,
     email: employee.email,
     phoneNumber: employee.phoneNumber || "",
     countryCode: employee.countryCode || defaultDialCode,
-    country: (employee as any).country || "",
+    country: resolvedCountry,
     address: employee.address || "",
     city: employee.city || "",
     state: employee.state || "",
@@ -128,7 +138,7 @@ export function useEmployeeDialogForm(open: boolean, employee: Employee | undefi
       if (isEdit && employee) {
         const empCountry = findPhoneCountry(employee.countryCode);
         setPhoneIso(empCountry?.isoCode || targetCountryIso);
-        form.reset(getEmployeeValues(employee, defaultDialCode));
+        form.reset(getEmployeeValues(employee, defaultDialCode, targetCountryName));
       } else {
         setPhoneIso(targetCountryIso);
         form.reset(getEmptyEmployeeValues(defaultDialCode, targetCountryName));

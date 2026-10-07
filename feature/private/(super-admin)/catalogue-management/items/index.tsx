@@ -30,7 +30,9 @@ export function ItemsManagement() {
     profile?.role === "store_manager" ||
     profile?.roleCode === "STORE_MANAGER" ||
     profile?.role === "store_admin" ||
-    profile?.roleCode === "STORE_ADMIN";
+    profile?.roleCode === "STORE_ADMIN" ||
+    profile?.role === "employee" ||
+    profile?.roleCode === "EMPLOYEE";
   const canWrite = !needsBankVerification;
   const {
     fromDate,
@@ -258,7 +260,7 @@ export function ItemsManagement() {
             className="h-10 rounded-xl px-3"
           />
         </div>
-        <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+        <div className="min-w-70 flex-1 sm:min-w-[320px]">
           <DateRangeFilter
             fromDate={fromDate}
             toDate={toDate}
@@ -308,7 +310,11 @@ export function ItemsManagement() {
             columns={columns}
             data={filteredData}
             searchKey="itemDisplayName"
-            searchPlaceholder="Search by product name, store name, item number, or UPC..."
+            searchPlaceholder={
+              isStoreManager
+                ? "Search by product name, item number, or UPC..."
+                : "Search by product name, store name, item number, or UPC..."
+            }
             emptyMessage={
               hasFilters || statusTab !== "all"
                 ? "No items match your filters"

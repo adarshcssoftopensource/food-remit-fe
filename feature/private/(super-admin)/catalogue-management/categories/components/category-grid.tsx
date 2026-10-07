@@ -10,6 +10,7 @@ import {
   FolderOpen,
   Package,
   Pencil,
+  Store,
   Trash2,
   ZoomIn,
 } from "lucide-react";
@@ -21,6 +22,7 @@ import { useDeleteCategory } from "../hooks/use-delete-category";
 import { successToast } from "@/components/toaster";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
+import { useProfile } from "@/components/providers/profile-provider";
 
 interface CategoryGridProps {
   categories: CategoryData[];
@@ -50,11 +52,13 @@ function CategoryGridCard({
   setCategoryToDelete,
   setLightboxSrc,
 }: CategoryGridCardProps) {
+  const { isSuperAdmin } = useProfile();
   const [isActive, setIsActive] = useState(category.status === "ACTIVE");
   const { mutateAsync: updateStatus, isPending } = useUpdateCategoryStatus(category.id);
 
   const icon = category.categoryIconUrl || category.categoryIcon;
   const count = category.itemCount ?? 0;
+  const storeName = category.storeName || category.store?.storeName || null;
 
   const handleStatusChange = async (checked: boolean) => {
     if (!canWrite) return;
@@ -73,7 +77,7 @@ function CategoryGridCard({
         type="button"
         aria-label={category.categoryName}
         onClick={() => onOpen(category)}
-        className="absolute inset-0 z-[1] cursor-pointer outline-none"
+        className="absolute inset-0 z-1 cursor-pointer outline-none"
       />
       <div className="flex items-start gap-3 p-4">
         <div className="bg-primary/10 text-primary relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl">
@@ -125,6 +129,15 @@ function CategoryGridCard({
               <Package className="h-3.5 w-3.5" />
               {count} {count === 1 ? "item" : "items"}
             </span>
+            {isSuperAdmin && storeName && (
+              <span
+                className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400"
+                title={`Store: ${storeName}`}
+              >
+                <Store className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                <span className="max-w-32.5 truncate">{storeName}</span>
+              </span>
+            )}
           </div>
         </div>
         {canWrite && (

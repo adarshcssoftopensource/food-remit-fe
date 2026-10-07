@@ -19,8 +19,20 @@ import {
 } from "lucide-react";
 import type { Employee } from "@/feature/private/(store-admin)/employee-management/types/employee-management";
 import { LocationSectionHeader } from "@/feature/private/(shared)/components/location-section-header";
+import { findPhoneCountry } from "@/components/ui/phone-input-utils";
 import Image from "next/image";
 import type { ReactNode } from "react";
+
+function resolveEmployeeCountry(employee: Employee): string | undefined {
+  if (employee.country && employee.country.trim()) {
+    return employee.country.trim();
+  }
+  if (employee.countryCode) {
+    const pc = findPhoneCountry(employee.countryCode);
+    if (pc?.name) return pc.name;
+  }
+  return undefined;
+}
 
 interface InfoTileProps {
   icon: ReactNode;
@@ -192,7 +204,7 @@ export function EmployeeProfileCard({ employee, totalOrders }: EmployeeProfileCa
             />
             <LocationField
               label="Country"
-              value={(employee as any).country}
+              value={resolveEmployeeCountry(employee)}
               icon={<Globe2 className="size-3.5" />}
             />
           </div>

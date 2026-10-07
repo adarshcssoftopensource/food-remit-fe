@@ -229,6 +229,7 @@ export function CategoryItemsWorkspace({ id }: CategoryItemsWorkspaceProps) {
             setPage(1);
           }}
           isItemsLoading={isItemsLoading}
+          isStoreScoped={isStoreScoped}
           onPageChange={setPage}
           onRowsPerPageChange={(value) => {
             setLimit(value);
@@ -472,6 +473,7 @@ function WorkspaceItemsSection({
   search,
   onSearchChange,
   isItemsLoading,
+  isStoreScoped,
   onPageChange,
   onRowsPerPageChange,
   getRowClassName,
@@ -488,6 +490,7 @@ function WorkspaceItemsSection({
   search: string;
   onSearchChange: (value: string) => void;
   isItemsLoading: boolean;
+  isStoreScoped?: boolean;
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (value: number) => void;
   getRowClassName: (row: Row<ItemData>) => string | undefined;
@@ -536,7 +539,11 @@ function WorkspaceItemsSection({
             columns={columns}
             data={items}
             searchKey="itemDisplayName"
-            searchPlaceholder="Search by product name, store name, item number, or UPC..."
+            searchPlaceholder={
+              isStoreScoped
+                ? "Search by product name, item number, or UPC..."
+                : "Search by product name, store name, item number, or UPC..."
+            }
             emptyMessage="No items match your filters"
             searchValue={search}
             onSearchChange={onSearchChange}

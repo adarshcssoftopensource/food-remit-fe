@@ -40,8 +40,10 @@ function buildEmployeeFormData(data: EmployeeFormValues) {
 
   if (data.image instanceof File) {
     formData.append("image", data.image);
-  } else if (typeof data.image === "string") {
-    formData.append("image", data.image);
+  } else if (typeof data.image === "string" && data.image.trim()) {
+    formData.append("image", data.image.trim());
+  } else {
+    formData.append("image", "");
   }
   return formData;
 }

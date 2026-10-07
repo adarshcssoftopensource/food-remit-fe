@@ -63,7 +63,16 @@ export function EmployeeImageField({ form }: { form: EmployeeForm }) {
             <div className="w-full">
               <ImageUpload
                 maxFiles={1}
-                onChange={(files) => field.onChange(files[0] || undefined)}
+                onChange={(files) => {
+                  if (files && files.length > 0) {
+                    field.onChange(files[0]);
+                  }
+                }}
+                onAllImagesChange={(allImages) => {
+                  if (!allImages || allImages.length === 0) {
+                    field.onChange("");
+                  }
+                }}
                 initialImages={getInitialImages(field.value)}
               />
             </div>

@@ -11,6 +11,9 @@ export function useUpdateEmployee(id: string) {
     onSuccess: (res) => {
       successToast({ description: res?.message || "Employee updated successfully" });
       queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.EMPLOYEES });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.EMPLOYEE_BY_ID(id) });
+      }
     },
   });
 }

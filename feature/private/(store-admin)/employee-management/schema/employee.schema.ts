@@ -13,7 +13,10 @@ export const EmployeeFormSchema = z
     state: z.string().optional(),
     zipCode: z.string().optional(),
     country: z.string().min(1, "Country is required"),
-    image: z.union([z.instanceof(File), z.string()]).optional(),
+    image: z
+      .union([z.instanceof(File), z.string()])
+      .optional()
+      .nullable(),
     accountStatus: z.enum(["ACTIVE", "INACTIVE"]).optional(),
   })
   .superRefine((data, ctx) => {

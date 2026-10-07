@@ -36,6 +36,7 @@ export interface CategoryData {
 
   storeId?: string | null;
   store?: { id: string; storeName: string } | null;
+  storeName?: string | null;
   itemCount?: number;
   /** Returned by the category detail endpoint for the item workspace */
   currency?: string | null;
