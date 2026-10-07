@@ -73,7 +73,6 @@ const packOptionSchema = z.object({
   optionName: z
     .string()
     .trim()
-    .min(1, "Option name is required")
     .max(ITEM_LIMITS.optionNameMax, `Keep it under ${ITEM_LIMITS.optionNameMax} characters`),
   quantityPerPack: numberField({
     label: "Quantity",
@@ -97,6 +96,7 @@ const packOptionSchema = z.object({
     max: ITEM_LIMITS.maxPrice,
     decimals: 2,
   }),
+  _isSingleReadOnly: z.boolean().optional(),
 });
 
 const optionalText = (label: string) =>
@@ -168,15 +168,26 @@ const itemSchema = z
     const seen = new Set<string>();
     data.options.forEach((opt, index) => {
       const name = opt.optionName.trim().toLowerCase();
-      if (!name) return;
-      if (seen.has(name)) {
+
+      // Require option name unless it's explicitly the single read-only mode
+      if (!name && !opt._isSingleReadOnly) {
         ctx.addIssue({
           code: "custom",
           path: ["options", index, "optionName"],
-          message: "Each option needs a different name",
+          message: "Option name is required",
         });
       }
-      seen.add(name);
+
+      if (name) {
+        if (seen.has(name)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["options", index, "optionName"],
+            message: "Each option needs a different name",
+          });
+        }
+        seen.add(name);
+      }
 
       if (opt.netWeight && !opt.weightUnit) {
         ctx.addIssue({
@@ -197,6 +208,7 @@ function toInputString(value: number | string | null | undefined) {
 
 function mapItemOptions(item?: ItemData | null): PackSizeOptionRow[] {
   if (item && Array.isArray(item.options) && item.options.length > 0) {
+    const isSingle = item.options.length === 1;
     return item.options.map((opt) =>
       createPackSizeOptionRow({
         id: opt.id,
@@ -205,6 +217,7 @@ function mapItemOptions(item?: ItemData | null): PackSizeOptionRow[] {
         netWeight: toInputString(opt.netWeight),
         weightUnit: opt.weightUnit || "",
         price: toInputString(opt.price),
+        _isSingleReadOnly: isSingle,
       }),
     );
   }
@@ -220,11 +233,12 @@ function mapItemOptions(item?: ItemData | null): PackSizeOptionRow[] {
         netWeight,
         weightUnit: unit,
         price: toInputString(item.placements?.[0]?.price),
+        _isSingleReadOnly: true,
       }),
     ];
   }
 
-  return [createPackSizeOptionRow()];
+  return [createPackSizeOptionRow({ _isSingleReadOnly: true })];
 }
 
 export function getInitialProductImages(item?: ItemData | null) {
@@ -277,7 +291,7 @@ function buildFormData(
     JSON.stringify(
       values.options.map((opt) => ({
         ...(opt.id ? { id: opt.id } : {}),
-        optionName: opt.optionName.trim(),
+        optionName: opt.optionName.trim() || "Standard",
         quantityPerPack: opt.quantityPerPack ? Number(opt.quantityPerPack) : null,
         netWeight: opt.netWeight ? Number(opt.netWeight) : null,
         weightUnit: opt.weightUnit || null,

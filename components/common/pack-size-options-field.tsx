@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { ITEM_LIMITS, WEIGHT_UNITS } from "@/lib/catalogue/item-rules";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 
 export type { PackSizeOptionErrors, PackSizeOptionRow };
 
@@ -53,8 +54,15 @@ export function PackSizeOptionsField({
   const rows = Array.isArray(value) ? value : [];
   const canAdd = rows.length < ITEM_LIMITS.maxOptions;
 
+  const allowMultiple =
+    rows.length > 1 || (rows.length === 1 && rows[0]?._isSingleReadOnly === false);
+
   const updateRow = (key: string, field: keyof PackSizeOptionRow, fieldValue: string) => {
-    onChange(rows.map((row) => (row.key === key ? { ...row, [field]: fieldValue } : row)));
+    onChange(
+      rows.map((row) =>
+        row.key === key ? { ...row, [field]: fieldValue, _isSingleReadOnly: !allowMultiple } : row,
+      ),
+    );
   };
 
   const removeRow = (key: string) => onChange(rows.filter((row) => row.key !== key));
@@ -68,7 +76,20 @@ export function PackSizeOptionsField({
   const pricePadding = currencySymbol ? (currencySymbol.length > 1 ? "pl-11" : "pl-7") : "";
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("space-y-4", className)}>
+      <div className="flex items-center justify-between">
+        <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+          <Switch
+            checked={allowMultiple}
+            onCheckedChange={(checked) => {
+              const newRows = checked ? rows : rows.length > 0 ? [rows[0]!] : [];
+              onChange(newRows.map((r) => ({ ...r, _isSingleReadOnly: !checked })));
+            }}
+            disabled={disabled}
+          />
+          Enable multiple pack / size options
+        </label>
+      </div>
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
         <div
           className={cn(
@@ -77,9 +98,7 @@ export function PackSizeOptionsField({
           )}
         >
           <span className="text-center">#</span>
-          <span>
-            Option name <span className="text-destructive">*</span>
-          </span>
+          <span>Option name {allowMultiple && <span className="text-destructive">*</span>}</span>
           <span>Qty per pack</span>
           <span>Net weight</span>
           <span>Unit</span>
@@ -126,7 +145,7 @@ export function PackSizeOptionsField({
 
                 <div className="col-span-2 md:col-span-1">
                   <label htmlFor={`${row.key}-option-name`} className={mobileLabelClass}>
-                    Option name *
+                    Option name {allowMultiple && "*"}
                   </label>
                   <Input
                     id={`${row.key}-option-name`}
@@ -135,9 +154,10 @@ export function PackSizeOptionsField({
                     maxLength={ITEM_LIMITS.optionNameMax}
                     placeholder="e.g. 1 Litre Bottle"
                     disabled={disabled}
+                    readOnly={!allowMultiple}
                     aria-invalid={!!errors?.optionName}
                     aria-label={`Option ${index + 1} name`}
-                    className={fieldClass}
+                    className={cn(fieldClass, !allowMultiple && "cursor-not-allowed opacity-70")}
                   />
                   <FieldError message={errors?.optionName} />
                 </div>
@@ -274,16 +294,18 @@ export function PackSizeOptionsField({
           The first option is the default and sets the item&apos;s base price. Use
           <Star className="h-3 w-3" /> to change it.
         </p>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => onChange([...rows, createPackSizeOptionRow()])}
-          disabled={disabled || !canAdd}
-          className="hover:border-primary/40 hover:bg-primary/5 hover:text-primary h-9 shrink-0 rounded-lg border-dashed font-semibold"
-        >
-          <Plus className="mr-1.5 h-4 w-4" />
-          Add pack / size
-        </Button>
+        {allowMultiple && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onChange([...rows, createPackSizeOptionRow()])}
+            disabled={disabled || !canAdd}
+            className="hover:border-primary/40 hover:bg-primary/5 hover:text-primary h-9 shrink-0 rounded-lg border-dashed font-semibold"
+          >
+            <Plus className="mr-1.5 h-4 w-4" />
+            Add pack / size
+          </Button>
+        )}
       </div>
     </div>
   );

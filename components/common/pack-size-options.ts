@@ -6,6 +6,7 @@ export type PackSizeOptionRow = {
   netWeight?: string;
   weightUnit: string;
   price?: string;
+  _isSingleReadOnly?: boolean;
 };
 
 export type PackSizeOptionErrors = Partial<Record<keyof PackSizeOptionRow, string>>;

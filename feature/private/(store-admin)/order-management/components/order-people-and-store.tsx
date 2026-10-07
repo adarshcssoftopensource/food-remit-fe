@@ -29,6 +29,19 @@ function PersonCard({
   const isSender = role === "Sender";
   const color = isSender ? "blue" : "amber";
 
+  const cleanStreetAddress = (fullStr: string) => {
+    if (!fullStr) return "N/A";
+    const parts = fullStr.split(",").map((s) => s.trim());
+    const knownParts = [city, state, country, zipCode]
+      .filter(Boolean)
+      .map((s) => s?.toLowerCase().trim());
+
+    const streetParts = parts.filter((p) => p && !knownParts.includes(p.toLowerCase()));
+    return streetParts.length > 0 ? streetParts.join(", ") : fullStr;
+  };
+
+  const displayAddress = cleanStreetAddress(address);
+
   return (
     <div
       className={`rounded-xl border p-4 border-${color}-100/60 bg-${color}-50/40 dark:border-${color}-900/30 dark:bg-${color}-950/20`}
@@ -48,18 +61,70 @@ function PersonCard({
           <p className="text-sm font-bold text-slate-900 dark:text-white">{name || "N/A"}</p>
         </div>
       </div>
-      <div className="mt-3 space-y-1.5 text-xs">
-        <p className="flex items-center text-slate-600 dark:text-slate-300">
+      <div className="mt-4 space-y-3">
+        <p className="flex items-center text-xs font-medium text-slate-600 dark:text-slate-300">
           <Phone className={`mr-2 size-3.5 shrink-0 text-${color}-500`} />
           {phone || "N/A"}
         </p>
-        <div className="flex items-start text-slate-600 dark:text-slate-300">
-          <MapPin className={`mr-2 size-3.5 shrink-0 text-${color}-500 mt-0.5`} />
-          <div className="flex flex-col gap-1">
-            <span>
-              {formatAddress([address, city, state, country, zipCode].filter(Boolean).join(", ")) ||
-                "N/A"}
-            </span>
+
+        <div className="rounded-xl border border-slate-200/60 bg-white/40 p-3 shadow-xs dark:border-slate-800/60 dark:bg-slate-900/40">
+          <div className="mb-2.5 flex items-center text-[11px] font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300">
+            <MapPin className={`mr-1.5 size-3.5 text-${color}-500`} />
+            Address Details
+          </div>
+
+          <div className="grid min-w-0 grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+            <div className="min-w-0 sm:col-span-2">
+              <span className="mb-1 block text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                Street Address
+              </span>
+
+              <p className="min-w-0 text-xs leading-5 font-medium wrap-break-word text-slate-700 dark:text-slate-300">
+                {displayAddress || "N/A"}
+              </p>
+            </div>
+
+            <div className="min-w-0">
+              <span className="mb-1 block text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                City
+              </span>
+
+              <p className="min-w-0 text-xs leading-5 font-medium wrap-break-word text-slate-700 dark:text-slate-300">
+                {city || "N/A"}
+              </p>
+            </div>
+
+            <div className="min-w-0">
+              <span className="mb-1 block text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                Zip Code
+              </span>
+
+              <p className="min-w-0 text-xs leading-5 font-medium wrap-break-word text-slate-700 dark:text-slate-300">
+                {zipCode || "N/A"}
+              </p>
+            </div>
+
+            {state && (
+              <div className="min-w-0">
+                <span className="mb-1 block text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                  State
+                </span>
+
+                <p className="min-w-0 text-xs leading-5 font-medium wrap-break-word text-slate-700 dark:text-slate-300">
+                  {state}
+                </p>
+              </div>
+            )}
+
+            <div className={`min-w-0 ${!state ? "sm:col-span-2" : ""}`}>
+              <span className="mb-1 block text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                Country
+              </span>
+
+              <p className="min-w-0 text-xs leading-5 font-medium wrap-break-word text-slate-700 dark:text-slate-300">
+                {country || "N/A"}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -74,7 +139,6 @@ interface OrderPeopleAndStoreProps {
 export function OrderPeopleAndStore({ order }: OrderPeopleAndStoreProps) {
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-      {/* Sender & Receiver */}
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
           <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">
@@ -106,7 +170,6 @@ export function OrderPeopleAndStore({ order }: OrderPeopleAndStoreProps) {
         </CardContent>
       </Card>
 
-      {/* Fulfilling Store */}
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
           <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">

@@ -176,15 +176,6 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                           )}
                         </div>
                       </div>
-
-                      {loc.hoursOfOperation && (
-                        <div className="shrink-0 self-start @md:self-auto">
-                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50/80 px-3 py-1 text-xs font-semibold whitespace-nowrap text-emerald-800">
-                            <Clock className="h-3 w-3 shrink-0 text-emerald-600" />
-                            <span className="truncate">{loc.hoursOfOperation}</span>
-                          </span>
-                        </div>
-                      )}
                     </div>
 
                     {/* Operational Schedule Box */}
