@@ -30,7 +30,6 @@ export function DiscountBadge({
 
 interface PriceStackProps {
   price: number | null | undefined;
-  /** Shown struck through when higher than `price` */
   originalPrice?: number | null;
   currencySymbol?: string;
   size?: "sm" | "md" | "lg" | "xl";

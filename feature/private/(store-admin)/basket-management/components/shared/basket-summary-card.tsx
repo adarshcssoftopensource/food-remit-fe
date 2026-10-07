@@ -15,6 +15,7 @@ interface BasketSummaryCardProps {
   basketType: BasketType;
   householdSize?: string | null;
   image?: string | null;
+  libraryImage?: string | null;
   itemCount: number;
   totalUnits?: number;
   price?: number;
@@ -31,6 +32,7 @@ export function BasketSummaryCard({
   basketType,
   householdSize,
   image,
+  libraryImage,
   itemCount,
   totalUnits,
   price,
@@ -77,6 +79,7 @@ export function BasketSummaryCard({
       <div className="relative shrink-0">
         <BasketImage
           image={image}
+          libraryImage={libraryImage}
           basketType={basketType}
           alt={name || "Basket"}
           className={cn(

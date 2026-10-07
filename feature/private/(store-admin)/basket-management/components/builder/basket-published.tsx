@@ -3,6 +3,7 @@
 import {
   ArrowRight,
   CalendarClock,
+  CalendarRange,
   Check,
   Eye,
   LayoutList,
@@ -11,7 +12,6 @@ import {
   Plus,
   Store,
   Tag,
-  Users,
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
@@ -20,8 +20,8 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
-import { formatHouseholdSize } from "../../../../../../constants/basket.constants";
 import type { BasketDetail } from "../../types/basket.types";
+import { describeAvailability, formatAvailability } from "../../utils/basket-availability";
 import { formatMoney } from "../../utils/basket-format";
 import { BasketTypeBadge } from "../shared/basket-badges";
 import { BasketImage } from "../shared/basket-image";
@@ -56,9 +56,9 @@ export function BasketPublished({ basket, onCreateAnother }: BasketPublishedProp
       value: `${basket.itemCount} items · ${basket.totalUnits} units`,
     },
     {
-      icon: Users,
-      label: "Serves",
-      value: basket.householdSize ? formatHouseholdSize(basket.householdSize) : "Any household",
+      icon: CalendarRange,
+      label: "Availability",
+      value: formatAvailability(basket),
     },
     { icon: Store, label: "Store", value: basket.store?.storeName ?? "—" },
     {
@@ -78,13 +78,17 @@ export function BasketPublished({ basket, onCreateAnother }: BasketPublishedProp
     },
     {
       icon: CalendarClock,
-      title: "Follows your store schedule",
-      text: "Pickup and delivery happen during your store's operating hours.",
+      title:
+        basket.availabilityMode === "CUSTOM" ? "Custom schedule set" : "Follows your store hours",
+      text:
+        basket.availabilityMode === "CUSTOM"
+          ? `Available ${describeAvailability(basket)}, only while your store is open.`
+          : "Customers can order whenever your store is open.",
     },
     {
       icon: Pencil,
       title: "Edit anytime",
-      text: "Change items, quantities, image or availability from Basket Details.",
+      text: "Edit items, pricing or availability, set it inactive, or schedule it to end.",
     },
   ];
 
@@ -139,6 +143,7 @@ export function BasketPublished({ basket, onCreateAnother }: BasketPublishedProp
         <div className="relative">
           <BasketImage
             image={basket.image}
+            libraryImage={basket.libraryImage}
             basketType={basket.basketType}
             alt={basket.name}
             className="aspect-4/3 h-full w-full md:aspect-auto"
@@ -155,8 +160,8 @@ export function BasketPublished({ basket, onCreateAnother }: BasketPublishedProp
             <div className="min-w-0 space-y-1.5">
               <BasketTypeBadge type={basket.basketType} />
               <h2 className="text-2xl font-black tracking-tight wrap-break-word">{basket.name}</h2>
-              {basket.shortDescription && (
-                <p className="text-muted-foreground text-sm">{basket.shortDescription}</p>
+              {basket.description && (
+                <p className="text-muted-foreground line-clamp-3 text-sm">{basket.description}</p>
               )}
             </div>
             <div className="rounded-2xl bg-emerald-50 px-4 py-3 ring-1 ring-emerald-100 dark:bg-emerald-950/30 dark:ring-emerald-900">

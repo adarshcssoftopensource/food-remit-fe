@@ -90,29 +90,37 @@ export function BasketPricingBreakdown({
   }
 
   const money = (v: number) => formatMoney(v, pricing.currencySymbol);
-  const hasDiscount = pricing.discountAmount > 0;
-  const settlement = pricing.estimatedPayout + pricing.estimatedTax;
+  const hasItemDiscount = pricing.itemDiscountAmount > 0;
+  const vendorDiscount = pricing.vendorDiscountAmount;
+  const discountLabel =
+    pricing.pricingMode === "DISCOUNT_PERCENT"
+      ? `Vendor discount (${pricing.vendorDiscountPercent}%)`
+      : pricing.pricingMode === "MANUAL_PRICE"
+        ? "Manual basket price adjustment"
+        : null;
 
   return (
     <div className={cn("space-y-5", loading && "opacity-60 transition-opacity", className)}>
       <section className="space-y-3">
-        <SectionTitle icon={Receipt}>What the customer pays</SectionTitle>
+        <SectionTitle icon={Receipt}>Basket price</SectionTitle>
         <Row
-          label="Items at your regular price"
-          hint={`${pricing.itemCount} items · ${pricing.totalUnits} units`}
-          value={money(pricing.vendorSubtotal)}
+          label="Basket subtotal"
+          hint={`${pricing.itemCount} items · ${pricing.totalUnits} units at your prices${
+            hasItemDiscount ? `, incl. ${money(pricing.itemDiscountAmount)} item discounts` : ""
+          }`}
+          value={money(pricing.itemsVendorTotal)}
         />
-        {hasDiscount && (
+        {discountLabel && (
           <Row
-            label={`Item discounts`}
-            hint={`${pricing.discountedItemCount} discounted ${pricing.discountedItemCount === 1 ? "item" : "items"}`}
-            value={`−${money(pricing.discountAmount)}`}
-            tone="discount"
+            label={discountLabel}
+            value={vendorDiscount >= 0 ? `−${money(vendorDiscount)}` : `+${money(-vendorDiscount)}`}
+            tone={vendorDiscount > 0 ? "discount" : "add"}
           />
         )}
+        <Row label="Vendor basket price" value={money(pricing.vendorBasketPrice)} tone="add" />
         <Row
-          label={`Food Remit markup`}
-          hint={`${pricing.markupPercent}% of ${hasDiscount ? "the discounted price" : "your price"} (${money(pricing.discountedSubtotal)})`}
+          label="Food Remit markup"
+          hint={`${Number(pricing.effectiveMarkupPercent.toFixed(2))}% added on top · vendor/admin only`}
           value={`+${money(pricing.markupAmount)}`}
           tone="add"
         />
@@ -121,7 +129,7 @@ export function BasketPricingBreakdown({
           <div className="flex items-end justify-between gap-3">
             <div>
               <p className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
-                Basket price
+                Final customer price
               </p>
               <p className="text-[11px] text-emerald-700/80 dark:text-emerald-300/70">
                 Shown to customers as one price
@@ -131,23 +139,23 @@ export function BasketPricingBreakdown({
               <p className="text-2xl leading-none font-black text-emerald-700 tabular-nums dark:text-emerald-300">
                 {money(pricing.customerPrice)}
               </p>
-              {hasDiscount && (
+              {pricing.customerSavings > 0 && (
                 <p className="mt-1 text-xs text-slate-400 tabular-nums line-through">
                   {money(pricing.customerOriginalPrice)}
                 </p>
               )}
             </div>
           </div>
-          {hasDiscount && (
+          {pricing.customerSavings > 0 && (
             <p className="mt-2.5 rounded-lg bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-rose-700 dark:text-rose-300">
-              Customers save {money(pricing.customerSavings)} with item discounts
+              Customers save {money(pricing.customerSavings)} ({pricing.savingsPercent}% off)
             </p>
           )}
         </div>
 
         <Row
           label="Tax"
-          hint={`${pricing.taxPercent}% store tax on ${money(pricing.discountedSubtotal)}`}
+          hint={`${pricing.taxPercent}% store tax, added at checkout`}
           value={`+${money(pricing.estimatedTax)}`}
           tone="muted"
         />
@@ -168,32 +176,29 @@ export function BasketPricingBreakdown({
       {!hidePayout && (
         <section className="space-y-3 rounded-2xl bg-slate-50 p-3.5 ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-800">
           <SectionTitle icon={Wallet}>Your estimated earnings</SectionTitle>
-          <Row label="Your regular price" value={money(pricing.vendorSubtotal)} />
-          <Row
-            label="Food Remit commission"
-            hint={`${pricing.commissionPercent}% of your regular price`}
-            value={`−${money(pricing.commissionAmount)}`}
-            tone="deduct"
-          />
+          <Row label="Vendor basket price" value={money(pricing.vendorBasketPrice)} />
+          {pricing.commissionAmount > 0 && (
+            <Row
+              label="Food Remit commission"
+              hint={`${pricing.commissionPercent}% of the vendor basket price`}
+              value={`−${money(pricing.commissionAmount)}`}
+              tone="deduct"
+            />
+          )}
           <div className="flex items-center justify-between rounded-xl bg-white px-3 py-2.5 ring-1 ring-slate-200/70 dark:bg-slate-950 dark:ring-slate-800">
-            <span className="text-sm font-bold">Estimated payout</span>
+            <span className="text-sm font-bold">Estimated vendor payout</span>
             <span className="text-lg font-black text-slate-900 tabular-nums dark:text-white">
               {money(pricing.estimatedPayout)}
             </span>
           </div>
-          <Row
-            label="Payout + tax collected"
-            hint="Tax is collected at checkout and settled to your store"
-            value={money(settlement)}
-            tone="muted"
-          />
         </section>
       )}
 
       <p className="text-muted-foreground flex gap-2 text-[11px] leading-relaxed">
         <Info className="mt-0.5 size-3.5 shrink-0" />
-        Customers see one basket price. Markup and commission are never shown to them. Estimates use
-        today&apos;s item prices and discounts, and update automatically if those change.
+        Customers see one basket price. The markup never reduces your payout and is never shown to
+        customers as a separate line. Estimates use today&apos;s item prices and update
+        automatically.
       </p>
     </div>
   );

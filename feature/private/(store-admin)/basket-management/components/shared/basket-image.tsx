@@ -5,11 +5,13 @@ import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { getDefaultBasketImage } from "../../../../../../constants/basket.constants";
+import { getBasketFallbackImage } from "../../../../../../constants/basket.constants";
 import type { BasketType } from "../../types/basket.types";
 
 interface BasketImageProps {
   image?: string | null;
+  /** Food Remit library image key; falls back to the template image */
+  libraryImage?: string | null;
   basketType: BasketType;
   alt: string;
   className?: string;
@@ -19,13 +21,14 @@ interface BasketImageProps {
 
 export function BasketImage({
   image,
+  libraryImage,
   basketType,
   alt,
   className,
   sizes = "(max-width: 768px) 100vw, 400px",
   priority,
 }: BasketImageProps) {
-  const fallback = getDefaultBasketImage(basketType);
+  const fallback = getBasketFallbackImage({ libraryImage, basketType });
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const src = image && image !== failedSrc ? image : fallback;
 

@@ -1,28 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Calculator,
-  FileText,
-  ImageIcon,
-  LayoutGrid,
-  ListOrdered,
-  Loader2,
-  Rocket,
-  Save,
-  ScanEye,
-  ShoppingBasket,
-  Store,
-} from "lucide-react";
+import { CheckCircle2, Loader2, Save, Store } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { FormProvider, useForm, useWatch, type FieldPath } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import type { z } from "zod";
 
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
-import { WizardStepper, type WizardStep } from "@/components/common/wizard-stepper";
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { errorToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +19,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { ROUTES } from "@/config/routes";
+import { cn } from "@/lib/utils";
 
 import { useActiveBasketStore } from "../../hooks/use-active-basket-store";
 import { useBasketPricingPreview } from "../../hooks/use-basket-pricing-preview";
@@ -42,49 +29,35 @@ import {
   basketFormSchema,
   basketToFormValues,
   formValuesToPayload,
+  getPublishIssues,
+  pricingOptionsOf,
   type BasketFormValues,
+  type BasketSectionId,
 } from "../../schema/basket-form.schema";
 import type { BasketDetail } from "../../types/basket.types";
 import { formatMoney } from "../../utils/basket-format";
 import { BasketStatusBadge } from "../shared/basket-badges";
 import { BasketStoreSwitcher } from "../shared/basket-store-switcher";
-import { BasketSummaryCard } from "../shared/basket-summary-card";
 import { BasketPublished } from "./basket-published";
-import { ImageAvailabilityStep } from "./steps/image-availability-step";
-import { InfoStep } from "./steps/info-step";
-import { ItemsStep } from "./steps/items-step";
-import { PricingStep } from "./steps/pricing-step";
-import { QuantitiesStep } from "./steps/quantities-step";
-import { ReviewStep, type BuilderStepId } from "./steps/review-step";
-import { TypeStep } from "./steps/type-step";
-
-const STEPS: (WizardStep & { id: BuilderStepId })[] = [
-  { id: "type", label: "Basket type", icon: LayoutGrid },
-  { id: "info", label: "Information", icon: FileText },
-  { id: "items", label: "Select items", icon: ShoppingBasket },
-  { id: "quantities", label: "Quantities", icon: ListOrdered },
-  { id: "pricing", label: "Pricing", icon: Calculator },
-  { id: "image", label: "Image & availability", icon: ImageIcon },
-  { id: "review", label: "Preview", icon: ScanEye },
-];
-
-const STEP_FIELDS: Partial<Record<BuilderStepId, FieldPath<BasketFormValues>[]>> = {
-  type: ["basketType"],
-  info: ["name", "shortDescription", "description", "householdSize"],
-  items: ["items"],
-  quantities: ["items"],
-};
-
-const stepIndex = (id: BuilderStepId) => STEPS.findIndex((s) => s.id === id);
-const stepAt = (index: number): BuilderStepId => STEPS[index]?.id ?? "review";
+import { sectionDomId } from "./section-card";
+import { AvailabilitySection } from "./sections/availability-section";
+import { ContentsSection } from "./sections/contents-section";
+import { ImageSection } from "./sections/image-section";
+import { InformationSection } from "./sections/information-section";
+import { PricingSection } from "./sections/pricing-section";
+import { SummarySection } from "./sections/summary-section";
+import { TemplateSection } from "./sections/template-section";
 
 interface BasketBuilderProps {
   basket?: BasketDetail;
 }
 
+const scrollToSection = (id: BasketSectionId) =>
+  document.getElementById(sectionDomId(id))?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+/** Single guided page to create a basket, edit a draft, or edit a published basket */
 export function BasketBuilder({ basket }: BasketBuilderProps) {
   const router = useRouter();
-  const isEdit = Boolean(basket);
   const {
     stores,
     activeStore,
@@ -92,38 +65,41 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
     isLoading: storesLoading,
   } = useActiveBasketStore();
 
-  const [savedBasket, setSavedBasket] = useState<BasketDetail | undefined>(basket);
   const [published, setPublished] = useState<BasketDetail | null>(null);
-  const [current, setCurrent] = useState(isEdit ? stepIndex("review") : 0);
-  const [maxReached, setMaxReached] = useState(isEdit ? STEPS.length - 1 : 0);
-  const topRef = useRef<HTMLDivElement>(null);
+  const [showIssues, setShowIssues] = useState(false);
+  const [confirmLeave, setConfirmLeave] = useState(false);
 
   const form = useForm<BasketFormValues, unknown, z.output<typeof basketFormSchema>>({
     resolver: zodResolver(basketFormSchema),
     defaultValues: basket ? basketToFormValues(basket) : EMPTY_BASKET_FORM,
     mode: "onTouched",
   });
-  const { control, trigger, getValues, reset, formState } = form;
-  const [items, basketType, name, shortDescription, householdSize, image] = useWatch({
-    control,
-    name: ["items", "basketType", "name", "shortDescription", "householdSize", "image"],
-  });
+  const { control, trigger, getValues, reset, setError, formState } = form;
+  const values = useWatch({ control }) as BasketFormValues;
+  const { items, pricingMode, vendorDiscountPercent, manualVendorPrice } = values;
 
   const store =
-    savedBasket?.store ??
+    basket?.store ??
     (activeStore ? { id: activeStore.id, storeName: activeStore.storeName } : null);
-  const storeId = savedBasket?.storeId ?? store?.id;
-  const isPublished = Boolean(savedBasket && savedBasket.status !== "DRAFT");
+  const storeId = basket?.storeId ?? store?.id;
+  const isPublished = Boolean(basket && basket.status !== "DRAFT");
+  const isDraft = basket?.status === "DRAFT";
 
   const pricingInput = useMemo(
     () => items.map(({ itemId, quantity }) => ({ itemId, quantity })),
     [items],
   );
-  const pricingQuery = useBasketPricingPreview(storeId, pricingInput);
+  const pricingQuery = useBasketPricingPreview(
+    storeId,
+    pricingInput,
+    pricingOptionsOf({ pricingMode, vendorDiscountPercent, manualVendorPrice }),
+  );
   const pricing = items.length > 0 ? pricingQuery.data : undefined;
-  const pricingLoading = pricingQuery.isFetching;
 
+  const issues = getPublishIssues(values, pricing);
+  const issueSections = new Set(showIssues ? issues.map((i) => i.section) : []);
   const save = useSaveBasket();
+  const busy = save.isPending;
 
   useEffect(() => {
     if (!formState.isDirty || published) return;
@@ -132,76 +108,60 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
     return () => window.removeEventListener("beforeunload", handler);
   }, [formState.isDirty, published]);
 
-  const goTo = (index: number) => {
-    setCurrent(index);
-    setMaxReached((m) => Math.max(m, index));
-    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  const validateStep = async (id: BuilderStepId) => {
-    const fields = STEP_FIELDS[id];
-    if (fields && !(await trigger(fields, { shouldFocus: true }))) return false;
-    if ((id === "items" || id === "quantities") && getValues("items").length === 0) {
-      errorToast({ description: "Add at least one item to your basket." });
-      return false;
-    }
-    return true;
-  };
-
-  const next = async () => {
-    if (await validateStep(stepAt(current))) goTo(current + 1);
-  };
-
-  const jumpTo = async (index: number) => {
-    if (index <= current) return goTo(index);
-    for (let i = current; i < index; i++) {
-      if (!(await validateStep(stepAt(i)))) return goTo(i);
-    }
-    goTo(index);
-  };
-
   const persist = async (publish: boolean) => {
-    const values = getValues();
+    const current = getValues();
     const res = await save.mutateAsync({
-      id: savedBasket?.id,
-      payload: formValuesToPayload(values, { storeId: savedBasket ? undefined : storeId, publish }),
+      id: basket?.id,
+      payload: formValuesToPayload(current, { storeId: basket ? undefined : storeId, publish }),
     });
-    setSavedBasket(res.data);
-    reset(values);
+    reset(current);
     return res.data;
   };
 
   const handleSaveDraft = async () => {
-    if (!(await trigger("name"))) {
-      goTo(stepIndex("info"));
-      errorToast({ description: "Add a basket name before saving." });
+    if (!(await trigger())) return;
+    const saved = await persist(false).catch(() => null);
+    if (saved && !basket) router.replace(ROUTES.ADMIN.BASKETS.EDIT(saved.id));
+  };
+
+  /** Create Basket (publish) for new baskets and drafts; Save changes for published baskets */
+  const handleSubmit = async () => {
+    const valid = await trigger();
+    const current = getValues();
+    const blocking = getPublishIssues(current, pricing);
+    if (!valid || blocking.length) {
+      setShowIssues(true);
+      for (const issue of blocking) {
+        if (issue.field === "name" || issue.field === "description") {
+          setError(issue.field, { message: issue.message });
+        }
+      }
+      const first = blocking[0];
+      if (first) {
+        scrollToSection(first.section);
+        errorToast({
+          description: isPublished
+            ? `Fix before saving: ${first.message}.`
+            : `Complete the basket before creating it: ${first.message}.`,
+        });
+      }
       return;
     }
-    await persist(false).catch(() => undefined);
+    const saved = await persist(!isPublished).catch(() => null);
+    if (!saved) return;
+    if (isPublished) router.push(ROUTES.ADMIN.BASKETS.DETAILS(saved.id));
+    else setPublished(saved);
   };
 
-  const handlePublish = async () => {
-    for (const step of STEPS) {
-      if (!(await validateStep(step.id))) return goTo(stepIndex(step.id));
-    }
-    if (pricing?.hasUnavailableItems && getValues("isActive")) {
-      errorToast({ description: "Remove unavailable items before publishing an active basket." });
-      return goTo(stepIndex("quantities"));
-    }
-    const wasPublished = isPublished;
-    const result = await persist(true).catch(() => null);
-    if (!result) return;
-    if (wasPublished) router.push(ROUTES.ADMIN.BASKETS.DETAILS(result.id));
-    else setPublished(result);
-  };
+  const cancel = () =>
+    formState.isDirty ? setConfirmLeave(true) : router.push(ROUTES.ADMIN.BASKETS.ROOT);
 
   const createAnother = () => {
+    if (basket) return router.push(ROUTES.ADMIN.BASKETS.CREATE);
     reset(EMPTY_BASKET_FORM);
-    setSavedBasket(undefined);
     setPublished(null);
-    setCurrent(0);
-    setMaxReached(0);
-    if (isEdit) router.push(ROUTES.ADMIN.BASKETS.CREATE);
+    setShowIssues(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (published) return <BasketPublished basket={published} onCreateAnother={createAnother} />;
@@ -222,255 +182,167 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
     );
   }
 
-  const stepId = stepAt(current);
-  const isLast = current === STEPS.length - 1;
-  const busy = save.isPending;
-  const title = isEdit ? `Edit ${basket!.name}` : "Create a basket";
-
-  const showAside = stepId === "type" || stepId === "info" || stepId === "quantities";
-  const storeForSwitcher = savedBasket?.store
-    ? (stores.find((s) => s.id === savedBasket.storeId) ?? {
-        ...savedBasket.store,
+  const title = isPublished ? "Edit Basket" : isDraft ? "Edit Draft" : "Create Basket";
+  const submitLabel = isPublished ? "Save Changes" : "Create Basket";
+  const storeForSwitcher = basket?.store
+    ? (stores.find((s) => s.id === basket.storeId) ?? {
+        ...basket.store,
         storeImage: null,
         city: null,
         status: null,
       })
     : activeStore;
 
+  const actions = (size: "header" | "footer") => (
+    <div className={cn("flex items-center gap-2", size === "footer" && "ml-auto")}>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={cancel}
+        disabled={busy}
+        className="h-10 rounded-xl"
+      >
+        Cancel
+      </Button>
+      {!isPublished && (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleSaveDraft}
+          disabled={busy}
+          className="text-primary h-10 rounded-xl border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900"
+        >
+          {busy && save.variables?.payload.publish === false ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Save className="size-4" />
+          )}
+          <span className={size === "footer" ? "hidden sm:inline" : ""}>Save as Draft</span>
+        </Button>
+      )}
+      <Button
+        type="button"
+        onClick={handleSubmit}
+        disabled={busy}
+        className="h-10 rounded-xl px-5 shadow-md shadow-emerald-600/20"
+      >
+        {busy && save.variables?.payload.publish !== false ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <CheckCircle2 className="size-4" />
+        )}
+        {submitLabel}
+      </Button>
+    </div>
+  );
+
   return (
     <FormProvider {...form}>
-      <div ref={topRef} className="scroll-mt-24 space-y-6">
+      <div className="space-y-5">
         <Breadcrumbs
           items={[
             { label: "Baskets", href: ROUTES.ADMIN.BASKETS.ROOT },
-            ...(savedBasket
-              ? [{ label: savedBasket.name, href: ROUTES.ADMIN.BASKETS.DETAILS(savedBasket.id) }]
+            ...(basket
+              ? [
+                  {
+                    label: basket.name || "Untitled basket",
+                    href: ROUTES.ADMIN.BASKETS.DETAILS(basket.id),
+                  },
+                ]
               : []),
-            { label: isEdit ? "Edit" : "Create", active: true },
+            { label: basket ? "Edit" : "Create", active: true },
           ]}
         />
 
-        <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950">
-          <div className="relative overflow-hidden bg-linear-to-br from-emerald-600 via-emerald-500 to-teal-500 px-5 py-6 text-white sm:px-8">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full bg-white/10"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -bottom-28 left-1/3 size-56 rounded-full bg-white/10"
-            />
-            <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-4">
-                <span className="hidden size-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30 backdrop-blur sm:flex">
-                  <ShoppingBasket className="size-7" />
-                </span>
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{title}</h1>
-                    {savedBasket && (
-                      <BasketStatusBadge status={savedBasket.status} className="bg-white/90" />
-                    )}
-                  </div>
-                  <p className="mt-1 text-sm text-emerald-50/90">
-                    Build a ready-to-buy basket from your store&apos;s catalogue in a few simple
-                    steps.
-                  </p>
-                </div>
-              </div>
-              <BasketStoreSwitcher
-                stores={stores}
-                activeStore={storeForSwitcher}
-                onChange={setActiveStoreId}
-                isLoading={storesLoading && !savedBasket}
-                disabled={Boolean(savedBasket) || items.length > 0}
-                className="text-slate-900"
-              />
-            </div>
-          </div>
-          <div className="px-4 py-5 sm:px-8">
-            <WizardStepper
-              steps={STEPS}
-              currentIndex={current}
-              maxReachableIndex={maxReached}
-              onStepClick={jumpTo}
-            />
-          </div>
-        </div>
-
-        <div className={showAside ? "grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]" : ""}>
-          <div
-            key={stepId}
-            className="animate-in fade-in slide-in-from-bottom-2 min-w-0 rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm duration-300 sm:p-7 dark:border-slate-800 dark:bg-slate-950"
-          >
-            {stepId === "type" && <TypeStep />}
-            {stepId === "info" && <InfoStep onChangeType={() => goTo(stepIndex("type"))} />}
-            {stepId === "items" && (
-              <ItemsStep storeId={storeId} storeName={store?.storeName} pricing={pricing} />
-            )}
-            {stepId === "quantities" && (
-              <QuantitiesStep pricing={pricing} onAddMore={() => goTo(stepIndex("items"))} />
-            )}
-            {stepId === "pricing" && <PricingStep pricing={pricing} loading={pricingLoading} />}
-            {stepId === "image" && (
-              <ImageAvailabilityStep
-                customerPrice={pricing?.customerPrice}
-                originalPrice={pricing?.customerOriginalPrice}
-                currencySymbol={pricing?.currencySymbol}
-                isPublished={isPublished}
-              />
-            )}
-            {stepId === "review" && (
-              <ReviewStep
-                pricing={pricing}
-                pricingLoading={pricingLoading}
-                onEditStep={(id) => goTo(stepIndex(id))}
-              />
-            )}
-          </div>
-
-          {showAside && (
-            <aside className="hidden xl:block">
-              <div className="sticky top-24 space-y-3">
-                <div className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-                  <p className="mb-3 flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-slate-500 uppercase">
-                    <span className="relative flex size-2">
-                      <span className="bg-primary absolute inline-flex size-full animate-ping rounded-full opacity-60" />
-                      <span className="bg-primary relative inline-flex size-2 rounded-full" />
-                    </span>
-                    Live preview
-                  </p>
-                  <BasketSummaryCard
-                    name={name}
-                    shortDescription={shortDescription}
-                    basketType={basketType ?? "CUSTOM"}
-                    householdSize={householdSize}
-                    image={image}
-                    itemCount={items.length}
-                    totalUnits={pricing?.totalUnits ?? 0}
-                    price={pricing?.customerPrice ?? 0}
-                    originalPrice={pricing?.customerOriginalPrice}
-                    currencySymbol={pricing?.currencySymbol}
-                  />
-                </div>
-                {pricing && (
-                  <div className="space-y-2 rounded-3xl border border-slate-200/80 bg-white p-4 text-xs shadow-sm dark:border-slate-800 dark:bg-slate-950">
-                    {pricing.discountAmount > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Item discounts</span>
-                        <strong className="text-rose-600 tabular-nums">
-                          −{formatMoney(pricing.discountAmount, pricing.currencySymbol)}
-                        </strong>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Food Remit markup</span>
-                      <strong className="tabular-nums">
-                        +{formatMoney(pricing.markupAmount, pricing.currencySymbol)}
-                      </strong>
-                    </div>
-                    <div className="flex justify-between border-t border-dashed border-slate-200 pt-2 dark:border-slate-700">
-                      <span className="font-semibold">Your estimated payout</span>
-                      <strong className="text-sm tabular-nums">
-                        {formatMoney(pricing.estimatedPayout, pricing.currencySymbol)}
-                      </strong>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </aside>
-          )}
-        </div>
-      </div>
-
-      <div className="sticky bottom-3 z-30 mt-6">
-        <div className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/90 px-3 py-3 shadow-xl shadow-slate-900/10 backdrop-blur-md sm:px-4 dark:border-slate-800 dark:bg-slate-950/95">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() =>
-              current === 0 ? router.push(ROUTES.ADMIN.BASKETS.ROOT) : goTo(current - 1)
-            }
-            disabled={busy}
-            className="h-10 rounded-xl"
-          >
-            <ArrowLeft className="size-4" />
-            <span className="hidden sm:inline">{current === 0 ? "Cancel" : "Back"}</span>
-          </Button>
-          <div className="hidden items-center gap-3 border-l border-slate-200 pl-3 md:flex dark:border-slate-800">
+        <header className="flex flex-col gap-4 rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-6 lg:flex-row lg:items-center lg:justify-between dark:border-slate-800 dark:bg-slate-950">
+          <div className="min-w-0 space-y-3">
             <div>
-              <p className="text-[10px] font-semibold text-slate-500 uppercase">Basket price</p>
-              <p className="text-sm font-black tabular-nums">
-                {pricing ? formatMoney(pricing.customerPrice, pricing.currencySymbol) : "—"}
-                {pricing && pricing.customerSavings > 0 && (
-                  <span className="ml-1.5 text-[11px] font-medium text-slate-400 line-through">
-                    {formatMoney(pricing.customerOriginalPrice, pricing.currencySymbol)}
-                  </span>
-                )}
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+                  {title}
+                </h1>
+                {basket && <BasketStatusBadge status={basket.status} />}
+              </div>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Build a ready-to-buy basket by selecting a template, adding items, setting pricing,
+                availability, and image.
               </p>
             </div>
-            <span className="text-muted-foreground text-xs">
-              {items.length} items · Step {current + 1}/{STEPS.length}
-            </span>
+            <BasketStoreSwitcher
+              stores={stores}
+              activeStore={storeForSwitcher}
+              onChange={setActiveStoreId}
+              isLoading={storesLoading && !basket}
+              disabled={Boolean(basket) || items.length > 0}
+            />
           </div>
-          <div className="ml-auto flex items-center gap-2">
-            {!isPublished && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleSaveDraft}
-                disabled={busy}
-                className="h-10 rounded-xl"
-              >
-                {busy && !isLast ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <Save className="size-4" />
-                )}
-                <span className="hidden sm:inline">Save draft</span>
-              </Button>
-            )}
-            {isPublished && !isLast && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePublish}
-                disabled={busy}
-                className="h-10 rounded-xl"
-              >
-                <Save className="size-4" />
-                <span className="hidden sm:inline">Save changes</span>
-              </Button>
-            )}
-            {isLast ? (
-              <Button
-                type="button"
-                onClick={handlePublish}
-                disabled={busy}
-                className="h-11 rounded-xl px-6 shadow-md shadow-emerald-600/20"
-              >
-                {busy ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : isPublished ? (
-                  <Save className="size-4" />
-                ) : (
-                  <Rocket className="size-4" />
-                )}
-                {isPublished ? "Save changes" : "Publish basket"}
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                onClick={next}
-                disabled={busy}
-                className="h-11 rounded-xl px-6 shadow-md shadow-emerald-600/20"
-              >
-                Next <ArrowRight className="size-4" />
-              </Button>
-            )}
+          <div className="hidden lg:block">{actions("header")}</div>
+        </header>
+
+        <TemplateSection hasIssue={issueSections.has("template")} />
+        <InformationSection hasIssue={issueSections.has("information")} />
+        <ContentsSection
+          storeId={storeId}
+          pricing={pricing}
+          hasIssue={issueSections.has("contents")}
+        />
+        <PricingSection
+          pricing={pricing}
+          loading={pricingQuery.isFetching}
+          hasIssue={issueSections.has("pricing")}
+        />
+        <AvailabilitySection hasIssue={issueSections.has("availability")} />
+        <ImageSection />
+        <SummarySection
+          pricing={pricing}
+          issues={issues}
+          onJump={scrollToSection}
+          statusNote={
+            isPublished
+              ? `${basket?.status === "ACTIVE" ? "Active" : "Inactive"} · status unchanged`
+              : "Active · Visible to customers"
+          }
+        />
+      </div>
+
+      <div className="sticky bottom-3 z-30 mt-5">
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/90 px-3 py-3 shadow-xl shadow-slate-900/10 backdrop-blur-md sm:px-4 dark:border-slate-800 dark:bg-slate-950/95">
+          <div className="hidden min-w-0 sm:block">
+            <p className="text-[10px] font-semibold text-slate-500 uppercase">
+              Final customer price
+            </p>
+            <p className="text-sm font-black tabular-nums">
+              {pricing ? formatMoney(pricing.customerPrice, pricing.currencySymbol) : "—"}
+              {pricing && pricing.savingsPercent > 0 && (
+                <span className="ml-1.5 rounded-full bg-rose-50 px-1.5 py-0.5 text-[10px] font-bold text-rose-600">
+                  {pricing.savingsPercent}% off
+                </span>
+              )}
+            </p>
           </div>
+          <span className="text-muted-foreground hidden text-xs md:inline">
+            {items.length} items
+            {pricing
+              ? ` · You receive ${formatMoney(pricing.estimatedPayout, pricing.currencySymbol)}`
+              : ""}
+          </span>
+          {actions("footer")}
         </div>
       </div>
+
+      <ConfirmationDialog
+        open={confirmLeave}
+        onOpenChange={setConfirmLeave}
+        title="Discard unsaved changes?"
+        description="Your changes to this basket haven't been saved. Save it as a draft to keep working on it later."
+        confirmLabel="Discard changes"
+        variant="destructive"
+        onConfirm={() => {
+          setConfirmLeave(false);
+          reset(getValues());
+          router.push(ROUTES.ADMIN.BASKETS.ROOT);
+        }}
+      />
     </FormProvider>
   );
 }

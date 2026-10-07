@@ -9,7 +9,7 @@ import { RecycledEntityActionsCell } from "../components/recycled-entity-actions
 import { withDeletedByColumn } from "../components/deleted-by-columns";
 import { usersColumns as rawUsersColumns } from "./recycled-users-columns";
 import { Store, User } from "lucide-react";
-import { BASKET_STATUS_META, getDefaultBasketImage } from "@/constants/basket.constants";
+import { BASKET_STATUS_META, getBasketImage } from "@/constants/basket.constants";
 import type { BasketStatus } from "@/feature/private/(store-admin)/basket-management/types/basket.types";
 
 export const usersColumns = withDeletedByColumn(rawUsersColumns as ColumnDef<any>[], true);
@@ -503,7 +503,7 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
         cell: ({ row }) => (
           <ImageNameCell
             name={row.original.name}
-            image={row.original.image || getDefaultBasketImage(row.original.basketType)}
+            image={getBasketImage(row.original)}
             type="logo"
           />
         ),

@@ -45,28 +45,44 @@ export interface BasketPricingLine {
   payoutLineTotal: number;
 }
 
+export type BasketPricingMode = "STANDARD" | "DISCOUNT_PERCENT" | "MANUAL_PRICE";
+
+export type BasketAvailabilityMode = "STORE_HOURS" | "CUSTOM";
+
 export interface BasketPricingTotals {
   currency: string;
   currencySymbol: string;
+  /** Platform markup rate */
   markupPercent: number;
+  /** Weighted markup rate of the basket's items */
+  effectiveMarkupPercent: number;
   taxPercent: number;
   commissionPercent: number;
   itemCount: number;
   totalUnits: number;
-  vendorSubtotal: number;
-  discountAmount: number;
+  categoryNames: string[];
+  itemsRegularTotal: number;
+  itemDiscountAmount: number;
   discountedItemCount: number;
-  discountedSubtotal: number;
+  /** Basket subtotal (vendor items total, after item discounts) */
+  itemsVendorTotal: number;
+  customerItemsTotal: number;
+  pricingMode: BasketPricingMode;
+  vendorDiscountPercent: number;
+  vendorDiscountAmount: number;
+  vendorBasketPrice: number;
   markupAmount: number;
-  customerOriginalPrice: number;
   customerPrice: number;
+  customerOriginalPrice: number;
   customerSavings: number;
+  savingsPercent: number;
   estimatedTax: number;
   processingFee: number;
   estimatedCustomerTotal: number;
   commissionAmount: number;
   estimatedPayout: number;
   hasUnavailableItems: boolean;
+  pricingError: string | null;
 }
 
 export interface BasketPricingPreview extends BasketPricingTotals {
@@ -84,16 +100,34 @@ export interface Basket {
   basketType: BasketType;
   householdSize: string | null;
   image: string | null;
+  libraryImage: string | null;
   isDefaultImage: boolean;
   defaultImagePath: string;
   status: BasketStatus;
   publishedAt: string | null;
+  scheduledInactiveAt: string | null;
+  pricingMode: BasketPricingMode;
+  vendorDiscountPercent: number | null;
+  manualVendorPrice: number | null;
+  availabilityMode: BasketAvailabilityMode;
+  /** YYYY-MM-DD */
+  availableFrom: string | null;
+  availableUntil: string | null;
+  availableDays: string[];
+  /** Vendor basket price (after vendor discount / manual price) */
   vendorPrice: number;
+  /** Final customer basket price */
   price: number;
-  /** Basket price before item discounts */
+  /** Customer price before any discount */
   originalPrice: number;
-  discountAmount: number;
+  savings: number;
+  savingsPercent: number;
+  vendorDiscountAmount: number;
+  itemDiscountAmount: number;
   discountedItemCount: number;
+  categoryNames: string[];
+  isPublishable: boolean;
+  missingRequirements: string[];
   currency: string;
   currencySymbol: string;
   itemCount: number;
@@ -175,15 +209,25 @@ export interface BasketItemInput {
   quantity: number;
 }
 
-export interface UpsertBasketPayload {
+export interface BasketPricingOptions {
+  pricingMode: BasketPricingMode;
+  vendorDiscountPercent?: number | null;
+  manualVendorPrice?: number | null;
+}
+
+export interface UpsertBasketPayload extends BasketPricingOptions {
   storeId?: string;
-  name: string;
+  name?: string;
   shortDescription?: string;
   description?: string;
   basketType: BasketType;
   householdSize?: string;
   image?: string | null;
-  isActive?: boolean;
+  libraryImage?: string | null;
+  availabilityMode: BasketAvailabilityMode;
+  availableFrom?: string | null;
+  availableUntil?: string | null;
+  availableDays?: string[];
   items: BasketItemInput[];
   publish?: boolean;
 }

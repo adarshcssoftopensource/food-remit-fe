@@ -2,13 +2,15 @@ import { z } from "zod";
 
 import {
   BASKET_DESCRIPTION_MAX,
+  BASKET_DISCOUNT_PERCENT_MAX,
   BASKET_ITEM_QUANTITY_MAX,
   BASKET_NAME_MAX,
-  BASKET_SHORT_DESCRIPTION_MAX,
+  BASKET_WEEKDAYS,
 } from "../../../../../constants/basket.constants";
 import type {
   BasketDetail,
   BasketItemInfo,
+  BasketPricingTotals,
   BasketType,
   UpsertBasketPayload,
 } from "../types/basket.types";
@@ -22,33 +24,42 @@ const BASKET_TYPES = [
   "CUSTOM",
 ] as const satisfies readonly BasketType[];
 
+/** Catalogue prices captured when an item is added, used until server pricing arrives */
 export type SelectedBasketItem = {
   itemId: string;
   quantity: number;
-  item: BasketItemInfo & { vendorPrice?: number };
+  item: BasketItemInfo & {
+    vendorPrice?: number;
+    discountPercent?: number;
+    discountedVendorPrice?: number;
+    customerPrice?: number;
+  };
 };
 
+/** Draft-level shape; publish completeness is checked by `getPublishIssues` */
 export const basketFormSchema = z.object({
-  basketType: z
-    .enum(BASKET_TYPES, { message: "Choose a basket type to continue" })
-    .nullable()
-    .refine((value) => value !== null, "Choose a basket type to continue"),
-  name: z
-    .string()
-    .trim()
-    .min(2, "Basket name must be at least 2 characters")
-    .max(BASKET_NAME_MAX, `Keep the name under ${BASKET_NAME_MAX} characters`),
-  shortDescription: z
-    .string()
-    .trim()
-    .max(BASKET_SHORT_DESCRIPTION_MAX, `Max ${BASKET_SHORT_DESCRIPTION_MAX} characters`),
+  basketType: z.enum(BASKET_TYPES).nullable(),
+  name: z.string().trim().max(BASKET_NAME_MAX, `Keep the name under ${BASKET_NAME_MAX} characters`),
   description: z
     .string()
     .trim()
-    .max(BASKET_DESCRIPTION_MAX, `Max ${BASKET_DESCRIPTION_MAX} characters`),
+    .max(BASKET_DESCRIPTION_MAX, `Keep the description under ${BASKET_DESCRIPTION_MAX} characters`),
+  /** Preserved from earlier versions; not edited in the builder */
+  shortDescription: z.string(),
   householdSize: z.string(),
   image: z.string().nullable(),
-  isActive: z.boolean(),
+  libraryImage: z.string().nullable(),
+  pricingMode: z.enum(["STANDARD", "DISCOUNT_PERCENT", "MANUAL_PRICE"]),
+  vendorDiscountPercent: z
+    .number()
+    .min(0, "Discount can't be negative")
+    .max(BASKET_DISCOUNT_PERCENT_MAX, `Discount can be up to ${BASKET_DISCOUNT_PERCENT_MAX}%`)
+    .nullable(),
+  manualVendorPrice: z.number().min(0, "Price can't be negative").nullable(),
+  availabilityMode: z.enum(["STORE_HOURS", "CUSTOM"]),
+  availableFrom: z.string().nullable(),
+  availableUntil: z.string().nullable(),
+  availableDays: z.array(z.enum(BASKET_WEEKDAYS.map((d) => d.value) as [string, ...string[]])),
   items: z
     .array(
       z.object({
@@ -62,14 +73,23 @@ export const basketFormSchema = z.object({
 
 export type BasketFormValues = z.input<typeof basketFormSchema>;
 
+export const ALL_WEEKDAYS = BASKET_WEEKDAYS.map((d) => d.value);
+
 export const EMPTY_BASKET_FORM: BasketFormValues = {
   basketType: null,
   name: "",
-  shortDescription: "",
   description: "",
+  shortDescription: "",
   householdSize: "",
   image: null,
-  isActive: true,
+  libraryImage: null,
+  pricingMode: "STANDARD",
+  vendorDiscountPercent: null,
+  manualVendorPrice: null,
+  availabilityMode: "STORE_HOURS",
+  availableFrom: null,
+  availableUntil: null,
+  availableDays: [],
   items: [],
 };
 
@@ -77,17 +97,30 @@ export function basketToFormValues(basket: BasketDetail): BasketFormValues {
   return {
     basketType: basket.basketType,
     name: basket.name,
-    shortDescription: basket.shortDescription ?? "",
     description: basket.description ?? "",
+    shortDescription: basket.shortDescription ?? "",
     householdSize: basket.householdSize ?? "",
     image: basket.image,
-    isActive: basket.status !== "INACTIVE",
+    libraryImage: basket.libraryImage,
+    pricingMode: basket.pricingMode,
+    vendorDiscountPercent: basket.vendorDiscountPercent,
+    manualVendorPrice: basket.manualVendorPrice,
+    availabilityMode: basket.availabilityMode,
+    availableFrom: basket.availableFrom,
+    availableUntil: basket.availableUntil,
+    availableDays: basket.availableDays,
     items: basket.items
       .filter((line) => line.item)
       .map((line) => ({
         itemId: line.itemId,
         quantity: line.quantity,
-        item: { ...line.item!, vendorPrice: line.pricing?.vendorUnitPrice },
+        item: {
+          ...line.item!,
+          vendorPrice: line.pricing?.vendorUnitPrice,
+          discountPercent: line.pricing?.discountPercent,
+          discountedVendorPrice: line.pricing?.discountedUnitPrice,
+          customerPrice: line.pricing?.customerUnitPrice,
+        },
       })),
   };
 }
@@ -96,16 +129,110 @@ export function formValuesToPayload(
   values: BasketFormValues,
   options: { storeId?: string; publish?: boolean },
 ): UpsertBasketPayload {
+  const custom = values.availabilityMode === "CUSTOM";
   return {
     storeId: options.storeId,
     name: values.name.trim(),
-    shortDescription: values.shortDescription.trim() || undefined,
     description: values.description.trim() || undefined,
+    shortDescription: values.shortDescription.trim() || undefined,
     basketType: values.basketType ?? "CUSTOM",
     householdSize: values.householdSize || undefined,
     image: values.image,
-    isActive: values.isActive,
+    libraryImage: values.libraryImage,
+    ...pricingOptionsOf(values),
+    availabilityMode: values.availabilityMode,
+    availableFrom: custom ? values.availableFrom : null,
+    availableUntil: custom ? values.availableUntil : null,
+    availableDays: custom ? values.availableDays : [],
     items: values.items.map(({ itemId, quantity }) => ({ itemId, quantity })),
     publish: options.publish,
   };
+}
+
+export function pricingOptionsOf(
+  values: Pick<BasketFormValues, "pricingMode" | "vendorDiscountPercent" | "manualVendorPrice">,
+) {
+  return {
+    pricingMode: values.pricingMode,
+    vendorDiscountPercent:
+      values.pricingMode === "DISCOUNT_PERCENT" ? values.vendorDiscountPercent : null,
+    manualVendorPrice: values.pricingMode === "MANUAL_PRICE" ? values.manualVendorPrice : null,
+  };
+}
+
+export type BasketSectionId =
+  "template" | "information" | "contents" | "pricing" | "availability" | "image" | "summary";
+
+export interface PublishIssue {
+  section: BasketSectionId;
+  field?: "name" | "description" | "availableFrom" | "availableDays";
+  message: string;
+}
+
+const todayKey = () => {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
+
+/** Everything still missing before the basket can be published (mirrors the API rules) */
+export function getPublishIssues(
+  values: BasketFormValues,
+  pricing?: Pick<BasketPricingTotals, "hasUnavailableItems" | "customerPrice">,
+): PublishIssue[] {
+  const issues: PublishIssue[] = [];
+  if (!values.basketType) {
+    issues.push({ section: "template", message: "Choose a basket template" });
+  }
+  if (values.name.trim().length < 2) {
+    issues.push({ section: "information", field: "name", message: "Add a basket name" });
+  }
+  if (!values.description.trim()) {
+    issues.push({
+      section: "information",
+      field: "description",
+      message: "Add a basket description",
+    });
+  }
+  if (!values.items.length) {
+    issues.push({ section: "contents", message: "Add at least one item" });
+  } else if (pricing?.hasUnavailableItems) {
+    issues.push({ section: "contents", message: "Remove unavailable items" });
+  }
+  if (values.pricingMode === "DISCOUNT_PERCENT" && !(Number(values.vendorDiscountPercent) > 0)) {
+    issues.push({ section: "pricing", message: "Enter a discount percentage" });
+  }
+  if (values.pricingMode === "MANUAL_PRICE" && !(Number(values.manualVendorPrice) > 0)) {
+    issues.push({ section: "pricing", message: "Enter a manual vendor basket price" });
+  }
+  if (values.availabilityMode === "CUSTOM") {
+    const { availableFrom: from, availableUntil: until } = values;
+    if (!from || !until) {
+      issues.push({
+        section: "availability",
+        field: "availableFrom",
+        message: "Set a start and end date for the custom schedule",
+      });
+    } else if (from > until) {
+      issues.push({
+        section: "availability",
+        field: "availableFrom",
+        message: "End date must be on or after the start date",
+      });
+    } else if (until < todayKey()) {
+      issues.push({
+        section: "availability",
+        field: "availableFrom",
+        message: "Custom schedule has already ended",
+      });
+    }
+    if (!values.availableDays.length) {
+      issues.push({
+        section: "availability",
+        field: "availableDays",
+        message: "Select at least one available day",
+      });
+    }
+  }
+  return issues;
 }
