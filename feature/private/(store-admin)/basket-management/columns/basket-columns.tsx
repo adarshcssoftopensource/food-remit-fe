@@ -12,7 +12,7 @@ import { ROUTES } from "@/config/routes";
 
 import { BasketStatusBadge, BasketTypeBadge } from "../components/shared/basket-badges";
 import { BasketImage } from "../components/shared/basket-image";
-import { formatHouseholdSize } from "../constants/basket.constants";
+import { formatHouseholdSize } from "../../../../../constants/basket.constants";
 import type { Basket } from "../types/basket.types";
 import { formatMoney } from "../utils/basket-format";
 

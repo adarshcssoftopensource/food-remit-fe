@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { BASKET_TYPE_MAP, formatHouseholdSize } from "../../constants/basket.constants";
+import { BASKET_TYPE_MAP, formatHouseholdSize } from "../../../../../../constants/basket.constants";
 import type { BasketType } from "../../types/basket.types";
 import { formatMoney } from "../../utils/basket-format";
 import { BasketTypeBadge } from "./basket-badges";

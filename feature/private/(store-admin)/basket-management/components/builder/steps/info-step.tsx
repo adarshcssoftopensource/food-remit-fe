@@ -14,7 +14,7 @@ import {
   BASKET_SHORT_DESCRIPTION_MAX,
   BASKET_TYPE_MAP,
   HOUSEHOLD_SIZE_OPTIONS,
-} from "../../../constants/basket.constants";
+} from "../../../../../../../constants/basket.constants";
 import type { BasketFormValues } from "../../../schema/basket-form.schema";
 import { BasketImage } from "../../shared/basket-image";
 import { StepHeader } from "../step-header";

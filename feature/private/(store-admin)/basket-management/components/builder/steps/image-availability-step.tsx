@@ -21,7 +21,7 @@ import {
   BASKET_IMAGE_MAX_BYTES,
   BASKET_TYPE_MAP,
   formatHouseholdSize,
-} from "../../../constants/basket.constants";
+} from "../../../../../../../constants/basket.constants";
 import { useUploadBasketImage } from "../../../hooks/use-upload-basket-image";
 import type { BasketFormValues } from "../../../schema/basket-form.schema";
 import { formatMoney } from "../../../utils/basket-format";

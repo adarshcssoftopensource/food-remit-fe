@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-import { BASKET_STATUS_META, BASKET_TYPE_MAP } from "../../constants/basket.constants";
+import { BASKET_STATUS_META, BASKET_TYPE_MAP } from "../../../../../../constants/basket.constants";
 import type { BasketStatus, BasketType } from "../../types/basket.types";
 
 export function BasketStatusBadge({

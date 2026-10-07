@@ -20,7 +20,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
-import { formatHouseholdSize } from "../../constants/basket.constants";
+import { formatHouseholdSize } from "../../../../../../constants/basket.constants";
 import type { BasketDetail } from "../../types/basket.types";
 import { formatMoney } from "../../utils/basket-format";
 import { BasketTypeBadge } from "../shared/basket-badges";

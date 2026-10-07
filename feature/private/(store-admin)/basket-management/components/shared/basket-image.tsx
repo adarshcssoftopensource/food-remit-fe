@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { getDefaultBasketImage } from "../../constants/basket.constants";
+import { getDefaultBasketImage } from "../../../../../../constants/basket.constants";
 import type { BasketType } from "../../types/basket.types";
 
 interface BasketImageProps {

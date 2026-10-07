@@ -5,7 +5,7 @@ import {
   BASKET_ITEM_QUANTITY_MAX,
   BASKET_NAME_MAX,
   BASKET_SHORT_DESCRIPTION_MAX,
-} from "../constants/basket.constants";
+} from "../../../../../constants/basket.constants";
 import type {
   BasketDetail,
   BasketItemInfo,

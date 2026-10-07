@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { BASKET_ITEM_QUANTITY_MAX } from "../constants/basket.constants";
+import { BASKET_ITEM_QUANTITY_MAX } from "../../../../../constants/basket.constants";
 import type { BasketFormValues, SelectedBasketItem } from "../schema/basket-form.schema";
 import type { CatalogueItem } from "../types/basket.types";
 

@@ -5,7 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 
-import { BASKET_TYPE_OPTIONS } from "../../../constants/basket.constants";
+import { BASKET_TYPE_OPTIONS } from "../../../../../../../constants/basket.constants";
 import type { BasketFormValues } from "../../../schema/basket-form.schema";
 import type { BasketType } from "../../../types/basket.types";
 import { BasketImage } from "../../shared/basket-image";

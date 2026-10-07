@@ -1,7 +1,10 @@
 import type { LucideIcon } from "lucide-react";
 import { CalendarHeart, Home, Package, PackagePlus, ShoppingBasket, Users } from "lucide-react";
 
-import type { BasketStatus, BasketType } from "../types/basket.types";
+import type {
+  BasketStatus,
+  BasketType,
+} from "../feature/private/(store-admin)/basket-management/types/basket.types";
 
 export interface BasketTypeOption {
   value: BasketType;

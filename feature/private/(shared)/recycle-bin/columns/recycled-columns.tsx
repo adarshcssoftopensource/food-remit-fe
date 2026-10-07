@@ -9,10 +9,7 @@ import { RecycledEntityActionsCell } from "../components/recycled-entity-actions
 import { withDeletedByColumn } from "../components/deleted-by-columns";
 import { usersColumns as rawUsersColumns } from "./recycled-users-columns";
 import { Store, User } from "lucide-react";
-import {
-  BASKET_STATUS_META,
-  getDefaultBasketImage,
-} from "@/feature/private/(store-admin)/basket-management/constants/basket.constants";
+import { BASKET_STATUS_META, getDefaultBasketImage } from "@/constants/basket.constants";
 import type { BasketStatus } from "@/feature/private/(store-admin)/basket-management/types/basket.types";
 
 export const usersColumns = withDeletedByColumn(rawUsersColumns as ColumnDef<any>[], true);

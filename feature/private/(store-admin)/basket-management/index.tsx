@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { getBasketColumns } from "./columns/basket-columns";
 import { BasketsEmptyState } from "./components/list/baskets-empty-state";
 import { BasketStoreSwitcher } from "./components/shared/basket-store-switcher";
-import { BASKET_TYPE_MAP, BASKET_TYPE_OPTIONS } from "./constants/basket.constants";
+import { BASKET_TYPE_MAP, BASKET_TYPE_OPTIONS } from "../../../../constants/basket.constants";
 import { useActiveBasketStore } from "./hooks/use-active-basket-store";
 import { useDeleteBasket } from "./hooks/use-delete-basket";
 import { useGetBaskets } from "./hooks/use-get-baskets";
