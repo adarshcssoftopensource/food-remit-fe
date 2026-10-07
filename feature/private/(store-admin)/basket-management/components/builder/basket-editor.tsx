@@ -6,7 +6,6 @@ import { useGetBasket } from "../../hooks/use-get-basket";
 import { BasketNotFound } from "../shared/basket-not-found";
 import { BasketBuilder } from "./basket-builder";
 
-/** Loads an existing basket and opens it in the builder */
 export function BasketEditor({ id }: { id: string }) {
   const { data, isLoading, isError } = useGetBasket(id);
 
@@ -15,7 +14,7 @@ export function BasketEditor({ id }: { id: string }) {
       <div className="space-y-6">
         <Skeleton className="h-16 w-80 rounded-xl" />
         <Skeleton className="h-20 w-full rounded-2xl" />
-        <Skeleton className="h-[480px] w-full rounded-2xl" />
+        <Skeleton className="h-120 w-full rounded-2xl" />
       </div>
     );
   }

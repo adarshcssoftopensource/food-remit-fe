@@ -201,9 +201,8 @@ export function PricingStep({ pricing, loading }: PricingStepProps) {
             </p>
           </div>
 
-          {/* Desktop table */}
           <div className="hidden overflow-x-auto md:block">
-            <table className="w-full min-w-[720px] text-sm">
+            <table className="w-full min-w-180 text-sm">
               <thead className="bg-slate-50 text-[11px] font-bold tracking-wider text-slate-500 uppercase dark:bg-slate-900">
                 <tr>
                   <th className="px-5 py-2.5 text-left">Item</th>

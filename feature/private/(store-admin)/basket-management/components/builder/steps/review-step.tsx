@@ -13,6 +13,7 @@ import { BasketSummaryCard } from "../../shared/basket-summary-card";
 import { DiscountBadge, PriceStack } from "../../shared/price-display";
 import { ProductThumb } from "../../shared/product-thumb";
 import { StepHeader } from "../step-header";
+import { Button } from "@/components/ui/button";
 
 export type BuilderStepId =
   "type" | "info" | "items" | "quantities" | "pricing" | "image" | "review";
@@ -38,13 +39,14 @@ function Section({
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-bold">{title}</h3>
         {onEdit && (
-          <button
+          <Button
             type="button"
+            variant={"ghost"}
             onClick={onEdit}
             className="text-primary inline-flex items-center gap-1 text-xs font-semibold hover:underline"
           >
             <Pencil className="size-3" /> Edit
-          </button>
+          </Button>
         )}
       </div>
       {children}
@@ -121,7 +123,7 @@ export function ReviewStep({ pricing, pricingLoading, onEditStep }: ReviewStepPr
             title={`Basket items (${values.items.length})`}
             onEdit={() => onEditStep("quantities")}
           >
-            <ul className="max-h-[560px] divide-y divide-slate-100 overflow-y-auto dark:divide-slate-800">
+            <ul className="max-h-140 divide-y divide-slate-100 overflow-y-auto dark:divide-slate-800">
               {values.items.map(({ itemId, quantity, item }, index) => {
                 const line = lineById.get(itemId);
                 return (

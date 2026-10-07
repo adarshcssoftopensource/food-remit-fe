@@ -191,7 +191,7 @@ export function BasketDetails({ id }: { id: string }) {
             }
           >
             <div className="-mx-4 overflow-x-auto sm:-mx-5">
-              <table className="w-full min-w-[640px] text-sm">
+              <table className="w-full min-w-160 text-sm">
                 <thead className="bg-slate-50 text-[11px] font-bold tracking-wider text-slate-500 uppercase dark:bg-slate-900">
                   <tr>
                     <th className="px-4 py-2.5 text-left sm:px-5">Item</th>

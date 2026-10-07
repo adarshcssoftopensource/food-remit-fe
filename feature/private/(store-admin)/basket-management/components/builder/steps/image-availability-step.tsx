@@ -28,6 +28,8 @@ import { formatMoney } from "../../../utils/basket-format";
 import { BasketImage } from "../../shared/basket-image";
 import { PriceStack } from "../../shared/price-display";
 import { StepHeader } from "../step-header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface ImageAvailabilityStepProps {
   customerPrice?: number;
@@ -82,7 +84,6 @@ export function ImageAvailabilityStep({
           <div className="space-y-2">
             <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Basket image</p>
             <div className="grid gap-3 md:grid-cols-2">
-              {/* Default image */}
               <button
                 type="button"
                 onClick={useDefault}
@@ -98,7 +99,7 @@ export function ImageAvailabilityStep({
                   basketType={type}
                   alt="Default basket image"
                   sizes="128px"
-                  className="aspect-[4/3] w-24 shrink-0 rounded-xl"
+                  className="aspect-4/3 w-24 shrink-0 rounded-xl"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1.5 text-sm font-bold">
@@ -118,7 +119,6 @@ export function ImageAvailabilityStep({
                 </span>
               </button>
 
-              {/* Custom upload */}
               <div
                 className={cn(
                   "flex items-center gap-3 rounded-2xl border-2 p-2.5 transition-all",
@@ -144,14 +144,15 @@ export function ImageAvailabilityStep({
                     basketType={type}
                     alt="Custom basket image"
                     sizes="128px"
-                    className="aspect-[4/3] w-24 shrink-0 rounded-xl"
+                    className="aspect-4/3 w-24 shrink-0 rounded-xl"
                   />
                 ) : (
-                  <button
+                  <Button
                     type="button"
+                    variant={"ghost"}
                     onClick={() => inputRef.current?.click()}
                     disabled={upload.isPending}
-                    className="flex aspect-[4/3] w-24 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600 dark:bg-slate-800"
+                    className="flex aspect-4/3 w-24 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600 dark:bg-slate-800"
                     aria-label="Upload image"
                   >
                     {upload.isPending ? (
@@ -159,7 +160,7 @@ export function ImageAvailabilityStep({
                     ) : (
                       <UploadCloud className="size-6" />
                     )}
-                  </button>
+                  </Button>
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1.5 text-sm font-bold">
@@ -167,25 +168,28 @@ export function ImageAvailabilityStep({
                   </p>
                   {image ? (
                     <div className="mt-1 flex items-center gap-1">
-                      <button
+                      <Button
                         type="button"
+                        variant={"ghost"}
                         onClick={() => inputRef.current?.click()}
                         disabled={upload.isPending}
                         className="text-primary rounded-lg px-2 py-1 text-xs font-semibold hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
                       >
                         {upload.isPending ? "Uploading…" : "Change"}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
+                        variant={"ghost"}
                         onClick={useDefault}
                         className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                       >
                         <Trash2 className="size-3.5" /> Remove
-                      </button>
+                      </Button>
                     </div>
                   ) : (
-                    <button
+                    <Button
                       type="button"
+                      variant={"ghost"}
                       onClick={() => inputRef.current?.click()}
                       disabled={upload.isPending}
                       className="mt-0.5 text-left text-xs text-slate-500"
@@ -201,10 +205,10 @@ export function ImageAvailabilityStep({
                           </span>
                         </>
                       )}
-                    </button>
+                    </Button>
                   )}
                 </div>
-                <input
+                <Input
                   ref={inputRef}
                   type="file"
                   accept={BASKET_IMAGE_ACCEPT}
@@ -221,7 +225,6 @@ export function ImageAvailabilityStep({
             </p>
           </div>
 
-          {/* Availability */}
           <div className="space-y-2">
             <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Availability</p>
             <div className="rounded-2xl border border-slate-200/80 p-4 dark:border-slate-800">
@@ -253,7 +256,7 @@ export function ImageAvailabilityStep({
         </div>
 
         {/* Storefront preview */}
-        <div className="mx-auto h-fit w-full max-w-[280px] rounded-3xl bg-linear-to-b from-slate-100 to-slate-50 p-3.5 ring-1 ring-slate-200/70 lg:sticky lg:top-24 dark:from-slate-900 dark:to-slate-950 dark:ring-slate-800">
+        <div className="mx-auto h-fit w-full max-w-70 rounded-3xl bg-linear-to-b from-slate-100 to-slate-50 p-3.5 ring-1 ring-slate-200/70 lg:sticky lg:top-24 dark:from-slate-900 dark:to-slate-950 dark:ring-slate-800">
           <p className="mb-3 text-center text-[11px] font-bold tracking-wider text-slate-500 uppercase">
             How customers will see it
           </p>
@@ -264,7 +267,7 @@ export function ImageAvailabilityStep({
                 basketType={type}
                 alt={name || "Basket"}
                 sizes="280px"
-                className="aspect-[16/10] w-full"
+                className="aspect-16/10 w-full"
               />
               {originalPrice !== undefined &&
                 customerPrice !== undefined &&

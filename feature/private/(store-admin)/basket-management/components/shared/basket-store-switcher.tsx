@@ -19,12 +19,10 @@ interface BasketStoreSwitcherProps {
   activeStore: BasketStore | null;
   onChange: (id: string) => void;
   isLoading?: boolean;
-  /** Lock the store (e.g. while editing an existing basket) */
   disabled?: boolean;
   className?: string;
 }
 
-/** Active store indicator; becomes a picker when the vendor manages more than one store */
 export function BasketStoreSwitcher({
   stores,
   activeStore,

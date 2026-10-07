@@ -109,7 +109,7 @@ export function BasketPublished({ basket, onCreateAnother }: BasketPublishedProp
         ))}
 
         <div className="relative mx-auto flex size-24 items-center justify-center">
-          <span className="absolute inset-0 animate-ping rounded-full bg-white/30 [animation-iteration-count:2]" />
+          <span className="repeat-2 absolute inset-0 animate-ping rounded-full bg-white/30" />
           <span className="animate-in zoom-in fill-mode-both relative flex size-20 items-center justify-center rounded-full bg-white text-emerald-600 shadow-xl delay-150 duration-500">
             <Check className="size-11" strokeWidth={3} />
           </span>
@@ -141,7 +141,7 @@ export function BasketPublished({ basket, onCreateAnother }: BasketPublishedProp
             image={basket.image}
             basketType={basket.basketType}
             alt={basket.name}
-            className="aspect-[4/3] h-full w-full md:aspect-auto"
+            className="aspect-4/3 h-full w-full md:aspect-auto"
             priority
           />
           {savings > 0 && (
@@ -154,7 +154,7 @@ export function BasketPublished({ basket, onCreateAnother }: BasketPublishedProp
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0 space-y-1.5">
               <BasketTypeBadge type={basket.basketType} />
-              <h2 className="text-2xl font-black tracking-tight break-words">{basket.name}</h2>
+              <h2 className="text-2xl font-black tracking-tight wrap-break-word">{basket.name}</h2>
               {basket.shortDescription && (
                 <p className="text-muted-foreground text-sm">{basket.shortDescription}</p>
               )}

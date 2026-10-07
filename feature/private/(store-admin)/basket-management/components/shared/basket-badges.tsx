@@ -31,7 +31,6 @@ export function BasketTypeBadge({
   className,
 }: {
   type: BasketType;
-  /** Drop the trailing "Basket" word, e.g. "Family" */
   short?: boolean;
   className?: string;
 }) {

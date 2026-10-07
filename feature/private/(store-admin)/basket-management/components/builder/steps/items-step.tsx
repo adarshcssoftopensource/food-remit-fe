@@ -298,13 +298,14 @@ export function ItemsStep({ storeId, storeName, pricing }: ItemsStepProps) {
               </div>
             </div>
             {items.length > 0 && (
-              <button
+              <Button
                 type="button"
+                variant={"ghost"}
                 onClick={clear}
                 className="text-xs font-semibold text-rose-600 hover:underline"
               >
                 Clear all
-              </button>
+              </Button>
             )}
           </div>
 
@@ -320,7 +321,7 @@ export function ItemsStep({ storeId, storeName, pricing }: ItemsStepProps) {
             </div>
           ) : (
             <>
-              <ul className="max-h-[440px] space-y-2 overflow-y-auto px-3 pb-3">
+              <ul className="max-h-110 space-y-2 overflow-y-auto px-3 pb-3">
                 {[...items].reverse().map(({ itemId, quantity, item }) => {
                   const line = lineById.get(itemId);
                   return (

@@ -79,7 +79,6 @@ const stepIndex = (id: BuilderStepId) => STEPS.findIndex((s) => s.id === id);
 const stepAt = (index: number): BuilderStepId => STEPS[index]?.id ?? "review";
 
 interface BasketBuilderProps {
-  /** Existing basket when editing */
   basket?: BasketDetail;
 }
 

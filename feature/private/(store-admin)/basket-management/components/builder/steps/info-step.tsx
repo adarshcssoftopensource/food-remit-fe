@@ -18,6 +18,7 @@ import {
 import type { BasketFormValues } from "../../../schema/basket-form.schema";
 import { BasketImage } from "../../shared/basket-image";
 import { StepHeader } from "../step-header";
+import { Button } from "@/components/ui/button";
 
 const labelClass = "text-sm font-semibold text-slate-700 dark:text-slate-200";
 const HOUSEHOLD_ICONS = { "1-2": User, "3-5": Users, "6+": UsersRound } as Record<
@@ -167,14 +168,15 @@ export function InfoStep({ onChangeType }: { onChangeType: () => void }) {
                 const active = field.value === option.value;
                 const Icon = HOUSEHOLD_ICONS[option.value] ?? UsersRound;
                 return (
-                  <button
+                  <Button
+                    variant={"ghost"}
                     key={option.value || "none"}
                     type="button"
                     role="radio"
                     aria-checked={active}
                     onClick={() => field.onChange(option.value)}
                     className={cn(
-                      "flex flex-col items-center gap-2 rounded-2xl border-2 px-3 py-4 text-sm font-semibold transition-all",
+                      "flex h-18 flex-col items-center gap-2 rounded-2xl border-2 px-3 py-4 text-sm font-semibold transition-all",
                       active
                         ? "border-primary bg-primary/5 text-primary shadow-md shadow-emerald-600/10"
                         : "border-slate-200 text-slate-600 hover:border-emerald-300 hover:bg-emerald-50/40 dark:border-slate-700 dark:text-slate-300",
@@ -191,7 +193,7 @@ export function InfoStep({ onChangeType }: { onChangeType: () => void }) {
                       <Icon className="size-5" />
                     </span>
                     {option.label}
-                  </button>
+                  </Button>
                 );
               })}
             </div>

@@ -16,7 +16,6 @@ export function ProductThumb({
   src?: string | null;
   alt: string;
   className?: string;
-  /** Rendered width hint for next/image; match the displayed size to keep it sharp */
   sizes?: string;
   iconClassName?: string;
 }) {

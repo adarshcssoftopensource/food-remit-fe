@@ -18,7 +18,6 @@ interface BasketSummaryCardProps {
   itemCount: number;
   totalUnits?: number;
   price?: number;
-  /** Price before item discounts; shown struck through when higher */
   originalPrice?: number;
   currencySymbol?: string;
   badge?: ReactNode;
@@ -82,7 +81,7 @@ export function BasketSummaryCard({
           alt={name || "Basket"}
           className={cn(
             "rounded-xl",
-            horizontal ? "aspect-[4/3] w-full sm:w-64" : "aspect-[4/3] w-full",
+            horizontal ? "aspect-4/3 w-full sm:w-64" : "aspect-4/3 w-full",
           )}
         />
         {badge && <div className="absolute top-2.5 left-2.5">{badge}</div>}
@@ -95,7 +94,7 @@ export function BasketSummaryCard({
       <div className="min-w-0 flex-1 space-y-3">
         <div className="space-y-1.5">
           <BasketTypeBadge type={basketType} />
-          <h3 className="text-xl leading-tight font-bold tracking-tight break-words">
+          <h3 className="text-xl leading-tight font-bold tracking-tight wrap-break-word">
             {name || "Untitled basket"}
           </h3>
           <p className="text-primary text-sm font-semibold">

@@ -62,16 +62,10 @@ function SectionTitle({ icon: Icon, children }: { icon: typeof Receipt; children
 interface BasketPricingBreakdownProps {
   pricing?: BasketPricingTotals | null;
   loading?: boolean;
-  /** Hide the vendor payout section (e.g. in compact summaries) */
   hidePayout?: boolean;
   className?: string;
 }
 
-/**
- * Vendor-facing price breakdown. Mirrors checkout: item discounts reduce your price,
- * markup and tax apply to the discounted price, commission is taken from your regular price.
- * Customers only ever see the single basket price.
- */
 export function BasketPricingBreakdown({
   pricing,
   loading,

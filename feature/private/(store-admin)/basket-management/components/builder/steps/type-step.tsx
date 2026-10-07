@@ -60,7 +60,7 @@ export function TypeStep() {
                   basketType={option.value}
                   alt={option.label}
                   sizes="(max-width: 640px) 100vw, (max-width: 1536px) 50vw, 420px"
-                  className="aspect-[16/9] w-full transition-transform duration-700 group-hover:scale-[1.04]"
+                  className="aspect-video w-full transition-transform duration-700 group-hover:scale-[1.04]"
                 />
                 <span
                   className={cn(

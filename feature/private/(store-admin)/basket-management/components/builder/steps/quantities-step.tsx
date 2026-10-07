@@ -127,21 +127,22 @@ export function QuantitiesStep({ pricing, onAddMore }: QuantitiesStepProps) {
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="button"
+                  variant={"ghost"}
                   onClick={() => remove(itemId)}
                   className="hidden justify-self-end rounded-lg p-2 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600 lg:block"
                   aria-label={`Remove ${item.productName}`}
                 >
                   <Trash2 className="size-4" />
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   onClick={() => remove(itemId)}
                   className="col-span-2 -mt-1 justify-self-start text-xs font-semibold text-rose-600 lg:hidden"
                 >
                   Remove
-                </button>
+                </Button>
               </li>
             );
           })}

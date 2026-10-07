@@ -17,7 +17,6 @@ interface BasketImageProps {
   priority?: boolean;
 }
 
-/** Basket artwork; falls back to the default image for the basket type */
 export function BasketImage({
   image,
   basketType,
@@ -33,7 +32,7 @@ export function BasketImage({
   return (
     <div
       className={cn(
-        "relative overflow-hidden bg-gradient-to-br from-emerald-50 to-amber-50 dark:from-slate-800 dark:to-slate-900",
+        "relative overflow-hidden bg-linear-to-br from-emerald-50 to-amber-50 dark:from-slate-800 dark:to-slate-900",
         className,
       )}
     >
