@@ -9,6 +9,7 @@ The goal is not only to document **how** the application is built, but also **wh
 Whether you're **onboarding a new engineer, developing a new feature, refactoring existing code, or debugging a complex issue**, these documents should provide the necessary guidance to keep the codebase consistent and maintainable.
 
 ---
+
 ## 📚 Documentation Index
 
 ### 1. Architecture & Folder Structure
