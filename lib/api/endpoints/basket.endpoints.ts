@@ -1,0 +1,17 @@
+export const BASKET_ENDPOINTS = {
+  LIST: "/admin/baskets",
+  CREATE: "/admin/baskets",
+  STORES: "/admin/baskets/stores",
+  CATALOGUE: "/admin/baskets/catalogue",
+  PRICING_PREVIEW: "/admin/baskets/pricing-preview",
+  UPLOAD_IMAGE: "/admin/baskets/image",
+  DETAIL: (id: string) => `/admin/baskets/${id}`,
+  UPDATE: (id: string) => `/admin/baskets/${id}`,
+  UPDATE_STATUS: (id: string) => `/admin/baskets/${id}/status`,
+  DELETE: (id: string) => `/admin/baskets/${id}`,
+  GET_RECYCLED: "/admin/baskets/recycle-bin",
+  RESTORE: (id: string) => `/admin/baskets/recycle-bin/${id}/restore`,
+  BULK_RESTORE: "/admin/baskets/recycle-bin/bulk-restore",
+  PERMANENT_DELETE: (id: string) => `/admin/baskets/recycle-bin/${id}`,
+  BULK_PERMANENT_DELETE: "/admin/baskets/recycle-bin/bulk-permanent-delete",
+} as const;

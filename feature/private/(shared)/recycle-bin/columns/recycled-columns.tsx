@@ -9,6 +9,11 @@ import { RecycledEntityActionsCell } from "../components/recycled-entity-actions
 import { withDeletedByColumn } from "../components/deleted-by-columns";
 import { usersColumns as rawUsersColumns } from "./recycled-users-columns";
 import { Store, User } from "lucide-react";
+import {
+  BASKET_STATUS_META,
+  getDefaultBasketImage,
+} from "@/feature/private/(store-admin)/basket-management/constants/basket.constants";
+import type { BasketStatus } from "@/feature/private/(store-admin)/basket-management/types/basket.types";
 
 export const usersColumns = withDeletedByColumn(rawUsersColumns as ColumnDef<any>[], true);
 
@@ -490,20 +495,36 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
     ],
     true,
   ),
-  "product-boxes": withDeletedByColumn(
+  baskets: withDeletedByColumn(
     [
       createSNoColumn(),
       createSelectColumn(),
       {
-        accessorKey: "title",
-        header: "Box Title",
+        accessorKey: "name",
+        header: "Basket Name",
         enableSorting: true,
         cell: ({ row }) => (
           <ImageNameCell
-            name={row.original.title}
-            image={row.original.image || undefined}
+            name={row.original.name}
+            image={row.original.image || getDefaultBasketImage(row.original.basketType)}
             type="logo"
           />
+        ),
+      },
+      {
+        accessorKey: "store",
+        header: "Store",
+        cell: ({ row }) => (
+          <span className="text-xs text-slate-600 dark:text-slate-300">
+            {row.original.store?.storeName ?? "—"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "itemCount",
+        header: "Items",
+        cell: ({ row }) => (
+          <span className="text-xs font-semibold">{row.original.itemCount ?? 0}</span>
         ),
       },
       {
@@ -511,29 +532,32 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
         header: "Price",
         cell: ({ row }) => (
           <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-            ${row.original.price ?? "0.00"}
+            {Number(row.original.price ?? 0).toFixed(2)}
           </span>
         ),
       },
       {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => (
-          <StatusBadge
-            status={row.original.status}
-            activeLabel="ACTIVE"
-            displayLabel={row.original.status === "ACTIVE" ? "Active" : "Inactive"}
-          />
-        ),
+        cell: ({ row }) => {
+          const status = row.original.status as BasketStatus;
+          return (
+            <StatusBadge
+              status={status}
+              activeLabel="ACTIVE"
+              displayLabel={BASKET_STATUS_META[status]?.label ?? status}
+            />
+          );
+        },
       },
       {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
           <RecycledEntityActionsCell
-            entityType="product-boxes"
+            entityType="baskets"
             entity={row.original}
-            entityNameField="title"
+            entityNameField="name"
           />
         ),
       },

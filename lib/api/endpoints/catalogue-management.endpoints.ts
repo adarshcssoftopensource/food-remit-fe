@@ -62,20 +62,4 @@ export const CATALOGUE_MANAGEMENT_ENDPOINTS = {
   DOWNLOAD_ITEM_CSV: "/admin/items/csv/download-format",
   UPLOAD_ITEM_CSV: "/admin/items/csv/upload",
   BULK_UPLOAD_ITEM_IMAGES: "/admin/items/images/bulk-upload",
-
-  // Product Boxes
-  GET_PRODUCT_BOXES: "/admin/product-boxes",
-  GET_PRODUCT_BOX: (id: string) => `/admin/product-boxes/${id}`,
-  CREATE_PRODUCT_BOX: "/admin/product-boxes",
-  UPDATE_PRODUCT_BOX: (id: string) => `/admin/product-boxes/${id}`,
-  UPDATE_PRODUCT_BOX_STATUS: (id: string) => `/admin/product-boxes/${id}/status`,
-  DELETE_PRODUCT_BOX: (id: string) => `/admin/product-boxes/${id}`,
-  ADD_PRODUCT_BOX_ITEM: (id: string) => `/admin/product-boxes/${id}/items`,
-  REMOVE_PRODUCT_BOX_ITEM: (boxId: string, itemId: string) =>
-    `/admin/product-boxes/${boxId}/items/${itemId}`,
-  GET_RECYCLED_PRODUCT_BOXES: "/admin/product-boxes/recycle-bin",
-  RESTORE_PRODUCT_BOX: (id: string) => `/admin/product-boxes/recycle-bin/${id}/restore`,
-  BULK_RESTORE_PRODUCT_BOXES: "/admin/product-boxes/recycle-bin/bulk-restore",
-  PERMANENT_DELETE_PRODUCT_BOX: (id: string) => `/admin/product-boxes/recycle-bin/${id}`,
-  BULK_PERMANENT_DELETE_PRODUCT_BOXES: "/admin/product-boxes/recycle-bin/bulk-permanent-delete",
 };

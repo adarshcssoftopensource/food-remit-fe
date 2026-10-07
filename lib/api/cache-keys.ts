@@ -58,8 +58,14 @@ export const API_CACHE_KEYS = {
   CATEGORY_BY_ID: (id: string) => ["category", id],
   ITEMS: ["items"],
   ITEM_BY_ID: (id: string) => ["item", id],
-  PRODUCT_BOXES: ["product-boxes"],
-  PRODUCT_BOX_BY_ID: (id: string) => ["product-box", id],
+
+  // Baskets
+  BASKETS: ["baskets"],
+  BASKET_BY_ID: (id: string) => ["baskets", "detail", id],
+  BASKET_STORES: ["baskets", "stores"],
+  BASKET_CATALOGUE: ["baskets", "catalogue"],
+  BASKET_PRICING: ["baskets", "pricing"],
+  RECYCLED_BASKETS: ["baskets", "recycle-bin"],
 
   // Dashboard
   DASHBOARD: ["dashboard"],

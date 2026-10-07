@@ -34,7 +34,12 @@ export const ROUTES = {
       EDIT_ITEM: (id: string, returnTo?: string) =>
         `/catalogue-management/items/${id}/edit${returnTo ? `?from=${encodeURIComponent(returnTo)}` : ""}`,
     },
-    PRODUCT_BOXES: "/product-boxes",
+    BASKETS: {
+      ROOT: "/baskets",
+      CREATE: "/baskets/new",
+      DETAILS: (id: string) => `/baskets/${id}`,
+      EDIT: (id: string) => `/baskets/${id}/edit`,
+    },
     STORE_MANAGEMENT: {
       ROOT: "/store-management",
       ASSIGN_CITY_MANAGER: "/store-management/assign-city-manager",

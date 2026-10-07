@@ -1,6 +1,7 @@
 import { STORE_ENDPOINTS } from "@/lib/api/endpoints/store.endpoints";
 import { USER_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/user-management.endpoints";
 import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-management.endpoints";
+import { BASKET_ENDPOINTS } from "@/lib/api/endpoints/basket.endpoints";
 import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
 import { COUNTRY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/country-manager.endpoints";
 import { buildCacheKey, buildUrl } from "@/lib/build-query-string";
@@ -20,7 +21,7 @@ export type RecycleEntityType =
   | "country-managers"
   | "employees"
   | "partner-leads"
-  | "product-boxes"
+  | "baskets"
   | "sub-admins";
 
 export interface RecycledQueryArgs {
@@ -60,7 +61,7 @@ const ENDPOINT_MAP: Record<RecycleEntityType, string> = {
   "country-managers": COUNTRY_MANAGER_ENDPOINTS.GET_RECYCLED_COUNTRY_MANAGERS,
   employees: EMPLOYEE_ENDPOINTS.GET_RECYCLED_EMPLOYEES,
   "partner-leads": PARTNER_LEAD_ENDPOINTS.GET_RECYCLED_LEADS,
-  "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.GET_RECYCLED_PRODUCT_BOXES,
+  baskets: BASKET_ENDPOINTS.GET_RECYCLED,
   "sub-admins": SUB_ADMIN_ENDPOINTS.GET_RECYCLED_SUB_ADMINS,
 };
 

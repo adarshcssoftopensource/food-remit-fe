@@ -18,7 +18,7 @@ const ENTITY_TITLES: Record<string, string> = {
   "country-managers": "Deleted Country Managers",
   employees: "Deleted Employees",
   "partner-leads": "Deleted Partner Leads",
-  "product-boxes": "Deleted Product Boxes",
+  baskets: "Deleted Baskets",
   "sub-admins": "Deleted Sub/Co Admins",
 };
 

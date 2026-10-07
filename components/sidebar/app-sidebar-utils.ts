@@ -83,13 +83,7 @@ export function filterAllowedNavItems(
       ) {
         return !isEmployee;
       }
-      if (
-        item.url === ROUTES.ADMIN.PRODUCT_BOXES ||
-        item.title === "Product Boxes Management" ||
-        item.title === "Product Boxes"
-      ) {
-        return isStoreManager;
-      }
+      if (item.url === ROUTES.ADMIN.BASKETS.ROOT) return isStoreManager;
       return true;
     })
     .map((item) => {

@@ -1,4 +1,5 @@
 import { useApiMutation } from "@/hooks/useApi";
+import { BASKET_ENDPOINTS } from "@/lib/api/endpoints/basket.endpoints";
 import { CATALOGUE_MANAGEMENT_ENDPOINTS } from "@/lib/api/endpoints/catalogue-management.endpoints";
 import { CITY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/city-manager.endpoints";
 import { COUNTRY_MANAGER_ENDPOINTS } from "@/lib/api/endpoints/country-manager.endpoints";
@@ -22,7 +23,7 @@ export function useRestoreEntity(entityType: RecycleEntityType, id: string) {
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.RESTORE_COUNTRY_MANAGER(id),
     employees: EMPLOYEE_ENDPOINTS.RESTORE_EMPLOYEE(id),
     "partner-leads": PARTNER_LEAD_ENDPOINTS.RESTORE_LEAD(id),
-    "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.RESTORE_PRODUCT_BOX(id),
+    baskets: BASKET_ENDPOINTS.RESTORE(id),
     "sub-admins": SUB_ADMIN_ENDPOINTS.RESTORE_SUB_ADMIN(id),
   };
 
@@ -51,7 +52,7 @@ export function usePermanentDeleteEntity(entityType: RecycleEntityType, id: stri
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.PERMANENT_DELETE_COUNTRY_MANAGER(id),
     employees: EMPLOYEE_ENDPOINTS.PERMANENT_DELETE_EMPLOYEE(id),
     "partner-leads": PARTNER_LEAD_ENDPOINTS.PERMANENT_DELETE_LEAD(id),
-    "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.PERMANENT_DELETE_PRODUCT_BOX(id),
+    baskets: BASKET_ENDPOINTS.PERMANENT_DELETE(id),
     "sub-admins": SUB_ADMIN_ENDPOINTS.PERMANENT_DELETE_SUB_ADMIN(id),
   };
 
@@ -80,7 +81,7 @@ export function useBulkRestoreEntities(entityType: RecycleEntityType) {
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.BULK_RESTORE_COUNTRY_MANAGERS,
     employees: EMPLOYEE_ENDPOINTS.BULK_RESTORE_EMPLOYEES,
     "partner-leads": PARTNER_LEAD_ENDPOINTS.BULK_RESTORE_LEADS,
-    "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.BULK_RESTORE_PRODUCT_BOXES,
+    baskets: BASKET_ENDPOINTS.BULK_RESTORE,
     "sub-admins": SUB_ADMIN_ENDPOINTS.BULK_RESTORE_SUB_ADMINS,
   };
 
@@ -109,7 +110,7 @@ export function useBulkPermanentDeleteEntities(entityType: RecycleEntityType) {
     "country-managers": COUNTRY_MANAGER_ENDPOINTS.BULK_PERMANENT_DELETE_COUNTRY_MANAGERS,
     employees: EMPLOYEE_ENDPOINTS.BULK_PERMANENT_DELETE_EMPLOYEES,
     "partner-leads": PARTNER_LEAD_ENDPOINTS.BULK_PERMANENT_DELETE_LEADS,
-    "product-boxes": CATALOGUE_MANAGEMENT_ENDPOINTS.BULK_PERMANENT_DELETE_PRODUCT_BOXES,
+    baskets: BASKET_ENDPOINTS.BULK_PERMANENT_DELETE,
     "sub-admins": SUB_ADMIN_ENDPOINTS.BULK_PERMANENT_DELETE_SUB_ADMINS,
   };
 
