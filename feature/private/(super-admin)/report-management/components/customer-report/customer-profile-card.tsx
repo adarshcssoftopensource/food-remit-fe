@@ -106,7 +106,7 @@ function CustomerContactGrid({ customer }: { customer: ReportCustomer }) {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
-            Delivery / Residence Address
+            Residence Address
           </p>
           <p className="truncate text-xs font-semibold text-slate-800 dark:text-slate-200">
             {customer.address || "—"}
