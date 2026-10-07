@@ -1,13 +1,13 @@
 "use client";
 
 import {
+  AlertTriangle,
   CalendarClock,
   CheckCircle2,
   CircleAlert,
   ImageIcon,
   LayoutGrid,
-  Percent,
-  ShoppingBasket,
+  Package,
   Tag,
   Type,
 } from "lucide-react";
@@ -21,9 +21,166 @@ import type {
   PublishIssue,
 } from "../../../schema/basket-form.schema";
 import type { BasketPricingPreview } from "../../../types/basket.types";
-import { formatMoney } from "../../../utils/basket-format";
+import { formatItemSize, formatMoney } from "../../../utils/basket-format";
 import { formatAvailability } from "../../../utils/basket-availability";
+import { BasketPricingBreakdown } from "../../shared/basket-pricing-breakdown";
+import { BasketSummaryCard } from "../../shared/basket-summary-card";
+import { DiscountBadge } from "../../shared/price-display";
+import { ProductThumb } from "../../shared/product-thumb";
 import { SectionCard } from "../section-card";
+
+function ProductDetailsTable({
+  values,
+  pricing,
+}: {
+  values: BasketFormValues;
+  pricing?: BasketPricingPreview;
+}) {
+  const symbol = pricing?.currencySymbol ?? "";
+  const money = (n: number | undefined) => (pricing ? formatMoney(n, symbol) : "—");
+  const lineById = new Map(pricing?.lines.map((l) => [l.itemId, l]));
+  const rows = (values.items ?? []).map((entry) => ({ entry, line: lineById.get(entry.itemId) }));
+  const sum = (pick: (l: NonNullable<(typeof rows)[number]["line"]>) => number) =>
+    rows.reduce((acc, r) => acc + (r.line ? pick(r.line) : 0), 0);
+
+  if (!rows.length) {
+    return (
+      <p className="text-muted-foreground rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm dark:border-slate-700">
+        No items in this basket yet.
+      </p>
+    );
+  }
+
+  const th = "px-3 py-2.5 text-right font-semibold whitespace-nowrap";
+  const td = "px-3 py-3 text-right tabular-nums whitespace-nowrap";
+
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800">
+      <table className="w-full min-w-245 text-sm">
+        <thead className="bg-slate-50 text-[10px] tracking-wide text-slate-500 uppercase dark:bg-slate-900">
+          <tr>
+            <th className="px-3 py-2.5 text-left font-semibold">Product</th>
+            <th className="px-3 py-2.5 text-left font-semibold">Category</th>
+            <th className={th}>Qty</th>
+            <th className={th}>
+              Vendor price
+              <span className="block text-[9px] font-medium normal-case">per unit</span>
+            </th>
+            <th className={th}>
+              Markup
+              <span className="block text-[9px] font-medium normal-case">per unit</span>
+            </th>
+            <th className={th}>
+              Customer price
+              <span className="block text-[9px] font-medium normal-case">per unit</span>
+            </th>
+            <th className={th}>
+              Tax
+              <span className="block text-[9px] font-medium normal-case">
+                {pricing ? `${pricing.taxPercent}% · line` : "line"}
+              </span>
+            </th>
+            <th className={th}>
+              Vendor total
+              <span className="block text-[9px] font-medium normal-case">line</span>
+            </th>
+            <th className={th}>
+              Line total
+              <span className="block text-[9px] font-medium normal-case">customer</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          {rows.map(({ entry, line }) => {
+            const item = entry.item;
+            const size = formatItemSize(item);
+            const unavailable = line && !line.isAvailable;
+            return (
+              <tr
+                key={entry.itemId}
+                className={unavailable ? "bg-amber-50/70 dark:bg-amber-950/20" : undefined}
+              >
+                <td className="px-3 py-3">
+                  <div className="flex items-center gap-3">
+                    <ProductThumb
+                      src={item.productImageUrl}
+                      alt={item.productName}
+                      className="size-11 shrink-0 rounded-lg"
+                      sizes="88px"
+                    />
+                    <div className="min-w-0">
+                      <p className="max-w-56 truncate font-semibold text-slate-900 dark:text-white">
+                        {item.productName}
+                      </p>
+                      <p className="text-muted-foreground text-[11px]">
+                        {size || "—"}
+                        {unavailable ? (
+                          <span className="ml-1 inline-flex items-center gap-0.5 font-semibold text-amber-700">
+                            <AlertTriangle className="size-3" />
+                            {line.unavailableReason ?? "Unavailable"}
+                          </span>
+                        ) : (
+                          <span className="ml-1">· {item.stockQuantity} in stock</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-3 py-3 text-slate-600 dark:text-slate-300">
+                  {item.category?.categoryName ?? "—"}
+                </td>
+                <td className={`${td} font-bold`}>× {entry.quantity}</td>
+                <td className={td}>
+                  <p className="font-semibold">{money(line?.discountedUnitPrice)}</p>
+                  {line && line.discountPercent > 0 && (
+                    <p className="flex items-center justify-end gap-1">
+                      <span className="text-[10px] text-slate-400 line-through">
+                        {money(line.vendorUnitPrice)}
+                      </span>
+                      <DiscountBadge size="xs" percent={line.discountPercent} />
+                    </p>
+                  )}
+                </td>
+                <td className={`${td} text-slate-600 dark:text-slate-300`}>
+                  <p>+{money(line?.markupUnitAmount)}</p>
+                  {line && (
+                    <p className="text-[10px] text-slate-400">
+                      {Number(line.markupPercent.toFixed(2))}%
+                    </p>
+                  )}
+                </td>
+                <td className={`${td} font-semibold`}>{money(line?.customerUnitPrice)}</td>
+                <td className={`${td} text-slate-500`}>{money(line?.taxLineTotal)}</td>
+                <td className={`${td} text-slate-600 dark:text-slate-300`}>
+                  {money(line?.discountedLineTotal)}
+                </td>
+                <td className={`${td} font-black text-slate-900 dark:text-white`}>
+                  {money(line?.customerLineTotal)}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+        <tfoot className="bg-slate-50/80 text-sm dark:bg-slate-900/60">
+          <tr>
+            <td colSpan={2} className="px-3 py-3 font-semibold text-slate-600 dark:text-slate-300">
+              {rows.length} items
+            </td>
+            <td className={`${td} font-bold`}>{pricing?.totalUnits ?? "—"}</td>
+            <td colSpan={3} className="px-3 py-3 text-right text-[11px] text-slate-500">
+              Totals before basket discount
+            </td>
+            <td className={`${td} font-semibold`}>{money(sum((l) => l.taxLineTotal))}</td>
+            <td className={`${td} font-semibold`}>{money(sum((l) => l.discountedLineTotal))}</td>
+            <td className={`${td} text-base font-black`}>
+              {money(sum((l) => l.customerLineTotal))}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  );
+}
 
 function SummaryTile({
   icon: Icon,
@@ -64,12 +221,6 @@ export function SummarySection({ pricing, issues, onJump, statusNote }: SummaryS
   const categories = pricing?.categoryNames ?? [];
   const itemCount = values.items?.length ?? 0;
 
-  const finalPrice = pricing
-    ? `${formatMoney(pricing.customerPrice, symbol)}${
-        pricing.savingsPercent > 0 ? ` (${pricing.savingsPercent}% off)` : ""
-      }`
-    : "—";
-
   return (
     <SectionCard
       id="summary"
@@ -77,75 +228,106 @@ export function SummarySection({ pricing, issues, onJump, statusNote }: SummaryS
       title="Basket Summary"
       description="Review your basket details before creating. Go back to any step to make changes."
     >
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <SummaryTile
-          icon={LayoutGrid}
-          label="Template"
-          value={values.basketType ? BASKET_TYPE_MAP[values.basketType].label : "Not selected"}
-        />
-        <SummaryTile icon={Type} label="Basket Name" value={values.name?.trim() || "—"} />
-        <SummaryTile
-          icon={ShoppingBasket}
-          label="Items"
-          value={`${itemCount} ${itemCount === 1 ? "item" : "items"}${
-            pricing ? ` · ${pricing.totalUnits} units` : ""
-          }`}
-        />
-        <SummaryTile
-          icon={Tag}
-          label="Category"
-          value={
-            categories.length > 1
-              ? "Multiple categories"
-              : (categories[0] ?? (itemCount ? "—" : "No items yet"))
-          }
-        />
-        <SummaryTile icon={Percent} label="Final Price" value={finalPrice} />
-        <SummaryTile icon={CalendarClock} label="Availability" value={formatAvailability(values)} />
-        <SummaryTile
-          icon={ImageIcon}
-          label="Image"
-          value={values.image ? "Uploaded image" : "Template image"}
-        />
-        <SummaryTile icon={CheckCircle2} label="Status after saving" value={statusNote} />
+      <div className="mb-6 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+        <div className="space-y-5">
+          <div className="rounded-2xl border border-slate-200/80 p-4 dark:border-slate-800">
+            <BasketSummaryCard
+              layout="horizontal"
+              name={values.name?.trim() ?? ""}
+              shortDescription={values.description?.trim() || null}
+              basketType={values.basketType ?? "CUSTOM"}
+              householdSize={values.householdSize || null}
+              image={values.image}
+              libraryImage={values.libraryImage}
+              itemCount={itemCount}
+              totalUnits={pricing?.totalUnits}
+              price={pricing?.customerPrice}
+              originalPrice={pricing?.customerOriginalPrice}
+              currencySymbol={symbol}
+            />
+          </div>
+          <div>
+            <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-100">
+              <CheckCircle2 className="text-primary size-4" /> Basket details
+            </h3>
+            <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+              <SummaryTile
+                icon={LayoutGrid}
+                label="Template"
+                value={
+                  values.basketType ? BASKET_TYPE_MAP[values.basketType].label : "Not selected"
+                }
+              />
+              <SummaryTile icon={Type} label="Basket Name" value={values.name?.trim() || "—"} />
+              <SummaryTile
+                icon={Tag}
+                label="Category"
+                value={
+                  categories.length > 1
+                    ? "Multiple categories"
+                    : (categories[0] ?? (itemCount ? "—" : "No items yet"))
+                }
+              />
+              <SummaryTile
+                icon={CalendarClock}
+                label="Availability"
+                value={formatAvailability(values)}
+              />
+              <SummaryTile
+                icon={ImageIcon}
+                label="Image"
+                value={values.image ? "Uploaded image" : "Template image"}
+              />
+              <SummaryTile icon={CheckCircle2} label="Status after saving" value={statusNote} />
+            </div>
+
+            <div
+              className={
+                issues.length
+                  ? "rounded-2xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900/60 dark:bg-amber-950/20"
+                  : "flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm font-semibold text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/20 dark:text-emerald-300"
+              }
+            >
+              {issues.length ? (
+                <>
+                  <p className="flex items-center gap-2 text-sm font-bold text-amber-800 dark:text-amber-300">
+                    <CircleAlert className="size-4" /> Complete these to create the basket
+                  </p>
+                  <ul className="mt-2 flex flex-wrap gap-2">
+                    {issues.map((issue) => (
+                      <li key={issue.message}>
+                        <button
+                          type="button"
+                          onClick={() => onJump(issue.section)}
+                          className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-amber-800 shadow-xs ring-1 ring-amber-200 transition-colors hover:bg-amber-100 dark:bg-slate-900 dark:text-amber-300 dark:ring-amber-900"
+                        >
+                          {issue.message}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-xs text-amber-700/80 dark:text-amber-400/80">
+                    You can save as a draft at any time and finish later.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="size-5" /> Everything looks good. Your basket is ready to
+                  create.
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-slate-200/80 p-4 lg:sticky lg:top-20 dark:border-slate-800">
+          <BasketPricingBreakdown pricing={pricing} />
+        </div>
       </div>
 
-      <div
-        className={
-          issues.length
-            ? "mt-4 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900/60 dark:bg-amber-950/20"
-            : "mt-4 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm font-semibold text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/20 dark:text-emerald-300"
-        }
-      >
-        {issues.length ? (
-          <>
-            <p className="flex items-center gap-2 text-sm font-bold text-amber-800 dark:text-amber-300">
-              <CircleAlert className="size-4" /> Complete these to create the basket
-            </p>
-            <ul className="mt-2 flex flex-wrap gap-2">
-              {issues.map((issue) => (
-                <li key={issue.message}>
-                  <button
-                    type="button"
-                    onClick={() => onJump(issue.section)}
-                    className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-amber-800 shadow-xs ring-1 ring-amber-200 transition-colors hover:bg-amber-100 dark:bg-slate-900 dark:text-amber-300 dark:ring-amber-900"
-                  >
-                    {issue.message}
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-2 text-xs text-amber-700/80 dark:text-amber-400/80">
-              You can save as a draft at any time and finish later.
-            </p>
-          </>
-        ) : (
-          <>
-            <CheckCircle2 className="size-5" /> Everything looks good. Your basket is ready to
-            create.
-          </>
-        )}
-      </div>
+      <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-100">
+        <Package className="text-primary size-4" /> Products in this basket
+      </h3>
+      <ProductDetailsTable values={values} pricing={pricing} />
     </SectionCard>
   );
 }
