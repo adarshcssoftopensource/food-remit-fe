@@ -42,7 +42,7 @@ export interface BasketColumnHandlers {
 
 const formatDateTime = (value: string) => format(new Date(value), "MMM d, yyyy · HH:mm");
 
-function BasketStatusCell({
+function BasketStatusToggle({
   basket,
   pendingId,
   handlers,
@@ -60,7 +60,7 @@ function BasketStatusCell({
     setOptimisticActive(isActuallyActive);
   }
 
-  if (basket.status === "DRAFT") return <BasketStatusBadge status="DRAFT" />;
+  if (basket.status === "DRAFT") return null;
 
   const isPending = pendingId === basket.id;
   const blocked = !optimisticActive && !basket.isPublishable;
@@ -83,16 +83,13 @@ function BasketStatusCell({
   };
 
   const toggle = (
-    <div className="flex items-center gap-2">
-      <Switch
-        checked={optimisticActive}
-        disabled={isPending || blocked}
-        onCheckedChange={handleCheckedChange}
-        aria-label={optimisticActive ? "Set basket inactive" : "Reactivate basket"}
-        className="cursor-pointer data-[state=checked]:bg-emerald-600"
-      />
-      <BasketStatusBadge status={optimisticActive ? "ACTIVE" : "INACTIVE"} />
-    </div>
+    <Switch
+      checked={optimisticActive}
+      disabled={isPending || blocked}
+      onCheckedChange={handleCheckedChange}
+      aria-label={optimisticActive ? "Set basket inactive" : "Reactivate basket"}
+      className="cursor-pointer data-[state=checked]:bg-emerald-600"
+    />
   );
 
   if (!blocked) return toggle;
@@ -159,9 +156,7 @@ export function getBasketColumns(handlers: BasketColumnHandlers): ColumnDef<Bask
       id: "status",
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => (
-        <BasketStatusCell basket={row.original} pendingId={pendingId} handlers={handlers} />
-      ),
+      cell: ({ row }) => <BasketStatusBadge status={row.original.status} />,
     },
     {
       id: "availability",
@@ -206,46 +201,51 @@ export function getBasketColumns(handlers: BasketColumnHandlers): ColumnDef<Bask
     },
     {
       id: "actions",
-      header: "",
+      header: "Actions",
       enableSorting: false,
       cell: ({ row }) => {
         const basket = row.original;
         const isDraft = basket.status === "DRAFT";
         return (
-          <DataTableRowActions
-            className="w-52"
-            items={[
-              {
-                label: "View details",
-                icon: <Eye className="size-4" />,
-                onClick: () => handlers.onView(basket),
-              },
-              {
-                label: isDraft ? "Edit draft" : "Edit basket",
-                icon: isDraft ? <FilePen className="size-4" /> : <Pencil className="size-4" />,
-                onClick: () => handlers.onEdit(basket),
-              },
-              {
-                label: basket.isPublishable ? "Publish" : "Publish (incomplete)",
-                icon: <Rocket className="size-4" />,
-                onClick: () => handlers.onPublish(basket),
-                disabled: !basket.isPublishable || pendingId === basket.id,
-                hidden: !isDraft,
-              },
-              {
-                label: basket.scheduledInactiveAt ? "Edit inactive schedule" : "Schedule inactive",
-                icon: <CalendarClock className="size-4" />,
-                onClick: () => handlers.onScheduleInactive(basket),
-                hidden: basket.status !== "ACTIVE",
-              },
-              {
-                label: "Delete",
-                icon: <Trash2 className="size-4" />,
-                variant: "destructive",
-                onClick: () => handlers.onDelete(basket),
-              },
-            ]}
-          />
+          <div className="flex items-center gap-2">
+            <BasketStatusToggle basket={basket} pendingId={pendingId} handlers={handlers} />
+            <DataTableRowActions
+              className="w-52"
+              items={[
+                {
+                  label: "View details",
+                  icon: <Eye className="size-4" />,
+                  onClick: () => handlers.onView(basket),
+                },
+                {
+                  label: isDraft ? "Edit draft" : "Edit basket",
+                  icon: isDraft ? <FilePen className="size-4" /> : <Pencil className="size-4" />,
+                  onClick: () => handlers.onEdit(basket),
+                },
+                {
+                  label: basket.isPublishable ? "Publish" : "Publish (incomplete)",
+                  icon: <Rocket className="size-4" />,
+                  onClick: () => handlers.onPublish(basket),
+                  disabled: !basket.isPublishable || pendingId === basket.id,
+                  hidden: !isDraft,
+                },
+                {
+                  label: basket.scheduledInactiveAt
+                    ? "Edit inactive schedule"
+                    : "Schedule inactive",
+                  icon: <CalendarClock className="size-4" />,
+                  onClick: () => handlers.onScheduleInactive(basket),
+                  hidden: basket.status !== "ACTIVE",
+                },
+                {
+                  label: "Delete",
+                  icon: <Trash2 className="size-4" />,
+                  variant: "destructive",
+                  onClick: () => handlers.onDelete(basket),
+                },
+              ]}
+            />
+          </div>
         );
       },
     },
