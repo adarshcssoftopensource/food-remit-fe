@@ -18,7 +18,6 @@ import { Building2, Expand, Mail, MapPin, Phone, UserCircle } from "lucide-react
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { use, useState } from "react";
-import { useProfile } from "@/components/providers/profile-provider";
 import StoreScaltonLoading from "./store-scalton-loading";
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
