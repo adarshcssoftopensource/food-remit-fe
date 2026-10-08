@@ -55,11 +55,25 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
   );
   const addedIds = useMemo(() => new Set(items.map((i) => i.itemId)), [items]);
   const rows = items.map((entry) => {
-    const unit = unitPrices(entry, lineById.get(entry.itemId));
-    return { entry, unit, lineTotal: round2(unit.customer * entry.quantity) };
+    const line = lineById.get(entry.itemId);
+    const unit = unitPrices(entry, line);
+    const vendorLineTotal = line?.discountedLineTotal ?? round2(unit.vendor * entry.quantity);
+    const customerLineTotal = line?.customerLineTotal ?? round2(unit.customer * entry.quantity);
+    return {
+      entry,
+      unit,
+      vendorLineTotal,
+      customerLineTotal,
+      lineTotal: vendorLineTotal,
+    };
   });
   const totalUnits = items.reduce((acc, i) => acc + i.quantity, 0);
-  const total = round2(rows.reduce((acc, r) => acc + (r.unit.isAvailable ? r.lineTotal : 0), 0));
+  const vendorTotal =
+    pricing?.itemsVendorTotal ??
+    round2(rows.reduce((acc, r) => acc + (r.unit.isAvailable ? r.vendorLineTotal : 0), 0));
+  const customerTotal =
+    pricing?.customerItemsTotal ??
+    round2(rows.reduce((acc, r) => acc + (r.unit.isAvailable ? r.customerLineTotal : 0), 0));
   const checkedIds = [...checked].filter((id) => addedIds.has(id));
   const allChecked = items.length > 0 && checkedIds.length === items.length;
 
@@ -161,14 +175,18 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-[1fr_auto] gap-2 border-b border-slate-100 px-4 py-1.5 text-[10px] font-semibold tracking-wide text-slate-500 uppercase dark:border-slate-800">
+              <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-2 text-[10px] font-semibold tracking-wide text-slate-500 uppercase dark:border-slate-800">
                 <span className="truncate">
                   Item · Your price + Markup ({markupPercent}%) = Customer price
                 </span>
-                <span>Qty · Line total</span>
+                <div className="flex shrink-0 items-center gap-3">
+                  <span className="w-[92px] text-center">Qty</span>
+                  <span className="w-18 text-right">Line total</span>
+                  <span className="w-8" />
+                </div>
               </div>
               <ul className="min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto dark:divide-slate-800">
-                {rows.map(({ entry, unit, lineTotal }) => (
+                {rows.map(({ entry, unit, vendorLineTotal, customerLineTotal }) => (
                   <li
                     key={entry.itemId}
                     className={cn(
@@ -221,24 +239,35 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                         </p>
                       )}
                     </div>
-                    <div className="flex shrink-0 flex-col items-end gap-1.5">
-                      <QuantityStepper
-                        size="sm"
-                        value={entry.quantity}
-                        onChange={(q) => setQuantity(entry.itemId, q)}
-                      />
-                      <span className="text-sm font-black text-slate-900 tabular-nums dark:text-white">
-                        {formatMoney(lineTotal, symbol)}
-                      </span>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <div className="flex w-[92px] justify-center">
+                        <QuantityStepper
+                          size="sm"
+                          value={entry.quantity}
+                          onChange={(q) => setQuantity(entry.itemId, q)}
+                        />
+                      </div>
+                      <div className="w-18 text-right leading-tight">
+                        <span className="block text-sm font-black text-slate-900 tabular-nums dark:text-white">
+                          {formatMoney(vendorLineTotal, symbol)}
+                        </span>
+                        <span
+                          className="text-primary block text-[10px] font-semibold tabular-nums"
+                          title={`Customer line total with ${markupPercent}% markup`}
+                        >
+                          = {formatMoney(customerLineTotal, symbol)}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeMany([entry.itemId])}
+                        className="flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40"
+                        aria-label={`Remove ${entry.item.productName}`}
+                        title="Remove item"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => removeMany([entry.itemId])}
-                      className="-mr-1 shrink-0 rounded-lg p-2 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40"
-                      aria-label={`Remove ${entry.item.productName}`}
-                    >
-                      <Trash2 className="size-4" />
-                    </button>
                   </li>
                 ))}
               </ul>
@@ -248,19 +277,29 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                   Some items are no longer available. Remove them before publishing.
                 </p>
               )}
-              <footer className="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/80 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/60">
+              <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/80 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/60">
                 <span className="text-sm text-slate-600 dark:text-slate-300">
                   <strong className="text-slate-900 dark:text-white">{items.length}</strong> items ·{" "}
                   <strong className="text-slate-900 dark:text-white">{totalUnits}</strong> units
                 </span>
-                <span className="text-right">
-                  <span className="block text-[10px] font-semibold text-slate-500 uppercase">
-                    Items total
-                  </span>
-                  <span className="text-lg font-black tabular-nums">
-                    {formatMoney(total, symbol)}
-                  </span>
-                </span>
+                <div className="flex items-center gap-4 text-right">
+                  <div>
+                    <span className="block text-[10px] font-semibold text-slate-500 uppercase">
+                      Items total (Your price)
+                    </span>
+                    <span className="text-lg font-black text-slate-900 tabular-nums dark:text-white">
+                      {formatMoney(vendorTotal, symbol)}
+                    </span>
+                  </div>
+                  <div className="border-l border-slate-200 pl-4 dark:border-slate-700">
+                    <span className="text-primary block text-[10px] font-semibold uppercase">
+                      Customer total (+{markupPercent}%)
+                    </span>
+                    <span className="text-primary text-base font-black tabular-nums">
+                      {formatMoney(customerTotal, symbol)}
+                    </span>
+                  </div>
+                </div>
               </footer>
             </>
           )}

@@ -65,9 +65,9 @@ export function BasketStepper({
   const activeStep = BASKET_STEPS[current];
   const stateOf = (index: number, id: BasketSectionId): StepState => {
     if (index === current) return "current";
-    if (index > maxReachable) return "upcoming";
     if (sectionsWithIssues.has(id)) return "issue";
-    return "complete";
+    if (index < current) return "complete";
+    return "upcoming";
   };
   const progress = (current / (BASKET_STEPS.length - 1)) * 100;
 
@@ -118,25 +118,29 @@ export function BasketStepper({
               >
                 <span
                   className={cn(
-                    "flex size-10 items-center justify-center rounded-full border-2 text-sm font-black transition-all duration-300",
+                    "relative flex size-10 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all duration-300",
                     state === "current" &&
                       "border-primary bg-primary scale-110 text-white shadow-lg ring-4 shadow-emerald-600/30 ring-emerald-100 dark:ring-emerald-950",
                     state === "complete" &&
-                      "border-primary text-primary bg-white group-hover:bg-emerald-50 dark:bg-slate-950",
+                      "border-emerald-600 bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100/70 dark:border-emerald-500 dark:bg-emerald-950/40 dark:text-emerald-400",
                     state === "issue" &&
                       "border-amber-400 bg-amber-50 text-amber-600 group-hover:bg-amber-100 dark:bg-amber-950/40",
                     state === "upcoming" &&
-                      "border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-950",
+                      "border-slate-200 bg-slate-50 text-slate-400 group-hover:border-slate-300 group-hover:text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500",
                   )}
                 >
-                  {state === "complete" ? (
-                    <Check className="size-5" strokeWidth={3} />
-                  ) : state === "issue" ? (
-                    <TriangleAlert className="size-4.5" />
-                  ) : state === "current" ? (
-                    <Icon className="size-4.5" />
-                  ) : (
-                    index + 1
+                  <Icon className="size-4.5" />
+
+                  {state === "complete" && (
+                    <span className="bg-primary absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full text-white ring-2 ring-white dark:ring-slate-950">
+                      <Check className="size-2.5" strokeWidth={3.5} />
+                    </span>
+                  )}
+
+                  {state === "issue" && (
+                    <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-amber-500 text-white ring-2 ring-white dark:ring-slate-950">
+                      <TriangleAlert className="size-2.5" strokeWidth={3} />
+                    </span>
                   )}
                 </span>
                 <span className="hidden flex-col items-center md:flex">
