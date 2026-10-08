@@ -239,6 +239,9 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
               lead={store.partnerLead}
               storeSameDayDelivery={store.sameDayDelivery}
               storeOrderProcessingTime={store.orderProcessingTime}
+              storePerishableProducts={store.perishableProducts}
+              storeRefrigeratedProducts={store.refrigeratedProducts}
+              storeFrozenProducts={store.frozenProducts}
             />
           </div>
           <KycVerificationCard lead={store.partnerLead} />

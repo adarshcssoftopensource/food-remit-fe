@@ -171,6 +171,7 @@ export function PartnerLeadForm({ onSuccess, className }: PartnerLeadFormProps) 
             clearErrors={clearErrors}
             sameDayDelivery={sameDayDelivery}
             hasOtherWorkPreference={hasOtherWorkPreference}
+            watch={watch}
           />
         )}
 

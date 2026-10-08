@@ -14,7 +14,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/config/routes";
 import { ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
-import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { Package, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
@@ -22,6 +21,7 @@ import { CategoryPickerDialog } from "../categories/components/category-picker-d
 import { getItemColumns } from "./columns/item-columns";
 import { ItemCsvToolbar } from "./components/csv/item-csv-toolbar";
 import { useGetItems } from "./hooks/use-get-items";
+import { useCatalogueItemFilters } from "./hooks/use-catalogue-item-filters";
 import { ItemData } from "./types/item.types";
 
 export function ItemsManagement() {
@@ -34,50 +34,42 @@ export function ItemsManagement() {
     profile?.role === "employee" ||
     profile?.roleCode === "EMPLOYEE";
   const canWrite = !needsBankVerification;
+  const router = useRouter();
+
   const {
-    fromDate,
-    setFromDate,
-    toDate,
-    setToDate,
     page,
     setPage,
     limit,
     setLimit,
-    searchQuery: search,
-    setSearchQuery: setSearch,
+    search,
+    setSearch,
     debouncedSearch,
-    applied,
-    applyFilters,
-    cancelFilters,
-    resetBaseFilters,
-  } = useDraftTableFilters();
-
-  const router = useRouter();
-  const [country, setCountry] = useState("all");
-  const [city, setCity] = useState("all");
-  const [category, setCategory] = useState("all");
-
-  const [appliedCountry, setAppliedCountry] = useState("all");
-  const [appliedCity, setAppliedCity] = useState("all");
-  const [appliedCategory, setAppliedCategory] = useState("all");
-
-  const applyAllFilters = () => {
-    applyFilters();
-    setAppliedCountry(country);
-    setAppliedCity(city);
-    setAppliedCategory(category);
-  };
-
-  const cancelAllFilters = () => {
-    cancelFilters();
-    setCountry(appliedCountry);
-    setCity(appliedCity);
-    setCategory(appliedCategory);
-  };
+    country,
+    setCountry,
+    city,
+    setCity,
+    category,
+    setCategory,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    statusTab,
+    setStatusTab,
+    appliedCountry,
+    appliedCity,
+    appliedCategory,
+    appliedFromDate,
+    appliedToDate,
+    applyAllFilters,
+    cancelAllFilters,
+    clearFilters,
+    activeFilterCount,
+    hasFilters,
+  } = useCatalogueItemFilters();
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
   const [isOpeningEditor, startNavigation] = useTransition();
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
-  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
   const {
     data: itemsResponse,
     isLoading,
@@ -90,8 +82,8 @@ export function ItemsManagement() {
     cityId: appliedCity !== "all" ? appliedCity : undefined,
     categoryId: appliedCategory !== "all" ? appliedCategory : undefined,
     status: statusTab !== "all" ? statusTab : undefined,
-    fromDate: applied.fromDate ? new Date(applied.fromDate).toISOString() : undefined,
-    toDate: applied.toDate ? new Date(applied.toDate).toISOString() : undefined,
+    fromDate: appliedFromDate ? new Date(appliedFromDate).toISOString() : undefined,
+    toDate: appliedToDate ? new Date(appliedToDate).toISOString() : undefined,
   });
 
   const filteredData = useMemo(() => itemsResponse?.data || [], [itemsResponse?.data]);
@@ -103,34 +95,6 @@ export function ItemsManagement() {
     active: itemsResponse?.stats?.active || 0,
     inactive: itemsResponse?.stats?.inactive || 0,
   };
-
-  const hasFilters = !!(
-    applied.fromDate ||
-    applied.toDate ||
-    appliedCountry !== "all" ||
-    appliedCity !== "all" ||
-    appliedCategory !== "all" ||
-    debouncedSearch
-  );
-
-  const clearFilters = () => {
-    resetBaseFilters();
-    setCountry("all");
-    setCity("all");
-    setCategory("all");
-    setAppliedCountry("all");
-    setAppliedCity("all");
-    setAppliedCategory("all");
-  };
-
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (applied.fromDate || applied.toDate) count++;
-    if (appliedCountry !== "all" && appliedCountry !== "All") count++;
-    if (appliedCity !== "all" && appliedCity !== "All") count++;
-    if (appliedCategory !== "all") count++;
-    return count;
-  }, [applied.fromDate, applied.toDate, appliedCountry, appliedCity, appliedCategory]);
 
   const handleEdit = useCallback(
     (item: ItemData) =>
