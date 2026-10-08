@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, ChevronRight, Store } from "lucide-react";
+import { CheckCircle2, ChevronRight, Mail, Store } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -69,6 +69,14 @@ export function PartnerLeadSuccess({
         <div className="mt-1 font-mono text-xl font-bold tracking-wider text-emerald-950">
           {referenceNumber}
         </div>
+      </div>
+
+      <div className="mt-3.5 flex items-center justify-center gap-2 rounded-xl border border-emerald-200/70 bg-emerald-50/70 px-4 py-2.5 text-center text-xs text-emerald-800">
+        <Mail className="size-4 shrink-0 text-emerald-600" />
+        <span>
+          A confirmation email acknowledging receipt with Reference{" "}
+          <strong>#{referenceNumber}</strong> has been sent to your email.
+        </span>
       </div>
 
       <div className="mt-8">
