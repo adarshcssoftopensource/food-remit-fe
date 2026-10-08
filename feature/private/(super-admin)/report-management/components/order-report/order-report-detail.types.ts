@@ -61,6 +61,7 @@ export interface OrderDetailResponse {
     country: string;
     zipCode?: string;
     fullAddress: string;
+    profileImage?: string | null;
   };
   receiver: {
     firstName: string;
@@ -76,6 +77,7 @@ export interface OrderDetailResponse {
     zipCode?: string;
     fullAddress: string;
     customerSignature: string | null;
+    profileImage?: string | null;
   };
   store: {
     id: string;

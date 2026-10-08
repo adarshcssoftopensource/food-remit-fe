@@ -1,6 +1,7 @@
 "use client";
 
-import { Building2, FileSignature, MapPin, Phone, UserCheck, ZoomIn } from "lucide-react";
+import Image from "next/image";
+import { Building2, FileSignature, MapPin, Phone, User, UserCheck, ZoomIn } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,7 @@ import { formatAddress } from "@/lib/utils";
 
 interface PartyDetails {
   fullName?: string;
+  profileImage?: string | null;
   fullPhone?: string;
   fullAddress?: string;
   address?: string;
@@ -63,7 +65,24 @@ export function OrderPartyCard({ type, details, onPreviewSignature }: OrderParty
           <span className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
             <UserCheck className={`size-3.5 ${iconColor}`} /> Full Name
           </span>
-          <span className="text-sm font-bold text-slate-900 dark:text-white">{fullName}</span>
+          <div className="flex items-center gap-2">
+            <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 shadow-2xs dark:border-slate-700 dark:bg-slate-800">
+              {details?.profileImage ? (
+                <Image
+                  src={details.profileImage}
+                  alt={fullName}
+                  fill
+                  sizes="28px"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex size-full items-center justify-center text-slate-400">
+                  <User className="size-3.5" />
+                </div>
+              )}
+            </div>
+            <span className="text-sm font-bold text-slate-900 dark:text-white">{fullName}</span>
+          </div>
         </div>
 
         <div className="flex items-center justify-between border-b border-slate-100 py-2 dark:border-slate-800">
