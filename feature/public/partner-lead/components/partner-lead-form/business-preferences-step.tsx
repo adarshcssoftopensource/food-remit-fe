@@ -21,7 +21,13 @@ import type { PartnerLeadFormState } from "../../hooks/use-partner-lead-form";
 
 type BusinessPreferencesStepProps = Pick<
   PartnerLeadFormState,
-  "control" | "errors" | "setValue" | "clearErrors" | "sameDayDelivery" | "hasOtherWorkPreference"
+  | "control"
+  | "errors"
+  | "setValue"
+  | "clearErrors"
+  | "sameDayDelivery"
+  | "hasOtherWorkPreference"
+  | "watch"
 >;
 
 export function BusinessPreferencesStep({
@@ -31,6 +37,7 @@ export function BusinessPreferencesStep({
   clearErrors,
   sameDayDelivery,
   hasOtherWorkPreference,
+  watch,
 }: BusinessPreferencesStepProps) {
   return (
     <div className="flex flex-col gap-5">
@@ -132,6 +139,9 @@ export function BusinessPreferencesStep({
           clearErrors={clearErrors}
           sameDayDelivery={sameDayDelivery}
         />
+
+        {/* Product Screening Questions */}
+        <ProductScreeningSection control={control} setValue={setValue} watch={watch} />
 
         <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
           <Controller
@@ -359,6 +369,88 @@ function SameDayDeliverySection({
             )}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+type ProductScreeningSectionProps = Pick<PartnerLeadFormState, "control" | "setValue" | "watch">;
+
+function ProductScreeningSection({ setValue, watch }: ProductScreeningSectionProps) {
+  const perishableProducts = watch("perishableProducts") ?? false;
+  const refrigeratedProducts = watch("refrigeratedProducts") ?? false;
+  const frozenProducts = watch("frozenProducts") ?? false;
+
+  const questions = [
+    {
+      name: "perishableProducts" as const,
+      label: "Do you carry perishable products?",
+      value: perishableProducts,
+    },
+    {
+      name: "refrigeratedProducts" as const,
+      label: "Do you carry refrigerated products?",
+      value: refrigeratedProducts,
+    },
+    {
+      name: "frozenProducts" as const,
+      label: "Do you carry frozen products?",
+      value: frozenProducts,
+    },
+  ];
+
+  return (
+    <div className="flex flex-col gap-5 rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 sm:p-5">
+      <div>
+        <FieldLabel className="text-sm font-semibold text-slate-800">
+          Product Screening Questions <span className="text-red-500">*</span>
+        </FieldLabel>
+        <p className="text-xs text-slate-500">
+          Store - level product questions determine which inspection sections apply.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        {questions.map((q) => (
+          <div
+            key={q.name}
+            className="flex flex-col gap-3 border-t border-slate-200/60 pt-4 first:border-0 first:pt-0 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <span className="text-sm font-medium text-slate-700">{q.label}</span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setValue(q.name, true, { shouldValidate: true, shouldDirty: true })}
+                className={cn(
+                  "flex w-24 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-all",
+                  q.value === true
+                    ? "border-emerald-600 bg-emerald-50 text-emerald-950 shadow-sm ring-2 ring-emerald-600/20"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                )}
+              >
+                <CheckCircle2
+                  className={cn("size-4", q.value === true ? "text-emerald-600" : "text-slate-400")}
+                />
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => setValue(q.name, false, { shouldValidate: true, shouldDirty: true })}
+                className={cn(
+                  "flex w-24 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-all",
+                  q.value === false
+                    ? "border-slate-800 bg-slate-900 text-white shadow-sm"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                )}
+              >
+                <XCircle
+                  className={cn("size-4", q.value === false ? "text-white" : "text-slate-400")}
+                />
+                No
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

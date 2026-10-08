@@ -325,6 +325,9 @@ export function StoreInformation() {
               lead={partnerLead}
               storeSameDayDelivery={storeData?.sameDayDelivery}
               storeOrderProcessingTime={storeData?.orderProcessingTime}
+              storePerishableProducts={storeData?.perishableProducts}
+              storeRefrigeratedProducts={storeData?.refrigeratedProducts}
+              storeFrozenProducts={storeData?.frozenProducts}
             />
           </div>
           <AdditionalDocumentsCard lead={partnerLead} />

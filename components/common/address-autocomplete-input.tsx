@@ -217,6 +217,7 @@ export function AddressAutocompleteInput({
       onOpenChange={(open) => setIsOpen(open && visibleSuggestions.length > 0)}
     >
       <PopoverTrigger
+        nativeButton={false}
         render={<div ref={wrapperRef} className={cn("relative w-full", className)} />}
       >
         <div className="relative">
