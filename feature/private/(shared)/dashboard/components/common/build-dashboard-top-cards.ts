@@ -4,7 +4,7 @@ import { CheckCircle2, Clock, DollarSign, HandPlatter } from "lucide-react";
 export function buildDashboardTopCards(dashboardData: any) {
   return [
     {
-      title: "Total Sent Orders",
+      title: "Total Orders Received",
       href: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
       icon: Clock,
       accentColor: "amber" as const,

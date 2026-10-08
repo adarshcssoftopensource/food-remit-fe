@@ -53,10 +53,16 @@ export function useBasketLifecycleActions() {
     </>
   );
 
+  const toggleStatus = async (basket: Basket, status: "ACTIVE" | "INACTIVE") => {
+    await statusMutation.mutateAsync({ id: basket.id, status });
+  };
+
   return {
     publish: (basket: Basket) => publishMutation.mutate({ id: basket.id }),
     reactivate: (basket: Basket) => statusMutation.mutate({ id: basket.id, status: "ACTIVE" }),
-    setInactive: setConfirmInactive,
+    setInactive: (basket: Basket) => statusMutation.mutate({ id: basket.id, status: "INACTIVE" }),
+    promptSetInactive: setConfirmInactive,
+    toggleStatus,
     scheduleInactive: setScheduling,
     pendingId,
     dialogs,

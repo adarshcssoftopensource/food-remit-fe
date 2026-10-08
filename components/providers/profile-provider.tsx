@@ -1,6 +1,7 @@
 "use client";
 
 import { AccessDeniedScreen } from "@/components/access-denied-screen";
+import { ChangePasswordRequiredScreen } from "@/components/change-password-required-screen";
 import { ProfileErrorScreen } from "@/components/profile-error-screen";
 import { ProfileLoadingScreen } from "@/components/profile-loading-screen";
 import { hasPathPermission } from "@/config/permissions";
@@ -53,6 +54,8 @@ export interface AdminProfile {
   }[];
   partnerLead?: any;
   isReadOnly?: boolean;
+  mustChangePassword?: boolean;
+  changePasswordStatus?: boolean | null;
 }
 
 interface ProfileContextType {
@@ -156,6 +159,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         onRetry={() => refetch()}
       />
     );
+  }
+
+  if (profileData.mustChangePassword) {
+    return <ChangePasswordRequiredScreen onSuccess={refetchProfile} />;
   }
 
   const hasAccess = hasPathPermission(

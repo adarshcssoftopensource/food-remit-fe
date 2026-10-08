@@ -11,6 +11,8 @@ import { usersColumns as rawUsersColumns } from "./recycled-users-columns";
 import { Store, User } from "lucide-react";
 import { BASKET_STATUS_META, getBasketImage } from "@/constants/basket.constants";
 import type { BasketStatus } from "@/feature/private/(store-admin)/basket-management/types/basket.types";
+import { formatMoney } from "@/feature/private/(store-admin)/basket-management/utils/basket-format";
+import { getCurrencySymbol } from "@/lib/utils/currency";
 
 export const usersColumns = withDeletedByColumn(rawUsersColumns as ColumnDef<any>[], true);
 
@@ -527,11 +529,15 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
       {
         accessorKey: "price",
         header: "Price",
-        cell: ({ row }) => (
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-            {Number(row.original.price ?? 0).toFixed(2)}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const symbol =
+            row.original.currencySymbol || getCurrencySymbol(row.original.currency, "₱");
+          return (
+            <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+              {formatMoney(row.original.price, symbol)}
+            </span>
+          );
+        },
       },
       {
         accessorKey: "status",

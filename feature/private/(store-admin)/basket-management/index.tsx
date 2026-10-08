@@ -85,7 +85,7 @@ export function BasketManagement() {
     [activeStoreId, page, limit, debouncedSearch, statusTab, typeFilter, sorting],
   );
 
-  const { data, isLoading, isFetching } = useGetBaskets(params);
+  const { data, isLoading } = useGetBaskets(params);
   const lifecycle = useBasketLifecycleActions();
   const deleteMutation = useDeleteBasket();
 
@@ -104,6 +104,7 @@ export function BasketManagement() {
         onSetInactive: lifecycle.setInactive,
         onScheduleInactive: lifecycle.scheduleInactive,
         onReactivate: lifecycle.reactivate,
+        onToggleStatus: lifecycle.toggleStatus,
         pendingId: lifecycle.pendingId,
       }),
     [
@@ -112,6 +113,7 @@ export function BasketManagement() {
       lifecycle.setInactive,
       lifecycle.scheduleInactive,
       lifecycle.reactivate,
+      lifecycle.toggleStatus,
       lifecycle.pendingId,
     ],
   );
@@ -280,7 +282,7 @@ export function BasketManagement() {
               <DataTable
                 columns={columns}
                 data={baskets}
-                loading={isLoading || isFetching}
+                loading={isLoading}
                 currentPage={page}
                 totalPages={data?.pagination.totalPages ?? 1}
                 rowsPerPage={limit}
