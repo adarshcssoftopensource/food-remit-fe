@@ -285,7 +285,10 @@ export function ItemsManagement() {
                 : "No items yet — use Add Item or Import CSV to get started"
             }
             searchValue={search}
-            onSearchChange={setSearch}
+            onSearchChange={(val) => {
+              setSearch(val);
+              setPage(1);
+            }}
             loading={isLoading}
             currentPage={pagination.page}
             totalPages={pagination.totalPages}
