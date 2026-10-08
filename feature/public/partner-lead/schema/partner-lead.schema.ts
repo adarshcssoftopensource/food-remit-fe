@@ -200,6 +200,10 @@ export const partnerLeadSchema = z
     additionalNotes: z.string().optional(),
     currency: z.string().optional(),
 
+    perishableProducts: z.boolean().optional(),
+    refrigeratedProducts: z.boolean().optional(),
+    frozenProducts: z.boolean().optional(),
+
     agreeToContact: z.boolean().refine((val) => val === true, {
       message: "You must agree to be contacted by Food Remit to proceed",
     }),

@@ -72,6 +72,9 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
       sameDayDelivery: false,
       orderProcessingTime: "",
       websiteOrSocial: "",
+      perishableProducts: false,
+      refrigeratedProducts: false,
+      frozenProducts: false,
       additionalNotes: "",
       agreeToContact: false,
       veriffSessionId: "",
@@ -292,6 +295,9 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
       websiteOrSocial: "",
       additionalNotes: "",
       agreeToContact: false,
+      perishableProducts: false,
+      refrigeratedProducts: false,
+      frozenProducts: false,
       veriffSessionId: "",
       kycStatus: "NOT_STARTED",
       plaidItemId: "",
@@ -564,6 +570,9 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
         formData.append("inventoryManagement", data.inventoryManagement.trim());
       }
       formData.append("sameDayDelivery", String(data.sameDayDelivery ?? false));
+      formData.append("perishableProducts", String(data.perishableProducts ?? false));
+      formData.append("refrigeratedProducts", String(data.refrigeratedProducts ?? false));
+      formData.append("frozenProducts", String(data.frozenProducts ?? false));
       if (data.sameDayDelivery && data.orderProcessingTime?.trim()) {
         formData.append("orderProcessingTime", data.orderProcessingTime.trim());
       }

@@ -28,7 +28,7 @@ export function WhyJoinSection({ data }: WhyJoinSectionProps) {
             {data.points.map((point) => (
               <li
                 key={point}
-                className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
               >
                 <Badge className="mt-0.5 h-7 w-7 shrink-0 rounded-full bg-green-600 p-0 hover:bg-green-600">
                   <Check className="h-4 w-4 text-white" strokeWidth={3} />

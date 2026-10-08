@@ -18,6 +18,9 @@ export type StoreData = {
   autoAbandonRemark?: string | null;
   sameDayDelivery?: boolean;
   orderProcessingTime?: string | null;
+  perishableProducts?: boolean;
+  refrigeratedProducts?: boolean;
+  frozenProducts?: boolean;
   assignedCityManager?: string | null;
   status: StoreStatus;
   createdAt: string;
@@ -144,6 +147,9 @@ export interface RawStore {
   autoAbandonRemark?: string | null;
   sameDayDelivery?: boolean;
   orderProcessingTime?: string | null;
+  perishableProducts?: boolean;
+  refrigeratedProducts?: boolean;
+  frozenProducts?: boolean;
   status?: string;
   addedOn?: string;
   assignedCityManager?: string | null;

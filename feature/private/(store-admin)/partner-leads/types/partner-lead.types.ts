@@ -108,6 +108,9 @@ export interface PartnerLeadData {
   inventoryManagement: string | null;
   sameDayDelivery?: boolean;
   orderProcessingTime?: string | null;
+  perishableProducts?: boolean;
+  refrigeratedProducts?: boolean;
+  frozenProducts?: boolean;
   website: string | null;
   additionalInfo: string | null;
   agreeToContact: boolean;
