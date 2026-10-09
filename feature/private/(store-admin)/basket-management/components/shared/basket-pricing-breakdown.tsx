@@ -90,7 +90,6 @@ export function BasketPricingBreakdown({
   }
 
   const money = (v: number) => formatMoney(v, pricing.currencySymbol);
-  const hasItemDiscount = pricing.itemDiscountAmount > 0;
   const vendorDiscount = pricing.vendorDiscountAmount;
   const discountLabel =
     pricing.pricingMode === "DISCOUNT_PERCENT"
@@ -105,9 +104,7 @@ export function BasketPricingBreakdown({
         <SectionTitle icon={Receipt}>Basket price</SectionTitle>
         <Row
           label="Basket subtotal"
-          hint={`${pricing.itemCount} items · ${pricing.totalUnits} units at your prices${
-            hasItemDiscount ? `, incl. ${money(pricing.itemDiscountAmount)} item discounts` : ""
-          }`}
+          hint={`${pricing.itemCount} items · ${pricing.totalUnits} units at your prices`}
           value={money(pricing.itemsVendorTotal)}
         />
         {discountLabel && (
@@ -167,7 +164,7 @@ export function BasketPricingBreakdown({
         />
         <div className="flex items-center justify-between border-t border-dashed border-slate-200 pt-3 dark:border-slate-700">
           <span className="text-sm font-bold">Estimated checkout total</span>
-          <span className="text-base font-black tabular-nums">
+          <span className="text-base font-bold tabular-nums">
             {money(pricing.estimatedCustomerTotal)}
           </span>
         </div>
@@ -187,7 +184,7 @@ export function BasketPricingBreakdown({
           )}
           <div className="flex items-center justify-between rounded-xl bg-white px-3 py-2.5 ring-1 ring-slate-200/70 dark:bg-slate-950 dark:ring-slate-800">
             <span className="text-sm font-bold">Estimated vendor payout</span>
-            <span className="text-lg font-black text-slate-900 tabular-nums dark:text-white">
+            <span className="text-lg font-bold text-slate-900 tabular-nums dark:text-white">
               {money(pricing.estimatedPayout)}
             </span>
           </div>

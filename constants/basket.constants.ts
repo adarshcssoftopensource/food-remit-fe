@@ -116,8 +116,15 @@ export const HOUSEHOLD_SIZE_OPTIONS = [
   { value: "6+", label: "6+ people" },
 ];
 
+/** Upper bound for an exact people count on a Custom basket */
+export const HOUSEHOLD_SIZE_MAX = 50;
+
+/** "3-5" → "3–5 people", "8" → "8 people" */
 export function formatHouseholdSize(value?: string | null): string {
-  return HOUSEHOLD_SIZE_OPTIONS.find((o) => o.value === value)?.label ?? value ?? "—";
+  const preset = HOUSEHOLD_SIZE_OPTIONS.find((o) => o.value === value)?.label;
+  if (preset) return preset;
+  if (value && /^\d+$/.test(value)) return `${value} ${value === "1" ? "person" : "people"}`;
+  return value || "—";
 }
 
 export const BASKET_STATUS_META: Record<

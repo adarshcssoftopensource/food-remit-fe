@@ -13,7 +13,6 @@ import { useBasketItemSelection } from "../../../hooks/use-basket-item-selection
 import { basketLineKey, type SelectedBasketItem } from "../../../schema/basket-form.schema";
 import type { BasketPricingLine, BasketPricingPreview } from "../../../types/basket.types";
 import { formatItemSize, formatMoney } from "../../../utils/basket-format";
-import { DiscountBadge } from "../../shared/price-display";
 import { ProductThumb } from "../../shared/product-thumb";
 import { SectionCard } from "../section-card";
 import { CataloguePanel } from "./catalogue-panel";
@@ -29,7 +28,6 @@ function unitPrices(entry: SelectedBasketItem, line?: BasketPricingLine) {
   return {
     vendorRegular,
     vendor,
-    discountPercent: line?.discountPercent ?? item.discountPercent ?? 0,
     markup: line?.markupUnitAmount ?? round2(customer - vendor),
     customer,
     isAvailable: line?.isAvailable ?? true,
@@ -60,7 +58,7 @@ function LineVariant({
         >
           {variants.map((v) => (
             <option key={v.id} value={v.id} disabled={!v.isAvailable}>
-              {v.optionName} — {formatMoney(v.discountedVendorPrice, symbol)}
+              {v.optionName} — {formatMoney(v.vendorPrice, symbol)}
               {v.isAvailable ? "" : " (unavailable)"}
             </option>
           ))}
@@ -165,7 +163,7 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
           )}
         >
           <header className="flex items-center justify-between gap-2 border-b border-slate-100 bg-emerald-50/50 px-4 py-3 dark:border-slate-800 dark:bg-emerald-950/20">
-            <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
+            <h3 className="flex items-center gap-2 font-bold text-slate-800 dark:text-white">
               <span className="bg-primary flex size-8 items-center justify-center rounded-lg text-white">
                 <ShoppingBasket className="size-4" />
               </span>
@@ -181,7 +179,7 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                   size="sm"
                   variant="ghost"
                   onClick={removeChecked}
-                  className="animate-in fade-in h-8 rounded-lg text-rose-600 duration-200 hover:bg-rose-50 hover:text-rose-700"
+                  className="animate-in fade-in h-8 cursor-pointer rounded-lg text-rose-600 duration-200 hover:bg-rose-50 hover:text-rose-700"
                 >
                   <Trash2 className="size-4" /> Remove {checkedIds.length}
                 </Button>
@@ -222,7 +220,7 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                   Item · Your price + Markup ({markupPercent}%) = Customer price
                 </span>
                 <div className="flex shrink-0 items-center gap-3">
-                  <span className="w-[92px] text-center">Qty</span>
+                  <span className="w-23 text-center">Qty</span>
                   <span className="w-20 text-right">Line total</span>
                   <span className="w-8" />
                 </div>
@@ -273,9 +271,6 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                           <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {formatMoney(unit.vendor, symbol)}
                           </span>
-                          {unit.discountPercent > 0 && (
-                            <DiscountBadge size="xs" percent={unit.discountPercent} />
-                          )}
                           <span className="font-medium text-slate-700 dark:text-slate-300">
                             + {formatMoney(unit.markup, symbol)}
                           </span>
@@ -293,8 +288,8 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                         </p>
                       )}
                     </div>
-                    <div className="flex w-full items-center gap-3 pl-[3.375rem] @xl:w-auto @xl:shrink-0 @xl:pl-0">
-                      <div className="flex @xl:w-[92px] @xl:justify-center">
+                    <div className="flex w-full items-center gap-3 pl-13.5 @xl:w-auto @xl:shrink-0 @xl:pl-0">
+                      <div className="flex @xl:w-23 @xl:justify-center">
                         <QuantityStepper
                           size="sm"
                           value={entry.quantity}
@@ -302,7 +297,7 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                         />
                       </div>
                       <div className="ml-auto text-right leading-tight @xl:ml-0 @xl:w-20">
-                        <span className="block text-sm font-black text-slate-900 tabular-nums dark:text-white">
+                        <span className="block text-sm font-bold text-slate-900 tabular-nums dark:text-white">
                           {formatMoney(vendorLineTotal, symbol)}
                         </span>
                         <span
@@ -312,15 +307,16 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                           = {formatMoney(customerLineTotal, symbol)}
                         </span>
                       </div>
-                      <button
+                      <Button
                         type="button"
+                        variant={"outline"}
                         onClick={() => removeMany([key])}
-                        className="flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40"
+                        className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40"
                         aria-label={`Remove ${entry.item.productName}`}
                         title="Remove item"
                       >
                         <Trash2 className="size-4" />
-                      </button>
+                      </Button>
                     </div>
                   </li>
                 ))}

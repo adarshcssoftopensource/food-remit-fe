@@ -12,7 +12,12 @@ import { ExternalLink, Eye, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDeleteStore } from "../hooks/use-delete-store";
-import { useImpersonateStore } from "../hooks/use-impersonate-store";
+import {
+  fetchImpersonationPreview,
+  type ImpersonationPreview,
+  useImpersonateStore,
+} from "../hooks/use-impersonate-store";
+import { PasswordPendingStoreDialog } from "./password-pending-store-dialog";
 import { useUpdateStore } from "../hooks/use-update-store";
 import { EditStoreDialog } from "./edit-store-dialog";
 import {
@@ -32,6 +37,8 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [targetStatus, setTargetStatus] = useState<boolean>(!isActive);
+  const [isCheckingStore, setIsCheckingStore] = useState(false);
+  const [pendingPreview, setPendingPreview] = useState<ImpersonationPreview | null>(null);
 
   const handleStatusSwitchClick = () => {
     setTargetStatus(!isActive);
@@ -57,11 +64,28 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
     });
   };
 
-  const handleImpersonate = async () => {
+  const enterStore = async () => {
     try {
       await impersonate.mutateAsync(store.id);
-      successToast({ title: "Impersonating Store Manager..." });
+      setPendingPreview(null);
+      successToast({ title: `Opening ${store.storeName} in view-only mode…` });
     } catch {}
+  };
+
+  const handleGoToStore = async () => {
+    setIsCheckingStore(true);
+    try {
+      const preview = await fetchImpersonationPreview(store.id);
+      if (preview?.passwordSetupPending) {
+        setPendingPreview(preview);
+        return;
+      }
+      await enterStore();
+    } catch {
+      // Axios interceptor shows the error toast
+    } finally {
+      setIsCheckingStore(false);
+    }
   };
 
   const actionItems: DataTableRowActionItem[] = [
@@ -78,8 +102,8 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
     {
       label: "Go to Store",
       icon: <ExternalLink className="size-4" />,
-      onClick: handleImpersonate,
-      disabled: impersonate.isPending,
+      onClick: handleGoToStore,
+      disabled: impersonate.isPending || isCheckingStore,
       hidden: !isSuperAdmin || !isActive,
     },
     {
@@ -106,6 +130,13 @@ export function StoreActionsCell({ store }: { store: StoreData }) {
       </div>
 
       <EditStoreDialog store={store} open={editOpen} onOpenChange={setEditOpen} />
+
+      <PasswordPendingStoreDialog
+        preview={pendingPreview}
+        onOpenChange={(open) => !open && setPendingPreview(null)}
+        onConfirm={enterStore}
+        isLoading={impersonate.isPending}
+      />
 
       <AdminPasswordDialog
         open={statusOpen}

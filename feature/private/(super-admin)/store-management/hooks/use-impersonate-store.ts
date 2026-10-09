@@ -7,6 +7,23 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/config/routes";
 
+export type ImpersonationPreview = {
+  storeId: string;
+  storeName: string;
+  managerName: string;
+  managerEmail: string;
+  /** Manager still uses the system-generated password. */
+  passwordSetupPending: boolean;
+};
+
+export async function fetchImpersonationPreview(storeId: string) {
+  const response = await fetcher<{ data: ImpersonationPreview }>({
+    method: "get",
+    url: AUTH_ENDPOINTS.IMPERSONATE_PREVIEW(storeId),
+  });
+  return response.data;
+}
+
 export function useImpersonateStore() {
   const queryClient = useQueryClient();
   const router = useRouter();

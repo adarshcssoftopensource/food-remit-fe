@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { clearAuthSession, setAuthSession, buildCookieOptions } from "@/lib/auth-client";
 import { ORIGINAL_AUTH_TOKEN_COOKIE } from "@/config/cookie";
 import Cookies from "js-cookie";
-import { AlertCircle, LogOut } from "lucide-react";
+import { AlertCircle, KeyRound, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { ROUTES } from "@/config/routes";
@@ -32,18 +32,24 @@ export function ImpersonationBanner() {
   };
 
   return (
-    <div className="sticky top-0 z-50 flex w-full items-center justify-between bg-blue-600 px-4 py-2 text-white shadow-md">
-      <div className="flex items-center gap-2">
-        <AlertCircle className="size-5" />
+    <div className="sticky top-0 z-50 flex w-full flex-wrap items-center justify-between gap-2 bg-blue-600 px-4 py-2 text-white shadow-md">
+      <div className="flex min-w-0 items-center gap-2">
+        <AlertCircle className="size-5 shrink-0" />
         <span className="text-sm font-medium">
           You are currently impersonating <strong>{profile?.name}</strong>. You are in{" "}
           <strong>View Only</strong> mode.
+          {profile?.passwordSetupPending && (
+            <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-amber-400/90 px-2 py-0.5 text-xs font-semibold text-amber-950">
+              <KeyRound className="size-3" />
+              Manager hasn&apos;t set a password yet
+            </span>
+          )}
         </span>
       </div>
       <Button
         variant="secondary"
         size="sm"
-        className="h-8 border-0 bg-white/10 text-white hover:bg-white/20"
+        className="h-8 shrink-0 border-0 bg-white/10 text-white hover:bg-white/20"
         onClick={handleExit}
       >
         <LogOut className="mr-2 size-4" />

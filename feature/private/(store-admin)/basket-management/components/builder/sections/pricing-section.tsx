@@ -94,7 +94,7 @@ function SummaryRow({
       </div>
       <p
         className={cn(
-          "shrink-0 font-black tabular-nums",
+          "shrink-0 font-bold tabular-nums",
           emphasis ? "text-lg sm:text-xl" : "text-[15px] sm:text-base",
           tone === "negative" && "text-rose-600",
           tone === "positive" && "text-slate-700 dark:text-slate-200",
@@ -284,11 +284,7 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
           )}
           <SummaryRow
             label="Basket Subtotal (Vendor Items Total)"
-            hint={
-              pricing && pricing.itemDiscountAmount > 0
-                ? `Total cost of items in this basket (your prices), including ${formatMoney(pricing.itemDiscountAmount, symbol)} of item discounts.`
-                : "Total cost of items in this basket (your prices)."
-            }
+            hint="Total cost of items in this basket at their full prices."
             value={money(pricing?.itemsVendorTotal)}
           />
           <SummaryRow

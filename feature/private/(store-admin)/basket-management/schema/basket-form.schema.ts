@@ -219,7 +219,7 @@ export type BasketSectionId =
 
 export interface PublishIssue {
   section: BasketSectionId;
-  field?: "name" | "description" | "availableFrom" | "availableDays";
+  field?: "name" | "description" | "householdSize" | "availableFrom" | "availableDays";
   message: string;
 }
 
@@ -237,6 +237,13 @@ export function getPublishIssues(
   const issues: PublishIssue[] = [];
   if (!values.basketType) {
     issues.push({ section: "template", message: "Choose a basket template" });
+  }
+  if (values.basketType === "CUSTOM" && !values.householdSize.trim()) {
+    issues.push({
+      section: "template",
+      field: "householdSize",
+      message: "Choose how many people the basket is for",
+    });
   }
   if (values.name.trim().length < 2) {
     issues.push({ section: "information", field: "name", message: "Add a basket name" });

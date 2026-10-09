@@ -1,20 +1,126 @@
 "use client";
 
-import { Check, PencilLine, Plus, Sparkles, Users } from "lucide-react";
+import { Check, Hash, PencilLine, Plus, Sparkles, Users } from "lucide-react";
 import Image from "next/image";
 import { useFormContext, useWatch } from "react-hook-form";
 
+import { QuantityStepper } from "@/components/common/quantity-stepper";
 import { cn } from "@/lib/utils";
 
 import {
   BASKET_TYPE_MAP,
   BASKET_TYPE_OPTIONS,
+  formatHouseholdSize,
   getTemplateImage,
+  HOUSEHOLD_SIZE_MAX,
+  HOUSEHOLD_SIZE_OPTIONS,
 } from "../../../../../../../constants/basket.constants";
 import type { BasketFormValues } from "../../../schema/basket-form.schema";
 import type { BasketType } from "../../../types/basket.types";
 import { SectionCard } from "../section-card";
 import { InformationFields } from "./information-section";
+
+const EXACT_DEFAULT = 2;
+
+/** People count for a Custom basket: a preset range or an exact number */
+function HouseholdSizeField({ showError }: { showError?: boolean }) {
+  const { control, setValue } = useFormContext<BasketFormValues>();
+  const value = useWatch({ control, name: "householdSize" });
+  const exact = /^\d+$/.test(value) ? Number(value) : null;
+  const set = (next: string) => setValue("householdSize", next, { shouldDirty: true });
+  const missing = showError && !value;
+
+  const chipClass = (active: boolean) =>
+    cn(
+      "inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-semibold transition-all",
+      active
+        ? "border-primary bg-primary/10 text-primary shadow-sm"
+        : "border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
+    );
+
+  return (
+    <div
+      className={cn(
+        "animate-in fade-in slide-in-from-top-2 mt-4 rounded-2xl border p-4 duration-300 sm:p-5",
+        missing
+          ? "border-amber-300 bg-amber-50/60 dark:border-amber-800 dark:bg-amber-950/20"
+          : "border-emerald-200 bg-emerald-50/40 dark:border-emerald-900 dark:bg-emerald-950/20",
+      )}
+    >
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <p className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-100">
+            <Users className="text-primary size-4" />
+            How many people is this basket for?
+            <span className="text-rose-500">*</span>
+          </p>
+          <p className="text-muted-foreground mt-0.5 text-xs">
+            Shown to customers on the basket, like the people count on the other templates.
+          </p>
+        </div>
+        {value && (
+          <span className="bg-primary rounded-full px-2.5 py-1 text-xs font-bold text-white shadow-sm">
+            For {formatHouseholdSize(value)}
+          </span>
+        )}
+      </div>
+      <div role="radiogroup" aria-label="Number of people" className="flex flex-wrap gap-2">
+        {HOUSEHOLD_SIZE_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            role="radio"
+            aria-checked={value === option.value}
+            onClick={() => set(option.value)}
+            className={cn(chipClass(value === option.value), "flex-1 sm:flex-none")}
+          >
+            <Users className="size-4" />
+            {option.label}
+          </button>
+        ))}
+        {exact === null ? (
+          <button
+            type="button"
+            role="radio"
+            aria-checked={false}
+            onClick={() => set(String(EXACT_DEFAULT))}
+            className={cn(chipClass(false), "w-full sm:w-auto")}
+          >
+            <Hash className="size-4" />
+            Exact number
+          </button>
+        ) : (
+          <div
+            role="radio"
+            aria-checked
+            className={cn(chipClass(true), "w-full justify-between gap-3 pr-1.5 sm:w-auto")}
+          >
+            <span className="flex items-center gap-2">
+              <Hash className="size-4" />
+              Exact
+            </span>
+            <span className="flex items-center gap-2">
+              <QuantityStepper
+                size="sm"
+                value={exact}
+                min={1}
+                max={HOUSEHOLD_SIZE_MAX}
+                onChange={(n) => set(String(n))}
+                aria-label="Number of people"
+              />
+              <span className="text-xs">{exact === 1 ? "person" : "people"}</span>
+            </span>
+          </div>
+        )}
+      </div>
+      {missing && (
+        <p className="mt-2 text-xs font-semibold text-amber-700 dark:text-amber-400">
+          Choose how many people the basket is for.
+        </p>
+      )}
+    </div>
+  );
+}
 
 export function TemplateSection({ hasIssue }: { hasIssue?: boolean }) {
   const { control, setValue, getValues } = useFormContext<BasketFormValues>();
@@ -133,6 +239,8 @@ export function TemplateSection({ hasIssue }: { hasIssue?: boolean }) {
           );
         })}
       </div>
+
+      {selected === "CUSTOM" && <HouseholdSizeField showError={hasIssue} />}
 
       <div className="mt-6 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/30">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">

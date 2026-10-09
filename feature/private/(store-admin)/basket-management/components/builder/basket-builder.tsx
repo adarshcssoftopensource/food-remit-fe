@@ -392,7 +392,7 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
             <p className="text-[10px] font-semibold text-slate-500 uppercase">
               Step {step + 1} of {BASKET_STEPS.length} · {items.length} items
             </p>
-            <p className="text-sm font-black tabular-nums">
+            <p className="text-sm font-bold tabular-nums">
               {pricing ? formatMoney(pricing.customerPrice, pricing.currencySymbol) : "—"}
               {pricing && pricing.savingsPercent > 0 && (
                 <span className="ml-1.5 rounded-full bg-rose-50 px-1.5 py-0.5 text-[10px] font-bold text-rose-600">

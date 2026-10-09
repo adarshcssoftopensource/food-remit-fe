@@ -35,7 +35,6 @@ import type {
   GetCatalogueResponse,
 } from "../../../types/basket.types";
 import { formatItemSize, formatMoney } from "../../../utils/basket-format";
-import { DiscountBadge } from "../../shared/price-display";
 import { ProductThumb } from "../../shared/product-thumb";
 
 const PAGE_SIZE = 20;
@@ -248,7 +247,7 @@ function VariantChips({
               {variant.optionName}
             </span>
             <span className="font-bold text-slate-900 tabular-nums dark:text-white">
-              {variant.isAvailable ? formatMoney(variant.discountedVendorPrice, symbol) : "N/A"}
+              {variant.isAvailable ? formatMoney(variant.vendorPrice, symbol) : "N/A"}
             </span>
           </button>
         );
@@ -521,19 +520,9 @@ export function CataloguePanel({ storeId, addedKeys, onAdd, className }: Catalog
                     )}
                   </p>
                 </div>
-                <div className="shrink-0 text-right">
-                  <p className="text-sm font-bold text-slate-900 tabular-nums dark:text-white">
-                    {formatMoney(price.discountedVendorPrice, symbol)}
-                  </p>
-                  {price.discountPercent > 0 && (
-                    <p className="flex items-center justify-end gap-1">
-                      <span className="hidden text-[10px] text-slate-400 line-through min-[400px]:inline">
-                        {formatMoney(price.vendorPrice, symbol)}
-                      </span>
-                      <DiscountBadge size="xs" percent={price.discountPercent} />
-                    </p>
-                  )}
-                </div>
+                <p className="shrink-0 text-right text-sm font-bold text-slate-900 tabular-nums dark:text-white">
+                  {formatMoney(price.vendorPrice, symbol)}
+                </p>
                 {isAdded ? (
                   <span className="text-primary flex w-9 shrink-0 items-center justify-end gap-1 text-[11px] font-bold sm:w-16">
                     <Check className="size-3.5" strokeWidth={3} />

@@ -11,7 +11,6 @@ interface SectionCardProps {
   title: string;
   description: string;
   action?: ReactNode;
-  /** Highlights the section when it blocks publishing */
   hasIssue?: boolean;
   className?: string;
   children: ReactNode;
@@ -19,7 +18,6 @@ interface SectionCardProps {
 
 export const sectionDomId = (id: BasketSectionId) => `basket-section-${id}`;
 
-/** One step of the Create Basket stepper */
 export function SectionCard({
   id,
   step,
@@ -53,7 +51,7 @@ export function SectionCard({
             </p>
             <h2
               id={`${sectionDomId(id)}-title`}
-              className="text-lg leading-tight font-black tracking-tight text-slate-900 sm:text-xl dark:text-white"
+              className="text-lg leading-tight font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white"
             >
               {title}
             </h2>

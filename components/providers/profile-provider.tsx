@@ -56,6 +56,8 @@ export interface AdminProfile {
   isReadOnly?: boolean;
   mustChangePassword?: boolean;
   changePasswordStatus?: boolean | null;
+  /** View-only sessions: the manager still uses the system-generated password. */
+  passwordSetupPending?: boolean;
 }
 
 interface ProfileContextType {
@@ -161,7 +163,8 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (profileData.mustChangePassword) {
+  // Admins viewing a store as its manager never get the manager's password gate.
+  if (profileData.mustChangePassword && !profileData.isReadOnly) {
     return <ChangePasswordRequiredScreen onSuccess={refetchProfile} />;
   }
 

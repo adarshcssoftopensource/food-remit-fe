@@ -16,7 +16,10 @@ import { useFormContext, useWatch } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 
-import { BASKET_TYPE_MAP } from "../../../../../../../constants/basket.constants";
+import {
+  BASKET_TYPE_MAP,
+  formatHouseholdSize,
+} from "../../../../../../../constants/basket.constants";
 import {
   basketLineKey,
   type BasketFormValues,
@@ -27,8 +30,7 @@ import type { BasketPricingPreview } from "../../../types/basket.types";
 import { formatItemSize, formatMoney } from "../../../utils/basket-format";
 import { formatAvailability } from "../../../utils/basket-availability";
 import { BasketPricingBreakdown } from "../../shared/basket-pricing-breakdown";
-import { BasketSummaryCard } from "../../shared/basket-summary-card";
-import { DiscountBadge } from "../../shared/price-display";
+import { BasketSummaryCard, imageSourceLabel } from "../../shared/basket-summary-card";
 import { ProductThumb } from "../../shared/product-thumb";
 import { SectionCard } from "../section-card";
 
@@ -124,7 +126,7 @@ function ProductDetailsTable({
                 ).map(([label, value]) => (
                   <div key={label} className="min-w-0">
                     <dt className="truncate text-slate-500">{label}</dt>
-                    <dd className="font-semibold text-slate-800 dark:text-slate-100">{value}</dd>
+                    <dd className="font-bold text-slate-800 dark:text-slate-100">{value}</dd>
                   </div>
                 ))}
               </dl>
@@ -137,9 +139,7 @@ function ProductDetailsTable({
           </span>
           <span className="text-right">
             <span className="block text-[10px] text-slate-500">Before basket discount</span>
-            <span className="font-black tabular-nums">
-              {money(sum((l) => l.customerLineTotal))}
-            </span>
+            <span className="font-bold tabular-nums">{money(sum((l) => l.customerLineTotal))}</span>
           </span>
         </li>
       </ul>
@@ -224,15 +224,7 @@ function ProductDetailsTable({
                   </td>
                   <td className={`${td} font-bold`}>× {entry.quantity}</td>
                   <td className={td}>
-                    <p className="font-semibold">{money(line?.discountedUnitPrice)}</p>
-                    {line && line.discountPercent > 0 && (
-                      <p className="flex items-center justify-end gap-1">
-                        <span className="text-[10px] text-slate-400 line-through">
-                          {money(line.vendorUnitPrice)}
-                        </span>
-                        <DiscountBadge size="xs" percent={line.discountPercent} />
-                      </p>
-                    )}
+                    <p className="font-semibold">{money(line?.vendorUnitPrice)}</p>
                   </td>
                   <td className={`${td} text-slate-600 dark:text-slate-300`}>
                     <p>+{money(line?.markupUnitAmount)}</p>
@@ -247,7 +239,7 @@ function ProductDetailsTable({
                   <td className={`${td} text-slate-600 dark:text-slate-300`}>
                     {money(line?.discountedLineTotal)}
                   </td>
-                  <td className={`${td} font-black text-slate-900 dark:text-white`}>
+                  <td className={`${td} font-bold text-slate-900 dark:text-white`}>
                     {money(line?.customerLineTotal)}
                   </td>
                 </tr>
@@ -268,7 +260,7 @@ function ProductDetailsTable({
               </td>
               <td className={`${td} font-semibold`}>{money(sum((l) => l.taxLineTotal))}</td>
               <td className={`${td} font-semibold`}>{money(sum((l) => l.discountedLineTotal))}</td>
-              <td className={`${td} text-base font-black`}>
+              <td className={`${td} text-base font-bold`}>
                 {money(sum((l) => l.customerLineTotal))}
               </td>
             </tr>
@@ -352,7 +344,13 @@ export function SummarySection({ pricing, issues, onJump, statusNote }: SummaryS
                 icon={LayoutGrid}
                 label="Template"
                 value={
-                  values.basketType ? BASKET_TYPE_MAP[values.basketType].label : "Not selected"
+                  values.basketType
+                    ? `${BASKET_TYPE_MAP[values.basketType].label}${
+                        values.householdSize
+                          ? ` · For ${formatHouseholdSize(values.householdSize)}`
+                          : ""
+                      }`
+                    : "Not selected"
                 }
               />
               <SummaryTile icon={Type} label="Basket Name" value={values.name?.trim() || "—"} />
@@ -372,8 +370,8 @@ export function SummarySection({ pricing, issues, onJump, statusNote }: SummaryS
               />
               <SummaryTile
                 icon={ImageIcon}
-                label="Image"
-                value={values.image ? "Uploaded image" : "Template image"}
+                label="Basket image"
+                value={imageSourceLabel(values.image, values.libraryImage)}
               />
               <SummaryTile icon={CheckCircle2} label="Status after saving" value={statusNote} />
             </div>

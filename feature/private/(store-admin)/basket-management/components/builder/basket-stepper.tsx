@@ -119,15 +119,15 @@ export function BasketStepper({
               >
                 <span
                   className={cn(
-                    "relative flex size-10 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all duration-300",
+                    "relative flex size-10 cursor-pointer items-center justify-center rounded-full border-2 text-sm font-semibold transition-all duration-300",
                     state === "current" &&
                       "border-primary bg-primary scale-110 text-white shadow-lg ring-4 shadow-emerald-600/30 ring-emerald-100 dark:ring-emerald-950",
                     state === "complete" &&
-                      "border-emerald-600 bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100/70 dark:border-emerald-500 dark:bg-emerald-950/40 dark:text-emerald-400",
+                      "border-emerald-600 bg-emerald-50 text-emerald-600 dark:border-emerald-500 dark:bg-emerald-950/40 dark:text-emerald-400",
                     state === "issue" &&
-                      "border-amber-400 bg-amber-50 text-amber-600 group-hover:bg-amber-100 dark:bg-amber-950/40",
+                      "border-amber-400 bg-amber-50 text-amber-600 dark:bg-amber-950/40",
                     state === "upcoming" &&
-                      "border-slate-200 bg-slate-50 text-slate-400 group-hover:border-slate-300 group-hover:text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500",
+                      "border-slate-200 bg-slate-50 text-slate-400 group-hover:text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500",
                   )}
                 >
                   <Icon className="size-4.5" />
