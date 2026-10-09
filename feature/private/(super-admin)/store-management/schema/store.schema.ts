@@ -3,6 +3,7 @@ import { z } from "zod/v3";
 
 export const storeSchema = z
   .object({
+    storeId: z.string().optional(),
     storeImage: z.any().optional(),
     storeName: z.string().min(2, "Store name must be at least 2 characters"),
     storePhoneCode: z.string().min(1, "Phone code is required"),

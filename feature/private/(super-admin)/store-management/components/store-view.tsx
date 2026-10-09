@@ -102,9 +102,16 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
             </div>
 
             <div className="flex-1">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-                {store.storeName}
-              </h1>
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+                  {store.storeName}
+                </h1>
+                {store.storeId && (
+                  <span className="inline-flex items-center rounded-lg border border-slate-200 bg-white/90 px-2.5 py-1 font-mono text-xs font-semibold text-slate-700 shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                    Store ID: {store.storeId}
+                  </span>
+                )}
+              </div>
               <div className="mt-2 flex items-center gap-2 text-sm text-slate-500">
                 <MapPin className="h-4 w-4 shrink-0" />
                 <span className="line-clamp-1">{storeFullAddress || "No address provided"}</span>
@@ -127,6 +134,14 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
               Store Information
             </h3>
             <div className="divide-y divide-slate-100">
+              <InfoRow
+                label="Store ID"
+                value={
+                  <span className="inline-flex items-center rounded-md bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+                    {store.storeId || "—"}
+                  </span>
+                }
+              />
               <InfoRow
                 label="Phone"
                 value={

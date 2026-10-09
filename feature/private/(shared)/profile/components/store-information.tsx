@@ -253,13 +253,21 @@ export function StoreInformation() {
             <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
               <Building2 className="size-5" />
             </div>
-            <div>
-              <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
-                Store Details
-              </CardTitle>
-              <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm dark:text-slate-400">
-                Basic information about the store
-              </CardDescription>
+            <div className="flex flex-1 items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
+                  Store Details
+                </CardTitle>
+                <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm dark:text-slate-400">
+                  Basic information about the store
+                </CardDescription>
+              </div>
+              {storeData?.storeId && (
+                <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white/80 px-2.5 py-1 font-mono text-xs font-semibold text-slate-700 shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                  <span className="text-slate-400">Store ID:</span>
+                  <span className="text-primary font-bold">{storeData.storeId}</span>
+                </div>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -275,6 +283,18 @@ export function StoreInformation() {
             />
 
             <div className="space-y-6">
+              {storeData?.storeId && (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel className="text-sm font-semibold">Store ID</FieldLabel>
+                  <div className="flex h-12 items-center rounded-xl border border-gray-200/80 bg-gray-100/70 px-3 font-mono text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                    {storeData.storeId}
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    Permanently assigned unique identifier for this store.
+                  </p>
+                </div>
+              )}
+
               <Controller
                 name="storeName"
                 control={control}

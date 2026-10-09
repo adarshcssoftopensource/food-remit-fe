@@ -37,6 +37,7 @@ export function useGetStores(args?: UseGetStoresArgs) {
     if (!data?.data) return [];
     return data.data.map((item: RawStore): StoreData => ({
       id: item.id,
+      storeId: item.storeId ?? "",
       storeImage: item.storeImage ?? "",
       storeName: item.storeName,
       storeAddress: item.storeAddress ?? "",
@@ -104,6 +105,7 @@ export function useGetStore(id: string) {
 
     return {
       id: item.id,
+      storeId: item.storeId ?? "",
       storeImage: item.storeImage ?? "",
       storeName: item.storeName ?? "",
       storeAddress: item.storeAddress ?? "",
