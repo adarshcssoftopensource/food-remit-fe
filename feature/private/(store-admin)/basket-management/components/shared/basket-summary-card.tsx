@@ -1,7 +1,10 @@
-import { ImageIcon, LayoutTemplate, Package, Plus, Tag, Users } from "lucide-react";
-import Image from "next/image";
-import type { ReactNode } from "react";
+"use client";
 
+import { ImageIcon, LayoutTemplate, Maximize2, Package, Plus, Tag, Users } from "lucide-react";
+import Image from "next/image";
+import { useState, type ReactNode } from "react";
+
+import { ImageLightbox } from "@/components/common/image-lightbox";
 import { cn } from "@/lib/utils";
 
 import {
@@ -47,33 +50,67 @@ function TemplateTile({
   householdSize?: string | null;
 }) {
   const template = BASKET_TYPE_MAP[basketType];
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const templateImg = basketType !== "CUSTOM" ? getTemplateImage(basketType) : null;
+
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/70 p-2 dark:border-slate-800 dark:bg-slate-900/50">
-      <span className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-emerald-50 dark:bg-emerald-950/40">
-        {basketType === "CUSTOM" ? (
-          <Plus className="size-6 text-emerald-600" strokeWidth={2.5} />
-        ) : (
-          <Image
-            src={getTemplateImage(basketType)}
-            alt={template.label}
-            fill
-            sizes="56px"
-            className="object-cover"
-          />
-        )}
-      </span>
-      <div className="min-w-0">
-        <p className="flex items-center gap-1 text-[10px] font-bold tracking-wide text-slate-500 uppercase">
-          <LayoutTemplate className="size-3" /> Template
-        </p>
-        <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
-          {template.label}
-        </p>
-        <p className="text-primary text-xs font-semibold">
-          {householdSize ? `For ${formatHouseholdSize(householdSize)}` : template.tagline}
-        </p>
+    <>
+      <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/70 p-2 dark:border-slate-800 dark:bg-slate-900/50">
+        <span
+          className={cn(
+            "group/tpl-thumb relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-emerald-50 dark:bg-emerald-950/40",
+            templateImg && "cursor-pointer",
+          )}
+          onClick={
+            templateImg
+              ? (e) => {
+                  e.stopPropagation();
+                  setLightboxOpen(true);
+                }
+              : undefined
+          }
+        >
+          {basketType === "CUSTOM" ? (
+            <Plus className="size-6 text-emerald-600" strokeWidth={2.5} />
+          ) : (
+            <>
+              <Image
+                src={templateImg!}
+                alt={template.label}
+                fill
+                sizes="56px"
+                className="object-cover transition-transform duration-300 group-hover/tpl-thumb:scale-105"
+              />
+              <span
+                aria-label={`View ${template.label} full size`}
+                className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all duration-200 group-hover/tpl-thumb:bg-black/35 group-hover/tpl-thumb:opacity-100"
+              >
+                <Maximize2 className="size-3.5 drop-shadow-sm" />
+              </span>
+            </>
+          )}
+        </span>
+        <div className="min-w-0">
+          <p className="flex items-center gap-1 text-[10px] font-bold tracking-wide text-slate-500 uppercase">
+            <LayoutTemplate className="size-3" /> Template
+          </p>
+          <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
+            {template.label}
+          </p>
+          <p className="text-primary text-xs font-semibold">
+            {householdSize ? `For ${formatHouseholdSize(householdSize)}` : template.tagline}
+          </p>
+        </div>
       </div>
-    </div>
+
+      {lightboxOpen && templateImg && (
+        <ImageLightbox
+          src={templateImg}
+          alt={template.label}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
+    </>
   );
 }
 

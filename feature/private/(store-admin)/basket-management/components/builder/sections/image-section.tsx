@@ -152,6 +152,7 @@ export function ImageSection() {
                   basketType={type}
                   alt="Uploaded basket image"
                   sizes="160px"
+                  previewable={false}
                   className="aspect-4/3 w-36 shrink-0 rounded-xl"
                 />
               ) : (
@@ -226,6 +227,7 @@ export function ImageSection() {
             basketType={type}
             alt={name || "Basket image"}
             sizes="220px"
+            previewable={false}
             className="aspect-4/3 w-full rounded-xl"
           />
           <p className="mt-2 truncate text-xs font-semibold">{name || "Basket name"}</p>

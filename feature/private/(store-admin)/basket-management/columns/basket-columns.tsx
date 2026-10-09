@@ -102,10 +102,7 @@ export function getBasketColumns(handlers: BasketColumnHandlers): ColumnDef<Bask
       cell: ({ row }) => {
         const basket = row.original;
         return (
-          <Link
-            href={ROUTES.ADMIN.BASKETS.DETAILS(basket.id)}
-            className="group flex min-w-60 items-center gap-3"
-          >
+          <div className="flex min-w-60 items-center gap-3">
             <BasketImage
               image={basket.image}
               libraryImage={basket.libraryImage}
@@ -114,7 +111,7 @@ export function getBasketColumns(handlers: BasketColumnHandlers): ColumnDef<Bask
               sizes="112px"
               className="size-14 shrink-0 rounded-xl ring-1 ring-slate-100 dark:ring-slate-800"
             />
-            <div className="min-w-0">
+            <Link href={ROUTES.ADMIN.BASKETS.DETAILS(basket.id)} className="group min-w-0 flex-1">
               <p className="group-hover:text-primary flex items-center gap-1.5 truncate font-semibold text-slate-900 transition-colors dark:text-white">
                 {basket.name || "Untitled basket"}
                 {basket.hasUnavailableItems && (
@@ -135,8 +132,8 @@ export function getBasketColumns(handlers: BasketColumnHandlers): ColumnDef<Bask
                   </span>
                 )}
               </p>
-            </div>
-          </Link>
+            </Link>
+          </div>
         );
       },
     },
