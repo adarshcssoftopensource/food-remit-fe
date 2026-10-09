@@ -4,21 +4,18 @@ import { useState } from "react";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 
-import { ScheduleInactiveDialog } from "../components/shared/schedule-inactive-dialog";
 import type { Basket } from "../types/basket.types";
-import { usePublishBasket, useScheduleBasketInactive } from "./use-basket-lifecycle";
+import { usePublishBasket } from "./use-basket-lifecycle";
 import { useUpdateBasketStatus } from "./use-update-basket-status";
 
 /**
- * Publish / Set Inactive / Reactivate / Schedule Inactive for list and detail
+ * Publish / Set Inactive / Reactivate for list and detail
  * views. Render `dialogs` once in the consuming component.
  */
 export function useBasketLifecycleActions() {
   const publishMutation = usePublishBasket();
   const statusMutation = useUpdateBasketStatus();
-  const scheduleMutation = useScheduleBasketInactive();
   const [confirmInactive, setConfirmInactive] = useState<Basket | null>(null);
-  const [scheduling, setScheduling] = useState<Basket | null>(null);
 
   const pendingId =
     (publishMutation.isPending && publishMutation.variables?.id) ||
@@ -26,31 +23,19 @@ export function useBasketLifecycleActions() {
     null;
 
   const dialogs = (
-    <>
-      <ConfirmationDialog
-        open={Boolean(confirmInactive)}
-        onOpenChange={(open) => !open && setConfirmInactive(null)}
-        title="Set basket inactive?"
-        description={`"${confirmInactive?.name ?? ""}" will be hidden from customers. You can reactivate it anytime.`}
-        confirmLabel="Set Inactive"
-        isLoading={statusMutation.isPending}
-        onConfirm={async () => {
-          if (!confirmInactive) return;
-          await statusMutation.mutateAsync({ id: confirmInactive.id, status: "INACTIVE" });
-          setConfirmInactive(null);
-        }}
-      />
-      <ScheduleInactiveDialog
-        basket={scheduling}
-        onOpenChange={(open) => !open && setScheduling(null)}
-        isPending={scheduleMutation.isPending}
-        onSubmit={async (at) => {
-          if (!scheduling) return;
-          await scheduleMutation.mutateAsync({ id: scheduling.id, at });
-          setScheduling(null);
-        }}
-      />
-    </>
+    <ConfirmationDialog
+      open={Boolean(confirmInactive)}
+      onOpenChange={(open) => !open && setConfirmInactive(null)}
+      title="Set basket inactive?"
+      description={`"${confirmInactive?.name ?? ""}" will be hidden from customers. You can reactivate it anytime.`}
+      confirmLabel="Set Inactive"
+      isLoading={statusMutation.isPending}
+      onConfirm={async () => {
+        if (!confirmInactive) return;
+        await statusMutation.mutateAsync({ id: confirmInactive.id, status: "INACTIVE" });
+        setConfirmInactive(null);
+      }}
+    />
   );
 
   const toggleStatus = async (basket: Basket, status: "ACTIVE" | "INACTIVE") => {
@@ -63,7 +48,6 @@ export function useBasketLifecycleActions() {
     setInactive: (basket: Basket) => statusMutation.mutate({ id: basket.id, status: "INACTIVE" }),
     promptSetInactive: setConfirmInactive,
     toggleStatus,
-    scheduleInactive: setScheduling,
     pendingId,
     dialogs,
   };

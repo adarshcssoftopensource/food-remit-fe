@@ -26,8 +26,14 @@ import { BASKET_ENDPOINTS } from "@/lib/api/endpoints/basket.endpoints";
 import { useDebounce } from "@/lib/debounce";
 import { cn } from "@/lib/utils";
 
+import type { CataloguePick } from "../../../hooks/use-basket-item-selection";
 import { useGetBasketCatalogue } from "../../../hooks/use-get-basket-catalogue";
-import type { CatalogueItem, GetCatalogueResponse } from "../../../types/basket.types";
+import { basketLineKey } from "../../../schema/basket-form.schema";
+import type {
+  CatalogueItem,
+  CatalogueVariant,
+  GetCatalogueResponse,
+} from "../../../types/basket.types";
 import { formatItemSize, formatMoney } from "../../../utils/basket-format";
 import { DiscountBadge } from "../../shared/price-display";
 import { ProductThumb } from "../../shared/product-thumb";
@@ -37,9 +43,9 @@ const ALL = "ALL";
 
 interface CataloguePanelProps {
   storeId?: string;
-  /** Items already in the basket (shown as added, not selectable) */
-  addedIds: Set<string>;
-  onAdd: (items: CatalogueItem[]) => void;
+  /** Line keys (product + variant) already in the basket */
+  addedKeys: Set<string>;
+  onAdd: (picks: CataloguePick[]) => void;
   className?: string;
 }
 
@@ -157,6 +163,100 @@ function CategoryPicker({
   );
 }
 
+const pickKey = ({ item, variant }: CataloguePick) =>
+  basketLineKey({ itemId: item.id, itemOptionId: variant?.id });
+
+const variantSize = (variant: CatalogueVariant) =>
+  formatItemSize({
+    netWeight: variant.netWeight,
+    weightUnit: variant.weightUnit,
+    itemsPerPack: variant.quantityPerPack,
+    unit: null,
+  });
+
+/** First variant that can still be added, so "Add" does something useful by default */
+function defaultVariant(item: CatalogueItem, addedKeys: Set<string>) {
+  if (!item.variants.length) return null;
+  return (
+    item.variants.find(
+      (v) =>
+        v.isAvailable && !addedKeys.has(basketLineKey({ itemId: item.id, itemOptionId: v.id })),
+    ) ?? item.variants[0]!
+  );
+}
+
+/** Size / pack options of a product, each with its own vendor price */
+function VariantChips({
+  item,
+  value,
+  addedKeys,
+  symbol,
+  onChange,
+}: {
+  item: CatalogueItem;
+  value: CatalogueVariant;
+  addedKeys: Set<string>;
+  symbol: string;
+  onChange: (variant: CatalogueVariant) => void;
+}) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label={`${item.productName} sizes`}
+      className="flex flex-wrap gap-1.5"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {item.variants.map((variant) => {
+        const active = variant.id === value.id;
+        const added = addedKeys.has(basketLineKey({ itemId: item.id, itemOptionId: variant.id }));
+        const size = variantSize(variant);
+        return (
+          <button
+            key={variant.id}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            disabled={!variant.isAvailable}
+            onClick={() => onChange(variant)}
+            title={
+              size && size !== variant.optionName ? `${variant.optionName} · ${size}` : undefined
+            }
+            className={cn(
+              "group/chip inline-flex max-w-full items-center gap-1.5 rounded-lg border px-2 py-1 text-left text-[11px] transition-all",
+              active
+                ? "border-primary bg-primary/10 ring-primary/20 shadow-sm ring-2"
+                : "border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/60 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-800",
+              !variant.isAvailable && "cursor-not-allowed opacity-45",
+            )}
+          >
+            {added ? (
+              <Check className="text-primary size-3 shrink-0" strokeWidth={3} />
+            ) : (
+              <span
+                className={cn(
+                  "size-2 shrink-0 rounded-full border",
+                  active ? "border-primary bg-primary" : "border-slate-300 dark:border-slate-600",
+                )}
+              />
+            )}
+            <span
+              className={cn(
+                "max-w-28 truncate font-semibold",
+                active ? "text-primary" : "text-slate-700 dark:text-slate-200",
+              )}
+            >
+              {variant.optionName}
+            </span>
+            <span className="font-bold text-slate-900 tabular-nums dark:text-white">
+              {variant.isAvailable ? formatMoney(variant.discountedVendorPrice, symbol) : "N/A"}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /** Fetches every active item of a category from the store catalogue */
 async function fetchCategoryItems(storeId: string, categoryId: string) {
   const all: CatalogueItem[] = [];
@@ -172,12 +272,14 @@ async function fetchCategoryItems(storeId: string, categoryId: string) {
 }
 
 /** Store catalogue with search, category filter and multi-select, shown beside Basket Contents */
-export function CataloguePanel({ storeId, addedIds, onAdd, className }: CataloguePanelProps) {
+export function CataloguePanel({ storeId, addedKeys, onAdd, className }: CataloguePanelProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 350);
   const [categoryId, setCategoryId] = useState(ALL);
   const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState<Map<string, CatalogueItem>>(new Map());
+  const [selected, setSelected] = useState<Map<string, CataloguePick>>(new Map());
+  /** Variant chosen per product; falls back to the first one that isn't added yet */
+  const [chosen, setChosen] = useState<Map<string, string>>(new Map());
   const [selectingCategory, setSelectingCategory] = useState(false);
 
   const { data, isLoading, isFetching } = useGetBasketCatalogue({
@@ -192,29 +294,42 @@ export function CataloguePanel({ storeId, addedIds, onAdd, className }: Catalogu
   const categories = data?.categories ?? [];
   const symbol = data?.currencySymbol ?? "";
   const totalPages = data?.pagination.totalPages ?? 1;
-  const selectable = rows.filter((r) => r.isAvailable && !addedIds.has(r.id));
-  const pageSelectedCount = selectable.filter((r) => selected.has(r.id)).length;
+  const pickOf = (item: CatalogueItem): CataloguePick => {
+    const id = chosen.get(item.id);
+    const variant =
+      (id && item.variants.find((v) => v.id === id)) || defaultVariant(item, addedKeys);
+    return { item, variant };
+  };
+  const isPickAvailable = ({ item, variant }: CataloguePick) =>
+    variant ? variant.isAvailable : item.isAvailable;
+  const selectable = rows
+    .map(pickOf)
+    .filter((pick) => isPickAvailable(pick) && !addedKeys.has(pickKey(pick)));
+  const pageSelectedCount = selectable.filter((p) => selected.has(pickKey(p))).length;
   const allPageSelected = selectable.length > 0 && pageSelectedCount === selectable.length;
   const categoryName = categories.find((c) => c.id === categoryId)?.categoryName;
-  const pendingCount = [...selected.keys()].filter((id) => !addedIds.has(id)).length;
+  const pendingCount = [...selected.keys()].filter((key) => !addedKeys.has(key)).length;
 
-  const toggle = (item: CatalogueItem, checked: boolean) =>
+  const toggle = (pick: CataloguePick, checked: boolean) =>
     setSelected((prev) => {
       const next = new Map(prev);
-      if (checked) next.set(item.id, item);
-      else next.delete(item.id);
+      if (checked) next.set(pickKey(pick), pick);
+      else next.delete(pickKey(pick));
       return next;
     });
 
   const togglePage = (checked: boolean) =>
     setSelected((prev) => {
       const next = new Map(prev);
-      for (const item of selectable) {
-        if (checked) next.set(item.id, item);
-        else next.delete(item.id);
+      for (const pick of selectable) {
+        if (checked) next.set(pickKey(pick), pick);
+        else next.delete(pickKey(pick));
       }
       return next;
     });
+
+  const choose = (item: CatalogueItem, variant: CatalogueVariant) =>
+    setChosen((prev) => new Map(prev).set(item.id, variant.id));
 
   const selectAllInCategory = async () => {
     if (!storeId || categoryId === ALL) return;
@@ -224,7 +339,8 @@ export function CataloguePanel({ storeId, addedIds, onAdd, className }: Catalogu
       setSelected((prev) => {
         const next = new Map(prev);
         for (const item of items) {
-          if (item.isAvailable && !addedIds.has(item.id)) next.set(item.id, item);
+          const pick = { item, variant: defaultVariant(item, addedKeys) };
+          if (isPickAvailable(pick) && !addedKeys.has(pickKey(pick))) next.set(pickKey(pick), pick);
         }
         return next;
       });
@@ -241,7 +357,7 @@ export function CataloguePanel({ storeId, addedIds, onAdd, className }: Catalogu
   };
 
   const addSelected = () => {
-    onAdd([...selected.values()].filter((item) => !addedIds.has(item.id)));
+    onAdd([...selected.entries()].filter(([key]) => !addedKeys.has(key)).map(([, pick]) => pick));
     setSelected(new Map());
   };
 
@@ -347,78 +463,109 @@ export function CataloguePanel({ storeId, addedIds, onAdd, className }: Catalogu
             </li>
           ))}
         {rows.map((item) => {
-          const isAdded = addedIds.has(item.id);
-          const disabled = isAdded || !item.isAvailable;
-          const checked = selected.has(item.id);
-          const size = formatItemSize(item);
+          const pick = pickOf(item);
+          const { variant } = pick;
+          const key = pickKey(pick);
+          const isAdded = addedKeys.has(key);
+          const available = isPickAvailable(pick);
+          const disabled = isAdded || !available;
+          const checked = selected.has(key);
+          const size = variant ? variantSize(variant) : formatItemSize(item);
+          const price = variant ?? item;
           return (
             <li
               key={item.id}
-              onClick={() => !disabled && toggle(item, !checked)}
+              onClick={() => !disabled && toggle(pick, !checked)}
               className={cn(
-                "flex items-center gap-2.5 px-3 py-2.5 transition-colors sm:gap-3 sm:px-4",
+                "px-3 py-2.5 transition-colors sm:px-4",
                 disabled
                   ? "cursor-default"
                   : "cursor-pointer hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20",
                 checked && "bg-emerald-50/80 dark:bg-emerald-950/30",
-                !item.isAvailable && "opacity-55",
               )}
             >
-              <span onClick={(e) => e.stopPropagation()} className="flex">
-                <Checkbox
-                  checked={isAdded || checked}
-                  disabled={disabled}
-                  onCheckedChange={(value) => toggle(item, Boolean(value))}
-                  aria-label={`Select ${item.productName}`}
+              <div
+                className={cn(
+                  "flex items-center gap-2.5 sm:gap-3",
+                  !item.isAvailable && "opacity-55",
+                )}
+              >
+                <span onClick={(e) => e.stopPropagation()} className="flex">
+                  <Checkbox
+                    checked={isAdded || checked}
+                    disabled={disabled}
+                    onCheckedChange={(value) => toggle(pick, Boolean(value))}
+                    aria-label={`Select ${item.productName}${variant ? ` (${variant.optionName})` : ""}`}
+                  />
+                </span>
+                <ProductThumb
+                  src={item.productImageUrl}
+                  alt={item.productName}
+                  className="size-10 shrink-0 rounded-lg sm:size-11"
+                  sizes="88px"
                 />
-              </span>
-              <ProductThumb
-                src={item.productImageUrl}
-                alt={item.productName}
-                className="size-10 shrink-0 rounded-lg sm:size-11"
-                sizes="88px"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
-                  {item.productName}
-                </p>
-                <p className="text-muted-foreground truncate text-[11px]">
-                  {item.category?.categoryName ?? "—"}
-                  {size ? ` · ${size}` : ""}
-                  {!item.isAvailable && " · Unavailable"}
-                </p>
-              </div>
-              <div className="shrink-0 text-right">
-                <p className="text-sm font-bold text-slate-900 tabular-nums dark:text-white">
-                  {formatMoney(item.discountedVendorPrice, symbol)}
-                </p>
-                {item.discountPercent > 0 && (
-                  <p className="flex items-center justify-end gap-1">
-                    <span className="text-[10px] text-slate-400 line-through">
-                      {formatMoney(item.vendorPrice, symbol)}
-                    </span>
-                    <DiscountBadge size="xs" percent={item.discountPercent} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                    {item.productName}
                   </p>
+                  <p className="text-muted-foreground flex min-w-0 items-center gap-1 text-[11px]">
+                    <span className="truncate">
+                      {item.category?.categoryName ?? "—"}
+                      {size ? ` · ${size}` : ""}
+                      {!available && " · Unavailable"}
+                    </span>
+                    {item.variants.length > 0 && (
+                      <span className="shrink-0 rounded-full bg-violet-100 px-1.5 py-px text-[10px] font-bold text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">
+                        {item.variants.length} sizes
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="text-sm font-bold text-slate-900 tabular-nums dark:text-white">
+                    {formatMoney(price.discountedVendorPrice, symbol)}
+                  </p>
+                  {price.discountPercent > 0 && (
+                    <p className="flex items-center justify-end gap-1">
+                      <span className="hidden text-[10px] text-slate-400 line-through min-[400px]:inline">
+                        {formatMoney(price.vendorPrice, symbol)}
+                      </span>
+                      <DiscountBadge size="xs" percent={price.discountPercent} />
+                    </p>
+                  )}
+                </div>
+                {isAdded ? (
+                  <span className="text-primary flex w-9 shrink-0 items-center justify-end gap-1 text-[11px] font-bold sm:w-16">
+                    <Check className="size-3.5" strokeWidth={3} />
+                    <span className="hidden sm:inline">Added</span>
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={!available}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAdd([pick]);
+                      toggle(pick, false);
+                    }}
+                    className="text-primary flex size-9 shrink-0 items-center justify-center gap-1 rounded-lg text-[11px] font-bold ring-1 ring-emerald-200 transition-colors hover:bg-emerald-50 disabled:pointer-events-none disabled:opacity-40 sm:h-auto sm:w-16 sm:py-1.5 dark:ring-emerald-900 dark:hover:bg-emerald-950/40"
+                    aria-label={`Add ${item.productName}${variant ? ` (${variant.optionName})` : ""} to basket`}
+                  >
+                    <Plus className="size-3.5" strokeWidth={3} />
+                    <span className="hidden sm:inline">Add</span>
+                  </button>
                 )}
               </div>
-              {isAdded ? (
-                <span className="text-primary flex w-16 shrink-0 items-center justify-end gap-1 text-[11px] font-bold">
-                  <Check className="size-3.5" strokeWidth={3} /> Added
-                </span>
-              ) : (
-                <button
-                  type="button"
-                  disabled={!item.isAvailable}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAdd([item]);
-                    toggle(item, false);
-                  }}
-                  className="text-primary flex w-16 shrink-0 items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-bold ring-1 ring-emerald-200 transition-colors hover:bg-emerald-50 disabled:pointer-events-none disabled:opacity-40 dark:ring-emerald-900 dark:hover:bg-emerald-950/40"
-                  aria-label={`Add ${item.productName} to basket`}
-                >
-                  <Plus className="size-3.5" strokeWidth={3} /> Add
-                </button>
+              {variant && (
+                <div className="mt-2 pl-[26px] sm:pl-[28px]">
+                  <VariantChips
+                    item={item}
+                    value={variant}
+                    addedKeys={addedKeys}
+                    symbol={symbol}
+                    onChange={(v) => choose(item, v)}
+                  />
+                </div>
               )}
             </li>
           );

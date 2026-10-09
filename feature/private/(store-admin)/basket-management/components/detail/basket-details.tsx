@@ -2,7 +2,6 @@
 
 import {
   AlertTriangle,
-  CalendarClock,
   CalendarRange,
   Clock,
   Eye,
@@ -134,19 +133,6 @@ export function BasketDetails({ id }: { id: string }) {
               {isDraft ? <FilePen className="size-4" /> : <Pencil className="size-4" />}
               {isDraft ? "Edit Draft" : "Edit"}
             </Link>
-            {isActive && (
-              <>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => lifecycle.scheduleInactive(basket)}
-                  className="h-10 rounded-xl"
-                >
-                  <CalendarClock className="size-4" />
-                  {basket.scheduledInactiveAt ? "Edit Schedule" : "Schedule Inactive"}
-                </Button>
-              </>
-            )}
             {isDraft && (
               <Tooltip>
                 <TooltipTrigger render={<span className="inline-flex" />}>
@@ -270,6 +256,11 @@ export function BasketDetails({ id }: { id: string }) {
                             <p className="truncate font-semibold">
                               {line.item?.productName ?? "Removed item"}
                             </p>
+                            {line.optionName && (
+                              <span className="inline-flex max-w-full truncate rounded-md bg-violet-50 px-1.5 py-px text-[10px] font-semibold text-violet-700 dark:bg-violet-950/50 dark:text-violet-300">
+                                {line.optionName}
+                              </span>
+                            )}
                             <p className="text-muted-foreground text-[11px]">
                               {line.item
                                 ? formatItemSize(line.item) || line.item.category?.categoryName
@@ -382,21 +373,6 @@ export function BasketDetails({ id }: { id: string }) {
                   <p className="text-muted-foreground text-xs">{describeAvailability(basket)}</p>
                 </div>
               </div>
-              {isActive && basket.scheduledInactiveAt && (
-                <div className="flex items-start justify-between gap-2 rounded-xl bg-amber-50 px-3 py-2.5 text-xs text-amber-800 ring-1 ring-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:ring-amber-900">
-                  <span className="flex items-start gap-2">
-                    <CalendarClock className="mt-0.5 size-4 shrink-0" />
-                    Becomes inactive on {formatDate(basket.scheduledInactiveAt)}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => lifecycle.scheduleInactive(basket)}
-                    className="shrink-0 font-semibold hover:underline"
-                  >
-                    Change
-                  </button>
-                </div>
-              )}
               <p className="text-muted-foreground border-t border-slate-100 pt-3 text-[11px] dark:border-slate-800">
                 Orders are only fulfilled when your store is open, even with a custom schedule.
               </p>

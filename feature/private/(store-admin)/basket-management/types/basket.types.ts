@@ -14,10 +14,18 @@ export interface BasketItemInfo {
   stockQuantity: number;
   status: "ACTIVE" | "INACTIVE";
   category: { id: string; categoryName: string } | null;
+  /** Variant (item option) of this line; null for single-option items */
+  optionName: string | null;
+  /** Number of variants the product has; 0 when it has a single option */
+  variantCount: number;
 }
 
 export interface BasketPricingLine {
   itemId: string;
+  itemOptionId: string | null;
+  optionName: string | null;
+  /** `${itemId}:${itemOptionId}` — identifies a line, since one product can appear once per variant */
+  lineKey: string;
   quantity: number;
   isAvailable: boolean;
   unavailableReason: string | null;
@@ -105,7 +113,6 @@ export interface Basket {
   defaultImagePath: string;
   status: BasketStatus;
   publishedAt: string | null;
-  scheduledInactiveAt: string | null;
   pricingMode: BasketPricingMode;
   vendorDiscountPercent: number | null;
   manualVendorPrice: number | null;
@@ -140,6 +147,8 @@ export interface Basket {
 export interface BasketLineItem {
   id: string;
   itemId: string;
+  itemOptionId: string | null;
+  optionName: string | null;
   quantity: number;
   sortOrder: number;
   item: BasketItemInfo | null;
@@ -186,13 +195,28 @@ export interface BasketStore {
   status: string | null;
 }
 
-export interface CatalogueItem extends BasketItemInfo {
+export interface CataloguePrices {
   vendorPrice: number;
   discountPercent: number;
   discountedVendorPrice: number;
   customerOriginalPrice: number;
   customerPrice: number;
   isAvailable: boolean;
+}
+
+/** A sellable size / pack of a product, each with its own price */
+export interface CatalogueVariant extends CataloguePrices {
+  id: string;
+  optionName: string;
+  netWeight: number | null;
+  weightUnit: string | null;
+  quantityPerPack: number | null;
+  stockQuantity: number;
+}
+
+export interface CatalogueItem extends BasketItemInfo, CataloguePrices {
+  /** Empty when the product has a single option */
+  variants: CatalogueVariant[];
 }
 
 export interface GetCatalogueResponse {
@@ -206,6 +230,8 @@ export interface GetCatalogueResponse {
 
 export interface BasketItemInput {
   itemId: string;
+  itemOptionId?: string | null;
+  optionName?: string | null;
   quantity: number;
 }
 

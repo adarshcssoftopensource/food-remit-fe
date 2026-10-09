@@ -30,6 +30,7 @@ import {
   formValuesToPayload,
   getPublishIssues,
   pricingOptionsOf,
+  toItemInput,
   type BasketFormValues,
   type BasketSectionId,
 } from "../../schema/basket-form.schema";
@@ -90,10 +91,7 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
   const isPublished = Boolean(basket && basket.status !== "DRAFT");
   const isDraft = basket?.status === "DRAFT";
 
-  const pricingInput = useMemo(
-    () => items.map(({ itemId, quantity }) => ({ itemId, quantity })),
-    [items],
-  );
+  const pricingInput = useMemo(() => items.map(toItemInput), [items]);
   const pricingQuery = useBasketPricingPreview(
     storeId,
     pricingInput,
