@@ -23,12 +23,15 @@ type ItemCsvToolbarProps = {
   className?: string;
 };
 
-function describeImport(created: number, updated: number) {
+function describeImport(created: number, updated: number, imagesDownloaded = 0) {
   const parts = [
     created ? `${created} new item${created === 1 ? "" : "s"} added` : "",
     updated ? `${updated} existing item${updated === 1 ? "" : "s"} updated` : "",
   ].filter(Boolean);
-  return parts.length ? `${parts.join(" and ")}.` : "No changes were needed.";
+  const summary = parts.length ? `${parts.join(" and ")}.` : "No changes were needed.";
+  return imagesDownloaded
+    ? `${summary} ${imagesDownloaded} image${imagesDownloaded === 1 ? " was" : "s were"} saved from links.`
+    : summary;
 }
 
 export function ItemCsvToolbar({ category, className }: ItemCsvToolbarProps) {
@@ -91,7 +94,11 @@ export function ItemCsvToolbar({ category, className }: ItemCsvToolbarProps) {
       ]);
       setResult({
         title: "Import complete",
-        description: describeImport(data.createdCount ?? 0, data.updatedCount ?? 0),
+        description: describeImport(
+          data.createdCount ?? 0,
+          data.updatedCount ?? 0,
+          data.imagesDownloaded ?? 0,
+        ),
         createdCount: data.createdCount ?? data.successCount ?? 0,
         updatedCount: data.updatedCount ?? 0,
         categoriesCreated: data.categoriesCreated ?? 0,

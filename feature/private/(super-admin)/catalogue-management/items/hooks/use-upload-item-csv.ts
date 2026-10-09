@@ -6,6 +6,7 @@ export type ItemCsvImportData = {
   createdCount?: number;
   updatedCount?: number;
   optionsCount?: number;
+  imagesDownloaded?: number;
   errorCount?: number;
   categoriesCreated?: number;
   errors?: string[];
@@ -40,7 +41,8 @@ export async function uploadItemCsvFile(
     CATALOGUE_MANAGEMENT_ENDPOINTS.UPLOAD_ITEM_CSV,
     formData,
     {
-      timeout: 120000,
+      // Image links in the file are downloaded during the import.
+      timeout: 10 * 60 * 1000,
       skipErrorToast: true,
     } as Parameters<typeof axiosInstance.post>[2],
   );
