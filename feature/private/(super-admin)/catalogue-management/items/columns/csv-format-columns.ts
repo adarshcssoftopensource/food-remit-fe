@@ -43,12 +43,20 @@ export const CSV_COLUMNS: CsvColumn[] = [
   {
     name: "productImage",
     required: false,
-    note: `Optional — you can add images later. Up to ${ITEM_LIMITS.maxImages} filenames or URLs, separated by commas.`,
+    note: `Optional. Up to ${ITEM_LIMITS.maxImages} images separated by commas — file names from "Upload images" (single files or a ZIP) and/or public https:// links, e.g. "milk-front.png, https://example.com/milk-back.jpg". Links are downloaded and saved during import.`,
   },
   { name: "productInfo", required: false, note: "Optional text." },
-  { name: "productInfoImage", required: false, note: "Optional. One filename or URL." },
+  {
+    name: "productInfoImage",
+    required: false,
+    note: "Optional. One uploaded file name or public image link.",
+  },
   { name: "nutritionInfo", required: false, note: "Optional text." },
-  { name: "nutritionInfoImage", required: false, note: "Optional. One filename or URL." },
+  {
+    name: "nutritionInfoImage",
+    required: false,
+    note: "Optional. One uploaded file name or public image link.",
+  },
   {
     name: "optionName",
     required: false,
