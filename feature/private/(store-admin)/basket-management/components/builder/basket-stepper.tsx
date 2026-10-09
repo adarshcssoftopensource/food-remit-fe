@@ -65,8 +65,9 @@ export function BasketStepper({
   const activeStep = BASKET_STEPS[current];
   const stateOf = (index: number, id: BasketSectionId): StepState => {
     if (index === current) return "current";
-    if (sectionsWithIssues.has(id)) return "issue";
-    if (index < current) return "complete";
+    if (index < current) {
+      return sectionsWithIssues.has(id) ? "issue" : "complete";
+    }
     return "upcoming";
   };
   const progress = (current / (BASKET_STEPS.length - 1)) * 100;
