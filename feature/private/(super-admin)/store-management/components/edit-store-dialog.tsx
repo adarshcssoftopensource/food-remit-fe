@@ -133,30 +133,32 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl p-0">
-        <DialogHeader className="rounded-t-xl border-b border-emerald-100/60 bg-linear-to-r from-emerald-50/70 via-teal-50/30 to-emerald-50/40 px-6 py-5">
+      <DialogContent className="flex max-h-[90dvh] w-[calc(100vw-1.5rem)] max-w-5xl flex-col overflow-hidden rounded-2xl p-0 sm:w-full">
+        <DialogHeader className="shrink-0 rounded-t-xl border-b border-emerald-100/60 bg-linear-to-r from-emerald-50/70 via-teal-50/30 to-emerald-50/40 px-4 py-3.5 sm:px-6 sm:py-5">
           <div className="flex items-center justify-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-xs shadow-emerald-600/20">
+            <div className="flex size-9 items-center justify-center rounded-full bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-xs shadow-emerald-600/20 sm:size-10">
               <Pencil size={18} />
             </div>
 
-            <DialogTitle className="text-center text-2xl font-bold text-slate-800">
+            <DialogTitle className="text-center text-xl font-bold text-slate-800 sm:text-2xl">
               Edit Store
             </DialogTitle>
           </div>
 
-          <p className="mt-2 text-center text-sm text-slate-500">
+          <p className="mt-1 text-center text-xs text-slate-500 sm:mt-2 sm:text-sm">
             Update details for{" "}
             <span className="font-semibold text-slate-700">{store.storeName}</span>
           </p>
         </DialogHeader>
-        <StoreForm
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          submitLabel="Update"
-          isSubmitting={isSubmitting}
-          mode="edit"
-        />
+        <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden bg-white">
+          <StoreForm
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            submitLabel="Update"
+            isSubmitting={isSubmitting}
+            mode="edit"
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

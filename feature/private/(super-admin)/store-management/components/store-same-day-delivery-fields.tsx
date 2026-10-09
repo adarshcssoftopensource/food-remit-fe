@@ -28,7 +28,7 @@ export function StoreSameDayDeliveryFields({
 }: StoreSameDayDeliveryFieldsProps) {
   return (
     <>
-      <div className="flex flex-col gap-1.5 border-t border-slate-100 pt-6">
+      <div className="flex flex-col gap-1.5">
         <Label className="text-sm font-semibold text-slate-700">
           Does your Store offer same-day delivery?
         </Label>

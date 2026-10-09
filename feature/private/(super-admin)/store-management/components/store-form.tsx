@@ -11,6 +11,7 @@ import { getCountryPhoneInfo } from "@/lib/phone";
 import { storeSchema, type StoreFormValues } from "../schema/store.schema";
 import { StoreDetailsCard } from "./store-details-card";
 import { StoreManagerDetailsCard } from "./store-manager-details-card";
+import { StoreOperationalPreferencesCard } from "./store-operational-preferences-card";
 
 interface StoreFormProps {
   initialValues?: Partial<StoreFormValues>;
@@ -90,9 +91,12 @@ export function StoreForm({
   );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col">
-      <div className="flex-1 overflow-y-auto pb-4">
-        <div className="grid gap-6 p-6 lg:grid-cols-2">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden"
+    >
+      <div className="min-h-0 w-full min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
+        <div className="grid w-full min-w-0 items-start gap-4 p-3.5 sm:gap-6 sm:p-6 lg:grid-cols-2">
           <StoreDetailsCard
             control={control}
             errors={errors}
@@ -114,15 +118,21 @@ export function StoreForm({
             managerPhoneInfo={managerPhoneInfo}
             apiCountries={apiCountries}
           />
+
+          <StoreOperationalPreferencesCard
+            control={control}
+            setValue={setValue}
+            isNonCommissionDisabled={isNonCommissionDisabled}
+          />
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 flex justify-center border-t bg-white px-6 py-4 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+      <div className="flex w-full min-w-0 shrink-0 justify-center border-t bg-white px-4 py-3 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] sm:px-6 sm:py-4">
         <Button
           type="submit"
           isLoading={isSubmitting}
           disabled={!isDirty || isSubmitting}
-          className="h-12 rounded-xl px-12 text-base font-semibold shadow-md transition-transform hover:scale-[1.02]"
+          className="h-11 w-full rounded-xl px-8 text-sm font-semibold shadow-md transition-transform hover:scale-[1.02] sm:h-12 sm:w-auto sm:px-12 sm:text-base"
         >
           {submitLabel}
         </Button>

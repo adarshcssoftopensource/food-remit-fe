@@ -100,16 +100,16 @@ export function AddStoreDialog() {
         <Plus className="mr-1.5 size-4" />
         Add Store
       </DialogTrigger>
-      <DialogContent className="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl p-0">
-        <DialogHeader className="shrink-0 border-b bg-linear-to-r from-slate-50 via-slate-100 to-slate-50 p-6 pb-5">
-          <DialogTitle className="text-center text-2xl font-extrabold tracking-tight text-slate-800">
+      <DialogContent className="flex max-h-[90dvh] w-[calc(100vw-1.5rem)] max-w-5xl flex-col overflow-hidden rounded-2xl p-0 sm:max-h-[90vh] sm:w-full">
+        <DialogHeader className="shrink-0 border-b bg-linear-to-r from-slate-50 via-slate-100 to-slate-50 px-4 py-3.5 sm:p-6 sm:pb-5">
+          <DialogTitle className="text-center text-xl font-extrabold tracking-tight text-slate-800 sm:text-2xl">
             Add Store
           </DialogTitle>
-          <p className="mt-1 text-center text-sm font-medium text-slate-500">
+          <p className="mt-1 text-center text-xs font-medium text-slate-500 sm:text-sm">
             Create a new store and manage your products easily.
           </p>
         </DialogHeader>
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
+        <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden bg-white">
           <StoreForm onSubmit={handleSubmit} submitLabel="Add Store" isSubmitting={isSubmitting} />
         </div>
       </DialogContent>
