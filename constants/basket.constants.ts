@@ -178,16 +178,16 @@ export const BASKET_WEEKDAYS: { value: BasketWeekday; label: string }[] = [
   { value: "SUN", label: "Sun" },
 ];
 
-/** Food Remit basket image library (files in `public/images/baskets`) */
+/** Food Remit basket image library (files in `public/images/baskets/library`) */
 export const BASKET_LIBRARY_IMAGES = [
-  { key: "basic", label: "Everyday essentials" },
-  { key: "family", label: "Family staples" },
-  { key: "large-family", label: "Large family" },
-  { key: "monthly-essentials", label: "Monthly essentials" },
+  { key: "basic", label: "Everyday Essentials" },
+  { key: "family", label: "Family Staples" },
+  { key: "large-family", label: "Large Family" },
+  { key: "monthly-essentials", label: "Monthly Essentials" },
   { key: "seasonal", label: "Seasonal" },
-  { key: "custom", label: "Mixed groceries" },
-  { key: "fresh-produce", label: "Fresh produce" },
-  { key: "pantry-staples", label: "Pantry staples" },
+  { key: "custom", label: "Mixed Groceries" },
+  { key: "fresh-produce", label: "Fresh Produce" },
+  { key: "pantry-staples", label: "Pantry Staples" },
 ] as const;
 
 const TEMPLATE_IMAGE_KEYS: Record<BasketType, string> = {
@@ -204,7 +204,12 @@ export function templateImageKey(type: BasketType): string {
 }
 
 export function getLibraryImage(key: string): string {
-  return `/images/baskets/${key}.jpg`;
+  return `/images/baskets/library/${key}.jpg`;
+}
+
+/** Artwork for the template cards on the first Create Basket step (`public/images/baskets/templates`) */
+export function getTemplateImage(type: BasketType): string {
+  return `/images/baskets/templates/${TEMPLATE_IMAGE_KEYS[type]}.jpg`;
 }
 
 export function getDefaultBasketImage(type: BasketType): string {

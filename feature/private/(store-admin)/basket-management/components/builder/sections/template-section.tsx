@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, PencilLine, Plus, Sparkles, Users } from "lucide-react";
+import Image from "next/image";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
@@ -8,10 +9,10 @@ import { cn } from "@/lib/utils";
 import {
   BASKET_TYPE_MAP,
   BASKET_TYPE_OPTIONS,
+  getTemplateImage,
 } from "../../../../../../../constants/basket.constants";
 import type { BasketFormValues } from "../../../schema/basket-form.schema";
 import type { BasketType } from "../../../types/basket.types";
-import { BasketImage } from "../../shared/basket-image";
 import { SectionCard } from "../section-card";
 import { InformationFields } from "./information-section";
 
@@ -85,12 +86,15 @@ export function TemplateSection({ hasIssue }: { hasIssue?: boolean }) {
                     </span>
                   </div>
                 ) : (
-                  <BasketImage
-                    basketType={option.value}
-                    alt={option.label}
-                    sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 220px"
-                    className="aspect-4/3 w-full transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
+                  <span className="relative block aspect-4/3 w-full overflow-hidden bg-[#f3ece2]">
+                    <Image
+                      src={getTemplateImage(option.value)}
+                      alt={option.label}
+                      fill
+                      sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 220px"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    />
+                  </span>
                 )}
                 <span
                   className={cn(
