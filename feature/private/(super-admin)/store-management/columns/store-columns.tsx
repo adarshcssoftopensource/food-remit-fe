@@ -64,6 +64,16 @@ export const storeColumns = (
       enableSorting: false,
     },
     {
+      accessorKey: "storeId",
+      header: "Store ID",
+      cell: ({ row }) => (
+        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+          {row.original.storeId || "—"}
+        </span>
+      ),
+      enableSorting: true,
+    },
+    {
       accessorKey: "storeName",
       header: "Store Name",
       cell: ({ row }) => (

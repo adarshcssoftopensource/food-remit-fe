@@ -2,6 +2,7 @@ export type StoreStatus = "Active" | "Inactive";
 
 export type StoreData = {
   id: string;
+  storeId?: string;
   storeImage: string;
   storeName: string;
   storeAddress: string;
@@ -76,6 +77,7 @@ export interface CreateStoreManagerPayload {
 }
 
 export interface CreateStorePayload {
+  storeId?: string;
   storeImage?: string;
   storeName: string;
   storeCountryCode?: string;
@@ -134,6 +136,7 @@ export interface StoreAdminInfo {
 
 export interface RawStore {
   id: string;
+  storeId?: string;
   storeImage?: string;
   storeName: string;
   storeAddress?: string;

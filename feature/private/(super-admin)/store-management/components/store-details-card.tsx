@@ -69,6 +69,17 @@ export function StoreDetailsCard({
         )}
       />
 
+      {initialValues?.storeId && (
+        <FormField label="Store ID">
+          <Input
+            value={initialValues.storeId}
+            disabled
+            readOnly
+            className="h-11 rounded-xl border-slate-200 bg-slate-100 font-mono text-slate-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-600 disabled:opacity-100"
+          />
+        </FormField>
+      )}
+
       <Controller
         name="storeName"
         control={control}

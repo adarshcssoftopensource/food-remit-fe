@@ -199,6 +199,11 @@ export function ProfileHeader() {
               <div className="flex w-fit items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 sm:px-2.5 sm:text-sm">
                 <Store className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                 <span className="truncate">{displayStores}</span>
+                {currentStore?.storeId && (
+                  <span className="font-mono text-xs font-semibold text-emerald-800">
+                    • {currentStore.storeId}
+                  </span>
+                )}
               </div>
             )}
           </div>

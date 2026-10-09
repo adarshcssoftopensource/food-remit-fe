@@ -31,6 +31,7 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
   );
 
   const initialValues: Partial<StoreFormValues> = {
+    storeId: store.storeId,
     storeImage: store.storeImage,
     storeName: store.storeName,
     storePhoneCode: storePhone.phoneCode,
