@@ -69,10 +69,13 @@ export function ImageSection() {
         <Tabs value={tab} onValueChange={(v) => setTab(v as ImageTab)} className="min-w-0">
           <TabsList className="w-full sm:w-fit">
             <TabsTrigger value="library" className="flex-1 sm:flex-none">
-              <Sparkles className="size-4" /> Food Remit: Template Images
+              <Sparkles className="size-4" />
+              Food Remit: Template Images
             </TabsTrigger>
+
             <TabsTrigger value="upload" className="flex-1 sm:flex-none">
-              <UploadCloud className="size-4" /> Upload Your Own Image
+              <UploadCloud className="size-4" />
+              Upload Your Own Image
             </TabsTrigger>
           </TabsList>
 
