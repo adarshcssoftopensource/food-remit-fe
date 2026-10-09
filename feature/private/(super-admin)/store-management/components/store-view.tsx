@@ -10,7 +10,6 @@ import { BankVerificationCard } from "@/feature/private/(store-admin)/partner-le
 import { KycVerificationCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/kyc-verification-card";
 import { LocationDetailsCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/location-details-card";
 import { OperationalPreferencesCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/operational-preferences-card";
-import { StoreOperationalPreferencesCard } from "./store-operational-preferences-card";
 import { ViewStatusMeta } from "@/feature/private/(super-admin)/city-management/components/shared/view-status-meta";
 import { useGetStore } from "@/feature/private/(super-admin)/store-management/hooks/use-get-stores";
 import { formatDate } from "@/lib/date";
@@ -249,13 +248,15 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
 
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="md:col-span-2">
-          <StoreOperationalPreferencesCard store={store} />
+          <OperationalPreferencesCard
+            lead={store.partnerLead}
+            storeSameDayDelivery={store.sameDayDelivery}
+            storeOrderProcessingTime={store.orderProcessingTime}
+            storePerishableProducts={store.perishableProducts}
+            storeRefrigeratedProducts={store.refrigeratedProducts}
+            storeFrozenProducts={store.frozenProducts}
+          />
         </div>
-        {store.partnerLead && (
-          <div className="md:col-span-2">
-            <OperationalPreferencesCard lead={store.partnerLead} />
-          </div>
-        )}
         {store.partnerLead && <KycVerificationCard lead={store.partnerLead} />}
         {store.partnerLead && <BankVerificationCard lead={store.partnerLead} />}
         {store.partnerLead && <AdditionalDocumentsCard lead={store.partnerLead} />}

@@ -365,14 +365,7 @@ export function StoreInformation() {
         <ProfileBankVerification />
         {partnerLead && <KycVerificationCard lead={partnerLead} />}
         <div className="md:col-span-2">
-          <OperationalPreferencesCard
-            lead={partnerLead}
-            storeSameDayDelivery={storeData?.sameDayDelivery}
-            storeOrderProcessingTime={storeData?.orderProcessingTime}
-            storePerishableProducts={storeData?.perishableProducts}
-            storeRefrigeratedProducts={storeData?.refrigeratedProducts}
-            storeFrozenProducts={storeData?.frozenProducts}
-          />
+          <OperationalPreferencesCard lead={partnerLead} hideFulfillmentAndScreening />
         </div>
         {partnerLead && <AdditionalDocumentsCard lead={partnerLead} />}
         {partnerLead && <LocationDetailsCard lead={partnerLead} />}
