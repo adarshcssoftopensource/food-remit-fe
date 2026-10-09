@@ -396,12 +396,15 @@ export function StoreSameDayDeliveryFields({
                 className={cn(
                   "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all",
                   field.value === false
-                    ? "border-slate-800 bg-slate-900 text-white shadow-sm"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                    ? "border-rose-400 bg-rose-50 text-rose-950 shadow-sm ring-2 ring-rose-500/20 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200",
                 )}
               >
                 <XCircle
-                  className={cn("size-4", field.value === false ? "text-white" : "text-slate-400")}
+                  className={cn(
+                    "size-4",
+                    field.value === false ? "text-rose-600 dark:text-rose-400" : "text-slate-400",
+                  )}
                 />
                 No
               </button>
@@ -581,14 +584,16 @@ export function StoreProductScreeningFields<TFieldValues extends FieldValues = a
                     className={cn(
                       "flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60",
                       field.value === false
-                        ? "border-slate-800 bg-slate-900 text-white shadow-sm dark:border-slate-600 dark:bg-slate-700"
+                        ? "border-rose-400 bg-rose-50 text-rose-950 shadow-sm ring-2 ring-rose-500/20 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
                         : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200",
                     )}
                   >
                     <XCircle
                       className={cn(
                         "size-3.5",
-                        field.value === false ? "text-white" : "text-slate-400",
+                        field.value === false
+                          ? "text-rose-600 dark:text-rose-400"
+                          : "text-slate-400",
                       )}
                     />
                     No

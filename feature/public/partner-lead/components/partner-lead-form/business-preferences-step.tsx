@@ -300,14 +300,14 @@ function SameDayDeliverySection({
               className={cn(
                 "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all",
                 sameDayDelivery === false
-                  ? "border-slate-800 bg-slate-900 text-white shadow-sm"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                  ? "border-rose-400 bg-rose-50 text-rose-950 shadow-sm ring-2 ring-rose-500/20 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
+                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200",
               )}
             >
               <XCircle
                 className={cn(
                   "size-4",
-                  sameDayDelivery === false ? "text-white" : "text-slate-400",
+                  sameDayDelivery === false ? "text-rose-600 dark:text-rose-400" : "text-slate-400",
                 )}
               />
               No
@@ -439,12 +439,15 @@ function ProductScreeningSection({ setValue, watch }: ProductScreeningSectionPro
                 className={cn(
                   "flex w-24 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-all",
                   q.value === false
-                    ? "border-slate-800 bg-slate-900 text-white shadow-sm"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                    ? "border-rose-400 bg-rose-50 text-rose-950 shadow-sm ring-2 ring-rose-500/20 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200",
                 )}
               >
                 <XCircle
-                  className={cn("size-4", q.value === false ? "text-white" : "text-slate-400")}
+                  className={cn(
+                    "size-4",
+                    q.value === false ? "text-rose-600 dark:text-rose-400" : "text-slate-400",
+                  )}
                 />
                 No
               </button>

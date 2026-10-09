@@ -70,9 +70,9 @@ export function OperationalPreferencesCard({
                   ) : (
                     <Badge
                       variant="outline"
-                      className="border-slate-200 bg-white px-2.5 py-0.5 text-xs font-semibold text-slate-600"
+                      className="border-rose-200 bg-rose-50/80 px-2.5 py-0.5 text-xs font-semibold text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300"
                     >
-                      <XCircle className="mr-1 h-3.5 w-3.5 text-slate-400" />
+                      <XCircle className="mr-1 h-3.5 w-3.5 text-rose-500 dark:text-rose-400" />
                       No
                     </Badge>
                   )}
@@ -121,9 +121,9 @@ export function OperationalPreferencesCard({
                     ) : (
                       <Badge
                         variant="outline"
-                        className="border-slate-200 bg-white px-2.5 py-0.5 text-xs font-semibold text-slate-600"
+                        className="border-rose-200 bg-rose-50/80 px-2.5 py-0.5 text-xs font-semibold text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300"
                       >
-                        <XCircle className="mr-1 h-3.5 w-3.5 text-slate-400" />
+                        <XCircle className="mr-1 h-3.5 w-3.5 text-rose-500 dark:text-rose-400" />
                         No
                       </Badge>
                     )}
