@@ -50,7 +50,7 @@ function ScheduleToolbar({
   onCopyHoursToAllOpen: () => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 pb-3">
+    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 pb-2.5">
       <div className="flex items-center gap-1.5">
         <Calendar className="h-4 w-4 text-emerald-600" />
         <span className="text-xs font-semibold text-slate-700">
@@ -58,12 +58,12 @@ function ScheduleToolbar({
         </span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5">
+      <div className="grid w-full grid-cols-2 gap-1.5 @md:flex @md:w-auto @md:flex-wrap @md:items-center">
         <button
           type="button"
           onClick={() => onApplyPreset("all")}
           disabled={disabled}
-          className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+          className="inline-flex h-8 cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
         >
           <Sparkles className="h-3 w-3 text-emerald-500" />
           All 7 Days
@@ -72,7 +72,7 @@ function ScheduleToolbar({
           type="button"
           onClick={() => onApplyPreset("weekdays")}
           disabled={disabled}
-          className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+          className="inline-flex h-8 cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
         >
           <Sun className="h-3 w-3 text-amber-500" />
           Mon – Fri
@@ -81,7 +81,7 @@ function ScheduleToolbar({
           type="button"
           onClick={() => onApplyPreset("weekends")}
           disabled={disabled}
-          className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+          className="inline-flex h-8 cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
         >
           <Moon className="h-3 w-3 text-indigo-500" />
           Sat – Sun
@@ -98,7 +98,7 @@ function ScheduleToolbar({
               : "Set opening & closing hours for at least one day first"
           }
           className={cn(
-            "inline-flex cursor-pointer items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all",
+            "inline-flex h-8 cursor-pointer items-center justify-center gap-1 rounded-lg border px-2.5 text-xs font-medium transition-all",
             isCopied
               ? "border-emerald-500 bg-emerald-50 font-semibold text-emerald-700 shadow-xs"
               : canCopyToAll
@@ -154,80 +154,80 @@ function getDayValidation(item: DailyScheduleItem, displayError: string | undefi
   return { isOpenInvalid, isCloseInvalid, timeSequenceInvalid };
 }
 
-function ScheduleDayHeader({
+function ScheduleDayBadge({ item }: { item: DailyScheduleItem }) {
+  return (
+    <span
+      className={cn(
+        "flex h-7 w-11 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold tracking-wider uppercase",
+        item.isOpen ? "bg-emerald-100/80 text-emerald-800" : "bg-slate-200/80 text-slate-500",
+      )}
+    >
+      {DAY_ABBR[item.day]}
+    </span>
+  );
+}
+
+function ScheduleDayToggles({
   item,
   disabled,
   onToggleDay,
   onToggle24Hours,
+  className,
 }: {
   item: DailyScheduleItem;
   disabled: boolean;
   onToggleDay: (dayName: string) => void;
   onToggle24Hours: (dayName: string) => void;
+  className?: string;
 }) {
   const isDayOpen = item.isOpen;
   const is24Hours = item.openTime === "24H";
+  const base =
+    "inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold shadow-xs transition-all active:scale-95 active:shadow-none";
 
   return (
-    <div className="flex w-full shrink-0 items-center justify-between sm:gap-3">
-      <div className="flex items-center gap-2">
-        <span
-          className={cn(
-            "flex h-7.5 w-12 items-center justify-center rounded-lg text-xs font-bold tracking-wider uppercase",
-            isDayOpen ? "bg-emerald-100/80 text-emerald-800" : "bg-slate-200/80 text-slate-500",
-          )}
-        >
-          {DAY_ABBR[item.day]}
-        </span>
-      </div>
-
-      {/* Open / Closed Toggle Button */}
-      <div className="ml-auto flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => onToggleDay(item.day)}
-          disabled={disabled}
-          className={cn(
-            "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all active:scale-95 active:shadow-none",
-            isDayOpen
-              ? "border-emerald-300 bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-emerald-200"
-              : "border-slate-300 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700",
-            disabled && "cursor-not-allowed opacity-50",
-          )}
-        >
-          <span
-            className={cn("h-1.5 w-1.5 rounded-full", isDayOpen ? "bg-white" : "bg-slate-400")}
-          />
-          {isDayOpen ? "Open" : "Closed"}
-        </button>
-
-        {/* 24 Hours Toggle */}
-        {isDayOpen && (
-          <button
-            type="button"
-            onClick={() => onToggle24Hours(item.day)}
-            disabled={disabled}
-            title={is24Hours ? "Switch to custom hours" : "Set as open 24 hours"}
-            className={cn(
-              "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all active:scale-95 active:shadow-none",
-              is24Hours
-                ? "border-violet-400 bg-violet-500 text-white hover:bg-violet-600"
-                : "border-slate-300 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700",
-              disabled && "cursor-not-allowed opacity-50",
-            )}
-          >
-            <span
-              className={cn(
-                "text-[11px] leading-none",
-                is24Hours ? "text-white" : "text-slate-400",
-              )}
-            >
-              ∞
-            </span>
-            24 Hrs
-          </button>
+    <div className={cn("flex shrink-0 items-center gap-1.5", className)}>
+      <button
+        type="button"
+        onClick={() => onToggleDay(item.day)}
+        disabled={disabled}
+        aria-pressed={isDayOpen}
+        className={cn(
+          base,
+          "min-w-18",
+          isDayOpen
+            ? "border-emerald-300 bg-emerald-500 text-white hover:bg-emerald-600"
+            : "border-slate-300 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+          disabled && "cursor-not-allowed opacity-50",
         )}
-      </div>
+      >
+        <span className={cn("h-1.5 w-1.5 rounded-full", isDayOpen ? "bg-white" : "bg-slate-400")} />
+        {isDayOpen ? "Open" : "Closed"}
+      </button>
+
+      <button
+        type="button"
+        onClick={() => onToggle24Hours(item.day)}
+        disabled={disabled || !isDayOpen}
+        aria-pressed={is24Hours}
+        title={is24Hours ? "Switch to custom hours" : "Set as open 24 hours"}
+        className={cn(
+          base,
+          "min-w-17",
+          is24Hours
+            ? "border-violet-400 bg-violet-500 text-white hover:bg-violet-600"
+            : "border-slate-300 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+          !isDayOpen && "invisible",
+          disabled && "cursor-not-allowed opacity-50",
+        )}
+      >
+        <span
+          className={cn("text-[11px] leading-none", is24Hours ? "text-white" : "text-slate-400")}
+        >
+          ∞
+        </span>
+        24 Hrs
+      </button>
     </div>
   );
 }
@@ -250,50 +250,50 @@ function ScheduleDayTimes({
   const isDayOpen = item.isOpen;
   const is24Hours = item.openTime === "24H";
 
+  if (!isDayOpen) {
+    return (
+      <div className="flex h-10 w-full items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-100/50 px-3 text-xs font-medium text-slate-400">
+        Closed all day
+      </div>
+    );
+  }
+
+  if (is24Hours) {
+    return (
+      <div className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50/60 px-3 text-xs font-semibold text-violet-700">
+        <span className="text-base leading-none">∞</span>
+        Open 24 hours
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-1 items-center gap-2">
-      {isDayOpen ? (
-        <div className="flex w-full flex-col gap-1.5">
-          {is24Hours ? (
-            <div className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50/60 px-3 text-xs font-semibold text-indigo-700">
-              <span className="text-base leading-none">∞</span>
-              Open 24 Hours — All Day
-            </div>
-          ) : (
-            <>
-              <div className="flex w-full items-center gap-2">
-                <div className="flex-1">
-                  <AnalogTimePicker
-                    value={item.openTime}
-                    onChange={(t) => onTimeChange(item.day, "openTime", t)}
-                    placeholder="00:00"
-                    disabled={disabled}
-                    invalid={isOpenInvalid || timeSequenceInvalid}
-                  />
-                </div>
-                <span className="text-xs font-semibold text-slate-400 sm:text-sm">to</span>
-                <div className="flex-1">
-                  <AnalogTimePicker
-                    value={item.closeTime}
-                    onChange={(t) => onTimeChange(item.day, "closeTime", t)}
-                    placeholder="00:00"
-                    disabled={disabled}
-                    invalid={isCloseInvalid}
-                  />
-                </div>
-              </div>
-              {timeSequenceInvalid && (
-                <p className="px-1 text-[11px] font-medium text-red-500">
-                  Closing time must be after opening time on the same day.
-                </p>
-              )}
-            </>
-          )}
+    <div className="flex w-full flex-col gap-1">
+      <div className="flex w-full items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <AnalogTimePicker
+            value={item.openTime}
+            onChange={(t) => onTimeChange(item.day, "openTime", t)}
+            placeholder="Opens"
+            disabled={disabled}
+            invalid={isOpenInvalid || timeSequenceInvalid}
+          />
         </div>
-      ) : (
-        <div className="flex h-10 w-full items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-100/50 px-3 text-xs font-medium text-slate-400">
-          Closed all day
+        <span className="shrink-0 text-xs font-semibold text-slate-400">to</span>
+        <div className="min-w-0 flex-1">
+          <AnalogTimePicker
+            value={item.closeTime}
+            onChange={(t) => onTimeChange(item.day, "closeTime", t)}
+            placeholder="Closes"
+            disabled={disabled}
+            invalid={isCloseInvalid}
+          />
         </div>
+      </div>
+      {timeSequenceInvalid && (
+        <p className="px-1 text-[11px] font-medium text-red-500">
+          Closing time must be after opening time.
+        </p>
       )}
     </div>
   );
@@ -320,30 +320,32 @@ function ScheduleDayRow({
     displayError,
   );
 
+  // Narrow: day + toggles on top, times below. Wide: everything on one line.
   return (
     <div
       className={cn(
-        "flex flex-col gap-3.5 p-4 transition-colors",
-        isDayOpen ? "hover:bg-slate-50/40" : "bg-slate-50/60 text-slate-400",
+        "flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2.5 transition-colors @lg:flex-nowrap",
+        isDayOpen ? "hover:bg-slate-50/50" : "bg-slate-50/60 text-slate-400",
       )}
     >
-      {/* Left: Day Abbr & Open/Closed Status Toggle */}
-      <ScheduleDayHeader
+      <ScheduleDayBadge item={item} />
+      <ScheduleDayToggles
         item={item}
         disabled={disabled}
         onToggleDay={onToggleDay}
         onToggle24Hours={onToggle24Hours}
+        className="ml-auto @lg:order-last @lg:ml-0"
       />
-
-      {/* Middle: Open & Close Time Pickers OR Closed Message */}
-      <ScheduleDayTimes
-        item={item}
-        disabled={disabled}
-        isOpenInvalid={isOpenInvalid}
-        isCloseInvalid={isCloseInvalid}
-        timeSequenceInvalid={timeSequenceInvalid}
-        onTimeChange={onTimeChange}
-      />
+      <div className="w-full @lg:w-auto @lg:min-w-0 @lg:flex-1">
+        <ScheduleDayTimes
+          item={item}
+          disabled={disabled}
+          isOpenInvalid={isOpenInvalid}
+          isCloseInvalid={isCloseInvalid}
+          timeSequenceInvalid={timeSequenceInvalid}
+          onTimeChange={onTimeChange}
+        />
+      </div>
     </div>
   );
 }
@@ -514,7 +516,7 @@ export function StoreScheduleEditor({
   const displayError = allOpenDaysConfigured ? undefined : error;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="@container flex flex-col gap-3">
       {/* Quick Presets Toolbar with unified Copy to all button */}
       <ScheduleToolbar
         openCount={openCount}
