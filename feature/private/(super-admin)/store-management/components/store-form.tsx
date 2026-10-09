@@ -19,6 +19,7 @@ interface StoreFormProps {
   submitLabel?: string;
   isSubmitting?: boolean;
   mode?: "add" | "edit";
+  onCancel?: () => void;
 }
 
 function getStoreFormDefaultValues(
@@ -61,6 +62,7 @@ export function StoreForm({
   submitLabel = "Submit",
   isSubmitting = false,
   mode = "add",
+  onCancel,
 }: StoreFormProps) {
   const { canViewPlatformFees, isSuperAdmin } = useProfile();
   const {
@@ -127,12 +129,23 @@ export function StoreForm({
         </div>
       </div>
 
-      <div className="flex w-full min-w-0 shrink-0 justify-center border-t bg-white px-4 py-3 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] sm:px-6 sm:py-4">
+      <div className="flex w-full min-w-0 shrink-0 items-center justify-end gap-3 border-t border-slate-100 bg-white px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.03)] sm:px-6 sm:py-4">
+        {onCancel && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="h-11 rounded-xl border-slate-200 px-5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+          >
+            Cancel
+          </Button>
+        )}
         <Button
           type="submit"
           isLoading={isSubmitting}
           disabled={!isDirty || isSubmitting}
-          className="h-11 w-full rounded-xl px-8 text-sm font-semibold shadow-md transition-transform hover:scale-[1.02] sm:h-12 sm:w-auto sm:px-12 sm:text-base"
+          className="h-11 w-full rounded-xl bg-linear-to-r from-emerald-600 via-teal-600 to-emerald-600 px-8 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.01] hover:from-emerald-700 hover:to-teal-700 sm:h-12 sm:w-auto sm:px-10 sm:text-base"
         >
           {submitLabel}
         </Button>

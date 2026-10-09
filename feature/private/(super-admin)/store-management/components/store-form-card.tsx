@@ -18,8 +18,8 @@ export function StoreFormCard({
   children,
 }: StoreFormCardProps) {
   return (
-    <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-      <div className="flex min-w-0 items-center gap-3 border-b border-slate-100 px-4 py-3 sm:px-6 sm:py-4">
+    <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
+      <div className="flex min-w-0 items-center gap-3 border-b border-slate-100 bg-slate-50/50 px-4 py-3.5 sm:px-6 sm:py-4">
         <div className={`shrink-0 ${iconWrapperClassName}`}>
           <Icon className={iconClassName} />
         </div>

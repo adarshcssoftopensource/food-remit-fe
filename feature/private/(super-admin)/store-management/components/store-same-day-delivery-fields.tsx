@@ -1,9 +1,8 @@
 "use client";
 
-import { CheckCircle2, Clock, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, Truck, XCircle } from "lucide-react";
 import { Controller, type Control, type UseFormSetValue } from "react-hook-form";
 
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -27,40 +26,46 @@ export function StoreSameDayDeliveryFields({
   isNonCommissionDisabled,
 }: StoreSameDayDeliveryFieldsProps) {
   return (
-    <>
-      <div className="flex flex-col gap-1.5">
-        <Label className="text-sm font-semibold text-slate-700">
-          Does your Store offer same-day delivery?
-        </Label>
-        <p className="text-xs text-slate-500">
-          Let customers know if their orders can be prepared and delivered or picked up on the same
-          day.
-        </p>
+    <div className="rounded-2xl border border-slate-200/80 bg-linear-to-br from-slate-50/70 via-white to-emerald-50/20 p-4 transition-all sm:p-5">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex items-start gap-3.5">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100/80 text-emerald-700 ring-4 ring-emerald-50/80">
+            <Truck className="size-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-slate-800 sm:text-base">
+                Same-Day Delivery & Pickup
+              </span>
+              <span className="inline-flex items-center rounded-full border border-emerald-200/60 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold tracking-wide text-emerald-700 uppercase">
+                Fulfillment
+              </span>
+            </div>
+            <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
+              Allow customers to place orders for preparation and delivery or pickup on the same
+              day.
+            </p>
+          </div>
+        </div>
 
         <Controller
           name="sameDayDelivery"
           control={control}
           render={({ field }) => (
-            <div className="grid max-w-sm grid-cols-2 gap-3 pt-1">
+            <div className="inline-flex shrink-0 self-start rounded-xl border border-slate-200/70 bg-slate-100/90 p-1 sm:self-auto">
               <button
                 type="button"
                 onClick={() => field.onChange(true)}
                 disabled={isNonCommissionDisabled}
                 className={cn(
-                  "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all",
+                  "flex cursor-pointer items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-60",
                   field.value === true
-                    ? "border-emerald-600 bg-emerald-50 text-emerald-950 shadow-sm ring-2 ring-emerald-600/20"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
-                  isNonCommissionDisabled && "cursor-not-allowed opacity-60",
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900",
                 )}
               >
-                <CheckCircle2
-                  className={cn(
-                    "size-4",
-                    field.value === true ? "text-emerald-600" : "text-slate-400",
-                  )}
-                />
-                Yes
+                <CheckCircle2 className="size-3.5" />
+                Yes, Offered
               </button>
 
               <button
@@ -71,20 +76,14 @@ export function StoreSameDayDeliveryFields({
                 }}
                 disabled={isNonCommissionDisabled}
                 className={cn(
-                  "flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all",
+                  "flex cursor-pointer items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-60",
                   field.value === false
-                    ? "border-rose-400 bg-rose-50 text-rose-950 shadow-sm ring-2 ring-rose-500/20 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200",
-                  isNonCommissionDisabled && "cursor-not-allowed opacity-60",
+                    ? "bg-rose-600 text-white shadow-xs"
+                    : "text-slate-600 hover:text-rose-700 dark:text-slate-400 dark:hover:text-rose-300",
                 )}
               >
-                <XCircle
-                  className={cn(
-                    "size-4",
-                    field.value === false ? "text-rose-600 dark:text-rose-400" : "text-slate-400",
-                  )}
-                />
-                No
+                <XCircle className="size-3.5" />
+                Not Offered
               </button>
             </div>
           )}
@@ -97,21 +96,26 @@ export function StoreSameDayDeliveryFields({
         render={({ field: sameDayField }) => (
           <>
             {sameDayField.value && (
-              <div className="mt-1 flex flex-col gap-1.5 border-t border-slate-100 pt-4">
-                <Label
-                  htmlFor="orderProcessingTime"
-                  className="text-sm font-semibold text-slate-700"
-                >
-                  Estimated Order Processing Time
-                </Label>
-                <p className="text-xs text-slate-500">
-                  Required preparation time before an order is ready for fulfillment.
-                </p>
-                <Controller
-                  name="orderProcessingTime"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="max-w-md pt-1">
+              <div className="mt-4 flex flex-col justify-between gap-3 rounded-xl border border-t border-emerald-100 border-slate-200/70 bg-white/95 p-3 pt-4 shadow-2xs sm:flex-row sm:items-center sm:p-3.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                    <Clock className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-800">
+                      Estimated Order Processing Time
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      Preparation duration before an order is ready for dispatch or customer pickup.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-full shrink-0 sm:w-56">
+                  <Controller
+                    name="orderProcessingTime"
+                    control={control}
+                    render={({ field }) => (
                       <Select
                         disabled={isNonCommissionDisabled}
                         value={field.value}
@@ -119,9 +123,7 @@ export function StoreSameDayDeliveryFields({
                       >
                         <SelectTrigger
                           id="orderProcessingTime"
-                          className={cn(
-                            "h-11! w-full rounded-xl border-slate-200 bg-white text-sm",
-                          )}
+                          className="h-10 w-full rounded-xl border-slate-200 bg-white text-xs font-semibold shadow-2xs focus-visible:ring-emerald-500/20"
                         >
                           <SelectValue placeholder="Select processing time" />
                         </SelectTrigger>
@@ -130,20 +132,20 @@ export function StoreSameDayDeliveryFields({
                             <SelectItem key={opt} value={opt}>
                               <div className="flex items-center gap-2">
                                 <Clock className="size-3.5 text-emerald-600" />
-                                <span>{opt}</span>
+                                <span className="text-xs font-medium">{opt}</span>
                               </div>
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                  )}
-                />
+                    )}
+                  />
+                </div>
               </div>
             )}
           </>
         )}
       />
-    </>
+    </div>
   );
 }

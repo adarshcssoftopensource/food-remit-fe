@@ -157,6 +157,7 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
             submitLabel="Update"
             isSubmitting={isSubmitting}
             mode="edit"
+            onCancel={() => onOpenChange(false)}
           />
         </div>
       </DialogContent>
