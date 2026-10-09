@@ -175,7 +175,7 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-2 text-[10px] font-semibold tracking-wide text-slate-500 uppercase dark:border-slate-800">
+              <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-2 text-[10px] font-bold tracking-wide text-slate-600 uppercase dark:border-slate-800 dark:text-slate-300">
                 <span className="truncate">
                   Item · Your price + Markup ({markupPercent}%) = Customer price
                 </span>
@@ -218,16 +218,18 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                       </p>
                       {unit.isAvailable ? (
                         <p className="mt-1 flex flex-wrap items-center gap-x-1 text-[11px] tabular-nums">
-                          <span className="font-semibold text-slate-700 dark:text-slate-200">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {formatMoney(unit.vendor, symbol)}
                           </span>
                           {unit.discountPercent > 0 && (
                             <DiscountBadge size="xs" percent={unit.discountPercent} />
                           )}
-                          <span className="text-slate-400">
+                          <span className="font-medium text-slate-700 dark:text-slate-300">
                             + {formatMoney(unit.markup, symbol)}
                           </span>
-                          <span className="text-slate-400">=</span>
+                          <span className="font-semibold text-slate-600 dark:text-slate-300">
+                            =
+                          </span>
                           <span className="text-primary font-bold">
                             {formatMoney(unit.customer, symbol)}
                           </span>

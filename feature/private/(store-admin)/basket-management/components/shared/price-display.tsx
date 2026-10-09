@@ -80,14 +80,14 @@ export function PriceStack({
       {hasDiscount && (
         <span
           className={cn(
-            "text-slate-400 tabular-nums line-through",
+            "text-slate-500 tabular-nums line-through dark:text-slate-400",
             size === "xl" || size === "lg" ? "text-sm" : "text-[11px]",
           )}
         >
           {formatMoney(originalPrice, currencySymbol)}
         </span>
       )}
-      {caption && <span className="text-[10px] text-slate-400">{caption}</span>}
+      {caption && <span className="text-[10px] text-slate-500 dark:text-slate-400">{caption}</span>}
     </div>
   );
 }
