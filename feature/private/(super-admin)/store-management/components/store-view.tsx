@@ -231,24 +231,22 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
         </div>
       </div>
 
-      {store.partnerLead && (
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="md:col-span-2">
-            <OperationalPreferencesCard
-              lead={store.partnerLead}
-              storeSameDayDelivery={store.sameDayDelivery}
-              storeOrderProcessingTime={store.orderProcessingTime}
-              storePerishableProducts={store.perishableProducts}
-              storeRefrigeratedProducts={store.refrigeratedProducts}
-              storeFrozenProducts={store.frozenProducts}
-            />
-          </div>
-          <KycVerificationCard lead={store.partnerLead} />
-          <BankVerificationCard lead={store.partnerLead} />
-          <AdditionalDocumentsCard lead={store.partnerLead} />
-          <LocationDetailsCard lead={store.partnerLead} />
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <OperationalPreferencesCard
+            lead={store.partnerLead}
+            storeSameDayDelivery={store.sameDayDelivery}
+            storeOrderProcessingTime={store.orderProcessingTime}
+            storePerishableProducts={store.perishableProducts}
+            storeRefrigeratedProducts={store.refrigeratedProducts}
+            storeFrozenProducts={store.frozenProducts}
+          />
         </div>
-      )}
+        {store.partnerLead && <KycVerificationCard lead={store.partnerLead} />}
+        {store.partnerLead && <BankVerificationCard lead={store.partnerLead} />}
+        {store.partnerLead && <AdditionalDocumentsCard lead={store.partnerLead} />}
+        {store.partnerLead && <LocationDetailsCard lead={store.partnerLead} />}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,13 @@
 "use client";
 
-import { Control, Controller, FieldErrors, UseFormSetValue, useWatch } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  FieldValues,
+  UseFormSetValue,
+  useWatch,
+} from "react-hook-form";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
 
 import { FieldLabel } from "@/components/ui/field";
@@ -465,5 +472,133 @@ export function StoreSameDayDeliveryFields({
         )}
       />
     </>
+  );
+}
+
+export const PRODUCT_SCREENING_ITEMS = [
+  {
+    name: "perishableProducts" as const,
+    label: "Perishable Products",
+    description: "Items subject to decay or spoilage, requiring prompt delivery or pickup.",
+  },
+  {
+    name: "refrigeratedProducts" as const,
+    label: "Refrigerated Products",
+    description: "Items requiring cold storage conditions to maintain freshness.",
+  },
+  {
+    name: "frozenProducts" as const,
+    label: "Frozen Products",
+    description: "Items requiring sub-zero freezing and frozen preservation.",
+  },
+];
+
+export interface StoreProductScreeningFieldsProps<TFieldValues extends FieldValues = any> {
+  control: Control<TFieldValues>;
+  setValue?: UseFormSetValue<TFieldValues>;
+  disabled?: boolean;
+}
+
+export function StoreProductScreeningFields<TFieldValues extends FieldValues = any>({
+  control,
+  setValue,
+  disabled = false,
+}: StoreProductScreeningFieldsProps<TFieldValues>) {
+  return (
+    <div className="flex flex-col gap-2 border-t border-slate-100 pt-6 dark:border-slate-800/60">
+      <div>
+        <FieldLabel className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          Product Screening
+        </FieldLabel>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Indicate whether your Store currently carries perishable, refrigerated, or frozen
+          products.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-3">
+        {PRODUCT_SCREENING_ITEMS.map((item) => (
+          <div
+            key={item.name}
+            className="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-colors dark:border-slate-800 dark:bg-slate-900/40"
+          >
+            <div className="mb-3">
+              <span className="text-[11px] font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                {item.label}
+              </span>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                {item.description}
+              </p>
+            </div>
+
+            <Controller
+              name={item.name as any}
+              control={control}
+              render={({ field }) => (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => {
+                      if (setValue) {
+                        setValue(item.name as any, true as any, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                      } else {
+                        field.onChange(true);
+                      }
+                    }}
+                    className={cn(
+                      "flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60",
+                      field.value === true
+                        ? "border-emerald-600 bg-emerald-50 text-emerald-950 shadow-sm ring-2 ring-emerald-600/20"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200",
+                    )}
+                  >
+                    <CheckCircle2
+                      className={cn(
+                        "size-3.5",
+                        field.value === true ? "text-emerald-600" : "text-slate-400",
+                      )}
+                    />
+                    Yes
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => {
+                      if (setValue) {
+                        setValue(item.name as any, false as any, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                      } else {
+                        field.onChange(false);
+                      }
+                    }}
+                    className={cn(
+                      "flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60",
+                      field.value === false
+                        ? "border-slate-800 bg-slate-900 text-white shadow-sm dark:border-slate-600 dark:bg-slate-700"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200",
+                    )}
+                  >
+                    <XCircle
+                      className={cn(
+                        "size-3.5",
+                        field.value === false ? "text-white" : "text-slate-400",
+                      )}
+                    />
+                    No
+                  </button>
+                </div>
+              )}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

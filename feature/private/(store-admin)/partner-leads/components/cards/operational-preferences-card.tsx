@@ -12,26 +12,34 @@ export function OperationalPreferencesCard({
   storeRefrigeratedProducts,
   storeFrozenProducts,
 }: {
-  lead: PartnerLeadData;
-  storeSameDayDelivery?: boolean;
+  lead?: PartnerLeadData | null;
+  storeSameDayDelivery?: boolean | null;
   storeOrderProcessingTime?: string | null;
-  storePerishableProducts?: boolean;
-  storeRefrigeratedProducts?: boolean;
-  storeFrozenProducts?: boolean;
+  storePerishableProducts?: boolean | null;
+  storeRefrigeratedProducts?: boolean | null;
+  storeFrozenProducts?: boolean | null;
 }) {
   const offersSameDay =
-    storeSameDayDelivery !== undefined
+    storeSameDayDelivery !== undefined && storeSameDayDelivery !== null
       ? storeSameDayDelivery === true
-      : lead.sameDayDelivery === true;
+      : lead?.sameDayDelivery === true;
   const processingTime =
-    storeOrderProcessingTime !== undefined ? storeOrderProcessingTime : lead.orderProcessingTime;
+    storeOrderProcessingTime !== undefined && storeOrderProcessingTime !== null
+      ? storeOrderProcessingTime
+      : lead?.orderProcessingTime;
 
   const carriesPerishable =
-    storePerishableProducts !== undefined ? storePerishableProducts : lead.perishableProducts;
+    storePerishableProducts !== undefined && storePerishableProducts !== null
+      ? storePerishableProducts === true
+      : lead?.perishableProducts === true;
   const carriesRefrigerated =
-    storeRefrigeratedProducts !== undefined ? storeRefrigeratedProducts : lead.refrigeratedProducts;
+    storeRefrigeratedProducts !== undefined && storeRefrigeratedProducts !== null
+      ? storeRefrigeratedProducts === true
+      : lead?.refrigeratedProducts === true;
   const carriesFrozen =
-    storeFrozenProducts !== undefined ? storeFrozenProducts : lead.frozenProducts;
+    storeFrozenProducts !== undefined && storeFrozenProducts !== null
+      ? storeFrozenProducts === true
+      : lead?.frozenProducts === true;
 
   return (
     <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
@@ -125,46 +133,51 @@ export function OperationalPreferencesCard({
             </div>
           </div>
 
-          <Separator className="bg-slate-100" />
-
-          <div>
-            <h4 className="mb-3 text-xs font-bold tracking-wider text-slate-500 uppercase">
-              Work Preferences
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {lead.workPreferences.length > 0 ? (
-                lead.workPreferences.map((pref) => (
-                  <Badge
-                    key={pref}
-                    variant="secondary"
-                    className="border-emerald-200/60 bg-emerald-50 px-3 py-1 font-bold text-emerald-700 hover:bg-emerald-100"
-                  >
-                    {pref}
-                  </Badge>
-                ))
-              ) : (
-                <span className="text-sm font-medium text-slate-400">None selected</span>
-              )}
-            </div>
-          </div>
-          <Separator className="bg-slate-100" />
-          <div>
-            <h4 className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
-              Inventory Management
-            </h4>
-            <p className="text-sm font-semibold text-slate-900">
-              {lead.inventoryManagement || "Not specified"}
-            </p>
-          </div>
-          <Separator className="bg-slate-100" />
-          <div>
-            <h4 className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
-              Languages Spoken
-            </h4>
-            <p className="text-sm font-semibold text-slate-900">
-              {lead.languages?.length > 0 ? lead.languages.join(", ") : "Not specified"}
-            </p>
-          </div>
+          {lead && (
+            <>
+              <Separator className="bg-slate-100" />
+              <div>
+                <h4 className="mb-3 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                  Work Preferences
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {lead.workPreferences && lead.workPreferences.length > 0 ? (
+                    lead.workPreferences.map((pref) => (
+                      <Badge
+                        key={pref}
+                        variant="secondary"
+                        className="border-emerald-200/60 bg-emerald-50 px-3 py-1 font-bold text-emerald-700 hover:bg-emerald-100"
+                      >
+                        {pref}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-sm font-medium text-slate-400">None selected</span>
+                  )}
+                </div>
+              </div>
+              <Separator className="bg-slate-100" />
+              <div>
+                <h4 className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                  Inventory Management
+                </h4>
+                <p className="text-sm font-semibold text-slate-900">
+                  {lead.inventoryManagement || "Not specified"}
+                </p>
+              </div>
+              <Separator className="bg-slate-100" />
+              <div>
+                <h4 className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                  Languages Spoken
+                </h4>
+                <p className="text-sm font-semibold text-slate-900">
+                  {lead.languages && lead.languages.length > 0
+                    ? lead.languages.join(", ")
+                    : "Not specified"}
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>

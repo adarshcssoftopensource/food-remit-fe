@@ -15,6 +15,9 @@ export const storeSchema = z
     foodRemitCommission: z.coerce.number().min(0).max(100).optional(),
     sameDayDelivery: z.boolean().optional(),
     orderProcessingTime: z.string().optional(),
+    perishableProducts: z.boolean().optional(),
+    refrigeratedProducts: z.boolean().optional(),
+    frozenProducts: z.boolean().optional(),
 
     managerImage: z.any().optional(),
     managerFirstName: z.string().min(1, "First name is required"),

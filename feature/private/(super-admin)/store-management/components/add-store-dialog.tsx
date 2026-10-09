@@ -67,6 +67,9 @@ export function AddStoreDialog() {
       } else {
         storeFormData.append("orderProcessingTime", "");
       }
+      storeFormData.append("perishableProducts", values.perishableProducts ? "true" : "false");
+      storeFormData.append("refrigeratedProducts", values.refrigeratedProducts ? "true" : "false");
+      storeFormData.append("frozenProducts", values.frozenProducts ? "true" : "false");
       if (values.storeTax !== undefined) storeFormData.append("storeTax", String(values.storeTax));
       if (values.foodRemitCommission !== undefined)
         storeFormData.append("foodRemitCommission", String(values.foodRemitCommission));

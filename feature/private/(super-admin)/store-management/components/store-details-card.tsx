@@ -13,6 +13,7 @@ import { PhoneField } from "./phone-field";
 import { FormField } from "./store-form-field";
 import { StoreFormCard } from "./store-form-card";
 import { StoreSameDayDeliveryFields } from "./store-same-day-delivery-fields";
+import { StoreProductScreeningFields } from "@/feature/private/(shared)/profile/components/store-information-fields";
 
 interface StoreDetailsCardProps {
   control: Control<StoreFormValues>;
@@ -180,6 +181,12 @@ export function StoreDetailsCard({
         control={control}
         setValue={setValue}
         isNonCommissionDisabled={isNonCommissionDisabled}
+      />
+
+      <StoreProductScreeningFields
+        control={control}
+        setValue={setValue}
+        disabled={isNonCommissionDisabled}
       />
 
       <Controller

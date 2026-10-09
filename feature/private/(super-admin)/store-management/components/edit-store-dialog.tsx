@@ -43,6 +43,9 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
     foodRemitCommission: store.foodRemitCommission,
     sameDayDelivery: store.sameDayDelivery ?? false,
     orderProcessingTime: store.orderProcessingTime ?? "",
+    perishableProducts: store.perishableProducts ?? false,
+    refrigeratedProducts: store.refrigeratedProducts ?? false,
+    frozenProducts: store.frozenProducts ?? false,
     managerImage: store.managerImage,
     managerFirstName: store.managerFirstName,
     managerLastName: store.managerLastName,
@@ -102,6 +105,9 @@ export function EditStoreDialog({ store, open, onOpenChange }: EditStoreDialogPr
       } else {
         storeFormData.append("orderProcessingTime", "");
       }
+      storeFormData.append("perishableProducts", values.perishableProducts ? "true" : "false");
+      storeFormData.append("refrigeratedProducts", values.refrigeratedProducts ? "true" : "false");
+      storeFormData.append("frozenProducts", values.frozenProducts ? "true" : "false");
       if (values.storeTax !== undefined) storeFormData.append("storeTax", String(values.storeTax));
       if (values.foodRemitCommission !== undefined)
         storeFormData.append("foodRemitCommission", String(values.foodRemitCommission));

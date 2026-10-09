@@ -90,6 +90,11 @@ export interface CreateStorePayload {
   autoAbandonRemark?: string;
   status?: string;
   assignedStoreManager?: string;
+  sameDayDelivery?: boolean;
+  orderProcessingTime?: string;
+  perishableProducts?: boolean;
+  refrigeratedProducts?: boolean;
+  frozenProducts?: boolean;
 }
 
 export interface CreateStoreManagerResponse {

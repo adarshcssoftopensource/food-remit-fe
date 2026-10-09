@@ -30,6 +30,7 @@ import {
   StoreImageField,
   StoreLocationFields,
   StorePhoneField,
+  StoreProductScreeningFields,
   StoreSameDayDeliveryFields,
 } from "./store-information-fields";
 
@@ -97,6 +98,9 @@ export function StoreInformation() {
       storeZipCode: "",
       sameDayDelivery: false,
       orderProcessingTime: "",
+      perishableProducts: false,
+      refrigeratedProducts: false,
+      frozenProducts: false,
     },
   });
 
@@ -155,6 +159,18 @@ export function StoreInformation() {
         storeZipCode: storeData.zipCode || storeData.partnerLead?.zipCode || "",
         sameDayDelivery: storeData.sameDayDelivery ?? false,
         orderProcessingTime: storeData.orderProcessingTime || "",
+        perishableProducts:
+          storeData.perishableProducts !== undefined && storeData.perishableProducts !== null
+            ? storeData.perishableProducts === true
+            : storeData.partnerLead?.perishableProducts === true,
+        refrigeratedProducts:
+          storeData.refrigeratedProducts !== undefined && storeData.refrigeratedProducts !== null
+            ? storeData.refrigeratedProducts === true
+            : storeData.partnerLead?.refrigeratedProducts === true,
+        frozenProducts:
+          storeData.frozenProducts !== undefined && storeData.frozenProducts !== null
+            ? storeData.frozenProducts === true
+            : storeData.partnerLead?.frozenProducts === true,
       });
     }
   }, [storeData, reset, detectedTargetCountry]);
@@ -173,6 +189,9 @@ export function StoreInformation() {
       } else {
         formData.append("orderProcessingTime", "");
       }
+      formData.append("perishableProducts", values.perishableProducts ? "true" : "false");
+      formData.append("refrigeratedProducts", values.refrigeratedProducts ? "true" : "false");
+      formData.append("frozenProducts", values.frozenProducts ? "true" : "false");
 
       const storeImageFile = Array.isArray(values.storeImage)
         ? values.storeImage[0]
@@ -299,6 +318,12 @@ export function StoreInformation() {
               />
 
               <StoreSameDayDeliveryFields control={control} errors={errors} setValue={setValue} />
+
+              <StoreProductScreeningFields
+                control={control}
+                setValue={setValue}
+                disabled={isEmployee}
+              />
             </div>
 
             {!needsBankVerification && (
@@ -316,24 +341,22 @@ export function StoreInformation() {
         </CardContent>
       </Card>
 
-      {partnerLead && (
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-          <ProfileBankVerification />
-          <KycVerificationCard lead={partnerLead} />
-          <div className="md:col-span-2">
-            <OperationalPreferencesCard
-              lead={partnerLead}
-              storeSameDayDelivery={storeData?.sameDayDelivery}
-              storeOrderProcessingTime={storeData?.orderProcessingTime}
-              storePerishableProducts={storeData?.perishableProducts}
-              storeRefrigeratedProducts={storeData?.refrigeratedProducts}
-              storeFrozenProducts={storeData?.frozenProducts}
-            />
-          </div>
-          <AdditionalDocumentsCard lead={partnerLead} />
-          <LocationDetailsCard lead={partnerLead} />
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <ProfileBankVerification />
+        {partnerLead && <KycVerificationCard lead={partnerLead} />}
+        <div className="md:col-span-2">
+          <OperationalPreferencesCard
+            lead={partnerLead}
+            storeSameDayDelivery={storeData?.sameDayDelivery}
+            storeOrderProcessingTime={storeData?.orderProcessingTime}
+            storePerishableProducts={storeData?.perishableProducts}
+            storeRefrigeratedProducts={storeData?.refrigeratedProducts}
+            storeFrozenProducts={storeData?.frozenProducts}
+          />
         </div>
-      )}
+        {partnerLead && <AdditionalDocumentsCard lead={partnerLead} />}
+        {partnerLead && <LocationDetailsCard lead={partnerLead} />}
+      </div>
     </div>
   );
 }
