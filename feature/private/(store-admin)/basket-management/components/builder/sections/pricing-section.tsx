@@ -314,7 +314,11 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
           />
           <SummaryRow
             label={`Food Remit Markup (${markupPercentLabel}%)`}
-            hint="Added on top of your basket price to create the customer price."
+            hint={
+              pricing && pricing.effectiveMarkupPercent < pricing.markupPercent
+                ? `Platform markup is ${pricing.markupPercent}%, but some items in this basket are exempt from markup, so the basket rate is lower.`
+                : "Added on top of your basket price to create the customer price."
+            }
             value={pricing ? `+${formatMoney(pricing.markupAmount, symbol)}` : "—"}
             tone="positive"
           />
