@@ -35,16 +35,16 @@ function OptionCard({
     <div
       onClick={onActivate}
       className={cn(
-        "cursor-text rounded-2xl border-2 p-4 transition-all",
+        "cursor-text rounded-2xl border-2 p-3.5 transition-all sm:p-4",
         active
           ? "border-primary bg-emerald-50/60 shadow-sm dark:bg-emerald-950/20"
           : "border-slate-200/80 bg-slate-50/50 hover:border-emerald-200 dark:border-slate-800 dark:bg-slate-900/40",
       )}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2.5 sm:gap-3">
         <span
           className={cn(
-            "flex size-9 shrink-0 items-center justify-center rounded-xl transition-colors",
+            "flex size-8 shrink-0 items-center justify-center rounded-xl transition-colors sm:size-9",
             active ? "bg-primary text-white" : "bg-white text-slate-500 dark:bg-slate-800",
           )}
         >
@@ -76,7 +76,7 @@ function SummaryRow({
   return (
     <div
       className={cn(
-        "flex items-start justify-between gap-4 px-4 py-3",
+        "flex items-start justify-between gap-3 px-3.5 py-3 sm:gap-4 sm:px-4",
         emphasis && "bg-emerald-50/70 dark:bg-emerald-950/30",
       )}
     >
@@ -95,7 +95,7 @@ function SummaryRow({
       <p
         className={cn(
           "shrink-0 font-black tabular-nums",
-          emphasis ? "text-xl" : "text-base",
+          emphasis ? "text-lg sm:text-xl" : "text-[15px] sm:text-base",
           tone === "negative" && "text-rose-600",
           tone === "positive" && "text-slate-700 dark:text-slate-200",
           tone === "primary" && "text-primary",
@@ -196,12 +196,12 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
           >
             <label
               htmlFor="basket-discount-percent"
-              className="flex items-center justify-between gap-3"
+              className="flex flex-col gap-2 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between min-[420px]:gap-3"
             >
               <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                 Discount Percentage
               </span>
-              <span className="relative w-36">
+              <span className="relative w-full min-[420px]:w-36">
                 <NumericInput
                   id="basket-discount-percent"
                   value={discountInput}
@@ -224,12 +224,12 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
           >
             <label
               htmlFor="basket-manual-price"
-              className="flex items-center justify-between gap-3"
+              className="flex flex-col gap-2 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between min-[420px]:gap-3"
             >
               <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                 Manual Vendor Basket Price{symbol ? ` (${symbol})` : ""}
               </span>
-              <span className="relative w-36">
+              <span className="relative w-full min-[420px]:w-36">
                 {symbol && (
                   <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm font-semibold text-slate-400">
                     {symbol}
@@ -254,7 +254,7 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
             )}
           </OptionCard>
 
-          <div className="flex gap-3 rounded-2xl border border-sky-200/80 bg-sky-50/70 p-4 dark:border-sky-900/60 dark:bg-sky-950/20">
+          <div className="flex gap-3 rounded-2xl border border-sky-200/80 bg-sky-50/70 p-3.5 sm:p-4 dark:border-sky-900/60 dark:bg-sky-950/20">
             <Info className="mt-0.5 size-5 shrink-0 text-sky-600" />
             <div className="space-y-1.5 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
               <p className="text-sm font-bold text-slate-800 dark:text-slate-100">

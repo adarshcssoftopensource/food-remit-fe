@@ -9,7 +9,6 @@ export const BASKET_ENDPOINTS = {
   UPDATE: (id: string) => `/admin/baskets/${id}`,
   UPDATE_STATUS: (id: string) => `/admin/baskets/${id}/status`,
   PUBLISH: (id: string) => `/admin/baskets/${id}/publish`,
-  SCHEDULE_INACTIVE: (id: string) => `/admin/baskets/${id}/schedule-inactive`,
   DELETE: (id: string) => `/admin/baskets/${id}`,
   GET_RECYCLED: "/admin/baskets/recycle-bin",
   RESTORE: (id: string) => `/admin/baskets/recycle-bin/${id}/restore`,

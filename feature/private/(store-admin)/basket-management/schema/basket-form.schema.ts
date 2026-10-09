@@ -12,6 +12,8 @@ import type {
   BasketItemInfo,
   BasketPricingTotals,
   BasketType,
+  CatalogueItem,
+  CatalogueVariant,
   UpsertBasketPayload,
 } from "../types/basket.types";
 
@@ -27,14 +29,50 @@ const BASKET_TYPES = [
 /** Catalogue prices captured when an item is added, used until server pricing arrives */
 export type SelectedBasketItem = {
   itemId: string;
+  itemOptionId: string | null;
+  optionName: string | null;
   quantity: number;
   item: BasketItemInfo & {
     vendorPrice?: number;
     discountPercent?: number;
     discountedVendorPrice?: number;
     customerPrice?: number;
+    /** Known when added from the catalogue, so the variant can be switched in place */
+    variants?: CatalogueVariant[];
   };
 };
+
+/** Same key the API uses for pricing lines */
+export const basketLineKey = (line: { itemId: string; itemOptionId?: string | null }) =>
+  `${line.itemId}:${line.itemOptionId ?? ""}`;
+
+/** Basket line for a catalogue product, using the variant's size and prices when given */
+export function selectionFromCatalogue(
+  item: CatalogueItem,
+  variant: CatalogueVariant | null | undefined,
+  quantity = 1,
+): SelectedBasketItem {
+  if (!variant) return { itemId: item.id, itemOptionId: null, optionName: null, quantity, item };
+  return {
+    itemId: item.id,
+    itemOptionId: variant.id,
+    optionName: variant.optionName,
+    quantity,
+    item: {
+      ...item,
+      netWeight: variant.netWeight,
+      weightUnit: variant.weightUnit,
+      itemsPerPack: variant.quantityPerPack,
+      stockQuantity: variant.stockQuantity,
+      optionName: variant.optionName,
+      variantCount: item.variants.length,
+      vendorPrice: variant.vendorPrice,
+      discountPercent: variant.discountPercent,
+      discountedVendorPrice: variant.discountedVendorPrice,
+      customerPrice: variant.customerPrice,
+    },
+  };
+}
 
 /** Draft-level shape; publish completeness is checked by `getPublishIssues` */
 export const basketFormSchema = z.object({
@@ -64,6 +102,8 @@ export const basketFormSchema = z.object({
     .array(
       z.object({
         itemId: z.string(),
+        itemOptionId: z.string().nullable(),
+        optionName: z.string().nullable(),
         quantity: z.number().int().min(1).max(BASKET_ITEM_QUANTITY_MAX),
         item: z.custom<SelectedBasketItem["item"]>(),
       }),
@@ -113,6 +153,8 @@ export function basketToFormValues(basket: BasketDetail): BasketFormValues {
       .filter((line) => line.item)
       .map((line) => ({
         itemId: line.itemId,
+        itemOptionId: line.itemOptionId,
+        optionName: line.optionName,
         quantity: line.quantity,
         item: {
           ...line.item!,
@@ -144,10 +186,22 @@ export function formValuesToPayload(
     availableFrom: custom ? values.availableFrom : null,
     availableUntil: custom ? values.availableUntil : null,
     availableDays: custom ? values.availableDays : [],
-    items: values.items.map(({ itemId, quantity }) => ({ itemId, quantity })),
+    items: values.items.map(toItemInput),
     publish: options.publish,
   };
 }
+
+export const toItemInput = ({
+  itemId,
+  itemOptionId,
+  optionName,
+  quantity,
+}: Pick<SelectedBasketItem, "itemId" | "itemOptionId" | "optionName" | "quantity">) => ({
+  itemId,
+  itemOptionId,
+  optionName,
+  quantity,
+});
 
 export function pricingOptionsOf(
   values: Pick<BasketFormValues, "pricingMode" | "vendorDiscountPercent" | "manualVendorPrice">,

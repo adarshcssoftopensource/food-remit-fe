@@ -26,18 +26,3 @@ export function usePublishBasket() {
     },
   );
 }
-
-/** Schedule an Active basket to become Inactive; `at: null` cancels the schedule */
-export function useScheduleBasketInactive() {
-  const invalidate = useInvalidateBaskets();
-  return useApiMutation<{ message: string }, { id: string; at: string | null }>(
-    "patch",
-    (body) => BASKET_ENDPOINTS.SCHEDULE_INACTIVE(body.id),
-    {
-      onSuccess: (res) => {
-        successToast({ description: res.message });
-        void invalidate();
-      },
-    },
-  );
-}

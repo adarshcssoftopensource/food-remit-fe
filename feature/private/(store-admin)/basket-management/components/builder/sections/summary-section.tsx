@@ -14,11 +14,14 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { useFormContext, useWatch } from "react-hook-form";
 
+import { cn } from "@/lib/utils";
+
 import { BASKET_TYPE_MAP } from "../../../../../../../constants/basket.constants";
-import type {
-  BasketFormValues,
-  BasketSectionId,
-  PublishIssue,
+import {
+  basketLineKey,
+  type BasketFormValues,
+  type BasketSectionId,
+  type PublishIssue,
 } from "../../../schema/basket-form.schema";
 import type { BasketPricingPreview } from "../../../types/basket.types";
 import { formatItemSize, formatMoney } from "../../../utils/basket-format";
@@ -38,8 +41,12 @@ function ProductDetailsTable({
 }) {
   const symbol = pricing?.currencySymbol ?? "";
   const money = (n: number | undefined) => (pricing ? formatMoney(n, symbol) : "—");
-  const lineById = new Map(pricing?.lines.map((l) => [l.itemId, l]));
-  const rows = (values.items ?? []).map((entry) => ({ entry, line: lineById.get(entry.itemId) }));
+  const lineByKey = new Map(pricing?.lines.map((l) => [l.lineKey, l]));
+  const rows = (values.items ?? []).map((entry) => ({
+    key: basketLineKey(entry),
+    entry,
+    line: lineByKey.get(basketLineKey(entry)),
+  }));
   const sum = (pick: (l: NonNullable<(typeof rows)[number]["line"]>) => number) =>
     rows.reduce((acc, r) => acc + (r.line ? pick(r.line) : 0), 0);
 
@@ -55,130 +62,220 @@ function ProductDetailsTable({
   const td = "px-3 py-3 text-right tabular-nums whitespace-nowrap";
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800">
-      <table className="w-full min-w-245 text-sm">
-        <thead className="bg-slate-50 text-[10px] tracking-wide text-slate-500 uppercase dark:bg-slate-900">
-          <tr>
-            <th className="px-3 py-2.5 text-left font-semibold">Product</th>
-            <th className="px-3 py-2.5 text-left font-semibold">Category</th>
-            <th className={th}>Qty</th>
-            <th className={th}>
-              Vendor price
-              <span className="block text-[9px] font-medium normal-case">per unit</span>
-            </th>
-            <th className={th}>
-              Markup
-              <span className="block text-[9px] font-medium normal-case">per unit</span>
-            </th>
-            <th className={th}>
-              Customer price
-              <span className="block text-[9px] font-medium normal-case">per unit</span>
-            </th>
-            <th className={th}>
-              Tax
-              <span className="block text-[9px] font-medium normal-case">
-                {pricing ? `${pricing.taxPercent}% · line` : "line"}
-              </span>
-            </th>
-            <th className={th}>
-              Vendor total
-              <span className="block text-[9px] font-medium normal-case">line</span>
-            </th>
-            <th className={th}>
-              Line total
-              <span className="block text-[9px] font-medium normal-case">customer</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-          {rows.map(({ entry, line }) => {
-            const item = entry.item;
-            const size = formatItemSize(item);
-            const unavailable = line && !line.isAvailable;
-            return (
-              <tr
-                key={entry.itemId}
-                className={unavailable ? "bg-amber-50/70 dark:bg-amber-950/20" : undefined}
-              >
-                <td className="px-3 py-3">
-                  <div className="flex items-center gap-3">
-                    <ProductThumb
-                      src={item.productImageUrl}
-                      alt={item.productName}
-                      className="size-11 shrink-0 rounded-lg"
-                      sizes="88px"
-                    />
-                    <div className="min-w-0">
-                      <p className="max-w-56 truncate font-semibold text-slate-900 dark:text-white">
-                        {item.productName}
-                      </p>
-                      <p className="text-muted-foreground text-[11px]">
-                        {size || "—"}
-                        {unavailable ? (
-                          <span className="ml-1 inline-flex items-center gap-0.5 font-semibold text-amber-700">
-                            <AlertTriangle className="size-3" />
-                            {line.unavailableReason ?? "Unavailable"}
-                          </span>
-                        ) : (
-                          <span className="ml-1">· {item.stockQuantity} in stock</span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-3 py-3 text-slate-600 dark:text-slate-300">
-                  {item.category?.categoryName ?? "—"}
-                </td>
-                <td className={`${td} font-bold`}>× {entry.quantity}</td>
-                <td className={td}>
-                  <p className="font-semibold">{money(line?.discountedUnitPrice)}</p>
-                  {line && line.discountPercent > 0 && (
-                    <p className="flex items-center justify-end gap-1">
-                      <span className="text-[10px] text-slate-400 line-through">
-                        {money(line.vendorUnitPrice)}
+    <>
+      <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200/80 md:hidden dark:divide-slate-800 dark:border-slate-800">
+        {rows.map(({ key, entry, line }) => {
+          const item = entry.item;
+          const optionName = entry.optionName ?? item.optionName;
+          const size = formatItemSize(item);
+          const unavailable = line && !line.isAvailable;
+          return (
+            <li
+              key={key}
+              className={cn(
+                "space-y-2.5 p-3",
+                unavailable && "bg-amber-50/70 dark:bg-amber-950/20",
+              )}
+            >
+              <div className="flex items-start gap-3">
+                <ProductThumb
+                  src={item.productImageUrl}
+                  alt={item.productName}
+                  className="size-12 shrink-0 rounded-lg"
+                  sizes="96px"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="line-clamp-2 text-sm leading-snug font-semibold text-slate-900 dark:text-white">
+                    {item.productName}
+                  </p>
+                  <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px]">
+                    {optionName && (
+                      <span className="max-w-full truncate rounded-md bg-violet-50 px-1.5 py-px font-semibold text-violet-700 dark:bg-violet-950/50 dark:text-violet-300">
+                        {optionName}
                       </span>
-                      <DiscountBadge size="xs" percent={line.discountPercent} />
+                    )}
+                    <span className="text-muted-foreground truncate">
+                      {[item.category?.categoryName, size].filter(Boolean).join(" · ") || "—"}
+                    </span>
+                  </div>
+                  {unavailable && (
+                    <p className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-amber-700">
+                      <AlertTriangle className="size-3" />
+                      {line.unavailableReason ?? "Unavailable"}
                     </p>
                   )}
-                </td>
-                <td className={`${td} text-slate-600 dark:text-slate-300`}>
-                  <p>+{money(line?.markupUnitAmount)}</p>
-                  {line && (
-                    <p className="text-[10px] text-slate-400">
-                      {Number(line.markupPercent.toFixed(2))}%
-                    </p>
-                  )}
-                </td>
-                <td className={`${td} font-semibold`}>{money(line?.customerUnitPrice)}</td>
-                <td className={`${td} text-slate-500`}>{money(line?.taxLineTotal)}</td>
-                <td className={`${td} text-slate-600 dark:text-slate-300`}>
-                  {money(line?.discountedLineTotal)}
-                </td>
-                <td className={`${td} font-black text-slate-900 dark:text-white`}>
-                  {money(line?.customerLineTotal)}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-        <tfoot className="bg-slate-50/80 text-sm dark:bg-slate-900/60">
-          <tr>
-            <td colSpan={2} className="px-3 py-3 font-semibold text-slate-600 dark:text-slate-300">
-              {rows.length} items
-            </td>
-            <td className={`${td} font-bold`}>{pricing?.totalUnits ?? "—"}</td>
-            <td colSpan={3} className="px-3 py-3 text-right text-[11px] text-slate-500">
-              Totals before basket discount
-            </td>
-            <td className={`${td} font-semibold`}>{money(sum((l) => l.taxLineTotal))}</td>
-            <td className={`${td} font-semibold`}>{money(sum((l) => l.discountedLineTotal))}</td>
-            <td className={`${td} text-base font-black`}>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="text-sm font-black text-slate-900 tabular-nums dark:text-white">
+                    {money(line?.customerLineTotal)}
+                  </p>
+                  <p className="text-[11px] font-semibold text-slate-500">× {entry.quantity}</p>
+                </div>
+              </div>
+              <dl className="grid grid-cols-2 gap-x-3 gap-y-1 rounded-xl bg-slate-50 px-3 py-2 text-[11px] tabular-nums min-[420px]:grid-cols-3 dark:bg-slate-900">
+                {(
+                  [
+                    ["Vendor / unit", money(line?.discountedUnitPrice)],
+                    ["Markup / unit", `+${money(line?.markupUnitAmount)}`],
+                    ["Customer / unit", money(line?.customerUnitPrice)],
+                    ["Vendor total", money(line?.discountedLineTotal)],
+                    ["Tax", money(line?.taxLineTotal)],
+                  ] as const
+                ).map(([label, value]) => (
+                  <div key={label} className="min-w-0">
+                    <dt className="truncate text-slate-500">{label}</dt>
+                    <dd className="font-semibold text-slate-800 dark:text-slate-100">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </li>
+          );
+        })}
+        <li className="flex items-center justify-between gap-3 bg-slate-50/80 p-3 text-sm dark:bg-slate-900/60">
+          <span className="font-semibold text-slate-600 dark:text-slate-300">
+            {rows.length} items · {pricing?.totalUnits ?? "—"} units
+          </span>
+          <span className="text-right">
+            <span className="block text-[10px] text-slate-500">Before basket discount</span>
+            <span className="font-black tabular-nums">
               {money(sum((l) => l.customerLineTotal))}
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
+            </span>
+          </span>
+        </li>
+      </ul>
+      <div className="hidden overflow-x-auto rounded-2xl border border-slate-200/80 md:block dark:border-slate-800">
+        <table className="w-full min-w-245 text-sm">
+          <thead className="bg-slate-50 text-[10px] tracking-wide text-slate-500 uppercase dark:bg-slate-900">
+            <tr>
+              <th className="px-3 py-2.5 text-left font-semibold">Product</th>
+              <th className="px-3 py-2.5 text-left font-semibold">Category</th>
+              <th className={th}>Qty</th>
+              <th className={th}>
+                Vendor price
+                <span className="block text-[9px] font-medium normal-case">per unit</span>
+              </th>
+              <th className={th}>
+                Markup
+                <span className="block text-[9px] font-medium normal-case">per unit</span>
+              </th>
+              <th className={th}>
+                Customer price
+                <span className="block text-[9px] font-medium normal-case">per unit</span>
+              </th>
+              <th className={th}>
+                Tax
+                <span className="block text-[9px] font-medium normal-case">
+                  {pricing ? `${pricing.taxPercent}% · line` : "line"}
+                </span>
+              </th>
+              <th className={th}>
+                Vendor total
+                <span className="block text-[9px] font-medium normal-case">line</span>
+              </th>
+              <th className={th}>
+                Line total
+                <span className="block text-[9px] font-medium normal-case">customer</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            {rows.map(({ key, entry, line }) => {
+              const item = entry.item;
+              const size = formatItemSize(item);
+              const unavailable = line && !line.isAvailable;
+              return (
+                <tr
+                  key={key}
+                  className={unavailable ? "bg-amber-50/70 dark:bg-amber-950/20" : undefined}
+                >
+                  <td className="px-3 py-3">
+                    <div className="flex items-center gap-3">
+                      <ProductThumb
+                        src={item.productImageUrl}
+                        alt={item.productName}
+                        className="size-11 shrink-0 rounded-lg"
+                        sizes="88px"
+                      />
+                      <div className="min-w-0">
+                        <p className="max-w-56 truncate font-semibold text-slate-900 dark:text-white">
+                          {item.productName}
+                        </p>
+                        {(entry.optionName ?? item.optionName) && (
+                          <span className="mt-0.5 inline-flex max-w-56 truncate rounded-md bg-violet-50 px-1.5 py-px text-[10px] font-semibold text-violet-700 dark:bg-violet-950/50 dark:text-violet-300">
+                            {entry.optionName ?? item.optionName}
+                          </span>
+                        )}
+                        <p className="text-muted-foreground text-[11px]">
+                          {size || "—"}
+                          {unavailable ? (
+                            <span className="ml-1 inline-flex items-center gap-0.5 font-semibold text-amber-700">
+                              <AlertTriangle className="size-3" />
+                              {line.unavailableReason ?? "Unavailable"}
+                            </span>
+                          ) : (
+                            <span className="ml-1">· {item.stockQuantity} in stock</span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-3 py-3 text-slate-600 dark:text-slate-300">
+                    {item.category?.categoryName ?? "—"}
+                  </td>
+                  <td className={`${td} font-bold`}>× {entry.quantity}</td>
+                  <td className={td}>
+                    <p className="font-semibold">{money(line?.discountedUnitPrice)}</p>
+                    {line && line.discountPercent > 0 && (
+                      <p className="flex items-center justify-end gap-1">
+                        <span className="text-[10px] text-slate-400 line-through">
+                          {money(line.vendorUnitPrice)}
+                        </span>
+                        <DiscountBadge size="xs" percent={line.discountPercent} />
+                      </p>
+                    )}
+                  </td>
+                  <td className={`${td} text-slate-600 dark:text-slate-300`}>
+                    <p>+{money(line?.markupUnitAmount)}</p>
+                    {line && (
+                      <p className="text-[10px] text-slate-400">
+                        {Number(line.markupPercent.toFixed(2))}%
+                      </p>
+                    )}
+                  </td>
+                  <td className={`${td} font-semibold`}>{money(line?.customerUnitPrice)}</td>
+                  <td className={`${td} text-slate-500`}>{money(line?.taxLineTotal)}</td>
+                  <td className={`${td} text-slate-600 dark:text-slate-300`}>
+                    {money(line?.discountedLineTotal)}
+                  </td>
+                  <td className={`${td} font-black text-slate-900 dark:text-white`}>
+                    {money(line?.customerLineTotal)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot className="bg-slate-50/80 text-sm dark:bg-slate-900/60">
+            <tr>
+              <td
+                colSpan={2}
+                className="px-3 py-3 font-semibold text-slate-600 dark:text-slate-300"
+              >
+                {rows.length} items
+              </td>
+              <td className={`${td} font-bold`}>{pricing?.totalUnits ?? "—"}</td>
+              <td colSpan={3} className="px-3 py-3 text-right text-[11px] text-slate-500">
+                Totals before basket discount
+              </td>
+              <td className={`${td} font-semibold`}>{money(sum((l) => l.taxLineTotal))}</td>
+              <td className={`${td} font-semibold`}>{money(sum((l) => l.discountedLineTotal))}</td>
+              <td className={`${td} text-base font-black`}>
+                {money(sum((l) => l.customerLineTotal))}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </>
   );
 }
 

@@ -2,16 +2,7 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import {
-  AlertTriangle,
-  CalendarClock,
-  Eye,
-  EyeOff,
-  FilePen,
-  Pencil,
-  Rocket,
-  Trash2,
-} from "lucide-react";
+import { AlertTriangle, Eye, EyeOff, FilePen, Pencil, Rocket, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -34,13 +25,10 @@ export interface BasketColumnHandlers {
   onDelete: (basket: Basket) => void;
   onPublish: (basket: Basket) => void;
   onSetInactive: (basket: Basket) => void;
-  onScheduleInactive: (basket: Basket) => void;
   onReactivate: (basket: Basket) => void;
   onToggleStatus?: (basket: Basket, newStatus: "ACTIVE" | "INACTIVE") => Promise<void> | void;
   pendingId?: string | null;
 }
-
-const formatDateTime = (value: string) => format(new Date(value), "MMM d, yyyy · HH:mm");
 
 function BasketStatusToggle({
   basket,
@@ -179,12 +167,6 @@ export function getBasketColumns(handlers: BasketColumnHandlers): ColumnDef<Bask
             {basket.status !== "DRAFT" && (
               <p className="text-muted-foreground text-[11px]">{describeAvailability(basket)}</p>
             )}
-            {basket.status === "ACTIVE" && basket.scheduledInactiveAt && (
-              <p className="flex items-center gap-1 text-[11px] font-medium text-amber-700 dark:text-amber-400">
-                <CalendarClock className="size-3" />
-                Inactive from {formatDateTime(basket.scheduledInactiveAt)}
-              </p>
-            )}
           </div>
         );
       },
@@ -228,14 +210,6 @@ export function getBasketColumns(handlers: BasketColumnHandlers): ColumnDef<Bask
                   onClick: () => handlers.onPublish(basket),
                   disabled: !basket.isPublishable || pendingId === basket.id,
                   hidden: !isDraft,
-                },
-                {
-                  label: basket.scheduledInactiveAt
-                    ? "Edit inactive schedule"
-                    : "Schedule inactive",
-                  icon: <CalendarClock className="size-4" />,
-                  onClick: () => handlers.onScheduleInactive(basket),
-                  hidden: basket.status !== "ACTIVE",
                 },
                 {
                   label: "Delete",
