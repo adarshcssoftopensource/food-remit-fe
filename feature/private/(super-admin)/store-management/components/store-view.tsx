@@ -22,11 +22,11 @@ import StoreScaltonLoading from "./store-scalton-loading";
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-4 border-b border-slate-50 py-3 last:border-0">
-      <span className="min-w-32.5 text-xs font-semibold tracking-wide text-slate-400 uppercase">
+    <div className="flex min-w-0 flex-col gap-1 border-b border-slate-50 py-2.5 last:border-0 sm:flex-row sm:items-start sm:gap-4 sm:py-3">
+      <span className="shrink-0 text-[11px] font-semibold tracking-wide text-slate-400 uppercase sm:min-w-32.5 sm:text-xs">
         {label}
       </span>
-      <span className="flex-1 text-sm font-medium text-slate-700">{value}</span>
+      <span className="min-w-0 flex-1 text-sm font-medium break-words text-slate-700">{value}</span>
     </div>
   );
 }
@@ -75,62 +75,66 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
       />
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="from-primary/5 via-background to-primary/5 border-b bg-linear-to-r px-8 py-8">
-          <div className="flex items-center gap-6">
-            <div className="group bg-primary/10 ring-primary/5 relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl ring-4">
-              {store.storeImage ? (
-                <>
-                  <Image
-                    src={store.storeImage}
-                    alt={store.storeName}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                  <Button
-                    variant="ghost"
-                    onClick={() => setLightboxSrc(store.storeImage || null)}
-                    className="absolute right-1 bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 hover:scale-110"
-                    title="View full screen"
-                  >
-                    <Expand className="h-3 w-3" />
-                  </Button>
-                </>
-              ) : (
-                <Building2 className="text-primary h-10 w-10" />
-              )}
-            </div>
-
-            <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-                  {store.storeName}
-                </h1>
-                {store.storeId && (
-                  <span className="inline-flex items-center rounded-lg border border-slate-200 bg-white/90 px-2.5 py-1 font-mono text-xs font-semibold text-slate-700 shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                    Store ID: {store.storeId}
-                  </span>
+        <div className="from-primary/5 via-background to-primary/5 border-b bg-linear-to-r px-4 py-5 sm:px-8 sm:py-8">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
+            <div className="flex min-w-0 items-center gap-4 sm:gap-6">
+              <div className="group bg-primary/10 ring-primary/5 relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl ring-4 sm:h-20 sm:w-20 sm:rounded-2xl">
+                {store.storeImage ? (
+                  <>
+                    <Image
+                      src={store.storeImage}
+                      alt={store.storeName}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover"
+                    />
+                    <Button
+                      variant="ghost"
+                      onClick={() => setLightboxSrc(store.storeImage || null)}
+                      className="absolute right-1 bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 hover:scale-110"
+                      title="View full screen"
+                    >
+                      <Expand className="h-3 w-3" />
+                    </Button>
+                  </>
+                ) : (
+                  <Building2 className="text-primary h-8 w-8 sm:h-10 sm:w-10" />
                 )}
               </div>
-              <div className="mt-2 flex items-center gap-2 text-sm text-slate-500">
-                <MapPin className="h-4 w-4 shrink-0" />
-                <span className="line-clamp-1">{storeFullAddress || "No address provided"}</span>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <h1 className="text-xl font-bold tracking-tight break-words text-slate-900 sm:text-3xl">
+                    {store.storeName}
+                  </h1>
+                  {store.storeId && (
+                    <span className="inline-flex items-center rounded-lg border border-slate-200 bg-white/90 px-2.5 py-1 font-mono text-xs font-semibold text-slate-700 shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                      Store ID: {store.storeId}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-1.5 flex items-center gap-2 text-xs text-slate-500 sm:mt-2 sm:text-sm">
+                  <MapPin className="h-4 w-4 shrink-0" />
+                  <span className="line-clamp-1">{storeFullAddress || "No address provided"}</span>
+                </div>
               </div>
             </div>
 
-            <ViewStatusMeta
-              status={store.status}
-              dateLabel="Added On"
-              dateValue={formatDate(store.createdAt)}
-            />
+            <div className="shrink-0 border-t border-slate-100 pt-3 sm:border-0 sm:pt-0">
+              <ViewStatusMeta
+                status={store.status}
+                dateLabel="Added On"
+                dateValue={formatDate(store.createdAt)}
+              />
+            </div>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2">
           {/* Store Details Section */}
-          <div className="border-r border-slate-100 p-8">
-            <h3 className="mb-6 flex items-center gap-2 text-lg font-bold text-slate-800">
-              <Building2 className="h-5 w-5 text-emerald-600" />
+          <div className="border-b border-slate-100 p-4 sm:p-6 md:border-r md:border-b-0 md:p-8">
+            <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-slate-800 sm:mb-6 sm:text-lg">
+              <Building2 className="h-5 w-5 shrink-0 text-emerald-600" />
               Store Information
             </h3>
             <div className="divide-y divide-slate-100">
@@ -145,8 +149,8 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
               <InfoRow
                 label="Phone"
                 value={
-                  <span className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-medium text-slate-700">
-                    <Phone className="h-3.5 w-3.5 text-slate-500" />
+                  <span className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 sm:text-sm">
+                    <Phone className="h-3.5 w-3.5 shrink-0 text-slate-500" />
                     {store.storePhoneCode} {store.storePhoneNumber}
                   </span>
                 }
@@ -161,7 +165,7 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                 <InfoRow
                   label="Commission"
                   value={
-                    <span className="bg-primary/10 text-primary rounded-lg px-3 py-1 text-sm font-bold">
+                    <span className="bg-primary/10 text-primary rounded-lg px-2.5 py-1 text-xs font-bold sm:px-3 sm:text-sm">
                       {store.foodRemitCommission.toFixed(2)}%
                     </span>
                   }
@@ -172,14 +176,15 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
             </div>
           </div>
 
-          <div className="p-8">
-            <h3 className="mb-6 flex items-center gap-2 text-lg font-bold text-slate-800">
-              <UserCircle className="h-5 w-5 text-emerald-600" />
+          {/* Manager Details Section */}
+          <div className="p-4 sm:p-6 md:p-8">
+            <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-slate-800 sm:mb-6 sm:text-lg">
+              <UserCircle className="h-5 w-5 shrink-0 text-emerald-600" />
               Manager Information
             </h3>
 
-            <div className="mb-6 flex items-center gap-4">
-              <div className="group relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-slate-100">
+            <div className="mb-4 flex items-center gap-3 sm:mb-6 sm:gap-4">
+              <div className="group relative h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ring-slate-100 sm:h-16 sm:w-16">
                 {store.managerImage ? (
                   <>
                     <Image
@@ -199,14 +204,16 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                     </Button>
                   </>
                 ) : (
-                  <div className="from-primary/10 to-primary/15 text-primary flex h-full w-full items-center justify-center bg-linear-to-br text-xl font-bold">
+                  <div className="from-primary/10 to-primary/15 text-primary flex h-full w-full items-center justify-center bg-linear-to-br text-lg font-bold sm:text-xl">
                     {`${store.managerFirstName[0]}${store.managerLastName[0]}`.toUpperCase()}
                   </div>
                 )}
               </div>
-              <div>
-                <p className="font-bold text-slate-800">{managerName}</p>
-                <p className="text-sm text-slate-500">Store Manager</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold text-slate-800 sm:text-base">
+                  {managerName}
+                </p>
+                <p className="text-xs text-slate-500 sm:text-sm">Store Manager</p>
               </div>
             </div>
 
@@ -216,28 +223,30 @@ export default function StoreViewPage({ params }: StoreViewPageProps) {
                 value={
                   <a
                     href={`mailto:${store.managerEmail}`}
-                    className="flex items-center gap-1.5 text-emerald-700 hover:underline"
+                    className="inline-flex items-center gap-1.5 break-all text-emerald-700 hover:underline"
                   >
-                    <Mail className="h-3 w-3 text-slate-400" />
-                    {store.managerEmail}
+                    <Mail className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                    <span className="break-all">{store.managerEmail}</span>
                   </a>
                 }
               />
               <InfoRow
                 label="Phone"
                 value={
-                  <span className="flex items-center gap-1.5">
-                    <Phone className="h-3 w-3 text-slate-400" />
-                    {store.managerPhoneCode} {store.managerPhoneNumber}
+                  <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm">
+                    <Phone className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                    <span>
+                      {store.managerPhoneCode} {store.managerPhoneNumber}
+                    </span>
                   </span>
                 }
               />
               <InfoRow
                 label="Address"
                 value={
-                  <span className="flex items-start gap-1.5">
-                    <MapPin className="mt-0.5 h-3 w-3 shrink-0 text-slate-400" />
-                    {managerFullAddress}
+                  <span className="flex items-start gap-1.5 text-xs break-words sm:text-sm">
+                    <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" />
+                    <span className="break-words">{managerFullAddress}</span>
                   </span>
                 }
               />
