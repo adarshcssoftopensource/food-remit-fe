@@ -178,13 +178,13 @@ export function TemplateSection({ hasIssue }: { hasIssue?: boolean }) {
               onClick={() => select(option.value)}
               style={{ animationDelay: `${index * 40}ms` }}
               className={cn(
-                "group animate-in fade-in slide-in-from-bottom-2 fill-mode-both relative flex flex-col overflow-hidden rounded-2xl border-2 bg-white text-left transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-4 focus-visible:ring-emerald-500/30 focus-visible:outline-none dark:bg-slate-900",
+                "group animate-in fade-in slide-in-from-bottom-2 fill-mode-both relative flex w-full flex-col overflow-hidden rounded-2xl border-2 bg-white text-left transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-4 focus-visible:ring-emerald-500/30 focus-visible:outline-none dark:bg-slate-900",
                 isSelected
                   ? "border-primary shadow-lg shadow-emerald-600/15"
                   : "border-slate-200/80 hover:border-emerald-300 dark:border-slate-800",
               )}
             >
-              <div className="relative">
+              <div className="relative w-full">
                 {isCustom ? (
                   <div className="flex aspect-4/3 w-full items-center justify-center bg-linear-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-slate-900">
                     <span className="flex size-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 transition-transform duration-300 group-hover:scale-110 dark:bg-emerald-900/50">
@@ -197,6 +197,7 @@ export function TemplateSection({ hasIssue }: { hasIssue?: boolean }) {
                       src={getTemplateImage(option.value)}
                       alt={option.label}
                       fill
+                      unoptimized
                       sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 220px"
                       className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                     />

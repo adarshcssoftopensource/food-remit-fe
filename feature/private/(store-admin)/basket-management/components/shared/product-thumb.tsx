@@ -61,6 +61,7 @@ export function ProductThumb({
               alt={alt}
               fill
               sizes={sizes}
+              unoptimized={typeof src === "string" && src.startsWith("/")}
               className={cn(
                 "object-contain p-0.5 transition-all duration-300",
                 canPreview && "group-hover/thumb:scale-105",

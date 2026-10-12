@@ -78,6 +78,7 @@ function TemplateTile({
                 src={templateImg!}
                 alt={template.label}
                 fill
+                unoptimized
                 sizes="56px"
                 className="object-cover transition-transform duration-300 group-hover/tpl-thumb:scale-105"
               />

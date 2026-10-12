@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig & { eslint?: { ignoreDuringBuilds?: boolean } } = {
   images: {
-    formats: ["image/avif", "image/webp"],
+    formats: ["image/webp"],
+    contentDispositionType: "inline",
     remotePatterns: [
       {
         protocol: "https",

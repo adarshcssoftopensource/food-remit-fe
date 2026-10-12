@@ -66,6 +66,7 @@ export function BasketImage({
           fill
           sizes={sizes}
           priority={priority}
+          unoptimized={typeof src === "string" && src.startsWith("/images/")}
           className={cn(
             "object-cover transition-transform duration-300",
             previewable && "group-hover/basket-img:scale-105",

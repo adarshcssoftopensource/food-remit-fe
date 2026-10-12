@@ -95,7 +95,7 @@ export function ImageSection() {
                     aria-checked={selected}
                     onClick={() => chooseLibrary(option.key)}
                     className={cn(
-                      "group relative overflow-hidden rounded-xl border-2 text-left transition-all",
+                      "group relative flex w-full flex-col overflow-hidden rounded-xl border-2 text-left transition-all",
                       selected
                         ? "border-primary shadow-md shadow-emerald-600/15"
                         : "border-slate-200/80 hover:border-emerald-300 dark:border-slate-800",
@@ -106,6 +106,7 @@ export function ImageSection() {
                         src={getLibraryImage(option.key)}
                         alt={option.label}
                         fill
+                        unoptimized
                         sizes="(max-width: 640px) 50vw, 200px"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
