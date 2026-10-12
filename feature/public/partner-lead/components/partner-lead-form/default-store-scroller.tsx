@@ -172,7 +172,7 @@ export function DefaultStoreScroller({
           type="button"
           onClick={() => scrollByAmount("prev")}
           disabled={!canScrollLeft}
-          className="flex size-7 cursor-pointer items-center justify-center rounded-full text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-90 disabled:pointer-events-none disabled:opacity-20 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+          className="flex size-7 cursor-pointer items-center justify-center rounded-full text-slate-600 transition-all hover:bg-emerald-50 hover:text-emerald-700 active:scale-90 disabled:pointer-events-none disabled:opacity-20 dark:text-slate-400 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-300"
           aria-label="Previous presets"
           title="Scroll left"
         >
@@ -205,21 +205,21 @@ export function DefaultStoreScroller({
                   className={cn(
                     "group relative flex h-5 w-1.5 cursor-pointer items-center justify-center rounded-full transition-all focus:outline-none",
                     isItemActive
-                      ? "bg-emerald-500 shadow-2xs dark:bg-emerald-400"
-                      : "hover:bg-slate-350 bg-slate-200/90 dark:bg-slate-700 dark:hover:bg-slate-600",
+                      ? "bg-emerald-600 shadow-2xs ring-2 ring-emerald-500/30 dark:bg-emerald-400"
+                      : "bg-slate-200/90 hover:bg-emerald-200 dark:bg-slate-700 dark:hover:bg-emerald-900/50",
                   )}
                 />
               );
             })}
           </div>
 
-          {/* Blue Viewfinder Frame (Matching Image 2 rounded rectangle) */}
+          {/* Theme-matched Viewfinder Frame (Emerald green) */}
           <div
-            className="pointer-events-none absolute inset-y-0 rounded-[8px] border-2 border-blue-600 bg-blue-500/10 shadow-[0_1px_3px_rgba(37,99,235,0.18)] transition-transform duration-75 ease-out dark:border-blue-500 dark:bg-blue-400/10"
+            className="pointer-events-none absolute inset-y-0 rounded-[8px] border-2 border-emerald-600 bg-emerald-500/10 shadow-[0_1px_3px_rgba(5,150,105,0.22)] transition-transform duration-75 ease-out dark:border-emerald-500 dark:bg-emerald-400/10"
             style={{
               left: 0,
               width: `${thumbWidth}px`,
-              transform: `translateX(${thumbTranslateX}px)`,
+              transform: `${`translateX(${thumbTranslateX}px)`}`,
             }}
           />
         </div>
@@ -232,7 +232,7 @@ export function DefaultStoreScroller({
           type="button"
           onClick={() => scrollByAmount("next")}
           disabled={!canScrollRight}
-          className="flex size-7 cursor-pointer items-center justify-center rounded-full text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-90 disabled:pointer-events-none disabled:opacity-20 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+          className="flex size-7 cursor-pointer items-center justify-center rounded-full text-slate-600 transition-all hover:bg-emerald-50 hover:text-emerald-700 active:scale-90 disabled:pointer-events-none disabled:opacity-20 dark:text-slate-400 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-300"
           aria-label="Next presets"
           title="Scroll right"
         >
