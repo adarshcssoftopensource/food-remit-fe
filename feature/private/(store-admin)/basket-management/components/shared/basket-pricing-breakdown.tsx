@@ -104,7 +104,11 @@ export function BasketPricingBreakdown({
         <SectionTitle icon={Receipt}>Basket price</SectionTitle>
         <Row
           label="Basket subtotal"
-          hint={`${pricing.itemCount} items · ${pricing.totalUnits} units at your prices`}
+          hint={`${pricing.itemCount} items · ${pricing.totalUnits} units at your prices${
+            pricing.itemDiscountAmount > 0
+              ? ` · ${money(pricing.itemDiscountAmount)} item discounts added`
+              : ""
+          }`}
           value={money(pricing.itemsVendorTotal)}
         />
         {discountLabel && (
@@ -117,7 +121,7 @@ export function BasketPricingBreakdown({
         <Row label="Vendor basket price" value={money(pricing.vendorBasketPrice)} tone="add" />
         <Row
           label="Food Remit markup"
-          hint={`${Number(pricing.effectiveMarkupPercent.toFixed(2))}% added on top · vendor/admin only`}
+          hint={`${Number(pricing.markupPercent.toFixed(2))}% of the vendor basket price · vendor/admin only`}
           value={`+${money(pricing.markupAmount)}`}
           tone="add"
         />
@@ -152,7 +156,7 @@ export function BasketPricingBreakdown({
 
         <Row
           label="Tax"
-          hint={`${pricing.taxPercent}% store tax, added at checkout`}
+          hint={`${pricing.taxPercent}% of the vendor basket price, added at checkout`}
           value={`+${money(pricing.estimatedTax)}`}
           tone="muted"
         />

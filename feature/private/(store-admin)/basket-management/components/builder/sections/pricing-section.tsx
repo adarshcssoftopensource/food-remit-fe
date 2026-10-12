@@ -164,7 +164,7 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
         ? "Vendor Discount (manual price)"
         : "Vendor Discount";
   const priceAboveItems = pricing && pricing.vendorDiscountAmount < 0;
-  const markupPercentLabel = pricing ? Number(pricing.effectiveMarkupPercent.toFixed(2)) : 10;
+  const markupPercentLabel = pricing ? Number(pricing.markupPercent.toFixed(2)) : 10;
 
   return (
     <SectionCard
@@ -284,7 +284,11 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
           )}
           <SummaryRow
             label="Basket Subtotal (Vendor Items Total)"
-            hint="Total cost of items in this basket at their full prices."
+            hint={
+              pricing && pricing.itemDiscountAmount > 0
+                ? `Vendor line totals, after ${formatMoney(pricing.itemDiscountAmount, symbol)} of item discounts you added on ${pricing.discountedItemCount} ${pricing.discountedItemCount === 1 ? "item" : "items"}.`
+                : "Vendor unit price × quantity, summed over every item."
+            }
             value={money(pricing?.itemsVendorTotal)}
           />
           <SummaryRow
@@ -314,11 +318,7 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
           />
           <SummaryRow
             label={`Food Remit Markup (${markupPercentLabel}%)`}
-            hint={
-              pricing && pricing.effectiveMarkupPercent < pricing.markupPercent
-                ? `Platform markup is ${pricing.markupPercent}%, but some items in this basket are exempt from markup, so the basket rate is lower.`
-                : "Added on top of your basket price to create the customer price."
-            }
+            hint="Applied once to the vendor basket price to create the customer price."
             value={pricing ? `+${formatMoney(pricing.markupAmount, symbol)}` : "—"}
             tone="positive"
           />
@@ -332,6 +332,21 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
             value={money(pricing?.customerPrice)}
             tone="primary"
             emphasis
+          />
+          <SummaryRow
+            label={`Estimated Tax${pricing ? ` (${pricing.taxPercent}%)` : ""}`}
+            hint="Calculated on the vendor basket price and added at checkout."
+            value={pricing ? `+${formatMoney(pricing.estimatedTax, symbol)}` : "—"}
+          />
+          <SummaryRow
+            label="Processing Fee"
+            hint="Added to the customer's order at checkout."
+            value={pricing ? `+${formatMoney(pricing.processingFee, symbol)}` : "—"}
+          />
+          <SummaryRow
+            label="Estimated Customer Total"
+            hint="Customer basket price + tax + processing fee."
+            value={money(pricing?.estimatedCustomerTotal)}
           />
           {pricing && pricing.commissionAmount > 0 && (
             <SummaryRow

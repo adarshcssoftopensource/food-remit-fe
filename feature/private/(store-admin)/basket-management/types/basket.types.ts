@@ -18,6 +18,8 @@ export interface BasketItemInfo {
   optionName: string | null;
   /** Number of variants the product has; 0 when it has a single option */
   variantCount: number;
+  /** Catalogue discount the item offers (0 when it has none) */
+  itemDiscountPercent: number;
 }
 
 export interface BasketPricingLine {
@@ -29,28 +31,20 @@ export interface BasketPricingLine {
   quantity: number;
   isAvailable: boolean;
   unavailableReason: string | null;
-  /** Vendor's regular unit price (before item discount) */
+  /** Vendor's regular unit price */
   vendorUnitPrice: number;
+  /** Catalogue discount the item offers, whether or not this basket applies it */
+  itemDiscountPercent: number;
+  applyItemDiscount: boolean;
+  /** Item discount applied in this basket (0 unless opted in) */
   discountPercent: number;
   discountUnitAmount: number;
   discountedUnitPrice: number;
-  /** 0 when Food Remit markup is disabled for the item */
-  markupPercent: number;
-  markupUnitAmount: number;
-  customerOriginalUnitPrice: number;
-  customerUnitPrice: number;
-  taxUnitAmount: number;
-  commissionUnitAmount: number;
-  payoutUnitAmount: number;
+  /** Regular price × quantity */
   vendorLineTotal: number;
   discountLineTotal: number;
+  /** Line total that counts towards the basket subtotal */
   discountedLineTotal: number;
-  markupLineTotal: number;
-  customerOriginalLineTotal: number;
-  customerLineTotal: number;
-  taxLineTotal: number;
-  commissionLineTotal: number;
-  payoutLineTotal: number;
 }
 
 export type BasketPricingMode = "STANDARD" | "DISCOUNT_PERCENT" | "MANUAL_PRICE";
@@ -60,10 +54,8 @@ export type BasketAvailabilityMode = "STORE_HOURS" | "CUSTOM";
 export interface BasketPricingTotals {
   currency: string;
   currencySymbol: string;
-  /** Platform markup rate */
+  /** Food Remit markup rate, applied once to the vendor basket price */
   markupPercent: number;
-  /** Weighted markup rate of the basket's items */
-  effectiveMarkupPercent: number;
   taxPercent: number;
   commissionPercent: number;
   itemCount: number;
@@ -74,7 +66,6 @@ export interface BasketPricingTotals {
   discountedItemCount: number;
   /** Basket subtotal (vendor items total, after item discounts) */
   itemsVendorTotal: number;
-  customerItemsTotal: number;
   pricingMode: BasketPricingMode;
   vendorDiscountPercent: number;
   vendorDiscountAmount: number;
@@ -150,6 +141,7 @@ export interface BasketLineItem {
   itemOptionId: string | null;
   optionName: string | null;
   quantity: number;
+  applyItemDiscount: boolean;
   sortOrder: number;
   item: BasketItemInfo | null;
   pricing: BasketPricingLine | null;
@@ -198,9 +190,8 @@ export interface BasketStore {
 export interface CataloguePrices {
   vendorPrice: number;
   discountPercent: number;
+  /** Vendor price if the item discount is applied */
   discountedVendorPrice: number;
-  customerOriginalPrice: number;
-  customerPrice: number;
   isAvailable: boolean;
 }
 
@@ -233,6 +224,7 @@ export interface BasketItemInput {
   itemOptionId?: string | null;
   optionName?: string | null;
   quantity: number;
+  applyItemDiscount?: boolean;
 }
 
 export interface BasketPricingOptions {

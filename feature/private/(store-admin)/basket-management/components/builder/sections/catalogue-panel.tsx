@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BadgePercent,
   Check,
   CheckCheck,
   ChevronsUpDown,
@@ -520,9 +521,20 @@ export function CataloguePanel({ storeId, addedKeys, onAdd, className }: Catalog
                     )}
                   </p>
                 </div>
-                <p className="shrink-0 text-right text-sm font-bold text-slate-900 tabular-nums dark:text-white">
-                  {formatMoney(price.vendorPrice, symbol)}
-                </p>
+                <div className="shrink-0 text-right leading-tight">
+                  <p className="text-sm font-bold text-slate-900 tabular-nums dark:text-white">
+                    {formatMoney(price.vendorPrice, symbol)}
+                  </p>
+                  {item.itemDiscountPercent > 0 && (
+                    <p
+                      className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-rose-50 px-1.5 py-px text-[10px] font-bold text-rose-600 tabular-nums dark:bg-rose-950/50 dark:text-rose-300"
+                      title={`Item discount: ${formatMoney(price.discountedVendorPrice, symbol)} if you apply it in the basket`}
+                    >
+                      <BadgePercent className="size-3" />
+                      {item.itemDiscountPercent}% off
+                    </p>
+                  )}
+                </div>
                 {isAdded ? (
                   <span className="text-primary flex w-9 shrink-0 items-center justify-end gap-1 text-[11px] font-bold sm:w-16">
                     <Check className="size-3.5" strokeWidth={3} />

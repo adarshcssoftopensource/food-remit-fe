@@ -82,6 +82,7 @@ export function useBasketItemSelection() {
         { ...source.item, variants } as CatalogueItem,
         variant,
         source.quantity,
+        source.applyItemDiscount,
       );
       const nextKey = basketLineKey(next);
       if (nextKey === lineKey) return;
@@ -99,5 +100,14 @@ export function useBasketItemSelection() {
     [commit, current],
   );
 
-  return { items, addMany, removeMany, setQuantity, setVariant };
+  /** Passes (or stops passing) the item's own discount into this basket line */
+  const setApplyDiscount = useCallback(
+    (lineKey: string, applyItemDiscount: boolean) =>
+      commit(
+        current().map((i) => (basketLineKey(i) === lineKey ? { ...i, applyItemDiscount } : i)),
+      ),
+    [commit, current],
+  );
+
+  return { items, addMany, removeMany, setQuantity, setVariant, setApplyDiscount };
 }

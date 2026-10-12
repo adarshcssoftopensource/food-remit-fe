@@ -50,7 +50,9 @@ function ProductDetailsTable({
     line: lineByKey.get(basketLineKey(entry)),
   }));
   const sum = (pick: (l: NonNullable<(typeof rows)[number]["line"]>) => number) =>
-    rows.reduce((acc, r) => acc + (r.line ? pick(r.line) : 0), 0);
+    rows.reduce((acc, r) => acc + (r.line?.isAvailable ? pick(r.line) : 0), 0);
+  const discountCell = (line: (typeof rows)[number]["line"]) =>
+    !line ? "—" : line.discountLineTotal > 0 ? `−${money(line.discountLineTotal)}` : "—";
 
   if (!rows.length) {
     return (
@@ -109,19 +111,22 @@ function ProductDetailsTable({
                 </div>
                 <div className="shrink-0 text-right">
                   <p className="text-sm font-black text-slate-900 tabular-nums dark:text-white">
-                    {money(line?.customerLineTotal)}
+                    {money(line?.discountedLineTotal)}
                   </p>
                   <p className="text-[11px] font-semibold text-slate-500">× {entry.quantity}</p>
                 </div>
               </div>
-              <dl className="grid grid-cols-2 gap-x-3 gap-y-1 rounded-xl bg-slate-50 px-3 py-2 text-[11px] tabular-nums min-[420px]:grid-cols-3 dark:bg-slate-900">
+              <dl className="grid grid-cols-3 gap-x-3 gap-y-1 rounded-xl bg-slate-50 px-3 py-2 text-[11px] tabular-nums dark:bg-slate-900">
                 {(
                   [
-                    ["Vendor / unit", money(line?.discountedUnitPrice)],
-                    ["Markup / unit", `+${money(line?.markupUnitAmount)}`],
-                    ["Customer / unit", money(line?.customerUnitPrice)],
-                    ["Vendor total", money(line?.discountedLineTotal)],
-                    ["Tax", money(line?.taxLineTotal)],
+                    ["Unit price", money(line?.vendorUnitPrice)],
+                    [
+                      line && line.discountPercent > 0
+                        ? `Item disc. ${line.discountPercent}%`
+                        : "Item discount",
+                      discountCell(line),
+                    ],
+                    ["Full total", money(line?.vendorLineTotal)],
                   ] as const
                 ).map(([label, value]) => (
                   <div key={label} className="min-w-0">
@@ -138,13 +143,15 @@ function ProductDetailsTable({
             {rows.length} items · {pricing?.totalUnits ?? "—"} units
           </span>
           <span className="text-right">
-            <span className="block text-[10px] text-slate-500">Before basket discount</span>
-            <span className="font-bold tabular-nums">{money(sum((l) => l.customerLineTotal))}</span>
+            <span className="block text-[10px] text-slate-500">Basket subtotal</span>
+            <span className="font-bold tabular-nums">
+              {money(pricing?.itemsVendorTotal ?? sum((l) => l.discountedLineTotal))}
+            </span>
           </span>
         </li>
       </ul>
       <div className="hidden overflow-x-auto rounded-2xl border border-slate-200/80 md:block dark:border-slate-800">
-        <table className="w-full min-w-245 text-sm">
+        <table className="w-full min-w-180 text-sm">
           <thead className="bg-slate-50 text-[10px] tracking-wide text-slate-500 uppercase dark:bg-slate-900">
             <tr>
               <th className="px-3 py-2.5 text-left font-semibold">Product</th>
@@ -155,26 +162,12 @@ function ProductDetailsTable({
                 <span className="block text-[9px] font-medium normal-case">per unit</span>
               </th>
               <th className={th}>
-                Markup
-                <span className="block text-[9px] font-medium normal-case">per unit</span>
-              </th>
-              <th className={th}>
-                Customer price
-                <span className="block text-[9px] font-medium normal-case">per unit</span>
-              </th>
-              <th className={th}>
-                Tax
-                <span className="block text-[9px] font-medium normal-case">
-                  {pricing ? `${pricing.taxPercent}% · line` : "line"}
-                </span>
-              </th>
-              <th className={th}>
-                Vendor total
-                <span className="block text-[9px] font-medium normal-case">line</span>
+                Item discount
+                <span className="block text-[9px] font-medium normal-case">if added</span>
               </th>
               <th className={th}>
                 Line total
-                <span className="block text-[9px] font-medium normal-case">customer</span>
+                <span className="block text-[9px] font-medium normal-case">price × qty</span>
               </th>
             </tr>
           </thead>
@@ -226,21 +219,26 @@ function ProductDetailsTable({
                   <td className={td}>
                     <p className="font-semibold">{money(line?.vendorUnitPrice)}</p>
                   </td>
-                  <td className={`${td} text-slate-600 dark:text-slate-300`}>
-                    <p>+{money(line?.markupUnitAmount)}</p>
-                    {line && (
-                      <p className="text-[10px] text-slate-400">
-                        {Number(line.markupPercent.toFixed(2))}%
-                      </p>
+                  <td
+                    className={cn(
+                      td,
+                      line && line.discountLineTotal > 0
+                        ? "font-semibold text-rose-600"
+                        : "text-slate-400",
+                    )}
+                  >
+                    <p>{discountCell(line)}</p>
+                    {line && line.discountPercent > 0 && (
+                      <p className="text-[10px]">{line.discountPercent}%</p>
                     )}
                   </td>
-                  <td className={`${td} font-semibold`}>{money(line?.customerUnitPrice)}</td>
-                  <td className={`${td} text-slate-500`}>{money(line?.taxLineTotal)}</td>
-                  <td className={`${td} text-slate-600 dark:text-slate-300`}>
-                    {money(line?.discountedLineTotal)}
-                  </td>
                   <td className={`${td} font-bold text-slate-900 dark:text-white`}>
-                    {money(line?.customerLineTotal)}
+                    <p>{money(line?.discountedLineTotal)}</p>
+                    {line && line.discountLineTotal > 0 && (
+                      <p className="text-[10px] font-medium text-slate-400 line-through">
+                        {money(line.vendorLineTotal)}
+                      </p>
+                    )}
                   </td>
                 </tr>
               );
@@ -255,13 +253,14 @@ function ProductDetailsTable({
                 {rows.length} items
               </td>
               <td className={`${td} font-bold`}>{pricing?.totalUnits ?? "—"}</td>
-              <td colSpan={3} className="px-3 py-3 text-right text-[11px] text-slate-500">
-                Totals before basket discount
+              <td className="px-3 py-3 text-right text-[11px] text-slate-500">Basket subtotal</td>
+              <td className={`${td} font-semibold text-rose-600`}>
+                {pricing && pricing.itemDiscountAmount > 0
+                  ? `−${money(pricing.itemDiscountAmount)}`
+                  : "—"}
               </td>
-              <td className={`${td} font-semibold`}>{money(sum((l) => l.taxLineTotal))}</td>
-              <td className={`${td} font-semibold`}>{money(sum((l) => l.discountedLineTotal))}</td>
               <td className={`${td} text-base font-bold`}>
-                {money(sum((l) => l.customerLineTotal))}
+                {money(pricing?.itemsVendorTotal ?? sum((l) => l.discountedLineTotal))}
               </td>
             </tr>
           </tfoot>

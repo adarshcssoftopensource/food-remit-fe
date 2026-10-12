@@ -1,16 +1,28 @@
 "use client";
 
-import { AlertTriangle, ArrowLeft, ChevronDown, ShoppingBasket, Trash2 } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  BadgePercent,
+  ChevronDown,
+  ShoppingBasket,
+  Trash2,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { QuantityStepper } from "@/components/common/quantity-stepper";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 import { useBasketItemSelection } from "../../../hooks/use-basket-item-selection";
-import { basketLineKey, type SelectedBasketItem } from "../../../schema/basket-form.schema";
+import {
+  basketLineKey,
+  discountedPrice,
+  type SelectedBasketItem,
+} from "../../../schema/basket-form.schema";
 import type { BasketPricingLine, BasketPricingPreview } from "../../../types/basket.types";
 import { formatItemSize, formatMoney } from "../../../utils/basket-format";
 import { ProductThumb } from "../../shared/product-thumb";
@@ -19,17 +31,30 @@ import { CataloguePanel } from "./catalogue-panel";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
-/** Unit prices from the server pricing, falling back to catalogue prices captured on add */
-function unitPrices(entry: SelectedBasketItem, line?: BasketPricingLine) {
+/** Line prices from the server pricing, falling back to catalogue prices captured on add */
+function linePrices(entry: SelectedBasketItem, line?: BasketPricingLine) {
   const { item } = entry;
-  const vendorRegular = line?.vendorUnitPrice ?? item.vendorPrice ?? 0;
-  const vendor = line?.discountedUnitPrice ?? item.discountedVendorPrice ?? vendorRegular;
-  const customer = line?.customerUnitPrice ?? item.customerPrice ?? vendor;
+  const regular = line?.vendorUnitPrice ?? item.vendorPrice ?? 0;
+  const itemDiscountPercent =
+    line?.itemDiscountPercent ?? item.discountPercent ?? item.itemDiscountPercent ?? 0;
+  const applied = entry.applyItemDiscount && itemDiscountPercent > 0;
+  // Server lines lag one request behind a toggle, so only trust them when the flag matches
+  const fresh = line && line.applyItemDiscount === entry.applyItemDiscount;
+  const unit = fresh
+    ? line.discountedUnitPrice
+    : applied
+      ? discountedPrice(regular, itemDiscountPercent)
+      : regular;
+  const regularTotal = fresh ? line.vendorLineTotal : round2(regular * entry.quantity);
+  const total = fresh ? line.discountedLineTotal : round2(unit * entry.quantity);
   return {
-    vendorRegular,
-    vendor,
-    markup: line?.markupUnitAmount ?? round2(customer - vendor),
-    customer,
+    regular,
+    unit,
+    itemDiscountPercent,
+    applied,
+    regularTotal,
+    total,
+    discountTotal: round2(regularTotal - total),
     isAvailable: line?.isAvailable ?? true,
     unavailableReason: line?.unavailableReason ?? null,
   };
@@ -82,11 +107,11 @@ interface ContentsSectionProps {
 }
 
 export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionProps) {
-  const { items, addMany, removeMany, setQuantity, setVariant } = useBasketItemSelection();
+  const { items, addMany, removeMany, setQuantity, setVariant, setApplyDiscount } =
+    useBasketItemSelection();
   const [checked, setChecked] = useState<Set<string>>(new Set());
 
   const symbol = pricing?.currencySymbol ?? "";
-  const markupPercent = pricing?.markupPercent ?? 10;
   const lineByKey = useMemo(
     () => new Map(pricing?.lines.map((l) => [l.lineKey, l])),
     [pricing?.lines],
@@ -95,25 +120,14 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
   const rows = items.map((entry) => {
     const key = basketLineKey(entry);
     const line = lineByKey.get(key);
-    const unit = unitPrices(entry, line);
-    const vendorLineTotal = line?.discountedLineTotal ?? round2(unit.vendor * entry.quantity);
-    const customerLineTotal = line?.customerLineTotal ?? round2(unit.customer * entry.quantity);
-    return {
-      key,
-      entry,
-      unit,
-      vendorLineTotal,
-      customerLineTotal,
-      lineTotal: vendorLineTotal,
-    };
+    return { key, entry, price: linePrices(entry, line) };
   });
   const totalUnits = items.reduce((acc, i) => acc + i.quantity, 0);
-  const vendorTotal =
-    pricing?.itemsVendorTotal ??
-    round2(rows.reduce((acc, r) => acc + (r.unit.isAvailable ? r.vendorLineTotal : 0), 0));
-  const customerTotal =
-    pricing?.customerItemsTotal ??
-    round2(rows.reduce((acc, r) => acc + (r.unit.isAvailable ? r.customerLineTotal : 0), 0));
+  const available = rows.filter((r) => r.price.isAvailable);
+  const regularTotal = round2(available.reduce((acc, r) => acc + r.price.regularTotal, 0));
+  const itemDiscountTotal = round2(available.reduce((acc, r) => acc + r.price.discountTotal, 0));
+  const discountedCount = available.filter((r) => r.price.discountTotal > 0).length;
+  const subtotal = round2(regularTotal - itemDiscountTotal);
   const checkedIds = [...checked].filter((key) => addedKeys.has(key));
   const allChecked = items.length > 0 && checkedIds.length === items.length;
 
@@ -216,9 +230,7 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
           ) : (
             <>
               <div className="hidden items-center justify-between gap-2 border-b border-slate-100 px-4 py-2 text-[10px] font-bold tracking-wide text-slate-600 uppercase @xl:flex dark:border-slate-800 dark:text-slate-300">
-                <span className="truncate">
-                  Item · Your price + Markup ({markupPercent}%) = Customer price
-                </span>
+                <span className="truncate">Item · Your unit price</span>
                 <div className="flex shrink-0 items-center gap-3">
                   <span className="w-23 text-center">Qty</span>
                   <span className="w-20 text-right">Line total</span>
@@ -226,12 +238,12 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                 </div>
               </div>
               <ul className="min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto dark:divide-slate-800">
-                {rows.map(({ key, entry, unit, vendorLineTotal, customerLineTotal }) => (
+                {rows.map(({ key, entry, price }) => (
                   <li
                     key={key}
                     className={cn(
                       "animate-in fade-in slide-in-from-left-2 flex flex-wrap items-center gap-x-2.5 gap-y-2 px-3 py-3 duration-300 @xl:flex-nowrap @xl:gap-x-3 @xl:px-4",
-                      !unit.isAvailable && "bg-amber-50/70 dark:bg-amber-950/20",
+                      !price.isAvailable && "bg-amber-50/70 dark:bg-amber-950/20",
                       checked.has(key) && "bg-emerald-50/60 dark:bg-emerald-950/20",
                     )}
                   >
@@ -266,25 +278,48 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                           {formatItemSize(entry.item) ? ` · ${formatItemSize(entry.item)}` : ""}
                         </span>
                       </div>
-                      {unit.isAvailable ? (
-                        <p className="mt-1 flex flex-wrap items-center gap-x-1 text-[11px] tabular-nums">
-                          <span className="font-semibold text-slate-800 dark:text-slate-200">
-                            {formatMoney(unit.vendor, symbol)}
-                          </span>
-                          <span className="font-medium text-slate-700 dark:text-slate-300">
-                            + {formatMoney(unit.markup, symbol)}
-                          </span>
-                          <span className="font-semibold text-slate-600 dark:text-slate-300">
-                            =
-                          </span>
-                          <span className="text-primary font-bold">
-                            {formatMoney(unit.customer, symbol)}
-                          </span>
-                        </p>
+                      {price.isAvailable ? (
+                        <>
+                          <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-[11px] tabular-nums">
+                            {price.applied && (
+                              <span className="text-slate-400 line-through">
+                                {formatMoney(price.regular, symbol)}
+                              </span>
+                            )}
+                            <span className="font-semibold text-slate-800 dark:text-slate-200">
+                              {formatMoney(price.unit, symbol)}
+                            </span>
+                            <span className="text-muted-foreground">/ unit</span>
+                          </p>
+                          {price.itemDiscountPercent > 0 && (
+                            <label
+                              className={cn(
+                                "mt-1.5 inline-flex max-w-full cursor-pointer items-center gap-2 rounded-lg border px-2 py-1 text-[11px] font-semibold transition-colors",
+                                entry.applyItemDiscount
+                                  ? "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
+                                  : "border-slate-200 bg-white text-slate-600 hover:border-rose-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300",
+                              )}
+                            >
+                              <Switch
+                                size="sm"
+                                checked={entry.applyItemDiscount}
+                                onCheckedChange={(v) => setApplyDiscount(key, Boolean(v))}
+                                aria-label={`Apply ${price.itemDiscountPercent}% item discount to ${entry.item.productName}`}
+                                className="data-checked:bg-rose-500"
+                              />
+                              <BadgePercent className="size-3.5 shrink-0" />
+                              <span className="truncate">
+                                {entry.applyItemDiscount
+                                  ? `${price.itemDiscountPercent}% item discount added`
+                                  : `Add ${price.itemDiscountPercent}% item discount`}
+                              </span>
+                            </label>
+                          )}
+                        </>
                       ) : (
                         <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-amber-700">
                           <AlertTriangle className="size-3" />
-                          {unit.unavailableReason ?? "Unavailable"}
+                          {price.unavailableReason ?? "Unavailable"}
                         </p>
                       )}
                     </div>
@@ -298,13 +333,16 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                       </div>
                       <div className="ml-auto text-right leading-tight @xl:ml-0 @xl:w-20">
                         <span className="block text-sm font-bold text-slate-900 tabular-nums dark:text-white">
-                          {formatMoney(vendorLineTotal, symbol)}
+                          {formatMoney(price.total, symbol)}
                         </span>
                         <span
-                          className="text-primary block text-[10px] font-semibold tabular-nums"
-                          title={`Customer line total with ${markupPercent}% markup`}
+                          className={cn(
+                            "block text-[10px] font-semibold text-slate-400 tabular-nums line-through",
+                            price.discountTotal <= 0 && "invisible",
+                          )}
+                          aria-hidden={price.discountTotal <= 0}
                         >
-                          = {formatMoney(customerLineTotal, symbol)}
+                          {formatMoney(price.regularTotal, symbol)}
                         </span>
                       </div>
                       <Button
@@ -334,19 +372,20 @@ export function ContentsSection({ storeId, pricing, hasIssue }: ContentsSectionP
                 </span>
                 <div className="grid grid-cols-2 gap-3 @md:flex @md:items-center @md:gap-4 @md:text-right">
                   <div>
-                    <span className="block text-[10px] font-semibold text-slate-500 uppercase">
-                      Items total (Your price)
+                    <span className="block text-[10px] font-semibold text-rose-600 uppercase dark:text-rose-300">
+                      Item discounts
+                      {discountedCount > 0 ? ` (${discountedCount})` : ""}
                     </span>
-                    <span className="text-lg font-black text-slate-900 tabular-nums dark:text-white">
-                      {formatMoney(vendorTotal, symbol)}
+                    <span className="text-base font-black text-rose-600 tabular-nums dark:text-rose-300">
+                      {itemDiscountTotal > 0 ? `−${formatMoney(itemDiscountTotal, symbol)}` : "—"}
                     </span>
                   </div>
                   <div className="border-l border-slate-200 pl-3 @md:pl-4 dark:border-slate-700">
-                    <span className="text-primary block text-[10px] font-semibold uppercase">
-                      Customer total (+{markupPercent}%)
+                    <span className="block text-[10px] font-semibold text-slate-500 uppercase">
+                      Basket subtotal
                     </span>
-                    <span className="text-primary text-base font-black tabular-nums">
-                      {formatMoney(customerTotal, symbol)}
+                    <span className="text-lg font-black text-slate-900 tabular-nums dark:text-white">
+                      {formatMoney(subtotal, symbol)}
                     </span>
                   </div>
                 </div>

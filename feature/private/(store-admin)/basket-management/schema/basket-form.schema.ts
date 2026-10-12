@@ -32,15 +32,23 @@ export type SelectedBasketItem = {
   itemOptionId: string | null;
   optionName: string | null;
   quantity: number;
+  /** Pass the item's catalogue discount into this basket */
+  applyItemDiscount: boolean;
   item: BasketItemInfo & {
     vendorPrice?: number;
+    /** Catalogue discount the item offers */
     discountPercent?: number;
     discountedVendorPrice?: number;
-    customerPrice?: number;
     /** Known when added from the catalogue, so the variant can be switched in place */
     variants?: CatalogueVariant[];
   };
 };
+
+const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
+
+/** Unit price after an item discount, rounded the same way as the API */
+export const discountedPrice = (unitPrice: number, discountPercent: number) =>
+  round2(unitPrice - round2((unitPrice * discountPercent) / 100));
 
 /** Same key the API uses for pricing lines */
 export const basketLineKey = (line: { itemId: string; itemOptionId?: string | null }) =>
@@ -51,13 +59,24 @@ export function selectionFromCatalogue(
   item: CatalogueItem,
   variant: CatalogueVariant | null | undefined,
   quantity = 1,
+  applyItemDiscount = false,
 ): SelectedBasketItem {
-  if (!variant) return { itemId: item.id, itemOptionId: null, optionName: null, quantity, item };
+  if (!variant) {
+    return {
+      itemId: item.id,
+      itemOptionId: null,
+      optionName: null,
+      quantity,
+      applyItemDiscount,
+      item,
+    };
+  }
   return {
     itemId: item.id,
     itemOptionId: variant.id,
     optionName: variant.optionName,
     quantity,
+    applyItemDiscount,
     item: {
       ...item,
       netWeight: variant.netWeight,
@@ -69,7 +88,6 @@ export function selectionFromCatalogue(
       vendorPrice: variant.vendorPrice,
       discountPercent: variant.discountPercent,
       discountedVendorPrice: variant.discountedVendorPrice,
-      customerPrice: variant.customerPrice,
     },
   };
 }
@@ -105,6 +123,7 @@ export const basketFormSchema = z.object({
         itemOptionId: z.string().nullable(),
         optionName: z.string().nullable(),
         quantity: z.number().int().min(1).max(BASKET_ITEM_QUANTITY_MAX),
+        applyItemDiscount: z.boolean(),
         item: z.custom<SelectedBasketItem["item"]>(),
       }),
     )
@@ -156,12 +175,14 @@ export function basketToFormValues(basket: BasketDetail): BasketFormValues {
         itemOptionId: line.itemOptionId,
         optionName: line.optionName,
         quantity: line.quantity,
+        applyItemDiscount: line.applyItemDiscount,
         item: {
           ...line.item!,
           vendorPrice: line.pricing?.vendorUnitPrice,
-          discountPercent: line.pricing?.discountPercent,
-          discountedVendorPrice: line.pricing?.discountedUnitPrice,
-          customerPrice: line.pricing?.customerUnitPrice,
+          discountPercent: line.pricing?.itemDiscountPercent ?? line.item!.itemDiscountPercent,
+          discountedVendorPrice: line.pricing
+            ? discountedPrice(line.pricing.vendorUnitPrice, line.pricing.itemDiscountPercent)
+            : undefined,
         },
       })),
   };
@@ -196,11 +217,16 @@ export const toItemInput = ({
   itemOptionId,
   optionName,
   quantity,
-}: Pick<SelectedBasketItem, "itemId" | "itemOptionId" | "optionName" | "quantity">) => ({
+  applyItemDiscount,
+}: Pick<
+  SelectedBasketItem,
+  "itemId" | "itemOptionId" | "optionName" | "quantity" | "applyItemDiscount"
+>) => ({
   itemId,
   itemOptionId,
   optionName,
   quantity,
+  applyItemDiscount: Boolean(applyItemDiscount),
 });
 
 export function pricingOptionsOf(
@@ -232,7 +258,7 @@ const todayKey = () => {
 /** Everything still missing before the basket can be published (mirrors the API rules) */
 export function getPublishIssues(
   values: BasketFormValues,
-  pricing?: Pick<BasketPricingTotals, "hasUnavailableItems" | "customerPrice">,
+  pricing?: Pick<BasketPricingTotals, "hasUnavailableItems">,
 ): PublishIssue[] {
   const issues: PublishIssue[] = [];
   if (!values.basketType) {

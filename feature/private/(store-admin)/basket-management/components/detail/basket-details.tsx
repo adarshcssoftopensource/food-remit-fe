@@ -230,8 +230,8 @@ export function BasketDetails({ id }: { id: string }) {
                   <tr>
                     <th className="px-4 py-2.5 text-left sm:px-5">Item</th>
                     <th className="px-3 py-2.5 text-center">Qty</th>
-                    <th className="px-3 py-2.5 text-right">Your price</th>
-                    <th className="px-3 py-2.5 text-right">Markup</th>
+                    <th className="px-3 py-2.5 text-right">Unit price</th>
+                    <th className="px-3 py-2.5 text-right">Item discount</th>
                     <th className="px-4 py-2.5 text-right sm:px-5">Line total</th>
                   </tr>
                 </thead>
@@ -276,18 +276,28 @@ export function BasketDetails({ id }: { id: string }) {
                       </td>
                       <td className="px-3 py-3 text-center font-semibold">×{line.quantity}</td>
                       <td className="px-3 py-3 text-right tabular-nums">
-                        <p>{formatMoney(line.pricing?.discountedLineTotal, symbol)}</p>
-                        <p className="text-[10px] text-slate-400">
-                          {formatMoney(line.pricing?.discountedUnitPrice, symbol)} each
-                        </p>
+                        {formatMoney(line.pricing?.vendorUnitPrice, symbol)}
                       </td>
-                      <td className="px-3 py-3 text-right text-slate-600 tabular-nums dark:text-slate-300">
-                        {formatMoney(line.pricing?.markupLineTotal, symbol)}
+                      <td className="px-3 py-3 text-right tabular-nums">
+                        {line.pricing && line.pricing.discountLineTotal > 0 ? (
+                          <span className="font-semibold text-rose-600">
+                            −{formatMoney(line.pricing.discountLineTotal, symbol)}
+                            <span className="block text-[10px] font-medium">
+                              {line.pricing.discountPercent}% added
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-slate-400">
+                            {line.pricing && line.pricing.itemDiscountPercent > 0
+                              ? `${line.pricing.itemDiscountPercent}% not added`
+                              : "—"}
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-right sm:px-5">
                         <PriceStack
-                          price={line.pricing?.customerLineTotal}
-                          originalPrice={line.pricing?.customerOriginalLineTotal}
+                          price={line.pricing?.discountedLineTotal}
+                          originalPrice={line.pricing?.vendorLineTotal}
                           currencySymbol={symbol}
                         />
                       </td>
