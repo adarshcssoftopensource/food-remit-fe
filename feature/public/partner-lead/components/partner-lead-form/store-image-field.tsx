@@ -2,7 +2,7 @@
 
 import { Check, ImagePlus, Sparkles, Store, Upload, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller } from "react-hook-form";
 import { errorToast } from "@/components/toaster";
 import { FieldLabel } from "@/components/ui/field";
@@ -15,15 +15,63 @@ import { cn } from "@/lib/utils";
 import type { PartnerLeadFormState } from "../../hooks/use-partner-lead-form";
 import { getFilePreviewUrl } from "../../utils/file-preview-url";
 import { DefaultStoreImageDialog } from "./default-store-image-dialog";
+import { DefaultStoreScroller } from "./default-store-scroller";
 
 type StoreImageFieldProps = Pick<PartnerLeadFormState, "control" | "watch" | "setValue">;
 
 export function StoreImageField({ control, watch, setValue }: StoreImageFieldProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startScrollLeftRef = useRef(0);
+  const hasMovedRef = useRef(false);
+
   const businessType = watch("businessType");
+  const storeLogoValue = watch("storeLogo");
   const isOther = businessType === "Other";
 
   const recommendedImage = isOther ? undefined : getDefaultStoreImageForBusinessType(businessType);
+
+  // Auto-scroll to selected default preset if changed
+  useEffect(() => {
+    if (storeLogoValue instanceof File || typeof storeLogoValue !== "string") return;
+    const idx = DEFAULT_STORE_IMAGES.findIndex((img) => img.imageUrl === storeLogoValue);
+    if (idx !== -1 && itemRefs.current[idx]) {
+      itemRefs.current[idx]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
+    }
+  }, [storeLogoValue]);
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!scrollContainerRef.current) return;
+    isDraggingRef.current = true;
+    hasMovedRef.current = false;
+    startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
+    startScrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !scrollContainerRef.current) return;
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startXRef.current) * 1.3;
+    if (Math.abs(walk) > 4) {
+      hasMovedRef.current = true;
+    }
+    scrollContainerRef.current.scrollLeft = startScrollLeftRef.current - walk;
+  };
+
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
+  };
+
+  const handleMouseLeave = () => {
+    isDraggingRef.current = false;
+  };
 
   return (
     <Controller
@@ -244,16 +292,29 @@ export function StoreImageField({ control, watch, setValue }: StoreImageFieldPro
                   </button>
                 </div>
 
-                <div className="flex gap-2 overflow-x-auto pt-0.5 pb-1.5">
-                  {DEFAULT_STORE_IMAGES.map((img) => {
+                <div
+                  ref={scrollContainerRef}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseLeave}
+                  className="scrollbar-hide flex cursor-grab gap-2 overflow-x-auto pt-0.5 pb-1.5 select-none active:cursor-grabbing"
+                >
+                  {DEFAULT_STORE_IMAGES.map((img, index) => {
                     const isSelected = !isCustomFile && activeUrl === img.imageUrl;
                     const isRec = recommendedImage?.id === img.id;
 
                     return (
                       <button
                         key={img.id}
+                        ref={(el) => {
+                          itemRefs.current[index] = el;
+                        }}
                         type="button"
-                        onClick={() => handleSelectDefault(img.imageUrl, img.businessType)}
+                        onClick={() => {
+                          if (hasMovedRef.current) return;
+                          handleSelectDefault(img.imageUrl, img.businessType);
+                        }}
                         className={cn(
                           "group relative flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all",
                           isSelected
@@ -298,6 +359,15 @@ export function StoreImageField({ control, watch, setValue }: StoreImageFieldPro
                     );
                   })}
                 </div>
+
+                {/* Custom scroller (replacing native browser scrollbar with Image 2 design) */}
+                <DefaultStoreScroller
+                  containerRef={scrollContainerRef}
+                  items={DEFAULT_STORE_IMAGES}
+                  itemRefs={itemRefs}
+                  activeUrl={activeUrl}
+                  className="pt-2.5"
+                />
               </div>
             </div>
 
