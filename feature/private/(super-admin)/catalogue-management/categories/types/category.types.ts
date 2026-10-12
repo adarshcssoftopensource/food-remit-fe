@@ -56,6 +56,14 @@ export interface CategoryDropdownItem {
   id: string;
   name?: string;
   categoryName?: string;
+  storeId?: string | null;
+  storeName?: string | null;
+  store?: { id: string; storeName: string } | null;
+  cityName?: string | null;
+  cityId?: string | null;
+  scopeLabel?: string | null;
+  scopeType?: "global" | "city" | "store";
+  isGlobal?: boolean;
 }
 
 export interface UseGetCategoriesArgs {

@@ -217,6 +217,7 @@ export function ItemsManagement() {
           </Label>
           <CategorySelect
             countryId={country !== "all" ? country : undefined}
+            cityId={city !== "all" ? city : undefined}
             value={category === "all" ? "" : category}
             onValueChange={(val) => setCategory(val || "all")}
             placeholder="All Categories"
