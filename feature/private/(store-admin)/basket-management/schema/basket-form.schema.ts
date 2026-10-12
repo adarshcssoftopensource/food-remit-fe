@@ -10,6 +10,7 @@ import {
 import type {
   BasketDetail,
   BasketItemInfo,
+  BasketPricingMode,
   BasketPricingTotals,
   BasketType,
   CatalogueItem,
@@ -225,15 +226,20 @@ export const toItemInput = ({
   applyItemDiscount: Boolean(applyItemDiscount),
 });
 
+/** Discount % and manual price are independent; either, both or neither may be set */
 export function pricingOptionsOf(
-  values: Pick<BasketFormValues, "pricingMode" | "vendorDiscountPercent" | "manualVendorPrice">,
+  values: Pick<BasketFormValues, "vendorDiscountPercent" | "manualVendorPrice">,
 ) {
-  return {
-    pricingMode: values.pricingMode,
-    vendorDiscountPercent:
-      values.pricingMode === "DISCOUNT_PERCENT" ? values.vendorDiscountPercent : null,
-    manualVendorPrice: values.pricingMode === "MANUAL_PRICE" ? values.manualVendorPrice : null,
-  };
+  const vendorDiscountPercent =
+    Number(values.vendorDiscountPercent) > 0 ? Number(values.vendorDiscountPercent) : null;
+  const manualVendorPrice =
+    Number(values.manualVendorPrice) > 0 ? Number(values.manualVendorPrice) : null;
+  const pricingMode: BasketPricingMode = manualVendorPrice
+    ? "MANUAL_PRICE"
+    : vendorDiscountPercent
+      ? "DISCOUNT_PERCENT"
+      : "STANDARD";
+  return { pricingMode, vendorDiscountPercent, manualVendorPrice };
 }
 
 export type BasketSectionId =
@@ -281,12 +287,6 @@ export function getPublishIssues(
     issues.push({ section: "contents", message: "Add at least one item" });
   } else if (pricing?.hasUnavailableItems) {
     issues.push({ section: "contents", message: "Remove unavailable items" });
-  }
-  if (values.pricingMode === "DISCOUNT_PERCENT" && !(Number(values.vendorDiscountPercent) > 0)) {
-    issues.push({ section: "pricing", message: "Enter a discount percentage" });
-  }
-  if (values.pricingMode === "MANUAL_PRICE" && !(Number(values.manualVendorPrice) > 0)) {
-    issues.push({ section: "pricing", message: "Enter a manual vendor basket price" });
   }
   if (values.availabilityMode === "CUSTOM") {
     const { availableFrom: from, availableUntil: until } = values;

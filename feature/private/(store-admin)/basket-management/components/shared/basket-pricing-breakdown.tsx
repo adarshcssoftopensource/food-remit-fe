@@ -90,13 +90,7 @@ export function BasketPricingBreakdown({
   }
 
   const money = (v: number) => formatMoney(v, pricing.currencySymbol);
-  const vendorDiscount = pricing.vendorDiscountAmount;
-  const discountLabel =
-    pricing.pricingMode === "DISCOUNT_PERCENT"
-      ? `Vendor discount (${pricing.vendorDiscountPercent}%)`
-      : pricing.pricingMode === "MANUAL_PRICE"
-        ? "Manual basket price adjustment"
-        : null;
+  const manualAdjustment = pricing.manualPriceAdjustment;
 
   return (
     <div className={cn("space-y-5", loading && "opacity-60 transition-opacity", className)}>
@@ -111,11 +105,21 @@ export function BasketPricingBreakdown({
           }`}
           value={money(pricing.itemsVendorTotal)}
         />
-        {discountLabel && (
+        {pricing.manualVendorPrice !== null && (
           <Row
-            label={discountLabel}
-            value={vendorDiscount >= 0 ? `−${money(vendorDiscount)}` : `+${money(-vendorDiscount)}`}
-            tone={vendorDiscount > 0 ? "discount" : "add"}
+            label="Manual basket price adjustment"
+            hint={`Manual vendor price ${money(pricing.manualVendorPrice)}`}
+            value={
+              manualAdjustment >= 0 ? `−${money(manualAdjustment)}` : `+${money(-manualAdjustment)}`
+            }
+            tone={manualAdjustment > 0 ? "discount" : "add"}
+          />
+        )}
+        {pricing.basketDiscountAmount > 0 && (
+          <Row
+            label={`Vendor discount (${pricing.vendorDiscountPercent}%)`}
+            value={`−${money(pricing.basketDiscountAmount)}`}
+            tone="discount"
           />
         )}
         <Row label="Vendor basket price" value={money(pricing.vendorBasketPrice)} tone="add" />

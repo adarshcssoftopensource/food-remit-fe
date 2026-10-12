@@ -82,7 +82,7 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
   });
   const { control, trigger, getValues, reset, setError, formState } = form;
   const values = useWatch({ control }) as BasketFormValues;
-  const { items, pricingMode, vendorDiscountPercent, manualVendorPrice } = values;
+  const { items, vendorDiscountPercent, manualVendorPrice } = values;
 
   const store =
     basket?.store ??
@@ -95,7 +95,7 @@ export function BasketBuilder({ basket }: BasketBuilderProps) {
   const pricingQuery = useBasketPricingPreview(
     storeId,
     pricingInput,
-    pricingOptionsOf({ pricingMode, vendorDiscountPercent, manualVendorPrice }),
+    pricingOptionsOf({ vendorDiscountPercent, manualVendorPrice }),
   );
   const pricing = items.length > 0 ? pricingQuery.data : undefined;
 

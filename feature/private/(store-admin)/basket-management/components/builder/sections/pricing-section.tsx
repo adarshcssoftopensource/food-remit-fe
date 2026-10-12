@@ -115,7 +115,10 @@ interface PricingSectionProps {
 
 export function PricingSection({ pricing, loading, hasIssue }: PricingSectionProps) {
   const { control, setValue, getValues } = useFormContext<BasketFormValues>();
-  const pricingMode = useWatch({ control, name: "pricingMode" });
+  const [vendorDiscountPercent, manualVendorPrice] = useWatch({
+    control,
+    name: ["vendorDiscountPercent", "manualVendorPrice"],
+  });
   const [discountInput, setDiscountInput] = useState(() =>
     toInput(getValues("vendorDiscountPercent")),
   );
@@ -125,45 +128,42 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
   const money = (n: number | undefined) => (pricing ? formatMoney(n, symbol) : "—");
   const opts = { shouldDirty: true };
 
-  const applyMode = (
-    mode: BasketFormValues["pricingMode"],
-    discount: number | null,
-    manual: number | null,
-  ) => {
-    setValue("pricingMode", mode, opts);
-    setValue("vendorDiscountPercent", discount, opts);
-    setValue("manualVendorPrice", manual, opts);
+  const hasDiscount = Number(vendorDiscountPercent) > 0;
+  const hasManual = Number(manualVendorPrice) > 0;
+
+  const syncMode = (discount: number | null, manual: number | null) => {
+    setValue(
+      "pricingMode",
+      manual ? "MANUAL_PRICE" : discount ? "DISCOUNT_PERCENT" : "STANDARD",
+      opts,
+    );
   };
 
   const onDiscountChange = (raw: string) => {
     let value = raw;
     if (Number(value) > BASKET_DISCOUNT_PERCENT_MAX) value = String(BASKET_DISCOUNT_PERCENT_MAX);
     setDiscountInput(value);
-    setManualInput("");
-    if (value === "") applyMode("STANDARD", null, null);
-    else applyMode("DISCOUNT_PERCENT", Number(value), null);
+    const discount = value === "" ? null : Number(value);
+    setValue("vendorDiscountPercent", discount, opts);
+    syncMode(discount, getValues("manualVendorPrice"));
   };
 
   const onManualChange = (value: string) => {
     setManualInput(value);
-    setDiscountInput("");
-    if (value === "") applyMode("STANDARD", null, null);
-    else applyMode("MANUAL_PRICE", null, Number(value));
+    const manual = value === "" ? null : Number(value);
+    setValue("manualVendorPrice", manual, opts);
+    syncMode(getValues("vendorDiscountPercent"), manual);
   };
 
   const clearOption = () => {
     setDiscountInput("");
     setManualInput("");
-    applyMode("STANDARD", null, null);
+    setValue("vendorDiscountPercent", null, opts);
+    setValue("manualVendorPrice", null, opts);
+    syncMode(null, null);
   };
 
-  const discountLabel =
-    pricingMode === "DISCOUNT_PERCENT" && pricing
-      ? `Vendor Discount (${pricing.vendorDiscountPercent}%)`
-      : pricingMode === "MANUAL_PRICE"
-        ? "Vendor Discount (manual price)"
-        : "Vendor Discount";
-  const priceAboveItems = pricing && pricing.vendorDiscountAmount < 0;
+  const manualAboveItems = pricing && pricing.manualPriceAdjustment < 0;
   const markupPercentLabel = pricing ? Number(pricing.markupPercent.toFixed(2)) : 10;
 
   return (
@@ -171,10 +171,10 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
       id="pricing"
       step={3}
       title="Basket Pricing Summary"
-      description="Set a discount to offer a great value basket for your customers."
+      description="Set a discount, a manual price, both, or neither to offer a great value basket for your customers."
       hasIssue={hasIssue}
       action={
-        pricingMode !== "STANDARD" && (
+        (hasDiscount || hasManual) && (
           <button
             type="button"
             onClick={clearOption}
@@ -188,10 +188,14 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <div className="space-y-3">
           <OptionCard
-            active={pricingMode === "DISCOUNT_PERCENT"}
+            active={hasDiscount}
             icon={<Tag className="size-4" />}
             title="Set a vendor discount percentage"
-            description="Apply a percentage discount to the vendor subtotal."
+            description={
+              hasManual
+                ? "Applied to your manual vendor basket price."
+                : "Apply a percentage discount to the vendor subtotal."
+            }
             onActivate={() => document.getElementById("basket-discount-percent")?.focus()}
           >
             <label
@@ -216,10 +220,10 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
           </OptionCard>
 
           <OptionCard
-            active={pricingMode === "MANUAL_PRICE"}
+            active={hasManual}
             icon={<PencilLine className="size-4" />}
-            title="Or set a manual vendor basket price"
-            description="Set your own vendor price for this basket."
+            title="Set a manual vendor basket price"
+            description="Replaces the items total. Any discount percentage is applied on top of it."
             onActivate={() => document.getElementById("basket-manual-price")?.focus()}
           >
             <label
@@ -245,7 +249,7 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
                 />
               </span>
             </label>
-            {priceAboveItems && (
+            {manualAboveItems && (
               <p className="mt-2 flex items-start gap-1.5 text-[11px] font-medium text-amber-700 dark:text-amber-400">
                 <AlertTriangle className="mt-px size-3.5 shrink-0" />
                 This price is higher than the items total, so customers pay more than buying the
@@ -291,27 +295,44 @@ export function PricingSection({ pricing, loading, hasIssue }: PricingSectionPro
             }
             value={money(pricing?.itemsVendorTotal)}
           />
+          {hasManual && (
+            <SummaryRow
+              label="Manual Vendor Basket Price"
+              hint={
+                !pricing
+                  ? "Replaces the items total."
+                  : manualAboveItems
+                    ? `Replaces the items total (+${formatMoney(-pricing.manualPriceAdjustment, symbol)} above it).`
+                    : `Replaces the items total (−${formatMoney(pricing.manualPriceAdjustment, symbol)}).`
+              }
+              value={money(pricing?.manualVendorPrice ?? undefined)}
+            />
+          )}
           <SummaryRow
-            label={discountLabel}
+            label={
+              pricing && hasDiscount
+                ? `Vendor Discount (${pricing.vendorDiscountPercent}%)`
+                : "Vendor Discount"
+            }
             hint={
-              priceAboveItems
-                ? "Your manual price is above the items total."
-                : "Discount applied to vendor subtotal."
+              hasDiscount
+                ? hasManual
+                  ? "Discount applied to your manual price."
+                  : "Discount applied to vendor subtotal."
+                : "No discount percentage set."
             }
             value={
               !pricing
                 ? "—"
-                : priceAboveItems
-                  ? `+${formatMoney(-pricing.vendorDiscountAmount, symbol)}`
-                  : pricing.vendorDiscountAmount > 0
-                    ? `−${formatMoney(pricing.vendorDiscountAmount, symbol)}`
-                    : formatMoney(0, symbol)
+                : pricing.basketDiscountAmount > 0
+                  ? `−${formatMoney(pricing.basketDiscountAmount, symbol)}`
+                  : formatMoney(0, symbol)
             }
-            tone={pricing && pricing.vendorDiscountAmount > 0 ? "negative" : "default"}
+            tone={pricing && pricing.basketDiscountAmount > 0 ? "negative" : "default"}
           />
           <SummaryRow
             label="Vendor Basket Price"
-            hint="Your price for the basket after the vendor discount."
+            hint="Your price for the basket after the manual price and vendor discount."
             value={money(pricing?.vendorBasketPrice)}
             tone="primary"
             emphasis

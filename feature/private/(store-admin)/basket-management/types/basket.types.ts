@@ -67,7 +67,13 @@ export interface BasketPricingTotals {
   /** Basket subtotal (vendor items total, after item discounts) */
   itemsVendorTotal: number;
   pricingMode: BasketPricingMode;
+  /** Manual vendor basket price replacing the items total, if set */
+  manualVendorPrice: number | null;
+  /** Items total − manual price (negative when the manual price is higher) */
+  manualPriceAdjustment: number;
   vendorDiscountPercent: number;
+  /** Basket % discount, taken off the manual price or the items total */
+  basketDiscountAmount: number;
   vendorDiscountAmount: number;
   vendorBasketPrice: number;
   markupAmount: number;
