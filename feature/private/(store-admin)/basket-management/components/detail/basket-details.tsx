@@ -186,7 +186,6 @@ export function BasketDetails({ id }: { id: string }) {
                 basketType={basket.basketType}
                 householdSize={basket.householdSize}
                 image={basket.image}
-                libraryImage={basket.libraryImage}
                 itemCount={basket.itemCount}
                 totalUnits={basket.totalUnits}
                 price={basket.price}

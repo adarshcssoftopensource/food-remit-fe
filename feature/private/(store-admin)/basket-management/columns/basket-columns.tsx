@@ -105,7 +105,6 @@ export function getBasketColumns(handlers: BasketColumnHandlers): ColumnDef<Bask
           <div className="flex min-w-60 items-center gap-3">
             <BasketImage
               image={basket.image}
-              libraryImage={basket.libraryImage}
               basketType={basket.basketType}
               alt={basket.name}
               sizes="112px"

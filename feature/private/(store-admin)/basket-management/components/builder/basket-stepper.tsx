@@ -42,7 +42,7 @@ export const BASKET_STEPS: readonly BasketStep[] = [
     hint: "When customers can buy",
     icon: CalendarClock,
   },
-  { id: "image", label: "Image", hint: "Library or upload", icon: ImageIcon },
+  { id: "image", label: "Image", hint: "Template or upload", icon: ImageIcon },
   { id: "summary", label: "Review", hint: "Check and publish", icon: ClipboardCheck },
 ];
 

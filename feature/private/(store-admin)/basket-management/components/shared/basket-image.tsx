@@ -7,13 +7,12 @@ import { useState } from "react";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { cn } from "@/lib/utils";
 
-import { getBasketFallbackImage } from "../../../../../../constants/basket.constants";
+import { getDefaultBasketImage } from "../../../../../../constants/basket.constants";
 import type { BasketType } from "../../types/basket.types";
 
 export interface BasketImageProps {
+  /** Uploaded image; falls back to the template image */
   image?: string | null;
-  /** Food Remit library image key; falls back to the template image */
-  libraryImage?: string | null;
   basketType: BasketType;
   alt: string;
   className?: string;
@@ -25,7 +24,6 @@ export interface BasketImageProps {
 
 export function BasketImage({
   image,
-  libraryImage,
   basketType,
   alt,
   className,
@@ -34,7 +32,7 @@ export function BasketImage({
   previewable = true,
   onImageClick,
 }: BasketImageProps) {
-  const fallback = getBasketFallbackImage({ libraryImage, basketType });
+  const fallback = getDefaultBasketImage(basketType);
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const src = image && image !== failedSrc ? image : fallback;

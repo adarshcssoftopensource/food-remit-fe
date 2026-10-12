@@ -104,7 +104,6 @@ export const basketFormSchema = z.object({
   shortDescription: z.string(),
   householdSize: z.string(),
   image: z.string().nullable(),
-  libraryImage: z.string().nullable(),
   pricingMode: z.enum(["STANDARD", "DISCOUNT_PERCENT", "MANUAL_PRICE"]),
   vendorDiscountPercent: z
     .number()
@@ -141,7 +140,6 @@ export const EMPTY_BASKET_FORM: BasketFormValues = {
   shortDescription: "",
   householdSize: "",
   image: null,
-  libraryImage: null,
   pricingMode: "STANDARD",
   vendorDiscountPercent: null,
   manualVendorPrice: null,
@@ -160,7 +158,6 @@ export function basketToFormValues(basket: BasketDetail): BasketFormValues {
     shortDescription: basket.shortDescription ?? "",
     householdSize: basket.householdSize ?? "",
     image: basket.image,
-    libraryImage: basket.libraryImage,
     pricingMode: basket.pricingMode,
     vendorDiscountPercent: basket.vendorDiscountPercent,
     manualVendorPrice: basket.manualVendorPrice,
@@ -201,7 +198,6 @@ export function formValuesToPayload(
     basketType: values.basketType ?? "CUSTOM",
     householdSize: values.householdSize || undefined,
     image: values.image,
-    libraryImage: values.libraryImage,
     ...pricingOptionsOf(values),
     availabilityMode: values.availabilityMode,
     availableFrom: custom ? values.availableFrom : null,

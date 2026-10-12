@@ -143,7 +143,6 @@ export function BasketPublished({ basket, onCreateAnother }: BasketPublishedProp
         <div className="relative">
           <BasketImage
             image={basket.image}
-            libraryImage={basket.libraryImage}
             basketType={basket.basketType}
             alt={basket.name}
             className="aspect-4/3 h-full w-full md:aspect-auto"

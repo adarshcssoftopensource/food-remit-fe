@@ -185,18 +185,6 @@ export const BASKET_WEEKDAYS: { value: BasketWeekday; label: string }[] = [
   { value: "SUN", label: "Sun" },
 ];
 
-/** Food Remit basket image library (files in `public/images/baskets/library`) */
-export const BASKET_LIBRARY_IMAGES = [
-  { key: "basic", label: "Everyday Essentials" },
-  { key: "family", label: "Family Staples" },
-  { key: "large-family", label: "Large Family" },
-  { key: "monthly-essentials", label: "Monthly Essentials" },
-  { key: "seasonal", label: "Seasonal" },
-  { key: "custom", label: "Mixed Groceries" },
-  { key: "fresh-produce", label: "Fresh Produce" },
-  { key: "pantry-staples", label: "Pantry Staples" },
-] as const;
-
 const TEMPLATE_IMAGE_KEYS: Record<BasketType, string> = {
   BASIC: "basic",
   FAMILY: "family",
@@ -206,37 +194,16 @@ const TEMPLATE_IMAGE_KEYS: Record<BasketType, string> = {
   CUSTOM: "custom",
 };
 
-export function templateImageKey(type: BasketType): string {
-  return TEMPLATE_IMAGE_KEYS[type];
-}
-
-export function getLibraryImage(key: string): string {
-  return `/images/baskets/library/${key}.jpg`;
-}
-
 /** Artwork for the template cards on the first Create Basket step (`public/images/baskets/templates`) */
 export function getTemplateImage(type: BasketType): string {
   return `/images/baskets/templates/${TEMPLATE_IMAGE_KEYS[type]}.jpg`;
 }
 
+/** Image of the basket's own template, used when no custom image is uploaded (`public/images/baskets/library`) */
 export function getDefaultBasketImage(type: BasketType): string {
-  return getLibraryImage(TEMPLATE_IMAGE_KEYS[type]);
+  return `/images/baskets/library/${TEMPLATE_IMAGE_KEYS[type]}.jpg`;
 }
 
-/** Library image shown when no custom image is uploaded */
-export function getBasketFallbackImage(basket: {
-  libraryImage?: string | null;
-  basketType: BasketType;
-}): string {
-  return basket.libraryImage
-    ? getLibraryImage(basket.libraryImage)
-    : getDefaultBasketImage(basket.basketType);
-}
-
-export function getBasketImage(basket: {
-  image?: string | null;
-  libraryImage?: string | null;
-  basketType: BasketType;
-}): string {
-  return basket.image || getBasketFallbackImage(basket);
+export function getBasketImage(basket: { image?: string | null; basketType: BasketType }): string {
+  return basket.image || getDefaultBasketImage(basket.basketType);
 }

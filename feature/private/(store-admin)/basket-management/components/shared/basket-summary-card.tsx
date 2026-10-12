@@ -1,18 +1,11 @@
 "use client";
 
-import { ImageIcon, LayoutTemplate, Maximize2, Package, Plus, Tag, Users } from "lucide-react";
-import Image from "next/image";
-import { useState, type ReactNode } from "react";
+import { ImageIcon, LayoutTemplate, Package, Tag, Users } from "lucide-react";
+import type { ReactNode } from "react";
 
-import { ImageLightbox } from "@/components/common/image-lightbox";
 import { cn } from "@/lib/utils";
 
-import {
-  BASKET_LIBRARY_IMAGES,
-  BASKET_TYPE_MAP,
-  formatHouseholdSize,
-  getTemplateImage,
-} from "../../../../../../constants/basket.constants";
+import { BASKET_TYPE_MAP, formatHouseholdSize } from "../../../../../../constants/basket.constants";
 import type { BasketType } from "../../types/basket.types";
 import { formatMoney } from "../../utils/basket-format";
 import { BasketImage } from "./basket-image";
@@ -23,7 +16,6 @@ interface BasketSummaryCardProps {
   basketType: BasketType;
   householdSize?: string | null;
   image?: string | null;
-  libraryImage?: string | null;
   itemCount: number;
   totalUnits?: number;
   price?: number;
@@ -34,14 +26,12 @@ interface BasketSummaryCardProps {
   className?: string;
 }
 
-/** Where the basket image comes from: an upload, a library pick, or the template default */
-export function imageSourceLabel(image?: string | null, libraryImage?: string | null) {
-  if (image) return "Uploaded";
-  const library = BASKET_LIBRARY_IMAGES.find((l) => l.key === libraryImage);
-  return library ? `Library · ${library.label}` : "Template default";
+/** Where the basket image comes from: an upload or the selected template */
+export function imageSourceLabel(image?: string | null) {
+  return image ? "Uploaded" : "Template image";
 }
 
-/** The template picked in step 1, kept apart from the basket image picked in step 5 */
+/** The template picked in step 1 */
 function TemplateTile({
   basketType,
   householdSize,
@@ -50,68 +40,22 @@ function TemplateTile({
   householdSize?: string | null;
 }) {
   const template = BASKET_TYPE_MAP[basketType];
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const templateImg = basketType !== "CUSTOM" ? getTemplateImage(basketType) : null;
 
   return (
-    <>
-      <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/70 p-2 dark:border-slate-800 dark:bg-slate-900/50">
-        <span
-          className={cn(
-            "group/tpl-thumb relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-emerald-50 dark:bg-emerald-950/40",
-            templateImg && "cursor-pointer",
-          )}
-          onClick={
-            templateImg
-              ? (e) => {
-                  e.stopPropagation();
-                  setLightboxOpen(true);
-                }
-              : undefined
-          }
-        >
-          {basketType === "CUSTOM" ? (
-            <Plus className="size-6 text-emerald-600" strokeWidth={2.5} />
-          ) : (
-            <>
-              <Image
-                src={templateImg!}
-                alt={template.label}
-                fill
-                unoptimized
-                sizes="56px"
-                className="object-cover transition-transform duration-300 group-hover/tpl-thumb:scale-105"
-              />
-              <span
-                aria-label={`View ${template.label} full size`}
-                className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all duration-200 group-hover/tpl-thumb:bg-black/35 group-hover/tpl-thumb:opacity-100"
-              >
-                <Maximize2 className="size-3.5 drop-shadow-sm" />
-              </span>
-            </>
-          )}
-        </span>
-        <div className="min-w-0">
-          <p className="flex items-center gap-1 text-[10px] font-bold tracking-wide text-slate-500 uppercase">
-            <LayoutTemplate className="size-3" /> Template
-          </p>
-          <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
-            {template.label}
-          </p>
-          <p className="text-primary text-xs font-semibold">
-            {householdSize ? `For ${formatHouseholdSize(householdSize)}` : template.tagline}
-          </p>
-        </div>
+    <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/70 p-2 dark:border-slate-800 dark:bg-slate-900/50">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40">
+        <LayoutTemplate className="size-5" />
+      </span>
+      <div className="min-w-0">
+        <p className="text-[10px] font-bold tracking-wide text-slate-500 uppercase">Template</p>
+        <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
+          {template.label}
+        </p>
+        <p className="text-primary text-xs font-semibold">
+          {householdSize ? `For ${formatHouseholdSize(householdSize)}` : template.tagline}
+        </p>
       </div>
-
-      {lightboxOpen && templateImg && (
-        <ImageLightbox
-          src={templateImg}
-          alt={template.label}
-          onClose={() => setLightboxOpen(false)}
-        />
-      )}
-    </>
+    </div>
   );
 }
 
@@ -121,7 +65,6 @@ export function BasketSummaryCard({
   basketType,
   householdSize,
   image,
-  libraryImage,
   itemCount,
   totalUnits,
   price,
@@ -168,7 +111,6 @@ export function BasketSummaryCard({
       <div className="relative shrink-0">
         <BasketImage
           image={image}
-          libraryImage={libraryImage}
           basketType={basketType}
           alt={name || "Basket"}
           className={cn(
@@ -179,7 +121,7 @@ export function BasketSummaryCard({
         {badge && <div className="absolute top-2.5 left-2.5">{badge}</div>}
         <span className="absolute bottom-2.5 left-2.5 inline-flex max-w-[calc(100%-1.25rem)] items-center gap-1 truncate rounded-full bg-slate-900/70 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm">
           <ImageIcon className="size-3 shrink-0" />
-          Basket image · {imageSourceLabel(image, libraryImage)}
+          Basket image · {imageSourceLabel(image)}
         </span>
         {hasDiscount && (
           <span className="absolute top-2.5 right-2.5 rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white shadow">

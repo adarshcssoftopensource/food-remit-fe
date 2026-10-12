@@ -326,7 +326,6 @@ export function SummarySection({ pricing, issues, onJump, statusNote }: SummaryS
               basketType={values.basketType ?? "CUSTOM"}
               householdSize={values.householdSize || null}
               image={values.image}
-              libraryImage={values.libraryImage}
               itemCount={itemCount}
               totalUnits={pricing?.totalUnits}
               price={pricing?.customerPrice}
@@ -370,7 +369,7 @@ export function SummarySection({ pricing, issues, onJump, statusNote }: SummaryS
               <SummaryTile
                 icon={ImageIcon}
                 label="Basket image"
-                value={imageSourceLabel(values.image, values.libraryImage)}
+                value={imageSourceLabel(values.image)}
               />
               <SummaryTile icon={CheckCircle2} label="Status after saving" value={statusNote} />
             </div>

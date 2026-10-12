@@ -99,7 +99,6 @@ export interface Basket {
   basketType: BasketType;
   householdSize: string | null;
   image: string | null;
-  libraryImage: string | null;
   isDefaultImage: boolean;
   defaultImagePath: string;
   status: BasketStatus;
@@ -241,7 +240,6 @@ export interface UpsertBasketPayload extends BasketPricingOptions {
   basketType: BasketType;
   householdSize?: string;
   image?: string | null;
-  libraryImage?: string | null;
   availabilityMode: BasketAvailabilityMode;
   availableFrom?: string | null;
   availableUntil?: string | null;
