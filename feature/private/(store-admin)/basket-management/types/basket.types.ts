@@ -263,4 +263,27 @@ export interface BasketListParams {
   basketType?: BasketType;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  itemSearch?: string;
+  categoryId?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  priceBasis?: BasketPriceBasis;
+  householdSize?: string;
+  availabilityMode?: BasketAvailabilityMode;
+  discounted?: boolean;
+}
+
+export type BasketPriceBasis = "customer" | "vendor";
+
+/** Advanced filters of the basket list; empty strings mean "any" */
+export interface BasketAdvancedFilters {
+  basketType: BasketType | "";
+  itemSearch: string;
+  categoryId: string;
+  minPrice: string;
+  maxPrice: string;
+  priceBasis: BasketPriceBasis;
+  householdSize: string;
+  availabilityMode: BasketAvailabilityMode | "";
+  discounted: "" | "true" | "false";
 }

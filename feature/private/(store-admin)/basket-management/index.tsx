@@ -1,7 +1,16 @@
 "use client";
 
 import type { SortingState } from "@tanstack/react-table";
-import { CheckCircle2, EyeOff, FilePen, Info, Plus, Search, ShoppingBasket } from "lucide-react";
+import {
+  CheckCircle2,
+  EyeOff,
+  FilePen,
+  Info,
+  Plus,
+  Search,
+  ShoppingBasket,
+  SlidersHorizontal,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -10,34 +19,35 @@ import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
+import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ROUTES } from "@/config/routes";
 import { useDebounce } from "@/lib/debounce";
 import { cn } from "@/lib/utils";
 
 import { getBasketColumns } from "./columns/basket-columns";
+import {
+  BasketFiltersPanel,
+  countActiveFilters,
+  EMPTY_BASKET_FILTERS,
+} from "./components/list/basket-filters-panel";
 import { BasketsEmptyState } from "./components/list/baskets-empty-state";
 import { BasketStoreSwitcher } from "./components/shared/basket-store-switcher";
-import {
-  BASKET_STATUS_META,
-  BASKET_TYPE_MAP,
-  BASKET_TYPE_OPTIONS,
-} from "../../../../constants/basket.constants";
+import { BASKET_STATUS_META } from "../../../../constants/basket.constants";
 import { BasketStatusBadge } from "./components/shared/basket-badges";
 import { useActiveBasketStore } from "./hooks/use-active-basket-store";
 import { useBasketLifecycleActions } from "./hooks/use-basket-lifecycle-actions";
 import { useDeleteBasket } from "./hooks/use-delete-basket";
+import { useGetBasketCatalogue } from "./hooks/use-get-basket-catalogue";
 import { useGetBaskets } from "./hooks/use-get-baskets";
-import type { Basket, BasketStatus, BasketType } from "./types/basket.types";
+import type {
+  Basket,
+  BasketAdvancedFilters,
+  BasketListParams,
+  BasketStatus,
+} from "./types/basket.types";
 
 type StatusTab = "ALL" | BasketStatus;
 
@@ -65,33 +75,46 @@ export function BasketManagement() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 350);
   const [statusTab, setStatusTab] = useState<StatusTab>("ALL");
-  const [typeFilter, setTypeFilter] = useState<BasketType | "ALL">("ALL");
+  const [filters, setFilters] = useState<BasketAdvancedFilters>(EMPTY_BASKET_FILTERS);
+  const debouncedFilters = useDebounce(filters, 350);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pendingDelete, setPendingDelete] = useState<Basket | null>(null);
 
-  const params = useMemo(
-    () => ({
+  const params = useMemo<BasketListParams>(() => {
+    const f = debouncedFilters;
+    const price = (v: string) => (v.trim() === "" ? undefined : Number(v));
+    return {
       storeId: activeStoreId,
       page,
       limit,
       search: debouncedSearch.trim() || undefined,
       status: statusTab === "ALL" ? undefined : statusTab,
-      basketType: typeFilter === "ALL" ? undefined : typeFilter,
+      basketType: f.basketType || undefined,
+      itemSearch: f.itemSearch.trim() || undefined,
+      categoryId: f.categoryId || undefined,
+      minPrice: price(f.minPrice),
+      maxPrice: price(f.maxPrice),
+      priceBasis: f.minPrice !== "" || f.maxPrice !== "" ? f.priceBasis : undefined,
+      householdSize: f.householdSize || undefined,
+      availabilityMode: f.availabilityMode || undefined,
+      discounted: f.discounted === "" ? undefined : f.discounted === "true",
       sortBy: sorting[0]?.id,
       sortOrder: sorting[0] ? (sorting[0].desc ? ("desc" as const) : ("asc" as const)) : undefined,
-    }),
-    [activeStoreId, page, limit, debouncedSearch, statusTab, typeFilter, sorting],
-  );
+    };
+  }, [activeStoreId, page, limit, debouncedSearch, statusTab, debouncedFilters, sorting]);
 
   const { data, isLoading } = useGetBaskets(params);
+  const catalogue = useGetBasketCatalogue({ storeId: activeStoreId, page: 1, limit: 1 });
   const lifecycle = useBasketLifecycleActions();
   const deleteMutation = useDeleteBasket();
 
   const stats = data?.stats ?? { total: 0, active: 0, draft: 0, inactive: 0 };
   const baskets = data?.data ?? [];
-  const hasFilters = Boolean(params.search || params.status || params.basketType);
+  const activeFilterCount = countActiveFilters(filters);
+  const hasFilters = Boolean(params.search || params.status || activeFilterCount);
   const showEmptyState = !isLoading && !storesLoading && stats.total === 0 && !hasFilters;
 
   const columns = useMemo(
@@ -246,35 +269,39 @@ export function BasketManagement() {
                       setSearch(e.target.value);
                       resetPage();
                     }}
-                    placeholder="Search baskets"
+                    placeholder="Search by name or item"
                     className="h-10 rounded-xl pl-9"
                   />
                 </div>
-                <Select
-                  value={typeFilter}
-                  onValueChange={(value) => {
-                    setTypeFilter((value as BasketType | "ALL") ?? "ALL");
-                    resetPage();
-                  }}
+                <Button
+                  type="button"
+                  variant={filtersOpen || activeFilterCount ? "default" : "outline"}
+                  onClick={() => setFiltersOpen((open) => !open)}
+                  aria-expanded={filtersOpen}
+                  className="h-10 rounded-xl"
                 >
-                  <SelectTrigger className="h-10 w-full rounded-xl sm:w-48">
-                    <SelectValue>
-                      {typeFilter === "ALL"
-                        ? "All basket types"
-                        : BASKET_TYPE_MAP[typeFilter].label}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ALL">All basket types</SelectItem>
-                    {BASKET_TYPE_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <SlidersHorizontal className="size-4" />
+                  Filters
+                  {activeFilterCount > 0 && (
+                    <span className="rounded-full bg-white/25 px-1.5 text-[11px] font-bold tabular-nums">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </Button>
               </div>
             </CardHeader>
+
+            {filtersOpen && (
+              <BasketFiltersPanel
+                filters={filters}
+                onChange={(next) => {
+                  setFilters(next);
+                  resetPage();
+                }}
+                categories={catalogue.data?.categories ?? []}
+                currencySymbol={catalogue.data?.currencySymbol}
+              />
+            )}
 
             <CardContent className="p-4">
               <DataTable
