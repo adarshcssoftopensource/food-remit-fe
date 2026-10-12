@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/date";
 import {
   ArrowLeft,
   ArrowDownLeft,
@@ -145,9 +145,7 @@ export function CustomerReportDetail({ customerId }: CustomerReportDetailProps) 
     );
   }
 
-  const joinDateFormatted = customer.createdAt
-    ? format(new Date(customer.createdAt), "dd MMM yyyy")
-    : "—";
+  const joinDateFormatted = formatDate(customer.createdAt, "—");
 
   const customerInitials =
     `${customer.firstName?.[0] || ""}${customer.lastName?.[0] || ""}`.toUpperCase() || "CU";

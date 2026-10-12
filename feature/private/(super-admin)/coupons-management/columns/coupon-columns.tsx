@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { formatDateTime } from "@/lib/date";
 import { Calendar, Globe, Pencil, Store, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -25,17 +25,6 @@ import { ROUTES } from "@/config/routes";
 import { useDeleteCoupon } from "../hooks/use-delete-coupon";
 import { useToggleCouponStatus } from "../hooks/use-toggle-coupon-status";
 import type { CouponItem } from "../types/coupon.types";
-
-function formatDateTime(isoString?: string) {
-  if (!isoString) return "—";
-  try {
-    const d = new Date(isoString);
-    if (Number.isNaN(d.getTime())) return isoString;
-    return format(d, "MMM dd, yyyy h:mm a");
-  } catch {
-    return isoString;
-  }
-}
 
 function StatusCell({ coupon }: { coupon: CouponItem }) {
   const toggleMutation = useToggleCouponStatus();
@@ -201,12 +190,16 @@ export const couponColumns: ColumnDef<CouponItem>[] = [
         <div className="flex items-center gap-1 text-slate-600 dark:text-slate-400">
           <Calendar className="size-3 text-emerald-600" />
           <span className="text-[11px] font-medium">From:</span>
-          <span className="text-[11px] font-medium">{formatDateTime(row.original.startDate)}</span>
+          <span className="text-[11px] font-medium">
+            {formatDateTime(row.original.startDate, "—")}
+          </span>
         </div>
         <div className="flex items-center gap-1 text-slate-600 dark:text-slate-400">
           <Calendar className="size-3 text-rose-600" />
           <span className="text-[11px] font-medium">To:</span>
-          <span className="text-[11px] font-medium">{formatDateTime(row.original.endDate)}</span>
+          <span className="text-[11px] font-medium">
+            {formatDateTime(row.original.endDate, "—")}
+          </span>
         </div>
       </div>
     ),

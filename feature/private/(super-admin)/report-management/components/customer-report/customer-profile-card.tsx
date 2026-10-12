@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/date";
 import {
   Building,
   Building2,
@@ -118,9 +118,7 @@ function CustomerContactGrid({ customer }: { customer: ReportCustomer }) {
 }
 
 export function CustomerProfileCard({ customer }: { customer: ReportCustomer }) {
-  const joinDateFormatted = customer.createdAt
-    ? format(new Date(customer.createdAt), "dd MMM yyyy")
-    : "—";
+  const joinDateFormatted = formatDate(customer.createdAt, "—");
 
   const customerInitials =
     `${customer.firstName?.[0] || ""}${customer.lastName?.[0] || ""}`.toUpperCase() || "CU";

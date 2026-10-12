@@ -3,20 +3,12 @@
 import { FINAL_STATUS, ORDER_STATUS } from "../../utils/order-workflow";
 import { OrderData } from "../../types/order.types";
 import { Mail, PackageX } from "lucide-react";
+import { formatDateTime } from "@/lib/date";
 import { parseAbandonRemark } from "../shared/abandon-remark";
 import { SystemAbandonBadge } from "../shared/abandon-remark-badge";
 
 function formatAbandonedWhen(when: string | null | undefined) {
-  return when
-    ? ` · ${new Date(when).toLocaleString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      })}`
-    : "";
+  return when ? ` · ${formatDateTime(when)}` : "";
 }
 
 interface OrderAbandonRemarkCardProps {

@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/components/common/status-badge";
+import { formatDateTime } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { AmountLimitActionsCell } from "../components/actions-buttons";
 import type { AmountLimitData } from "../types/amount-limit.types";
@@ -44,7 +45,11 @@ export const amountLimitColumns: ColumnDef<AmountLimitData>[] = [
     accessorKey: "createdAt",
     header: "Created At",
     enableSorting: true,
-    cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.createdAt}</span>,
+    cell: ({ row }) => (
+      <span className="text-sm text-slate-600">
+        {formatDateTime(row.original.createdAt, row.original.createdAt)}
+      </span>
+    ),
   },
   {
     accessorKey: "status",

@@ -1,3 +1,4 @@
+import { formatDateTime } from "@/lib/date";
 import { OrderData } from "../types/order.types";
 import {
   FINAL_STATUS,
@@ -65,5 +66,5 @@ export function getOrderPageDescription(state: OrderDetailState) {
 }
 
 export function formatBannerStamp(iso: string | null | undefined) {
-  return iso ? ` · ${new Date(iso).toLocaleString("en-IN")}` : "";
+  return iso ? ` · ${formatDateTime(iso)}` : "";
 }

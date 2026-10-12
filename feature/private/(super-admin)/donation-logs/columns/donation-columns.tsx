@@ -1,4 +1,5 @@
 import { type DonationLog, DONATION_STATUS_STYLES } from "@/constants/donation-logs";
+import { formatDateTime } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 
 function StatusBadge({ status }: { status: DonationLog["status"] }) {
@@ -90,7 +91,11 @@ export const donationColumns: ColumnDef<DonationLog>[] = [
     accessorKey: "donatedAt",
     header: "Donated On",
     enableSorting: true,
-    cell: ({ row }) => <span className="text-sm text-slate-500">{row.original.donatedAt}</span>,
+    cell: ({ row }) => (
+      <span className="text-sm text-slate-500">
+        {formatDateTime(row.original.donatedAt, row.original.donatedAt)}
+      </span>
+    ),
   },
   {
     accessorKey: "status",

@@ -1,4 +1,4 @@
-import { format, parse } from "date-fns";
+import { formatDate } from "@/lib/date";
 
 import { BASKET_WEEKDAYS } from "../../../../../constants/basket.constants";
 import type { BasketAvailabilityMode } from "../types/basket.types";
@@ -10,7 +10,7 @@ interface AvailabilityInput {
   availableDays?: string[];
 }
 
-const formatDay = (value: string) => format(parse(value, "yyyy-MM-dd", new Date()), "MMM d, yyyy");
+const formatDay = (value: string) => formatDate(value);
 
 /** e.g. "Mon–Fri" or "Mon, Wed, Sat" or "Every day" */
 export function formatWeekdays(days: string[] = []): string {

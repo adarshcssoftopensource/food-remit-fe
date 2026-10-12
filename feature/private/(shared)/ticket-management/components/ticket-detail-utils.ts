@@ -1,4 +1,4 @@
-import { USER_TIME_ZONE } from "../../lib/user-time-zone";
+import { formatDateTime, formatTime } from "@/lib/date";
 import type { TicketDetailData } from "../hooks/use-get-ticket-detail";
 
 export function getInitials(name?: string) {
@@ -17,13 +17,9 @@ export function getTicketStatusInfo(ticket: TicketDetailData | null | undefined)
 }
 
 export function formatTicketDateTime(value: string) {
-  return new Date(value).toLocaleString([], { timeZone: USER_TIME_ZONE });
+  return formatDateTime(value);
 }
 
 export function formatTicketChatTime(value: string) {
-  return new Date(value).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: USER_TIME_ZONE,
-  });
+  return formatTime(value);
 }

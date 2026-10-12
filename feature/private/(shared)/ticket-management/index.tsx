@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
+import { format } from "date-fns";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,8 +37,8 @@ export function TicketManagement() {
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const fromDateStr = fromDate ? fromDate.toISOString().split("T")[0] : undefined;
-  const toDateStr = toDate ? toDate.toISOString().split("T")[0] : undefined;
+  const fromDateStr = fromDate ? format(fromDate, "yyyy-MM-dd") : undefined;
+  const toDateStr = toDate ? format(toDate, "yyyy-MM-dd") : undefined;
 
   const { data: ticketsResponse, isLoading } = useGetTickets({
     page,

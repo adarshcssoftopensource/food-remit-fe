@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
+import { format } from "date-fns";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -32,8 +33,8 @@ export function FeedbackList() {
   const [sortBy, setSortBy] = useState<string>("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const fromDateStr = fromDate ? fromDate.toISOString().split("T")[0] : undefined;
-  const toDateStr = toDate ? toDate.toISOString().split("T")[0] : undefined;
+  const fromDateStr = fromDate ? format(fromDate, "yyyy-MM-dd") : undefined;
+  const toDateStr = toDate ? format(toDate, "yyyy-MM-dd") : undefined;
 
   const { data: feedbackResponse, isLoading } = useGetFeedback({
     page,

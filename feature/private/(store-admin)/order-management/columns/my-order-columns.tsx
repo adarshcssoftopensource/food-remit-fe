@@ -13,7 +13,7 @@ import {
   ORDER_STATUS,
 } from "../utils/order-workflow";
 import { ROUTES } from "@/config/routes";
-import { formatDate } from "@/lib/date";
+import { formatRecentDateTime } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2, Eye, Loader2, PackageCheck, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -24,19 +24,6 @@ import {
   DataTableRowActions,
 } from "@/components/common/data-table/data-table-row-actions";
 import { maskOrderReference } from "../utils/mask-order-reference";
-
-function formatTimePlaced(iso?: string) {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  const now = new Date();
-  const sameDay =
-    d.getFullYear() === now.getFullYear() &&
-    d.getMonth() === now.getMonth() &&
-    d.getDate() === now.getDate();
-  const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  if (sameDay) return `Today, ${time}`;
-  return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${time}`;
-}
 
 function MyOrderActionsCell({ order }: { order: OrderData }) {
   const router = useRouter();
@@ -188,7 +175,9 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
     accessorKey: "createdAt",
     header: "Time Placed",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-600">{formatTimePlaced(row.original.createdAt)}</span>
+      <span className="text-xs text-slate-600">
+        {formatRecentDateTime(row.original.createdAt, "—")}
+      </span>
     ),
   },
   {

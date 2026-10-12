@@ -8,6 +8,7 @@ import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";
 import { fetcher } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
+import { resolveDateCountry, setDateDisplayCountry } from "@/lib/date";
 import { isPlatformFeeAdmin } from "@/lib/platform-fee-access";
 import {
   isBankStatusVerified,
@@ -75,6 +76,15 @@ interface ProfileContextType {
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
 
+function resolveProfileDateCountry(profile: AdminProfile | undefined): string | null {
+  if (!profile) return null;
+  const store = profile.stores?.[0];
+  return (
+    resolveDateCountry(profile.countryIsoCode, profile.countryName ?? profile.country) ??
+    resolveDateCountry(store?.countryCode, store?.countryName ?? store?.country)
+  );
+}
+
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
@@ -123,6 +133,9 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     },
     [isSuperAdmin, profileData],
   );
+
+  // Must run during render so every child formats dates with the current market.
+  setDateDisplayCountry(resolveProfileDateCountry(profileData));
 
   const refetchProfile = useCallback(() => {
     void refetch();

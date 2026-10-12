@@ -3,7 +3,7 @@
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/date";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -99,7 +99,7 @@ export function PartnerLeadDetail({ id }: PartnerLeadDetailProps) {
 
       <PageHeader
         title={lead.businessName}
-        description={`Ref: ${lead.referenceNumber} • Applied on ${format(new Date(lead.createdAt), "MMMM do, yyyy")}`}
+        description={`Ref: ${lead.referenceNumber} • Applied on ${formatDate(lead.createdAt)}`}
         breadcrumbs={[
           { label: "Partner Leads", href: ROUTES.ADMIN.PARTNER_LEADS },
           { label: "Lead Details" },

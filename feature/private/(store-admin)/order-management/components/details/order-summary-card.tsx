@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate } from "@/lib/date";
+import { formatDate, formatTime } from "@/lib/date";
 import { CheckCircle2, Clock, Package, Repeat, ShieldCheck, Tag, Calendar } from "lucide-react";
 import { OrderStatusBadge } from "../shared/order-status-badge";
 import type { OrderData } from "../../types/order.types";
@@ -33,13 +33,7 @@ function InfoField({
 }
 
 function formatCreatedTime(order: OrderData) {
-  return order.createdAt
-    ? new Date(order.createdAt).toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      })
-    : order.time || "N/A";
+  return order.createdAt ? formatTime(order.createdAt) : order.time || "N/A";
 }
 
 function RecurringScheduleDetails({ order }: { order: OrderData }) {

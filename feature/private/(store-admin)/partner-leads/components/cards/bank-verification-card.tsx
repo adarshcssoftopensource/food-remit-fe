@@ -13,7 +13,7 @@ import {
   CreditCard,
   ShieldCheck,
 } from "lucide-react";
-import { format } from "date-fns";
+import { formatDateTime } from "@/lib/date";
 import { PartnerLeadData } from "../../types/partner-lead.types";
 
 interface BankVerificationCardProps {
@@ -146,7 +146,7 @@ function VerifiedBankDetails({ details }: { details: BankDetails }) {
           <div className="text-slate-500">
             Verified on:{" "}
             <span className="font-semibold text-slate-800 dark:text-slate-200">
-              {format(new Date(verifiedDate), "MMM dd, yyyy, hh:mm a")}
+              {formatDateTime(verifiedDate)}
             </span>
           </div>
         )}

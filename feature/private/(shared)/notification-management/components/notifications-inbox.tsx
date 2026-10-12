@@ -30,19 +30,15 @@ import {
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import apiClient from "@/lib/api/client";
 import { NOTIFICATION_ENDPOINTS } from "@/lib/api/endpoints/notification.endpoints";
+import { formatDateTime } from "@/lib/date";
 import { cn } from "@/lib/utils";
-import { USER_TIME_ZONE } from "../../lib/user-time-zone";
 import { useGetWebNotifications } from "../hooks/use-get-notifications";
 
 function formatWhen(value?: string) {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString([], {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: USER_TIME_ZONE,
-  });
+  return formatDateTime(date);
 }
 
 const DEFAULT_PAGINATION = {

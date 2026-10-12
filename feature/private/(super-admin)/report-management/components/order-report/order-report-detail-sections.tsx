@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { formatDateTime } from "@/lib/date";
 import {
   ArrowLeft,
   BadgeDollarSign,
@@ -26,7 +27,7 @@ const subscribeNoop = () => () => {};
 function OrderDateText({ orderDate }: { orderDate: string }) {
   const formatted = useSyncExternalStore(
     subscribeNoop,
-    () => new Date(orderDate).toLocaleString(),
+    () => formatDateTime(orderDate),
     () => "",
   );
   return <>{formatted}</>;

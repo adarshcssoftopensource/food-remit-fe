@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { formatDate, formatTime } from "@/lib/date";
 import { DeletedByCell } from "./deleted-by-cell";
 
 export const movedDateColumn: ColumnDef<any> = {
@@ -22,9 +22,9 @@ export const movedDateColumn: ColumnDef<any> = {
     return (
       <div className="flex flex-col">
         <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-          {format(d, "MMM dd, yyyy")}
+          {formatDate(d)}
         </span>
-        <span className="text-[10px] text-slate-400">{format(d, "hh:mm a")}</span>
+        <span className="text-[10px] text-slate-400">{formatTime(d)}</span>
       </div>
     );
   },

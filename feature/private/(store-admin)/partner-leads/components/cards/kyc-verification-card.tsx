@@ -13,7 +13,7 @@ import {
   Check,
   User,
 } from "lucide-react";
-import { format } from "date-fns";
+import { formatDateTime } from "@/lib/date";
 import {
   KycDocument,
   KycMediaItem,
@@ -207,9 +207,7 @@ function KycDecisionMeta({
             Decision Code: {decisionCode}
           </span>
         )}
-        {verifiedDate && (
-          <span>Verified: {format(new Date(verifiedDate), "MMM dd, yyyy, hh:mm a")}</span>
-        )}
+        {verifiedDate && <span>Verified: {formatDateTime(verifiedDate)}</span>}
       </div>
       <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
         Biometrics & Liveness Checked

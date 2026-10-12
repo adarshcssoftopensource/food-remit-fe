@@ -45,7 +45,7 @@ function getAdminDetails(admin: SubAdminData): SubAdminDetailItem[] {
     },
     {
       label: "Joined On",
-      value: admin.createdAt ? formatDate(admin.createdAt, { month: "long" }) : "—",
+      value: formatDate(admin.createdAt, "—"),
       icon: <CalendarDays className="h-4.5 w-4.5" />,
       color: "amber",
     },

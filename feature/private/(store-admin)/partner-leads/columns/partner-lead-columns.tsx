@@ -1,7 +1,7 @@
 "use client";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { format } from "date-fns";
+import { formatDate, formatTime } from "@/lib/date";
 import { AlertCircle, Clock, Eye, Landmark, ShieldAlert, ShieldCheck } from "lucide-react";
 
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
@@ -148,11 +148,9 @@ export const getPartnerLeadColumns = (
       return (
         <div className="flex flex-col">
           <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-            {format(date, "MMM dd, yyyy")}
+            {formatDate(date)}
           </span>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500">
-            {format(date, "hh:mm a")}
-          </span>
+          <span className="text-[10px] text-slate-400 dark:text-slate-500">{formatTime(date)}</span>
         </div>
       );
     },

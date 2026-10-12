@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDate } from "@/lib/date";
 import { getInitials } from "@/lib/get-initials";
 import { ColumnDef } from "@tanstack/react-table";
 import { MapPin } from "lucide-react";
@@ -69,7 +70,7 @@ export const requestedOrdersColumns: ColumnDef<DashboardOrderRequested>[] = [
     enableSorting: false,
     cell: ({ row }) => (
       <span className="text-xs font-medium whitespace-nowrap text-slate-500 dark:text-slate-400">
-        {row.getValue("deliveredTime") || "N/A"}
+        {formatDate(row.original.createdAt, row.original.deliveredTime || "N/A")}
       </span>
     ),
   },

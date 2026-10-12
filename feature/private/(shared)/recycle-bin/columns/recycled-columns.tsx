@@ -2,7 +2,7 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/date";
 import { getStatusColor } from "@/constants/partner.leads";
 import { RecycleEntityType } from "../hooks/use-get-recycled-data";
 import { RecycledEntityActionsCell } from "../components/recycled-entity-actions-cell";
@@ -461,7 +461,7 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
           const date = row.original.createdAt ? new Date(row.original.createdAt) : null;
           return (
             <div className="text-xs text-slate-600 dark:text-slate-400">
-              {date && !isNaN(date.getTime()) ? format(date, "MMM dd, yyyy") : "N/A"}
+              {formatDate(date, "N/A")}
             </div>
           );
         },
@@ -640,7 +640,7 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
           const date = row.original.createdAt ? new Date(row.original.createdAt) : null;
           return (
             <span className="text-sm text-slate-700 dark:text-slate-300">
-              {date && !isNaN(date.getTime()) ? format(date, "MMM dd, yyyy") : "N/A"}
+              {formatDate(date, "N/A")}
             </span>
           );
         },

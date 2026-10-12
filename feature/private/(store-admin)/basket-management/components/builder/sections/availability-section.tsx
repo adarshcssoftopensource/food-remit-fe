@@ -11,6 +11,7 @@ import {
   startOfToday,
   startOfWeek,
 } from "date-fns";
+import { formatDate } from "@/lib/date";
 import {
   CalendarCheck2,
   CalendarDays,
@@ -129,8 +130,7 @@ function AvailabilityPreview({
             <ChevronLeft className="size-4" />
           </button>
           <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-            {format(gridStart, "MMM d")} –{" "}
-            {format(addDays(gridStart, PREVIEW_WEEKS * 7 - 1), "MMM d, yyyy")}
+            {formatDate(gridStart)} – {formatDate(addDays(gridStart, PREVIEW_WEEKS * 7 - 1))}
           </span>
           <button
             type="button"
@@ -160,8 +160,8 @@ function AvailabilityPreview({
                 disabled={past}
                 onClick={() => onPick(date)}
                 onMouseEnter={() => setHovered(date)}
-                title={format(date, "EEE, MMM d")}
-                aria-label={format(date, "EEEE, MMMM d, yyyy")}
+                title={`${format(date, "EEE")}, ${formatDate(date)}`}
+                aria-label={`${format(date, "EEEE")}, ${formatDate(date)}`}
                 aria-pressed={endpoint}
                 className={cn(
                   "flex aspect-square items-center justify-center rounded-lg text-xs font-semibold tabular-nums transition-all",

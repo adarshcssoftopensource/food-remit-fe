@@ -39,6 +39,7 @@ import {
 } from "./utils/order-workflow";
 import { CompleteOrderByReferenceDialog } from "@/feature/private/(shared)/my-orders/components/complete-order-by-reference-dialog";
 import { getOrderReference } from "./utils/mask-order-reference";
+import { formatDateTime } from "@/lib/date";
 import { getInitials } from "@/lib/get-initials";
 import { getOrderActorRole } from "./utils/order-roles";
 import { StartOrderConfirmDialog } from "./components/dialogs/start-order-confirm-dialog";
@@ -141,7 +142,7 @@ export function OrderDetailPage({ id }: { id: string }) {
         <OrderInfoBanner
           variant="processing"
           message={`Assigned to ${order.assignedEmployeeName || "an employee"}${
-            order.assignedAt ? ` · ${new Date(order.assignedAt).toLocaleString("en-IN")}` : ""
+            order.assignedAt ? ` · ${formatDateTime(order.assignedAt)}` : ""
           } · waiting for the employee to tap Start Order.`}
         />
       )}
@@ -149,7 +150,7 @@ export function OrderDetailPage({ id }: { id: string }) {
         <OrderInfoBanner
           variant="processing"
           message={`Processing · started by ${handlerName}${
-            order.startedAt ? ` · ${new Date(order.startedAt).toLocaleString("en-IN")}` : ""
+            order.startedAt ? ` · ${formatDateTime(order.startedAt)}` : ""
           }`}
         />
       )}

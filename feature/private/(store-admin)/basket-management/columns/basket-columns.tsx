@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/date";
 import { AlertTriangle, Eye, EyeOff, FilePen, Pencil, Rocket, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -173,7 +173,7 @@ export function getBasketColumns(handlers: BasketColumnHandlers): ColumnDef<Bask
       header: "Updated On",
       cell: ({ row }) => (
         <span className="text-sm whitespace-nowrap text-slate-600 dark:text-slate-300">
-          {format(new Date(row.original.updatedAt), "MMM d, yyyy")}
+          {formatDate(row.original.updatedAt)}
         </span>
       ),
     },

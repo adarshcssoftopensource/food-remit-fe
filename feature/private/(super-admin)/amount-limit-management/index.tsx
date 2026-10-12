@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFilterState } from "@/hooks/use-filter-state";
 import { useDebounce } from "@/lib/debounce";
 import { SortingState } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { Globe, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { amountLimitColumns } from "./columns/amount-limit-columns";
@@ -29,8 +30,8 @@ export function AmountLimitManagement() {
     toDate: undefined as Date | undefined,
   });
 
-  const fromDateStr = applied.fromDate ? applied.fromDate.toISOString().split("T")[0] : undefined;
-  const toDateStr = applied.toDate ? applied.toDate.toISOString().split("T")[0] : undefined;
+  const fromDateStr = applied.fromDate ? format(applied.fromDate, "yyyy-MM-dd") : undefined;
+  const toDateStr = applied.toDate ? format(applied.toDate, "yyyy-MM-dd") : undefined;
 
   const {
     data: amountLimits,

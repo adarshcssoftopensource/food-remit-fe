@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDate } from "@/lib/date";
 import { getInitials } from "@/lib/get-initials";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -8,6 +9,7 @@ interface SalesOrder {
   referenceNumber: string;
   customerName: string;
   date: string;
+  createdAt?: string | null;
   orderAmount: string;
 }
 
@@ -46,7 +48,7 @@ export const salesColumns: ColumnDef<SalesOrder>[] = [
     header: "Date",
     cell: ({ row }) => (
       <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-        {row.getValue("date") || "N/A"}
+        {formatDate(row.original.createdAt, row.original.date || "N/A")}
       </span>
     ),
   },

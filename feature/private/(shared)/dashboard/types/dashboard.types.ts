@@ -77,6 +77,7 @@ export interface DashboardOrderRequested {
   location: string;
   orderStatus: string;
   deliveredTime: string;
+  createdAt?: string | null;
   price: string;
 }
 
@@ -87,6 +88,7 @@ export interface DashboardRecentlyPlacedOrder {
   location: string;
   status: string;
   deliveredTime: string;
+  createdAt?: string | null;
   price: string;
 }
 

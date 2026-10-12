@@ -24,6 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ROUTES } from "@/config/routes";
+import { formatDateTime } from "@/lib/date";
 import { cn } from "@/lib/utils";
 
 import { useDeleteBasket } from "../../hooks/use-delete-basket";
@@ -38,11 +39,6 @@ import { BasketPricingBreakdown } from "../shared/basket-pricing-breakdown";
 import { BasketSummaryCard } from "../shared/basket-summary-card";
 import { PriceStack } from "../shared/price-display";
 import { ProductThumb } from "../shared/product-thumb";
-
-const formatDate = (value?: string | null) =>
-  value
-    ? new Date(value).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })
-    : "—";
 
 function Panel({
   title,
@@ -103,8 +99,8 @@ export function BasketDetails({ id }: { id: string }) {
 
   const meta = [
     { icon: Store, label: "Store", value: basket.store?.storeName ?? "—" },
-    { icon: Rocket, label: "Published", value: formatDate(basket.publishedAt) },
-    { icon: Clock, label: "Last updated", value: formatDate(basket.updatedAt) },
+    { icon: Rocket, label: "Published", value: formatDateTime(basket.publishedAt, "—") },
+    { icon: Clock, label: "Last updated", value: formatDateTime(basket.updatedAt, "—") },
   ];
 
   return (

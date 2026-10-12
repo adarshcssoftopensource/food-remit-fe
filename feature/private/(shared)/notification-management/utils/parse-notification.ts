@@ -1,35 +1,12 @@
-const NOTIFICATION_DATE_FORMATTERS = {
-  "Asia/Kolkata": new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Kolkata",
-    dateStyle: "medium",
-    timeStyle: "short",
-  }),
-  "Asia/Manila": new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Manila",
-    dateStyle: "medium",
-    timeStyle: "short",
-  }),
-  "America/Toronto": new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Toronto",
-    dateStyle: "medium",
-    timeStyle: "short",
-  }),
-  "Europe/London": new Intl.DateTimeFormat("en-US", {
-    timeZone: "Europe/London",
-    dateStyle: "medium",
-    timeStyle: "short",
-  }),
-  "Asia/Dubai": new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Dubai",
-    dateStyle: "medium",
-    timeStyle: "short",
-  }),
-  "Australia/Sydney": new Intl.DateTimeFormat("en-US", {
-    timeZone: "Australia/Sydney",
-    dateStyle: "medium",
-    timeStyle: "short",
-  }),
-};
+import { formatDateTime } from "@/lib/date";
+
+type NotificationTimeZone =
+  | "Asia/Kolkata"
+  | "Asia/Manila"
+  | "America/Toronto"
+  | "Europe/London"
+  | "Asia/Dubai"
+  | "Australia/Sydney";
 
 /**
  * Converts a raw date string (especially if ending in UTC) into the country's local timezone.
@@ -46,7 +23,7 @@ function formatNotificationDate(rawDate: string, currency?: string, phone?: stri
   const curr = (currency || "").toUpperCase();
   const cleanPhone = (phone || "").replace(/[^\d+]/g, "");
 
-  let timeZone: keyof typeof NOTIFICATION_DATE_FORMATTERS = "Asia/Kolkata";
+  let timeZone: NotificationTimeZone = "Asia/Kolkata";
   let tzLabel = "IST";
 
   if (
@@ -79,7 +56,7 @@ function formatNotificationDate(rawDate: string, currency?: string, phone?: stri
     const cleanDateStr = rawDate.replace(/\s*UTC\s*$/i, " UTC").trim();
     const parsedDate = new Date(cleanDateStr);
     if (!isNaN(parsedDate.getTime())) {
-      const formatted = NOTIFICATION_DATE_FORMATTERS[timeZone].format(parsedDate);
+      const formatted = formatDateTime(parsedDate, "", timeZone);
       return `${formatted} (${tzLabel})`;
     }
   } catch {

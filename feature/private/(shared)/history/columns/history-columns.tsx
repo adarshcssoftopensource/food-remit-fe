@@ -1,7 +1,7 @@
 import { StatusBadge } from "@/components/common/status-badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { formatDate, formatTime } from "@/lib/date";
 import { getStatusColor } from "@/constants/partner.leads";
 import { HistoryEntityType } from "../hooks/use-get-history-data";
 import { HistoryEntityActionsCell } from "../components/history-entity-actions-cell";
@@ -100,10 +100,8 @@ export const historyStoresColumns: ColumnDef<any>[] = [
       }
       return (
         <div className="flex flex-col text-xs">
-          <span className="font-medium text-slate-700 dark:text-slate-300">
-            {format(date, "MMM dd, yyyy")}
-          </span>
-          <span className="text-[11px] text-slate-400">{format(date, "hh:mm a")}</span>
+          <span className="font-medium text-slate-700 dark:text-slate-300">{formatDate(date)}</span>
+          <span className="text-[11px] text-slate-400">{formatTime(date)}</span>
         </div>
       );
     },
@@ -185,10 +183,8 @@ export const historyPartnerLeadsColumns: ColumnDef<any>[] = [
       }
       return (
         <div className="flex flex-col text-xs">
-          <span className="font-medium text-slate-700 dark:text-slate-300">
-            {format(date, "MMM dd, yyyy")}
-          </span>
-          <span className="text-[11px] text-slate-400">{format(date, "hh:mm a")}</span>
+          <span className="font-medium text-slate-700 dark:text-slate-300">{formatDate(date)}</span>
+          <span className="text-[11px] text-slate-400">{formatTime(date)}</span>
         </div>
       );
     },

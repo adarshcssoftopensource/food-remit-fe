@@ -12,27 +12,7 @@ import { FINAL_STATUS, isPendingOrder } from "../utils/order-workflow";
 import { parseAbandonRemark } from "../components/shared/abandon-remark";
 import { SystemAbandonBadge } from "../components/shared/abandon-remark-badge";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
-function formatTimePlaced(iso?: string) {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  const now = new Date();
-  const sameDay =
-    d.getFullYear() === now.getFullYear() &&
-    d.getMonth() === now.getMonth() &&
-    d.getDate() === now.getDate();
-  const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  if (sameDay) return `Today, ${time}`;
-  const yesterday = new Date(now);
-  yesterday.setDate(now.getDate() - 1);
-  if (
-    d.getFullYear() === yesterday.getFullYear() &&
-    d.getMonth() === yesterday.getMonth() &&
-    d.getDate() === yesterday.getDate()
-  ) {
-    return `Yesterday, ${time}`;
-  }
-  return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${time}`;
-}
+import { formatRecentDateTime } from "@/lib/date";
 
 const selectColumn: ColumnDef<OrderData> = {
   id: "select",
@@ -134,7 +114,7 @@ export const orderColumns: ColumnDef<OrderData>[] = [
     header: "Time Placed",
     cell: ({ row }) => (
       <span className="text-sm text-slate-600 dark:text-slate-400">
-        {formatTimePlaced(row.original.createdAt)}
+        {formatRecentDateTime(row.original.createdAt, "—")}
       </span>
     ),
   },
@@ -222,7 +202,7 @@ export const historyOrderColumns: ColumnDef<OrderData>[] = [
             {row.original.recieverName || row.original.userName || "Customer"}
           </p>
           <p className="text-[11px] whitespace-nowrap text-slate-500">
-            {formatTimePlaced(row.original.pickedUpAt || undefined)}
+            {formatRecentDateTime(row.original.pickedUpAt, "—")}
           </p>
         </div>
       ) : (
@@ -234,7 +214,7 @@ export const historyOrderColumns: ColumnDef<OrderData>[] = [
     header: "Closed At",
     cell: ({ row }) => (
       <span className="text-sm whitespace-nowrap text-slate-600">
-        {formatTimePlaced(row.original.closedAt || undefined)}
+        {formatRecentDateTime(row.original.closedAt, "—")}
       </span>
     ),
   },

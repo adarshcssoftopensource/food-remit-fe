@@ -10,6 +10,7 @@ import {
   isRequestedOrder,
 } from "../../utils/order-workflow";
 import { OrderData } from "../../types/order.types";
+import { formatDate, formatDateTime, formatTime } from "@/lib/date";
 import {
   CreditCard,
   HandPlatter,
@@ -28,24 +29,9 @@ export function formatFullStamp(iso?: string | Date | null) {
   const d = typeof iso === "string" ? new Date(iso) : iso;
   if (Number.isNaN(d.getTime())) return null;
   return {
-    date: d.toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }),
-    time: d.toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }),
-    full: d.toLocaleString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }),
+    date: formatDate(d),
+    time: formatTime(d),
+    full: formatDateTime(d),
   };
 }
 

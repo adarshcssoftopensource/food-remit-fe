@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye } from "lucide-react";
 import { TicketRowData } from "../hooks/use-get-tickets";
@@ -49,15 +50,7 @@ export function getTicketColumns(
       cell: ({ row }) => {
         const val = row.original.date;
         if (!val) return <span className="text-muted-foreground text-xs">—</span>;
-        return (
-          <span className="text-xs whitespace-nowrap text-slate-600">
-            {new Date(val).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </span>
-        );
+        return <span className="text-xs whitespace-nowrap text-slate-600">{formatDate(val)}</span>;
       },
     },
     {

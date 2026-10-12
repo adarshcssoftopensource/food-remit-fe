@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { formatDateTime } from "@/lib/date";
 import { FileText, PencilLine, Save } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -160,7 +161,7 @@ const subscribeNoop = () => () => {};
 function LastUpdatedText({ updatedAt }: { updatedAt: string }) {
   const formatted = useSyncExternalStore(
     subscribeNoop,
-    () => new Date(updatedAt).toLocaleString(),
+    () => formatDateTime(updatedAt),
     () => "",
   );
   return <>{`Last updated: ${formatted}`}</>;

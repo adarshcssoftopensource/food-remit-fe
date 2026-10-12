@@ -99,15 +99,7 @@ export function DataTablesSection({
                   </p>
                   <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
                     <Clock className="h-3 w-3" />
-                    <span>
-                      {ticket.addedOn
-                        ? formatDate(ticket.addedOn, {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })
-                        : "Recently generated"}
-                    </span>
+                    <span>{formatDate(ticket.addedOn, "Recently generated")}</span>
                   </div>
                 </div>
                 <DashboardStatusBadge status={ticket.status} />
