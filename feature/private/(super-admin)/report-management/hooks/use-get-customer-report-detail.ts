@@ -21,7 +21,7 @@ export interface CustomerReportDetailData {
     zipCode?: string;
     zipcode?: string;
     userStatus: "ACTIVE" | "INACTIVE" | "PENDING" | "DENIED";
-    emailVerifyStatus: "VERIFIED" | "UNVERIFIED";
+    isVerified: boolean;
     createdAt: string;
   };
   stats: {

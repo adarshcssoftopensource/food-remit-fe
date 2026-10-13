@@ -163,7 +163,7 @@ export function CustomerProfileCard({ customer }: { customer: ReportCustomer }) 
                       {customer.userStatus || "Inactive"}
                     </Badge>
                   )}
-                  {customer.emailVerifyStatus === "VERIFIED" ? (
+                  {customer.isVerified ? (
                     <Badge
                       variant="secondary"
                       className="gap-1 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-50 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400"
