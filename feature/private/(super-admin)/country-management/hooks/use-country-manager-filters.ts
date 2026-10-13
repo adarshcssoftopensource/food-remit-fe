@@ -49,7 +49,7 @@ export function useCountryManagerFilters() {
     setCity(appliedCity);
   };
 
-  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("ACTIVE");
 
   const {
     data: countryManagers,
@@ -100,7 +100,7 @@ export function useCountryManagerFilters() {
 
   const clearFilters = () => {
     resetBaseFilters();
-    setStatusTab("all");
+    setStatusTab("ACTIVE");
     setCountry("all");
     setCity("all");
     setAppliedCountry("all");

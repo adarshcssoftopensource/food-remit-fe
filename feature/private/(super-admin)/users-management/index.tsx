@@ -34,7 +34,7 @@ export function UserManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("ACTIVE");
   const debouncedSearch = useDebounce(applied.search, 500);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
@@ -91,7 +91,7 @@ export function UserManagement() {
 
   const clearFilters = () => {
     reset();
-    setStatusTab("all");
+    setStatusTab("ACTIVE");
     setCurrentPage(1);
     setSorting([]);
   };

@@ -39,7 +39,7 @@ export function SubAdminManagement() {
     resetBaseFilters,
   } = useDraftTableFilters();
 
-  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("ACTIVE");
 
   const handleSearchChange = useCallback(
     (value: string) => {
@@ -67,7 +67,7 @@ export function SubAdminManagement() {
 
   const handleReset = useCallback(() => {
     resetBaseFilters();
-    setStatusTab("all");
+    setStatusTab("ACTIVE");
     setCurrentPage(1);
   }, [resetBaseFilters, setCurrentPage]);
 

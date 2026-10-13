@@ -49,7 +49,7 @@ export function useStoreFilters() {
     cancelFilters,
   } = useDraftTableFilters(DEFAULT_PAGE_SIZE);
 
-  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("ACTIVE");
 
   const {
     data: rawStores,
@@ -89,7 +89,7 @@ export function useStoreFilters() {
 
   const clearFilters = () => {
     resetBaseFilters();
-    setStatusTab("all");
+    setStatusTab("ACTIVE");
     setCountry("All Countries");
     setCity("All Cities");
     setAppliedCountry("All Countries");

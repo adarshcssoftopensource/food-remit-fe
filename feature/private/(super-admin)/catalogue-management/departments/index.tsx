@@ -43,7 +43,7 @@ export function DepartmentsManagement() {
     resetBaseFilters,
   } = useDraftTableFilters();
 
-  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("ACTIVE");
 
   const [country, setCountry] = useState("all");
   const [city, setCity] = useState("all");
@@ -124,6 +124,7 @@ export function DepartmentsManagement() {
 
   const clearFilters = () => {
     resetBaseFilters();
+    setStatusTab("ACTIVE");
     setCountry("all");
     setCity("all");
     setAppliedCountry("all");

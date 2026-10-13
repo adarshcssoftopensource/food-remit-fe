@@ -19,7 +19,10 @@ export function useCatalogueItemFilters() {
   );
   const [appliedFromDate, setAppliedFromDate] = useQueryState("from", parseAsString);
   const [appliedToDate, setAppliedToDate] = useQueryState("to", parseAsString);
-  const [statusTabStr, setStatusTabStr] = useQueryState("status", parseAsString.withDefault("all"));
+  const [statusTabStr, setStatusTabStr] = useQueryState(
+    "status",
+    parseAsString.withDefault("ACTIVE"),
+  );
   const statusTab = statusTabStr as "all" | "ACTIVE" | "INACTIVE";
   const setStatusTab = setStatusTabStr;
 
@@ -62,6 +65,7 @@ export function useCatalogueItemFilters() {
     setAppliedFromDate(null);
     setAppliedToDate(null);
     setSearch(null);
+    setStatusTabStr(null);
     setPage(1);
   };
 

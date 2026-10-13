@@ -22,7 +22,7 @@ export function EmployeeManagementFeature() {
   const [limit, setLimit] = useState(50);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-  const [status, setStatus] = useState("all");
+  const [status, setStatus] = useState<"all" | "ACTIVE" | "INACTIVE">("ACTIVE");
 
   const [sortBy, setSortBy] = useState<string>();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">();
@@ -86,7 +86,7 @@ export function EmployeeManagementFeature() {
       </div>
 
       <StatusTabs
-        activeTab={status as "all" | "ACTIVE" | "INACTIVE"}
+        activeTab={status}
         stats={
           stats || {
             total: pagination?.total ?? data.length,

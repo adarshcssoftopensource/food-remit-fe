@@ -72,7 +72,7 @@ export function CategoryItemsWorkspace({ id }: CategoryItemsWorkspaceProps) {
   const debouncedSearch = useDebounce(search, 500);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [statusTab, setStatusTab] = useState<StatusTab>("all");
+  const [statusTab, setStatusTab] = useState<StatusTab>("ACTIVE");
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -163,8 +163,7 @@ export function CategoryItemsWorkspace({ id }: CategoryItemsWorkspaceProps) {
     return <CategoryNotAvailable onExit={exitCategory} />;
   }
 
-  const isEmptyCategory =
-    !isItemsLoading && stats.total === 0 && !debouncedSearch && statusTab === "all";
+  const isEmptyCategory = !isItemsLoading && stats.total === 0 && !debouncedSearch;
 
   return (
     <div className="space-y-6">

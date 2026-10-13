@@ -74,7 +74,7 @@ export function CategoriesManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<CategoryData | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
-  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("all");
+  const [statusTab, setStatusTab] = useState<"all" | "ACTIVE" | "INACTIVE">("ACTIVE");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   const router = useRouter();
@@ -136,6 +136,7 @@ export function CategoriesManagement() {
 
   const clearFilters = () => {
     resetBaseFilters();
+    setStatusTab("ACTIVE");
     setCountry("all");
     setCity("all");
     setAppliedCountry("all");

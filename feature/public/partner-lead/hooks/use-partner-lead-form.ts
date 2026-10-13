@@ -463,7 +463,7 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
             });
             isValid = false;
           }
-        } catch (err) {
+        } catch {
           // ignore
         }
       }
