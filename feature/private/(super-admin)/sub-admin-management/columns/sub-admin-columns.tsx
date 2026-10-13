@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/components/common/status-badge";
+import { CopyButton } from "@/components/common/copy-button";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { SubAdminActionsCell } from "../components/actions-cell";
@@ -61,14 +62,32 @@ export const subAdminColumns: ColumnDef<SubAdminData>[] = [
     header: "Email Address",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="text-sm text-blue-600 hover:underline">{row.original.email}</span>
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm text-blue-600 hover:underline">{row.original.email}</span>
+        <CopyButton
+          value={row.original.email}
+          label="Email"
+          className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        />
+      </div>
     ),
   },
   {
     accessorKey: "contactNumber",
     header: "Contact Number",
     enableSorting: true,
-    cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.contactNumber}</span>,
+    cell: ({ row }) => (
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm text-slate-700 dark:text-slate-300">
+          {row.original.contactNumber}
+        </span>
+        <CopyButton
+          value={row.original.contactNumber}
+          label="Contact Number"
+          className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        />
+      </div>
+    ),
   },
   {
     accessorKey: "permissions",

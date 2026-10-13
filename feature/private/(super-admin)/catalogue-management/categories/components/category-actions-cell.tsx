@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
 import { useDeleteCategory } from "../hooks/use-delete-category";
 import { CategoryData } from "../types/category.types";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import {
   DataTableRowActions,
   type DataTableRowActionItem,

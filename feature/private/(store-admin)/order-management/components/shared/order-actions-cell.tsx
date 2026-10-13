@@ -6,7 +6,7 @@ import {
   DataTableRowActions,
 } from "@/components/common/data-table/data-table-row-actions";
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { ROUTES } from "@/config/routes";
 import { Eye, Loader2, Play, Trash2, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";

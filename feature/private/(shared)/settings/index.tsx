@@ -11,7 +11,7 @@ import { OrderAbandonSettings } from "./components/order-abandon-settings";
 import { ProcessingFee } from "./components/processing-fee";
 import { FoodRemitCommission } from "./components/food-remit-commission";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";

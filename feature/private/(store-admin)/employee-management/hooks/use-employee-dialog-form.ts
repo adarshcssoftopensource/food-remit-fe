@@ -1,7 +1,7 @@
 "use client";
 
 import { findPhoneCountry } from "@/components/ui/phone-input-utils";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import {
   EmployeeFormSchema,
   EmployeeFormValues,

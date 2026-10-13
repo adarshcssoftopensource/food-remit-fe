@@ -28,7 +28,7 @@ import {
   useBulkPermanentDeleteEntities,
   useBulkRestoreEntities,
 } from "./hooks/use-recycle-bin-actions";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 
 const ALL_ENTITY_TABS: {
   id: RecycleEntityType;
@@ -57,7 +57,8 @@ export function RecycledUsersManagement() {
         ["categories", "items", "employees", "baskets"].includes(tab.id),
       );
     }
-    return ALL_ENTITY_TABS;
+    // Super admin does not manage store-scoped baskets in recycle bin
+    return ALL_ENTITY_TABS.filter((tab) => tab.id !== "baskets");
   }, [isStoreManager]);
 
   const [activeTab, setActiveTab] = useState<RecycleEntityType>(

@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { BarChart3, CreditCard, Landmark } from "lucide-react";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 

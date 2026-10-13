@@ -23,9 +23,15 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@/shared/*": ["./shared/*"],
-      "@/features/*": ["./features/*"],
-      "@/core/*": ["./core/*"]
+      "@/feature/*": ["./feature/*"],
+      "@/features/*": ["./feature/*"],
+      "@/components/*": ["./components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/config/*": ["./config/*"],
+      "@/constants/*": ["./constants/*"],
+      "@/hooks/*": ["./hooks/*"],
+      "@/types/*": ["./types/*"],
+      "@/providers/*": ["./providers/*"]
     }
   },
   "include": [

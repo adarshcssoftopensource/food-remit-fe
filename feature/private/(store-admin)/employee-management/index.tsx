@@ -4,7 +4,7 @@ import { DataTable } from "@/components/common/data-table/data-table";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { StatusTabs } from "@/components/common/status-tabs";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/config/routes";

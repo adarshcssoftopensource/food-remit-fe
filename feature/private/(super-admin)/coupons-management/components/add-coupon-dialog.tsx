@@ -6,7 +6,7 @@ import { Pencil, Plus } from "lucide-react";
 import React, { useEffect, useEffectEvent } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useControllableOpen } from "../hooks/use-controllable-open";

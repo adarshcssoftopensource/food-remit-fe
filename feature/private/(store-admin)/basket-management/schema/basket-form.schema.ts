@@ -5,6 +5,7 @@ import {
   BASKET_DISCOUNT_PERCENT_MAX,
   BASKET_ITEM_QUANTITY_MAX,
   BASKET_NAME_MAX,
+  BASKET_TYPE_MAP,
   BASKET_WEEKDAYS,
 } from "../../../../../constants/basket.constants";
 import type {
@@ -135,11 +136,11 @@ export type BasketFormValues = z.input<typeof basketFormSchema>;
 export const ALL_WEEKDAYS = BASKET_WEEKDAYS.map((d) => d.value);
 
 export const EMPTY_BASKET_FORM: BasketFormValues = {
-  basketType: null,
-  name: "",
-  description: "",
+  basketType: "BASIC",
+  name: BASKET_TYPE_MAP.BASIC.defaultName,
+  description: BASKET_TYPE_MAP.BASIC.defaultDescription,
   shortDescription: "",
-  householdSize: "",
+  householdSize: BASKET_TYPE_MAP.BASIC.defaultHouseholdSize ?? "1-2",
   image: null,
   pricingMode: "STANDARD",
   vendorDiscountPercent: null,

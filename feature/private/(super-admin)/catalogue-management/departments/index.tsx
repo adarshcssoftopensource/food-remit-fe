@@ -10,11 +10,12 @@ import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
-import { DEPARTMENT_STAT_CONFIG } from "@/constants/catalogue-management";
+import { DEPARTMENT_STAT_CONFIG } from "./constants/department.constants";
+
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { Building2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { useCallback, useMemo, useState } from "react";
 import { getDepartmentColumns } from "./columns/department-columns";
 import { DepartmentFormDialog } from "./components/department-form-dialog";

@@ -1,7 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/common/page-header";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { useGetDashboardStats } from "../hooks/use-get-dashboard-stats";
 import { buildDashboardTopCards } from "./common/build-dashboard-top-cards";
 import { DashboardOrdersSections } from "./common/dashboard-orders-sections";

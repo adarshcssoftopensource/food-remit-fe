@@ -1,6 +1,6 @@
 "use client";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { Landmark } from "lucide-react";

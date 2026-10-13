@@ -1,11 +1,12 @@
 "use client";
 
 import { ImageLightbox } from "@/components/common/image-lightbox";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { errorToast, successToast } from "@/components/toaster";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
-import { formatRole } from "@/lib/formatRole";
+import { formatRole } from "@/lib/format-role";
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Camera, Loader2, Mail, Maximize2, ShieldCheck, Store } from "lucide-react";
 import { useRef, useState } from "react";

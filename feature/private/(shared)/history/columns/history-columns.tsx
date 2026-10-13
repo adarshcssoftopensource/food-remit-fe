@@ -1,8 +1,11 @@
 import { StatusBadge } from "@/components/common/status-badge";
+import { CopyButton } from "@/components/common/copy-button";
+import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate, formatTime } from "@/lib/date";
-import { getStatusColor } from "@/constants/partner.leads";
+import { getStatusColor } from "@/constants/partner-leads";
+
 import { HistoryEntityType } from "../hooks/use-get-history-data";
 import { HistoryEntityActionsCell } from "../components/history-entity-actions-cell";
 import { withDeletedByColumn } from "@/feature/private/(shared)/recycle-bin/components/deleted-by-columns";
@@ -71,12 +74,22 @@ export const historyStoresColumns: ColumnDef<any>[] = [
   {
     accessorKey: "contactNumber",
     header: "Contact",
-    cell: ({ row }) => (
-      <span className="text-xs text-slate-600">
-        {`${row.original.storeCountryCode || ""} ${row.original.storePhoneNumber || ""}`.trim() ||
-          "N/A"}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const phone =
+        `${row.original.storeCountryCode || ""} ${row.original.storePhoneNumber || ""}`.trim();
+      return (
+        <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
+          <span>{phone || "N/A"}</span>
+          {phone && phone !== "N/A" ? (
+            <CopyButton
+              value={phone}
+              label="Contact"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          ) : null}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "storeStatus",
@@ -127,9 +140,14 @@ export const historyPartnerLeadsColumns: ColumnDef<any>[] = [
     accessorKey: "referenceNumber",
     header: "Ref No.",
     cell: ({ row }) => (
-      <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
-        {row.original.referenceNumber}
-      </span>
+      <div className="flex items-center gap-1 font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
+        <span>{row.original.referenceNumber}</span>
+        <CopyButton
+          value={row.original.referenceNumber}
+          label="Reference Number"
+          className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        />
+      </div>
     ),
   },
   {
@@ -158,7 +176,18 @@ export const historyPartnerLeadsColumns: ColumnDef<any>[] = [
           <span className="font-medium text-slate-900 dark:text-slate-100">
             {data.firstName} {data.lastName}
           </span>
-          <span className="text-muted-foreground text-xs">{data.businessEmail}</span>
+          <div className="text-muted-foreground flex items-center gap-1 text-xs">
+            <TruncatedTextCell
+              text={data.businessEmail}
+              truncateAfterAt
+              className="cursor-default"
+            />
+            <CopyButton
+              value={data.businessEmail}
+              label="Email"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          </div>
         </div>
       );
     },
@@ -167,9 +196,16 @@ export const historyPartnerLeadsColumns: ColumnDef<any>[] = [
     accessorKey: "phoneNumber",
     header: "Phone",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-600 dark:text-slate-400">
-        {row.original.phoneNumber || "N/A"}
-      </span>
+      <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
+        <span>{row.original.phoneNumber || "N/A"}</span>
+        {row.original.phoneNumber && row.original.phoneNumber !== "N/A" ? (
+          <CopyButton
+            value={row.original.phoneNumber}
+            label="Phone"
+            className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          />
+        ) : null}
+      </div>
     ),
   },
   {

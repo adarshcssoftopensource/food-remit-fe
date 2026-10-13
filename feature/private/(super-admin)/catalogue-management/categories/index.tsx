@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/config/routes";
-import { CATEGORY_STAT_CONFIG } from "@/constants/catalogue-management";
+import { CATEGORY_STAT_CONFIG } from "./constants/category.constants";
+
 import { useDraftTableFilters } from "@/hooks/use-table-filters";
 import { cn } from "@/lib/utils";
 import { Building2, LayoutGrid, List, Plus, Search } from "lucide-react";
@@ -22,7 +23,7 @@ import { getCategoryColumns } from "./columns/category-columns";
 import { CategoryFormDialog } from "./components/category-form-dialog";
 import { CategoryGrid } from "./components/category-grid";
 import { useGetCategories, type UseGetCategoriesArgs } from "./hooks/use-get-categories";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import type { CategoryData } from "./types/category.types";
 
 export function CategoriesManagement() {

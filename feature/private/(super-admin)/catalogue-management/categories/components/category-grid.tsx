@@ -22,7 +22,7 @@ import { useDeleteCategory } from "../hooks/use-delete-category";
 import { successToast } from "@/components/toaster";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateCategoryStatus } from "../hooks/use-update-category-status";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 
 interface CategoryGridProps {
   categories: CategoryData[];

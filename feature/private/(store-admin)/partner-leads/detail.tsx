@@ -10,7 +10,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/common/page-header";
-import { isTerminalLeadStatus } from "@/constants/partner.leads";
+import { isTerminalLeadStatus } from "@/constants/partner-leads";
 import { AdditionalInfoCard } from "./components/cards/additional-info-card";
 import { BusinessOverviewCard } from "./components/cards/business-overview-card";
 import { ContactInformationCard } from "./components/cards/contact-information-card";

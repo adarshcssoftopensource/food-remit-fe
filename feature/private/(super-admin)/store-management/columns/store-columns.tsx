@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { CopyButton } from "@/components/common/copy-button";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { StatusBadge } from "@/components/common/status-badge";
 import { type StoreData } from "@/feature/private/(super-admin)/store-management/types/store-management";
@@ -67,8 +68,15 @@ export const storeColumns = (
       accessorKey: "storeId",
       header: "Store ID",
       cell: ({ row }) => (
-        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-          {row.original.storeId || "—"}
+        <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+          <span>{row.original.storeId || "—"}</span>
+          {row.original.storeId ? (
+            <CopyButton
+              value={row.original.storeId}
+              label="Store ID"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          ) : null}
         </span>
       ),
       enableSorting: true,

@@ -79,7 +79,7 @@ export function BasketManagement() {
   const debouncedFilters = useDebounce(filters, 350);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pendingDelete, setPendingDelete] = useState<Basket | null>(null);
 
@@ -146,7 +146,7 @@ export function BasketManagement() {
       href={ROUTES.ADMIN.BASKETS.CREATE}
       className={cn(
         buttonVariants(),
-        "h-10 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-700 hover:to-teal-700",
+        "h-10 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 text-sm font-semibold text-white hover:from-emerald-700 hover:to-teal-700",
       )}
     >
       <Plus className="size-4" />

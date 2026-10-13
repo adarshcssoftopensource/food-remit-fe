@@ -7,13 +7,14 @@ import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { StatusTabs } from "@/components/common/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/config/routes";
-import { ITEM_STAT_CONFIG } from "@/constants/catalogue-management";
+import { ITEM_STAT_CONFIG } from "./constants/item.constants";
+
 import { Package, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
@@ -88,7 +89,7 @@ export function ItemsManagement() {
 
   const filteredData = useMemo(() => itemsResponse?.data || [], [itemsResponse?.data]);
 
-  const pagination = itemsResponse?.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 };
+  const pagination = itemsResponse?.pagination || { page: 1, limit: 50, total: 0, totalPages: 0 };
 
   const stats = {
     total: itemsResponse?.stats?.total || 0,
@@ -223,6 +224,7 @@ export function ItemsManagement() {
             placeholder="All Categories"
             disabled={country === "all" && !isStoreManager}
             className="h-10 rounded-xl px-3"
+            showStoreName={!isStoreManager}
           />
         </div>
         <div className="min-w-70 flex-1 sm:min-w-[320px]">

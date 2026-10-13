@@ -1,11 +1,13 @@
 "use client";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface TruncatedTextCellProps {
   text: string | number | null | undefined;
   maxWords?: number;
   maxChars?: number;
+  truncateAfterAt?: boolean;
   className?: string;
 }
 
@@ -13,15 +15,20 @@ export function TruncatedTextCell({
   text,
   maxWords,
   maxChars,
+  truncateAfterAt,
   className = "",
 }: TruncatedTextCellProps) {
   const textString = String(text ?? "").trim();
+  if (!textString) return null;
 
   const displayText = textString.split("_")[0];
-
   let truncatedText = displayText;
 
-  if (maxChars !== undefined && !textString.includes("_")) {
+  if (truncateAfterAt && textString.includes("@")) {
+    const atIndex = textString.indexOf("@");
+    const userPart = textString.slice(0, atIndex);
+    truncatedText = `${userPart}@...`;
+  } else if (maxChars !== undefined && !textString.includes("_")) {
     truncatedText = textString.slice(0, maxChars) + "...";
   } else if (!textString.includes("_")) {
     const limit = maxWords ?? 6;
@@ -31,11 +38,15 @@ export function TruncatedTextCell({
   }
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delay={150}>
       <Tooltip>
-        <TooltipTrigger>
-          <span className={className}>{truncatedText}</span>
-        </TooltipTrigger>
+        <TooltipTrigger
+          render={
+            <span className={cn("inline-block max-w-full truncate align-middle", className)}>
+              {truncatedText}
+            </span>
+          }
+        />
 
         <TooltipContent side="top" align="center" className="max-w-md">
           <p className="whitespace-pre-wrap">{textString}</p>

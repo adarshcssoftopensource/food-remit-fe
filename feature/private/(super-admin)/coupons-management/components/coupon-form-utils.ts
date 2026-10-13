@@ -1,4 +1,4 @@
-import type { AdminProfile } from "@/components/providers/profile-provider";
+import type { AdminProfile } from "@/providers/profile-provider";
 
 export function getStoreManagerInfo(profile: AdminProfile | null) {
   const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";

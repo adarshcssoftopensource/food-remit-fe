@@ -6,7 +6,7 @@ import { Building2 } from "lucide-react";
 import { CitySelect } from "@/components/common/city-select";
 import { CountrySelect } from "@/components/common/country-select";
 import { ImageUpload } from "@/components/common/image-upload";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import {
   Dialog,
   DialogContent,

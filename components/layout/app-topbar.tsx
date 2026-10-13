@@ -10,7 +10,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { NotificationBell } from "@/components/common/notification-bell";
-import { useProfile, type AdminProfile } from "@/components/providers/profile-provider";
+import { useProfile, type AdminProfile } from "@/providers/profile-provider";
 import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";
 import { useLogout } from "@/hooks/use-logout";

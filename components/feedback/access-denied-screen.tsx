@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { LogoutButton } from "./logout-button";
+import { LogoutButton } from "@/components/layout/logout-button";
 
 interface AccessDeniedScreenProps {
   hasDashboardAccess: boolean;

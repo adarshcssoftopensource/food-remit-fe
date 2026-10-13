@@ -1,7 +1,7 @@
 "use client";
 
 import { Switch } from "@/components/ui/switch";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { ROUTES } from "@/config/routes";
 import { type Employee } from "@/feature/private/(store-admin)/employee-management/types/employee-management";
 import { Edit, Eye, Trash2 } from "lucide-react";

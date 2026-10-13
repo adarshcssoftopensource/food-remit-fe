@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { History as HistoryIcon, Trash2 } from "lucide-react";
 import { HISTORY_COLUMNS_BY_ENTITY } from "../columns/history-columns";
 import { HistoryTableProps } from "../types/history.types";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { useMemo } from "react";
 
 const ENTITY_TITLES: Record<string, string> = {

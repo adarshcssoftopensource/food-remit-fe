@@ -1,7 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/common/page-header";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { ROUTES } from "@/config/routes";
 import { Store, Ticket } from "lucide-react";
 import { useGetDashboardStats } from "../hooks/use-get-dashboard-stats";

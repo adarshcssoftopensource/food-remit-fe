@@ -18,7 +18,7 @@ import { TestimonialsSection } from "./components/testimonials-section";
 import { SuccessSection, TrustSection } from "./components/success-section";
 import { RevenueSection, WhyJoinSection } from "./components/why-join-section";
 import { mergeLandingContent } from "./lib/merge-landing-content";
-import { ProfileLoadingScreen } from "@/components/profile-loading-screen";
+import { ProfileLoadingScreen } from "@/components/feedback";
 
 export function VendorLandingPage() {
   const { data, isLoading, isError } = useGetLandingPage(false);

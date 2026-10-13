@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useEffectEvent } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { ROUTES } from "@/config/routes";
 import { useCouponDurationText } from "../hooks/use-coupon-duration-text";
 import { useCreateCoupon } from "../hooks/use-create-coupon";

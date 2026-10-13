@@ -17,7 +17,7 @@ import { useGetMarkup } from "../hooks/use-get-markup";
 import { useUpdateMarkup } from "../hooks/use-update-markup";
 import { MarkupFormValues, markupSchema } from "../schema/markup.schema";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Switch } from "@/components/ui/switch";
 
 type Profile = ReturnType<typeof useProfile>["profile"];

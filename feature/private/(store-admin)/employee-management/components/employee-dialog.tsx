@@ -82,26 +82,46 @@ export function EmployeeDialog({
   };
 
   const handlePlaceSelect = (place: any) => {
-    form.setValue("address", place.streetAddress || place.name || "", {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    form.setValue("city", place.city || "", {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    form.setValue("state", place.state || "", {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    form.setValue("zipCode", place.postalCode || "", {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    form.setValue("country", place.country || "", {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
+    const address = place.streetAddress || place.name || place.formattedAddress || "";
+    if (address) {
+      form.setValue("address", address, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+    }
+    const city = place.city || "";
+    if (city) {
+      form.setValue("city", city, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+    }
+    const state = place.state || place.stateCode || "";
+    if (state) {
+      form.setValue("state", state, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+    }
+    const zipCode = place.postalCode || place.zipCode || "";
+    if (zipCode) {
+      form.setValue("zipCode", zipCode, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+    }
+    const country = place.country || "";
+    if (country) {
+      form.setValue("country", country, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+    }
   };
 
   return (

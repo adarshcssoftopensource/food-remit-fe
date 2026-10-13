@@ -5,7 +5,7 @@ import { useForm, type DefaultValues } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { useMemo } from "react";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { useGetCountriesDropdown } from "@/feature/private/(shared)/settings/hooks/use-get-countries-dropdown";
 import { getCountryPhoneInfo } from "@/lib/phone";
 import { storeSchema, type StoreFormValues } from "../schema/store.schema";

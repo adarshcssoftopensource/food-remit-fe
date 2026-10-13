@@ -4,7 +4,7 @@ import { useDebounce } from "@/lib/debounce";
 
 export function useCatalogueItemFilters() {
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [limit, setLimit] = useQueryState("limit", parseAsInteger.withDefault(10));
+  const [limit, setLimit] = useQueryState("limit", parseAsInteger.withDefault(50));
   const [search, setSearch] = useQueryState("q", parseAsString.withDefault(""));
   const debouncedSearch = useDebounce(search, 500);
 

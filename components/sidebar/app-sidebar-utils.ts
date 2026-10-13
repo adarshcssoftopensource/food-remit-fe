@@ -1,4 +1,4 @@
-import type { AdminProfile } from "@/components/providers/profile-provider";
+import type { AdminProfile } from "@/providers/profile-provider";
 import { NAVIGATION_GROUPS, type NavItem } from "@/config/nav";
 import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";

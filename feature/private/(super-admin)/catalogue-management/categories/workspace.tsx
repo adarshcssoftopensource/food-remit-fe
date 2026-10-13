@@ -5,7 +5,7 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { MetricStatCard } from "@/components/common/stats/metric-stat-card";
 import { StatusTabs } from "@/components/common/status-tabs";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
@@ -71,7 +71,7 @@ export function CategoryItemsWorkspace({ id }: CategoryItemsWorkspaceProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
   const [statusTab, setStatusTab] = useState<StatusTab>("ACTIVE");
 
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -129,7 +129,8 @@ export function CategoryItemsWorkspace({ id }: CategoryItemsWorkspaceProps) {
   );
 
   const handleView = useCallback(
-    (item: ItemData) => router.push(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item.id)),
+    (item: ItemData) =>
+      router.push(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item.id, "category")),
     [router],
   );
 

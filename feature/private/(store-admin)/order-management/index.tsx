@@ -20,7 +20,7 @@ import {
 import { historyOrderColumns, orderColumns } from "./columns/order-columns";
 import { useOrderManagement } from "./hooks/use-order-management";
 import { type WorkflowCounts, useWorkflowCounts } from "./hooks/use-workflow-counts";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { OrderInfoBanner } from "./components/details/order-info-banner";
 import { AssignEmployeeDialog } from "./components/dialogs/assign-employee-dialog";
 import { ManagerAssignmentSummaryCards } from "./components/details/manager-assignment-summary-cards";

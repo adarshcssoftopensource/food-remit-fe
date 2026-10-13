@@ -1,4 +1,4 @@
-import { AdminProfile } from "@/components/providers/profile-provider";
+import { AdminProfile } from "@/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { ROUTE_PERMISSION_MAP } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";

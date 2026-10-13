@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { CopyButton } from "@/components/common/copy-button";
 import { PhoneDisplay } from "@/components/ui/phone-display";
 import { cn } from "@/lib/utils";
 import { formatAddress } from "@/lib/utils";
@@ -146,19 +147,37 @@ export function EmployeeProfileCard({ employee, totalOrders }: EmployeeProfileCa
                 icon={<Mail className="size-4" />}
                 iconBg="bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
                 label="Email"
-                value={employee.email}
+                value={
+                  <div className="flex items-center gap-1.5">
+                    <span className="truncate">{employee.email}</span>
+                    <CopyButton
+                      value={employee.email}
+                      label="Email"
+                      className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                    />
+                  </div>
+                }
               />
               <InfoTile
                 icon={<Phone className="size-4" />}
                 iconBg="bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400"
                 label="Phone"
                 value={
-                  <PhoneDisplay
-                    countryCode={employee.countryCode}
-                    phoneNumber={employee.phoneNumber}
-                    className="font-semibold"
-                    emptyLabel="N/A"
-                  />
+                  <div className="flex items-center gap-1.5">
+                    <PhoneDisplay
+                      countryCode={employee.countryCode}
+                      phoneNumber={employee.phoneNumber}
+                      className="font-semibold"
+                      emptyLabel="N/A"
+                    />
+                    {employee.phoneNumber ? (
+                      <CopyButton
+                        value={`${employee.countryCode ? (employee.countryCode.startsWith("+") ? employee.countryCode : `+${employee.countryCode}`) : ""} ${employee.phoneNumber}`.trim()}
+                        label="Phone Number"
+                        className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                      />
+                    ) : null}
+                  </div>
                 }
               />
             </div>

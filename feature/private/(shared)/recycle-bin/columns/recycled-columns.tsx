@@ -1,9 +1,12 @@
 import { StatusBadge } from "@/components/common/status-badge";
+import { CopyButton } from "@/components/common/copy-button";
+import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "@/lib/date";
-import { getStatusColor } from "@/constants/partner.leads";
+import { getStatusColor } from "@/constants/partner-leads";
+
 import { RecycleEntityType } from "../hooks/use-get-recycled-data";
 import { RecycledEntityActionsCell } from "../components/recycled-entity-actions-cell";
 import { withDeletedByColumn } from "../components/deleted-by-columns";
@@ -94,11 +97,22 @@ export const storesColumns: ColumnDef<any>[] = [
   {
     accessorKey: "contactNumber",
     header: "Contact",
-    cell: ({ row }) => (
-      <span className="text-xs text-slate-600">
-        {`${row.original.storeCountryCode} ${row.original.storePhoneNumber}` || "N/A"}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const phone =
+        `${row.original.storeCountryCode || ""} ${row.original.storePhoneNumber || ""}`.trim();
+      return (
+        <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
+          <span>{phone || "N/A"}</span>
+          {phone && phone !== "N/A" ? (
+            <CopyButton
+              value={phone}
+              label="Contact"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          ) : null}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "storeStatus",
@@ -270,13 +284,31 @@ export const cityManagersColumns: ColumnDef<any>[] = [
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => <span className="text-xs text-blue-600">{row.original.email}</span>,
+    cell: ({ row }) => (
+      <div className="flex items-center gap-1 text-xs text-blue-600">
+        <span>{row.original.email}</span>
+        <CopyButton
+          value={row.original.email}
+          label="Email"
+          className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        />
+      </div>
+    ),
   },
   {
     accessorKey: "phoneNumber",
     header: "Contact",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-600">{row.original.phoneNumber || "N/A"}</span>
+      <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
+        <span>{row.original.phoneNumber || "N/A"}</span>
+        {row.original.phoneNumber ? (
+          <CopyButton
+            value={row.original.phoneNumber}
+            label="Phone"
+            className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          />
+        ) : null}
+      </div>
     ),
   },
   {
@@ -325,13 +357,31 @@ export const countryManagersColumns: ColumnDef<any>[] = [
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => <span className="text-xs text-blue-600">{row.original.email}</span>,
+    cell: ({ row }) => (
+      <div className="flex items-center gap-1 text-xs text-blue-600">
+        <span>{row.original.email}</span>
+        <CopyButton
+          value={row.original.email}
+          label="Email"
+          className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        />
+      </div>
+    ),
   },
   {
     accessorKey: "phoneNumber",
     header: "Contact",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-600">{row.original.phoneNumber || "N/A"}</span>
+      <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
+        <span>{row.original.phoneNumber || "N/A"}</span>
+        {row.original.phoneNumber ? (
+          <CopyButton
+            value={row.original.phoneNumber}
+            label="Phone"
+            className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          />
+        ) : null}
+      </div>
     ),
   },
   {
@@ -388,6 +438,36 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
       {
         accessorKey: "email",
         header: "Email",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-1.5 text-xs text-blue-600">
+            <span>{row.original.email}</span>
+            <CopyButton
+              value={row.original.email}
+              label="Email"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          </div>
+        ),
+      },
+      {
+        accessorKey: "phoneNumber",
+        header: "Contact",
+        cell: ({ row }) => {
+          const phone =
+            `${row.original.countryCode ? (row.original.countryCode.startsWith("+") ? row.original.countryCode : `+${row.original.countryCode}`) : ""} ${row.original.phoneNumber || ""}`.trim();
+          return (
+            <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+              <span>{phone || "N/A"}</span>
+              {row.original.phoneNumber ? (
+                <CopyButton
+                  value={phone}
+                  label="Contact"
+                  className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                />
+              ) : null}
+            </div>
+          );
+        },
       },
       {
         id: "actions",
@@ -408,9 +488,14 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
         header: "Ref No.",
         enableSorting: true,
         cell: ({ row }) => (
-          <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
-            {row.original.referenceNumber}
-          </span>
+          <div className="flex items-center gap-1 font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <span>{row.original.referenceNumber}</span>
+            <CopyButton
+              value={row.original.referenceNumber}
+              label="Reference Number"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          </div>
         ),
       },
       {
@@ -439,7 +524,18 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
               <span className="font-medium text-slate-900 dark:text-slate-100">
                 {data.firstName} {data.lastName}
               </span>
-              <span className="text-muted-foreground text-xs">{data.businessEmail}</span>
+              <div className="text-muted-foreground flex items-center gap-1 text-xs">
+                <TruncatedTextCell
+                  text={data.businessEmail}
+                  truncateAfterAt
+                  className="cursor-default"
+                />
+                <CopyButton
+                  value={data.businessEmail}
+                  label="Email"
+                  className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                />
+              </div>
             </div>
           );
         },
@@ -448,9 +544,16 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
         accessorKey: "phoneNumber",
         header: "Phone",
         cell: ({ row }) => (
-          <span className="text-xs text-slate-600 dark:text-slate-400">
-            {row.original.phoneNumber || "N/A"}
-          </span>
+          <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
+            <span>{row.original.phoneNumber || "N/A"}</span>
+            {row.original.phoneNumber && row.original.phoneNumber !== "N/A" ? (
+              <CopyButton
+                value={row.original.phoneNumber}
+                label="Phone"
+                className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              />
+            ) : null}
+          </div>
         ),
       },
       {
@@ -619,18 +722,35 @@ export const COLUMNS_BY_ENTITY: Record<RecycleEntityType, ColumnDef<any>[]> = {
         header: "Email Address",
         enableSorting: true,
         cell: ({ row }) => (
-          <span className="text-sm text-blue-600 hover:underline">{row.original.email}</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm text-blue-600 hover:underline">{row.original.email}</span>
+            <CopyButton
+              value={row.original.email}
+              label="Email"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          </div>
         ),
       },
       {
         accessorKey: "phoneNumber",
         header: "Contact Number",
         enableSorting: true,
-        cell: ({ row }) => (
-          <span className="text-sm text-slate-700 dark:text-slate-300">
-            {row.original.phoneNumber || row.original.contactNumber || "N/A"}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const phone = row.original.phoneNumber || row.original.contactNumber;
+          return (
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm text-slate-700 dark:text-slate-300">{phone || "N/A"}</span>
+              {phone ? (
+                <CopyButton
+                  value={phone}
+                  label="Contact Number"
+                  className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                />
+              ) : null}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "createdAt",
