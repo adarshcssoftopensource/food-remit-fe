@@ -26,7 +26,7 @@ export function DateRangeFilter({
   onToDateChange,
   fromLabel = "From Date",
   toLabel = "To Date",
-  placeholder = "YYYY-MM-DD",
+  placeholder,
   maxDate = new Date(),
   wrapperClassName = "flex flex-col sm:flex-row gap-3 w-full",
   itemClassName = "flex-1 min-w-0 space-y-1",

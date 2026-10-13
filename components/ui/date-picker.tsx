@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDate } from "@/lib/date";
+import { formatDate, getDateFormatPattern } from "@/lib/date";
 import { Calendar as CalendarIcon, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ interface DatePickerProps {
 export function DatePicker({
   date,
   setDate,
-  placeholder = "YYYY-MM-DD",
+  placeholder,
   className,
   maxDate,
   minDate,
@@ -39,7 +39,7 @@ export function DatePicker({
           >
             <CalendarIcon className="mr-1.5 h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500" />
             <span className="min-w-0 flex-1 truncate text-left">
-              {date ? formatDate(date) : placeholder}
+              {date ? formatDate(date) : (placeholder ?? getDateFormatPattern())}
             </span>
             {date && (
               <span

@@ -157,6 +157,22 @@ function formatParts(
   return segments.length ? segments.join(", ") : fallback;
 }
 
+const PATTERN_TOKENS: Partial<Record<Intl.DateTimeFormatPartTypes, string>> = {
+  day: "DD",
+  month: "MM",
+  year: "YYYY",
+};
+
+/** Placeholder matching {@link formatDate}, e.g. US → MM/DD/YYYY, IN → DD/MM/YYYY, JP → YYYY/MM/DD */
+export function getDateFormatPattern(): string {
+  const locale = resolveLocale(getDateDisplayCountry());
+  return getFormatter(locale.date, { year: "numeric", month: "2-digit", day: "2-digit" })
+    .formatToParts(new Date(2000, 0, 1))
+    .map((part) => PATTERN_TOKENS[part.type] ?? part.value)
+    .join("")
+    .replace(BIDI_MARKS, "");
+}
+
 /** e.g. US → 10/12/2026, IN/GB → 12/10/2026, JP → 2026/10/12 */
 export function formatDate(
   value: DateInput,
