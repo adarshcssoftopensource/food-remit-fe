@@ -1,6 +1,7 @@
 "use client";
 
 import { ScopeBadge } from "@/components/common/scope-badge";
+import { CopyButton } from "@/components/common/copy-button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
@@ -94,11 +95,16 @@ export function ItemIdentityCell({
         <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
           {item.itemNumber ? (
             <span
-              className="inline-flex items-center gap-0.5 rounded-md bg-slate-100 px-1.5 py-0.5 font-mono font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+              className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-mono font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
               title="Item number"
             >
               <Hash className="size-3 text-slate-400" />
-              {item.itemNumber}
+              <span>{item.itemNumber}</span>
+              <CopyButton
+                value={item.itemNumber}
+                label="Item number"
+                className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              />
             </span>
           ) : null}
           {/* {item.upcCode ? (

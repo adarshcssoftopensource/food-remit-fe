@@ -61,11 +61,15 @@ export function ItemEditor(props: ItemEditorProps) {
     ? ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(category.id)
     : ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS;
   const returnTo = props.returnTo || workspaceHref;
-  const cameFromItems = returnTo.startsWith(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS);
+  const cameFromCategory =
+    returnTo.includes("from=category") ||
+    returnTo.includes(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES);
+  const cameFromItems =
+    !cameFromCategory && returnTo.startsWith(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS);
   const backLabel =
     returnTo === ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS
-      ? "Back to Items"
-      : cameFromItems
+      ? "Back to items"
+      : returnTo.includes(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item?.id ?? ""))
         ? "Back to item"
         : `Back to ${category?.categoryName ?? "category"}`;
   const currencySymbol =

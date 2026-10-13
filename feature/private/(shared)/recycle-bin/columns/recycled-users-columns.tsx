@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/components/common/status-badge";
+import { CopyButton } from "@/components/common/copy-button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatDateTime } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
@@ -81,13 +82,35 @@ export const usersColumns: ColumnDef<UserData>[] = [
     accessorKey: "email",
     header: "Email Address",
     enableSorting: true,
-    cell: ({ row }) => <span className="pl-3 text-sm text-blue-600">{row.original.email}</span>,
+    cell: ({ row }) => (
+      <div className="flex items-center gap-1.5 pl-3">
+        <span className="text-sm text-blue-600">{row.original.email}</span>
+        <CopyButton
+          value={row.original.email}
+          label="Email"
+          className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        />
+      </div>
+    ),
   },
   {
     accessorKey: "phoneNumber",
     header: "Contact",
     enableSorting: true,
-    cell: ({ row }) => <span className="text-sm text-slate-700">{row.original.phoneNumber}</span>,
+    cell: ({ row }) => (
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm text-slate-700 dark:text-slate-300">
+          {row.original.phoneNumber || "N/A"}
+        </span>
+        {row.original.phoneNumber ? (
+          <CopyButton
+            value={row.original.phoneNumber}
+            label="Contact"
+            className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          />
+        ) : null}
+      </div>
+    ),
   },
   {
     accessorKey: "createdAt",

@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CopyButton } from "@/components/common/copy-button";
 import { PhoneDisplay } from "@/components/ui/phone-display";
 import { Mail, User } from "lucide-react";
 import { PartnerLeadData } from "../../types/partner-lead.types";
@@ -46,16 +47,28 @@ export function ContactInformationCard({ lead }: { lead: PartnerLeadData }) {
               >
                 {lead.businessEmail}
               </a>
+              <CopyButton
+                value={lead.businessEmail}
+                label="Email"
+                className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              />
             </dd>
           </div>
           <div className="col-span-2 sm:col-span-1">
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
               Phone Number
             </dt>
-            <dd>
+            <dd className="flex items-center gap-2">
               <a href={`tel:${phone}`} className="transition-colors hover:text-emerald-600">
                 <PhoneDisplay value={phone} className="font-semibold" emptyLabel="N/A" />
               </a>
+              {phone ? (
+                <CopyButton
+                  value={phone}
+                  label="Phone Number"
+                  className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                />
+              ) : null}
             </dd>
           </div>
         </dl>

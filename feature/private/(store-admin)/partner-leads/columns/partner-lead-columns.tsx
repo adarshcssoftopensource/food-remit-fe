@@ -5,6 +5,7 @@ import { formatDate, formatTime } from "@/lib/date";
 import { AlertCircle, Clock, Eye, Landmark, ShieldAlert, ShieldCheck } from "lucide-react";
 
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
+import { CopyButton } from "@/components/common/copy-button";
 import { getStatusColor } from "@/constants/partner-leads";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
@@ -17,11 +18,21 @@ export const getPartnerLeadColumns = (
   {
     accessorKey: "referenceNumber",
     header: "Ref No.",
-    cell: ({ row }) => (
-      <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
-        {row.getValue("referenceNumber")}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const ref = row.getValue("referenceNumber") as string;
+      return (
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
+            {ref}
+          </span>
+          <CopyButton
+            value={ref}
+            label="Reference Number"
+            className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          />
+        </div>
+      );
+    },
   },
   {
     accessorKey: "businessName",
@@ -60,7 +71,14 @@ export const getPartnerLeadColumns = (
           <span>
             {data.firstName} {data.lastName}
           </span>
-          <span className="text-muted-foreground text-xs">{data.businessEmail}</span>
+          <div className="text-muted-foreground flex items-center gap-1 text-xs">
+            <span>{data.businessEmail}</span>
+            <CopyButton
+              value={data.businessEmail}
+              label="Email"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          </div>
         </div>
       );
     },

@@ -30,7 +30,8 @@ export const ROUTES = {
       CATEGORY_WORKSPACE: (id: string) => `/catalogue-management/categories/${id}`,
       NEW_ITEM: (categoryId: string) => `/catalogue-management/categories/${categoryId}/items/new`,
       ITEMS: "/catalogue-management/items",
-      ITEM_DETAILS: (id: string) => `/catalogue-management/items/${id}`,
+      ITEM_DETAILS: (id: string, from?: string) =>
+        `/catalogue-management/items/${id}${from ? `?from=${encodeURIComponent(from)}` : ""}`,
       EDIT_ITEM: (id: string, returnTo?: string) =>
         `/catalogue-management/items/${id}/edit${returnTo ? `?from=${encodeURIComponent(returnTo)}` : ""}`,
     },

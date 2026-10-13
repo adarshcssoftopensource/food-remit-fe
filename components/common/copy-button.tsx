@@ -44,29 +44,31 @@ export function CopyButton({
   return (
     <TooltipProvider delay={150}>
       <Tooltip>
-        <TooltipTrigger>
-          <Button
-            type="button"
-            variant={variant}
-            size={size}
-            onClick={handleClick}
-            aria-label={label ? `Copy ${label}` : "Copy to clipboard"}
-            className={cn(
-              "relative shrink-0 transition-colors focus-visible:ring-1",
-              size === "icon" && "text-muted-foreground hover:text-foreground h-6 w-6 p-0",
-              showText && "h-7 gap-1.5 px-2 text-xs font-medium",
-              isCopied && "text-emerald-600 hover:text-emerald-600 dark:text-emerald-400",
-              className,
-            )}
-            {...props}
-          >
-            {isCopied ? (
-              <Check className="animate-in zoom-in-75 h-3.5 w-3.5 duration-150" />
-            ) : (
-              <Copy className="h-3.5 w-3.5" />
-            )}
-            {showText && <span>{isCopied ? copiedText : text}</span>}
-          </Button>
+        <TooltipTrigger
+          render={
+            <Button
+              type="button"
+              variant={variant}
+              size={size}
+              onClick={handleClick}
+              aria-label={label ? `Copy ${label}` : "Copy to clipboard"}
+              className={cn(
+                "relative shrink-0 transition-colors focus-visible:ring-1",
+                size === "icon" && "text-muted-foreground hover:text-foreground h-6 w-6 p-0",
+                showText && "h-7 gap-1.5 px-2 text-xs font-medium",
+                isCopied && "text-emerald-600 hover:text-emerald-600 dark:text-emerald-400",
+                className,
+              )}
+              {...props}
+            />
+          }
+        >
+          {isCopied ? (
+            <Check className="animate-in zoom-in-75 h-3.5 w-3.5 duration-150" />
+          ) : (
+            <Copy className="h-3.5 w-3.5" />
+          )}
+          {showText && <span>{isCopied ? copiedText : text}</span>}
         </TooltipTrigger>
         <TooltipContent side="top" className="text-xs">
           {isCopied ? (

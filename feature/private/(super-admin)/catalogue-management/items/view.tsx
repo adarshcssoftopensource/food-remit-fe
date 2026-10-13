@@ -6,7 +6,7 @@ import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { ArrowLeft, Package, Pencil } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ItemDetailsCard } from "./components/details/item-details-card";
 import { ItemInfoSection } from "./components/details/item-info-section";
@@ -23,6 +23,14 @@ interface ItemViewProps {
 
 export function ItemView({ id }: ItemViewProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromParam = searchParams.get("from");
+  const cameFromCategory = Boolean(
+    fromParam === "category" ||
+    fromParam?.includes("/categories") ||
+    fromParam?.includes("from=category"),
+  );
+
   const { profile, needsBankVerification } = useProfile();
   const isStoreScoped =
     profile?.role === "store_manager" ||
@@ -35,6 +43,28 @@ export function ItemView({ id }: ItemViewProps) {
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
+
+  const backHref =
+    cameFromCategory && item?.category
+      ? ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(item.category.id)
+      : ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS;
+
+  const backLabel =
+    cameFromCategory && item?.category ? `Back to ${item.category.categoryName}` : "Back to items";
+
+  const breadcrumbs = [
+    { label: "Catalogue Management" },
+    ...(cameFromCategory && item?.category
+      ? [
+          { label: "Categories", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES },
+          {
+            label: item.category.categoryName,
+            href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(item.category.id),
+          },
+        ]
+      : [{ label: "Items", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEMS }]),
+    { label: item?.productName ?? "Item Details" },
+  ];
 
   const imageList = useMemo(() => {
     const list: { src: string; label: string; type: string }[] = [];
@@ -100,19 +130,7 @@ export function ItemView({ id }: ItemViewProps) {
       <div className="space-y-4">
         <div>
           <PageHeader
-            breadcrumbs={[
-              { label: "Catalogue Management" },
-              { label: "Categories", href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORIES },
-              ...(item.category
-                ? [
-                    {
-                      label: item.category.categoryName,
-                      href: ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(item.category.id),
-                    },
-                  ]
-                : []),
-              { label: item.productName },
-            ]}
+            breadcrumbs={breadcrumbs}
             action={
               !needsBankVerification ? (
                 <Button
@@ -120,7 +138,9 @@ export function ItemView({ id }: ItemViewProps) {
                     router.push(
                       ROUTES.ADMIN.CATALOGUE_MANAGEMENT.EDIT_ITEM(
                         item.id,
-                        ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item.id),
+                        cameFromCategory
+                          ? ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item.id, "category")
+                          : ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item.id),
                       ),
                     )
                   }
@@ -132,6 +152,17 @@ export function ItemView({ id }: ItemViewProps) {
               ) : undefined
             }
           />
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push(backHref)}
+            className="-mt-2 h-8 gap-1.5 rounded-lg px-2 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {backLabel}
+          </Button>
         </div>
 
         <div className="animate-in fade-in slide-in-from-bottom-4 grid items-stretch gap-4 transition-colors duration-700 lg:grid-cols-3">

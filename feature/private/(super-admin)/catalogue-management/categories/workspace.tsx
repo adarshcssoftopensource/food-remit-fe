@@ -129,7 +129,8 @@ export function CategoryItemsWorkspace({ id }: CategoryItemsWorkspaceProps) {
   );
 
   const handleView = useCallback(
-    (item: ItemData) => router.push(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item.id)),
+    (item: ItemData) =>
+      router.push(ROUTES.ADMIN.CATALOGUE_MANAGEMENT.ITEM_DETAILS(item.id, "category")),
     [router],
   );
 

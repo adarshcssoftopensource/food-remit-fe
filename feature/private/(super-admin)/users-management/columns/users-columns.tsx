@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/components/common/status-badge";
+import { CopyButton } from "@/components/common/copy-button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PhoneDisplay } from "@/components/ui/phone-display";
 import { formatDate } from "@/lib/date";
@@ -105,19 +106,41 @@ export const usersColumns = (onImageClick?: (image: string) => void): ColumnDef<
     accessorKey: "email",
     header: "Email Address",
     enableSorting: true,
-    cell: ({ row }) => <span className="pl-3 text-sm text-blue-600">{row.original.email}</span>,
+    cell: ({ row }) => (
+      <div className="flex items-center gap-1.5 pl-3">
+        <span className="text-sm text-blue-600">{row.original.email}</span>
+        <CopyButton
+          value={row.original.email}
+          label="Email"
+          className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        />
+      </div>
+    ),
   },
   {
     accessorKey: "phoneNumber",
     header: "Contact",
     enableSorting: true,
-    cell: ({ row }) => (
-      <PhoneDisplay
-        countryCode={row.original.countryCode}
-        phoneNumber={row.original.phoneNumber}
-        emptyLabel="-"
-      />
-    ),
+    cell: ({ row }) => {
+      const fullPhone =
+        `${row.original.countryCode ? (row.original.countryCode.startsWith("+") ? row.original.countryCode : `+${row.original.countryCode}`) : ""} ${row.original.phoneNumber || ""}`.trim();
+      return (
+        <div className="flex items-center gap-1.5">
+          <PhoneDisplay
+            countryCode={row.original.countryCode}
+            phoneNumber={row.original.phoneNumber}
+            emptyLabel="-"
+          />
+          {row.original.phoneNumber ? (
+            <CopyButton
+              value={fullPhone}
+              label="Phone Number"
+              className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          ) : null}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "createdAt",

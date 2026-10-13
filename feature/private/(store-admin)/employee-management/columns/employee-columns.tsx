@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
+import { CopyButton } from "@/components/common/copy-button";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { StatusBadge } from "@/components/common/status-badge";
 import { PhoneDisplay } from "@/components/ui/phone-display";
@@ -40,20 +41,42 @@ export const employeeColumns = (onImageClick?: (image: string) => void): ColumnD
     accessorKey: "email",
     header: "Email",
     cell: ({ row }) => (
-      <span className="text-sm font-medium text-slate-600">{row.original.email}</span>
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+          {row.original.email}
+        </span>
+        <CopyButton
+          value={row.original.email}
+          label="Email"
+          className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        />
+      </div>
     ),
     enableSorting: true,
   },
   {
     accessorKey: "phoneNumber",
     header: "Contact",
-    cell: ({ row }) => (
-      <PhoneDisplay
-        countryCode={row.original.countryCode}
-        phoneNumber={row.original.phoneNumber}
-        emptyLabel="-"
-      />
-    ),
+    cell: ({ row }) => {
+      const fullPhone =
+        `${row.original.countryCode ? (row.original.countryCode.startsWith("+") ? row.original.countryCode : `+${row.original.countryCode}`) : ""} ${row.original.phoneNumber || ""}`.trim();
+      return (
+        <div className="flex items-center gap-1.5">
+          <PhoneDisplay
+            countryCode={row.original.countryCode}
+            phoneNumber={row.original.phoneNumber}
+            emptyLabel="-"
+          />
+          {row.original.phoneNumber ? (
+            <CopyButton
+              value={fullPhone}
+              label="Contact Number"
+              className="h-4 w-4 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          ) : null}
+        </div>
+      );
+    },
     enableSorting: true,
   },
   {
