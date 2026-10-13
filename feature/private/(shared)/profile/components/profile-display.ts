@@ -1,5 +1,5 @@
-import type { useProfile } from "@/components/providers/profile-provider";
-import { formatRole } from "@/lib/formatRole";
+import type { useProfile } from "@/providers/profile-provider";
+import { formatRole } from "@/lib/format-role";
 
 type Profile = ReturnType<typeof useProfile>["profile"];
 

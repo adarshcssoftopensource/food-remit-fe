@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getStatusColor, PARTNER_LEAD_MUTABLE_STATUSES } from "@/constants/partner.leads";
+import { getStatusColor, PARTNER_LEAD_MUTABLE_STATUSES } from "@/constants/partner-leads";
 import { Activity, AlertTriangle, ArrowRight, Lock, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { PartnerLeadData } from "../types/partner-lead.types";

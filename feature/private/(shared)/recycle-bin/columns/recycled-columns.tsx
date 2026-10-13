@@ -3,7 +3,8 @@ import { ImageNameCell } from "@/components/common/data-table/image-name-cell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "@/lib/date";
-import { getStatusColor } from "@/constants/partner.leads";
+import { getStatusColor } from "@/constants/partner-leads";
+
 import { RecycleEntityType } from "../hooks/use-get-recycled-data";
 import { RecycledEntityActionsCell } from "../components/recycled-entity-actions-cell";
 import { withDeletedByColumn } from "../components/deleted-by-columns";

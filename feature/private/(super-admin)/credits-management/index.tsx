@@ -4,7 +4,7 @@ import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { PageHeader } from "@/components/common/page-header";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useFilterState } from "@/hooks/use-filter-state";
 import { useDebounce } from "@/lib/debounce";

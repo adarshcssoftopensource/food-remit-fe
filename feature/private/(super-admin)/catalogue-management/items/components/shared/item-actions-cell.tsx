@@ -3,7 +3,7 @@
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { errorToast, successToast } from "@/components/toaster";
 import { Switch } from "@/components/ui/switch";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useDeleteItem } from "../../hooks/use-delete-item";

@@ -2,7 +2,8 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate, formatTime } from "@/lib/date";
-import { getStatusColor } from "@/constants/partner.leads";
+import { getStatusColor } from "@/constants/partner-leads";
+
 import { HistoryEntityType } from "../hooks/use-get-history-data";
 import { HistoryEntityActionsCell } from "../components/history-entity-actions-cell";
 import { withDeletedByColumn } from "@/feature/private/(shared)/recycle-bin/components/deleted-by-columns";

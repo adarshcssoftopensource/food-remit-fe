@@ -1,6 +1,6 @@
 "use client";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { clearAuthSession, setAuthSession, buildCookieOptions } from "@/lib/auth-client";
 import { ORIGINAL_AUTH_TOKEN_COOKIE } from "@/config/cookie";

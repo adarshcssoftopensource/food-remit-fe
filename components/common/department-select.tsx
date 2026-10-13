@@ -19,7 +19,7 @@ interface DepartmentSelectProps {
   countryId?: string;
 }
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 
 function formatDepartmentLabel(raw?: string | null) {
   if (!raw) return "";

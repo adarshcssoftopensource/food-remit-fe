@@ -4,7 +4,7 @@ import { FolderOpen, Lock, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useMemo } from "react";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { useGetCategory } from "../../../categories/hooks/use-get-category";

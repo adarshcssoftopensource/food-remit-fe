@@ -7,7 +7,7 @@ import { successToast } from "@/components/toaster";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import {
   useGetEmailNotifications,
   useUpdateEmailNotifications,

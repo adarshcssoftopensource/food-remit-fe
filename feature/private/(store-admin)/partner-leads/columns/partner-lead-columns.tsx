@@ -5,7 +5,7 @@ import { formatDate, formatTime } from "@/lib/date";
 import { AlertCircle, Clock, Eye, Landmark, ShieldAlert, ShieldCheck } from "lucide-react";
 
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
-import { getStatusColor } from "@/constants/partner.leads";
+import { getStatusColor } from "@/constants/partner-leads";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { PartnerLeadData } from "../types/partner-lead.types";

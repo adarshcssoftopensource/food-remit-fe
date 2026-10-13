@@ -15,7 +15,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { ImageLightbox } from "@/components/common/image-lightbox";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

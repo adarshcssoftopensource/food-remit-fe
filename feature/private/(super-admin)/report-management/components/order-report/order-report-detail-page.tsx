@@ -10,7 +10,7 @@ import { ORDER_ENDPOINTS } from "@/lib/api/endpoints/order.endpoints";
 import { useDebounce } from "@/lib/debounce";
 import { toast } from "sonner";
 import { getCurrencySymbol, cleanCurrencyDisplay } from "@/lib/utils/currency";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { OrderPartyCard } from "./order-party-card";
 import { OrderItemsTable } from "./order-items-table";
 import { OrderFinancialBreakdown } from "./order-financial-breakdown";

@@ -1,4 +1,6 @@
-const CURRENCY_SYMBOLS: Record<string, string> = {
+import { findWorldCountryByIso, findWorldCountryByName } from "@/lib/world-locations";
+
+export const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: "$",
   EUR: "€",
   GBP: "£",
@@ -42,6 +44,57 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   DKK: "kr",
   PLN: "zł",
 };
+
+export type ResolveCurrencyOptions = {
+  currency?: string | null;
+  countryName?: string | null;
+  countryCode?: string | null;
+};
+
+function fromCode(code: string): { code: string; symbol: string } {
+  const upper = code.toUpperCase();
+  return {
+    code: upper,
+    symbol: CURRENCY_SYMBOLS[upper] || upper,
+  };
+}
+
+export function resolveCurrencyDisplay(
+  currencyOrOptions?: string | null | ResolveCurrencyOptions,
+  countryName?: string | null,
+  countryCode?: string | null,
+): {
+  code: string;
+  symbol: string;
+} {
+  const options: ResolveCurrencyOptions =
+    currencyOrOptions && typeof currencyOrOptions === "object"
+      ? currencyOrOptions
+      : {
+          currency: currencyOrOptions,
+          countryName,
+          countryCode,
+        };
+
+  const raw = options.currency?.trim();
+  if (raw) {
+    const upper = raw.toUpperCase();
+    if (/^[A-Z]{3}$/.test(upper)) {
+      return fromCode(upper);
+    }
+    // Already a symbol like "₹" or "$"
+    return { code: raw, symbol: raw };
+  }
+
+  const world =
+    findWorldCountryByIso(options.countryCode) || findWorldCountryByName(options.countryName);
+
+  if (world?.currency) {
+    return fromCode(world.currency);
+  }
+
+  return { code: "USD", symbol: "$" };
+}
 
 const currencyFormatters = new Map<string, Intl.NumberFormat>();
 

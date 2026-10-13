@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

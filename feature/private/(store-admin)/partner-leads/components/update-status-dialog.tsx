@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SanitizedTextarea } from "@/components/common/sanitized-textarea";
-import { getStatusColor } from "@/constants/partner.leads";
+import { getStatusColor } from "@/constants/partner-leads";
 import { ROUTES } from "@/config/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Info, MessageSquarePlus, Send } from "lucide-react";

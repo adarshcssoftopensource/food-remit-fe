@@ -4,7 +4,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import {
   Sidebar,
   SidebarContent,

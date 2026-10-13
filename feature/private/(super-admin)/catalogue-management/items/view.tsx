@@ -2,7 +2,7 @@
 
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { ArrowLeft, Package, Pencil } from "lucide-react";

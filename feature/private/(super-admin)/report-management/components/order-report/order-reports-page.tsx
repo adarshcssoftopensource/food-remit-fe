@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { REPORT_SECTION_META } from "@/constants/report-management";
 import { useGetStores } from "@/feature/private/(super-admin)/store-management/hooks/use-get-stores";

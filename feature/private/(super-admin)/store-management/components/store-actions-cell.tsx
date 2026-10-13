@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminPasswordDialog } from "@/components/common/admin-password-dialog";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { Switch } from "@/components/ui/switch";
 import { ROUTES } from "@/config/routes";

@@ -7,7 +7,7 @@ import { Building2, Loader2, MapPin, Search, X } from "lucide-react";
 import { CountrySelect } from "@/components/common/country-select";
 import { ImageUpload } from "@/components/common/image-upload";
 import { StoreSelect } from "@/components/common/store-select";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {

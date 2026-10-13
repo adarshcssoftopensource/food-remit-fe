@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { FieldLabel } from "@/components/ui/field";
 import { Percent } from "lucide-react";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { useGetStore } from "@/feature/private/(super-admin)/store-management/hooks/use-get-stores";
 
 export function FoodRemitCommission() {

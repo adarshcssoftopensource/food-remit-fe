@@ -1,6 +1,6 @@
 "use client";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { PlaidBankStep } from "@/feature/public/partner-lead/components/plaid-bank-step";
 import { BankVerificationCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/bank-verification-card";
 import { isBankStatusVerified, resolvePartnerBankStatus } from "@/lib/bank-verification-gate";

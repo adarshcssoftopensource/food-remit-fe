@@ -17,7 +17,7 @@ import { LocationDetailsCard } from "@/feature/private/(store-admin)/partner-lea
 import { AdditionalDocumentsCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/additional-documents-card";
 import { OperationalPreferencesCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/operational-preferences-card";
 
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { useUpdateStore } from "@/feature/private/(super-admin)/store-management/hooks/use-update-store";
 import { successToast } from "@/components/toaster";
 import { fetcher } from "@/hooks/useApi";

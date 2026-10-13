@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useUpdateDepartmentStatus } from "../hooks/use-update-department-status";
 import { useDeleteDepartment } from "../hooks/use-delete-department";
 import { DepartmentData } from "../types/department.types";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 
 import {
   DataTableRowActions,

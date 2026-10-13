@@ -17,7 +17,7 @@ import {
 
 import { ROUTES } from "@/config/routes";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
-import { PARTNER_LEAD_PIPELINE_TABS, STATS_CONFIG } from "@/constants/partner.leads";
+import { PARTNER_LEAD_PIPELINE_TABS, STATS_CONFIG } from "@/constants/partner-leads";
 import { useDebounce } from "@/lib/debounce";
 import { useFilterState } from "@/hooks/use-filter-state";
 import { cn } from "@/lib/utils";

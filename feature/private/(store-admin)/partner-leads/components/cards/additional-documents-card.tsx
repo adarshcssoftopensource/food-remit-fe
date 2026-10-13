@@ -22,7 +22,7 @@ import { useAddPartnerLeadDocuments } from "../../hooks/use-add-partner-lead-doc
 import { useDeletePartnerLeadDocument } from "../../hooks/use-delete-partner-lead-document";
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { successToast } from "@/components/toaster";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 
 interface AdditionalDocumentsCardProps {
   lead: PartnerLeadData;

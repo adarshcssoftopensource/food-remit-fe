@@ -2,7 +2,7 @@
 
 import { DataTable } from "@/components/common/data-table/data-table";
 import { PageHeader } from "@/components/common/page-header";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 import { ShoppingBag } from "lucide-react";
 import {
   DashboardActionButton,

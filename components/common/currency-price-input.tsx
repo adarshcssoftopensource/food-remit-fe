@@ -6,7 +6,8 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
-import { resolveCurrencyDisplay } from "@/lib/currency";
+import { resolveCurrencyDisplay } from "@/lib/utils/currency";
+
 import { cn } from "@/lib/utils";
 
 type CurrencyPriceInputProps = {

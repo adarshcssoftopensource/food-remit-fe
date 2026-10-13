@@ -1,9 +1,12 @@
 "use client";
 
-import { AccessDeniedScreen } from "@/components/access-denied-screen";
-import { ChangePasswordRequiredScreen } from "@/components/change-password-required-screen";
-import { ProfileErrorScreen } from "@/components/profile-error-screen";
-import { ProfileLoadingScreen } from "@/components/profile-loading-screen";
+import {
+  AccessDeniedScreen,
+  ChangePasswordRequiredScreen,
+  ProfileErrorScreen,
+  ProfileLoadingScreen,
+} from "@/components/feedback";
+
 import { hasPathPermission } from "@/config/permissions";
 import { ROUTES } from "@/config/routes";
 import { fetcher } from "@/hooks/useApi";

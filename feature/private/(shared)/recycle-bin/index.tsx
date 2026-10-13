@@ -28,7 +28,7 @@ import {
   useBulkPermanentDeleteEntities,
   useBulkRestoreEntities,
 } from "./hooks/use-recycle-bin-actions";
-import { useProfile } from "@/components/providers/profile-provider";
+import { useProfile } from "@/providers/profile-provider";
 
 const ALL_ENTITY_TABS: {
   id: RecycleEntityType;

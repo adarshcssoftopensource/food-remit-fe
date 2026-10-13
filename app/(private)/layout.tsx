@@ -1,11 +1,10 @@
-import { AppTopBar } from "@/components/app-topbar";
-import { ProfileProvider } from "@/components/providers/profile-provider";
+import { AppTopBar } from "@/components/layout/app-topbar";
+import { ProfileProvider, FcmProvider } from "@/providers";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Suspense } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ImpersonationBanner } from "@/components/common/impersonation-banner";
 import { BankVerificationBanner } from "@/components/common/bank-verification-banner";
-import { FcmProvider } from "@/components/providers/fcm-provider";
 
 import { ErrorBoundary } from "@/components/common/error-boundary";
 
