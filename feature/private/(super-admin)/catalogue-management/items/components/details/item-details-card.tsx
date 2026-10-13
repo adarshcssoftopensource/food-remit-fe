@@ -8,10 +8,8 @@ import {
   Boxes,
   Building2,
   Calendar,
-  Check,
   CheckCircle2,
   Clock,
-  Copy,
   FolderOpen,
   Hash,
   Leaf,
@@ -22,11 +20,12 @@ import {
   Tag,
 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
-import { toast } from "sonner";
 import type { ItemData } from "../../types/item.types";
+
 import { formatPackSize, getItemOptions, getItemPriceSummary } from "../../utils/item-display";
 import { InfoCard } from "./info-card";
+
+import { CopyButton } from "@/components/common/copy-button";
 
 function IdentifierTile({
   icon,
@@ -39,19 +38,6 @@ function IdentifierTile({
   value?: string | null;
   emptyText: string;
 }) {
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    if (!value) return;
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      toast.success(`${label} copied`);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      toast.error("Couldn't copy to the clipboard");
-    }
-  };
-
   return (
     <div className="flex min-w-0 items-center gap-3 rounded-xl border border-dashed border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900/40">
       <div className="text-primary bg-primary/10 flex size-9 shrink-0 items-center justify-center rounded-lg">
@@ -67,16 +53,7 @@ function IdentifierTile({
           <p className="text-sm text-slate-400">{emptyText}</p>
         )}
       </div>
-      {value ? (
-        <button
-          type="button"
-          onClick={copy}
-          aria-label={`Copy ${label}`}
-          className="hover:text-primary hover:bg-primary/10 rounded-md p-1.5 text-slate-400 transition-colors"
-        >
-          {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-        </button>
-      ) : null}
+      {value ? <CopyButton value={value} label={label} /> : null}
     </div>
   );
 }

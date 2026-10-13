@@ -12,6 +12,7 @@ import { FINAL_STATUS, isPendingOrder } from "../utils/order-workflow";
 import { parseAbandonRemark } from "../components/shared/abandon-remark";
 import { SystemAbandonBadge } from "../components/shared/abandon-remark-badge";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
+import { CopyButton } from "@/components/common/copy-button";
 import { formatRecentDateTime } from "@/lib/date";
 
 const selectColumn: ColumnDef<OrderData> = {
@@ -67,12 +68,19 @@ export const orderColumns: ColumnDef<OrderData>[] = [
   {
     accessorKey: "refrenceNumber",
     header: "Order ID",
-    cell: ({ row }) => (
-      <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
-        #{row.original.refrenceNumber || row.original.id.substring(0, 8).toUpperCase()}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const orderRef = row.original.refrenceNumber || row.original.id.substring(0, 8).toUpperCase();
+      return (
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
+            #{orderRef}
+          </span>
+          <CopyButton value={orderRef} label="Order ID" />
+        </div>
+      );
+    },
   },
+
   {
     id: "customer",
     header: "Customer",

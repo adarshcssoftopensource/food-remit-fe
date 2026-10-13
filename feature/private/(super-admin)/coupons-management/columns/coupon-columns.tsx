@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import { Switch } from "@/components/ui/switch";
+import { CopyButton } from "@/components/common/copy-button";
+
 import {
   Dialog,
   DialogContent,
@@ -138,9 +140,12 @@ export const couponColumns: ColumnDef<CouponItem>[] = [
     enableSorting: true,
     cell: ({ row }) => (
       <div className="space-y-0.5">
-        <span className="inline-block rounded-lg bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold tracking-wider text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-          {row.original.couponCode}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block rounded-lg bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold tracking-wider text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+            {row.original.couponCode}
+          </span>
+          <CopyButton value={row.original.couponCode} label="Coupon Code" />
+        </div>
         <p className="max-w-[180px] truncate text-xs font-medium text-slate-600 dark:text-slate-400">
           {row.original.couponName}
         </p>

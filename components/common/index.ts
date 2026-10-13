@@ -14,6 +14,7 @@ export { NoDataFound } from "./no-data-found";
 export { ErrorBoundary } from "./error-boundary";
 export { BankVerificationBanner } from "./bank-verification-banner";
 export { ImpersonationBanner } from "./impersonation-banner";
+export { CopyButton, type CopyButtonProps } from "./copy-button";
 
 // Dialogs & Modals
 export { ConfirmationDialog } from "./confirmation-dialog";
