@@ -24,8 +24,10 @@ interface ApiErrorResponse {
   error?: string;
 }
 
+import { env } from "@/config/env";
+
 export function getApiBaseUrl(): string {
-  const envUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3218/";
+  const envUrl = env.NEXT_PUBLIC_BASE_URL;
   if (typeof window !== "undefined") {
     try {
       const url = new URL(envUrl);
@@ -45,7 +47,8 @@ export function getApiBaseUrl(): string {
 }
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: env.NEXT_PUBLIC_BASE_URL,
+
   timeout: 25000,
 });
 
@@ -205,4 +208,5 @@ axiosInstance.interceptors.response.use(
   },
 );
 
+export { axiosInstance };
 export default axiosInstance;
