@@ -89,7 +89,7 @@ export function ItemsManagement() {
 
   const filteredData = useMemo(() => itemsResponse?.data || [], [itemsResponse?.data]);
 
-  const pagination = itemsResponse?.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 };
+  const pagination = itemsResponse?.pagination || { page: 1, limit: 50, total: 0, totalPages: 0 };
 
   const stats = {
     total: itemsResponse?.stats?.total || 0,

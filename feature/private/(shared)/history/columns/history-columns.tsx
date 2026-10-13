@@ -1,5 +1,6 @@
 import { StatusBadge } from "@/components/common/status-badge";
 import { CopyButton } from "@/components/common/copy-button";
+import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate, formatTime } from "@/lib/date";
@@ -176,7 +177,11 @@ export const historyPartnerLeadsColumns: ColumnDef<any>[] = [
             {data.firstName} {data.lastName}
           </span>
           <div className="text-muted-foreground flex items-center gap-1 text-xs">
-            <span>{data.businessEmail}</span>
+            <TruncatedTextCell
+              text={data.businessEmail}
+              truncateAfterAt
+              className="cursor-default"
+            />
             <CopyButton
               value={data.businessEmail}
               label="Email"

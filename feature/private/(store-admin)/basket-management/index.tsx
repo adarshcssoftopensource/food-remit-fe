@@ -79,7 +79,7 @@ export function BasketManagement() {
   const debouncedFilters = useDebounce(filters, 350);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pendingDelete, setPendingDelete] = useState<Basket | null>(null);
 

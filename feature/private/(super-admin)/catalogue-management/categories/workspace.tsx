@@ -71,7 +71,7 @@ export function CategoryItemsWorkspace({ id }: CategoryItemsWorkspaceProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
   const [statusTab, setStatusTab] = useState<StatusTab>("ACTIVE");
 
   const [pickerOpen, setPickerOpen] = useState(false);

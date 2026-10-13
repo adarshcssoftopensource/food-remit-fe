@@ -72,7 +72,11 @@ export const getPartnerLeadColumns = (
             {data.firstName} {data.lastName}
           </span>
           <div className="text-muted-foreground flex items-center gap-1 text-xs">
-            <span>{data.businessEmail}</span>
+            <TruncatedTextCell
+              text={data.businessEmail}
+              truncateAfterAt
+              className="cursor-default hover:text-slate-900 dark:hover:text-slate-100"
+            />
             <CopyButton
               value={data.businessEmail}
               label="Email"
