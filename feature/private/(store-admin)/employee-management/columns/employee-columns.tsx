@@ -80,25 +80,37 @@ export const employeeColumns = (onImageClick?: (image: string) => void): ColumnD
     enableSorting: true,
   },
   {
-    accessorKey: "address",
+    id: "address",
+    accessorFn: (row) =>
+      [formatAddress(row.address), row.city, row.state, row.zipCode].filter(Boolean).join(", "),
     header: "Address",
-    cell: ({ row }) => (
-      <TruncatedTextCell
-        text={formatAddress(row.original.address) || "-"}
-        className="max-w-45 cursor-default text-sm"
-      />
-    ),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "city",
-    header: "Location",
-    cell: ({ row }) => (
-      <span className="text-sm text-slate-600">
-        {[row.original.city, row.original.state, row.original.zipCode].filter(Boolean).join(", ") ||
-          "-"}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const fullAddress = [
+        formatAddress(row.original.address),
+        row.original.city,
+        row.original.state,
+        row.original.zipCode,
+      ]
+        .filter(Boolean)
+        .join(", ");
+
+      if (!fullAddress) return <span className="text-slate-400">-</span>;
+
+      return (
+        <div className="flex max-w-85 items-center gap-1.5">
+          <TruncatedTextCell
+            text={fullAddress}
+            maxChars={35}
+            className="cursor-default text-sm text-slate-600 dark:text-slate-300"
+          />
+          <CopyButton
+            value={fullAddress}
+            label="Address"
+            className="h-4 w-4 shrink-0 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          />
+        </div>
+      );
+    },
     enableSorting: true,
   },
   {

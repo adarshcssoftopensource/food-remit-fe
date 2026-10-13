@@ -224,6 +224,7 @@ export function ItemsManagement() {
             placeholder="All Categories"
             disabled={country === "all" && !isStoreManager}
             className="h-10 rounded-xl px-3"
+            showStoreName={!isStoreManager}
           />
         </div>
         <div className="min-w-70 flex-1 sm:min-w-[320px]">

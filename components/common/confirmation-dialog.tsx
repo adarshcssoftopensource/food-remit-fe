@@ -90,7 +90,7 @@ export function ConfirmationDialog({
               variant="outline"
               onClick={handleCancel}
               disabled={isLoading}
-              className="h-11 min-h-12! w-full flex-1 rounded-2xl px-5 text-base font-semibold shadow-sm"
+              className="h-11 min-h-12! w-full flex-1 rounded-2xl px-5 text-base font-semibold"
             >
               {cancelLabel}
             </Button>
@@ -99,7 +99,7 @@ export function ConfirmationDialog({
               variant={variant}
               onClick={onConfirm}
               isLoading={isLoading}
-              className="h-11 min-h-12! w-full flex-1 rounded-2xl px-5 text-base font-semibold shadow-sm hover:brightness-110"
+              className="h-11 min-h-12! w-full flex-1 rounded-2xl px-5 text-base font-semibold hover:brightness-110"
             >
               {confirmLabel}
             </Button>

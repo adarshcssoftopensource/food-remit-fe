@@ -1,6 +1,7 @@
 "use client";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface TruncatedTextCellProps {
   text: string | number | null | undefined;
@@ -39,7 +40,13 @@ export function TruncatedTextCell({
   return (
     <TooltipProvider delay={150}>
       <Tooltip>
-        <TooltipTrigger render={<span className={className}>{truncatedText}</span>} />
+        <TooltipTrigger
+          render={
+            <span className={cn("inline-block max-w-full truncate align-middle", className)}>
+              {truncatedText}
+            </span>
+          }
+        />
 
         <TooltipContent side="top" align="center" className="max-w-md">
           <p className="whitespace-pre-wrap">{textString}</p>
