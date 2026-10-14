@@ -6,7 +6,15 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { formatDate } from "@/lib/date";
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2, CreditCard, Eye, PackageX, ShieldAlert, ZoomIn } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  CreditCard,
+  Eye,
+  PackageX,
+  ShieldAlert,
+  ZoomIn,
+} from "lucide-react";
 import Image from "next/image";
 import type { CreditColumnsOptions, CreditsData } from "../types/credits.types";
 
@@ -129,11 +137,38 @@ export function getCreditColumns({
     {
       id: "unmarkedItems",
       accessorKey: "unmarkedItemsCount",
-      header: "Unmarked Items",
+      header: "Type / Items",
       enableSorting: true,
       cell: ({ row }) => {
+        const isAbandoned = Boolean(
+          row.original.isAbandoned || row.original.creditType === "abandoned",
+        );
         const items = row.original.unmarkedItems || [];
         const count = row.original.unmarkedItemsCount || items.length;
+
+        if (isAbandoned) {
+          return (
+            <Popover>
+              <PopoverTrigger className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-300">
+                <AlertCircle className="size-3 text-amber-600 dark:text-amber-400" />
+                <span>Abandoned Order</span>
+              </PopoverTrigger>
+              <PopoverContent className="w-72 p-3 text-xs" align="start">
+                <p className="mb-1 font-bold text-amber-900 dark:text-amber-300">
+                  Abandoned by Customer
+                </p>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                  {row.original.abandonRemark || "Order was marked as abandoned and not collected."}
+                </p>
+                {row.original.abandonedAt && (
+                  <p className="mt-1 text-[10px] text-slate-400">
+                    Abandoned: {formatDate(row.original.abandonedAt)}
+                  </p>
+                )}
+              </PopoverContent>
+            </Popover>
+          );
+        }
 
         if (count === 0) {
           return <span className="text-xs text-slate-400">None</span>;

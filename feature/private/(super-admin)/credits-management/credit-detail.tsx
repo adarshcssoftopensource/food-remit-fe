@@ -150,7 +150,7 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
               <div>
                 <div className="flex flex-wrap items-center gap-2.5">
                   <h1 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                    Credit Request
+                    {detail.isAbandoned ? "Abandoned Order Credit" : "Credit Request"}
                   </h1>
 
                   {/* Reference Pill with interactive copy */}
@@ -254,6 +254,32 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
         onCancel={() => setShowConfirmPay(false)}
       />
 
+      {/* Abandoned Order Notice Banner */}
+      {detail.isAbandoned && (
+        <Card className="rounded-2xl border border-amber-300 bg-amber-50/70 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
+          <div className="flex items-start gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+              <AlertCircle className="size-5" />
+            </div>
+            <div className="flex-1 space-y-1">
+              <h4 className="text-sm font-bold text-amber-900 dark:text-amber-200">
+                Abandoned Order Refund
+              </h4>
+              <p className="text-xs text-amber-800/90 dark:text-amber-300/80">
+                This order was marked as Abandoned because it was not collected within the pickup
+                window. Super Admin can execute the refund payment to the user below.
+              </p>
+              {detail.abandonRemark && (
+                <p className="mt-1 text-xs font-medium text-slate-700 dark:text-slate-300">
+                  <span className="font-semibold text-slate-900 dark:text-white">Remark: </span>
+                  {detail.abandonRemark}
+                </p>
+              )}
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Section 1: Customer & Store Information */}
       <CreditPartiesCard
         customer={detail.customer}
@@ -261,9 +287,19 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
         onImageClick={setLightboxImage}
       />
 
-      {/* Section 2: Unmarked Items Requiring Refund (Full Width - No empty gaps) */}
+      {/* Section 2: Items Requiring Refund (Full Width) */}
       <CreditUnmarkedItems
-        items={detail.unmarkedItems}
+        items={
+          detail.isAbandoned && detail.unmarkedItems.length === 0
+            ? detail.allItems
+            : detail.unmarkedItems
+        }
+        isAbandoned={detail.isAbandoned}
+        title={
+          detail.isAbandoned
+            ? `Prepared Order Items (${(detail.allItems || []).length})`
+            : undefined
+        }
         currency={detail.currency}
         onImageClick={setLightboxImage}
       />
