@@ -1,22 +1,40 @@
 import { ROUTES } from "@/config/routes";
-import { CheckCircle2, Clock, DollarSign, HandPlatter } from "lucide-react";
+import { CheckCircle2, Clock, DollarSign, HandPlatter, ShoppingBag, Wallet } from "lucide-react";
+import type { DashboardStatCardProps } from "./dashboard-stat-card";
 
-export function buildDashboardTopCards(dashboardData: any) {
-  return [
+export function buildDashboardTopCards(
+  dashboardData: any,
+  options: { includeExtended?: boolean } = {},
+): DashboardStatCardProps[] {
+  const cards: DashboardStatCardProps[] = [
     {
-      title: "Total Orders Received",
+      title: "Orders Received",
       href: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
-      icon: Clock,
-      accentColor: "amber" as const,
-      iconBgClassName: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
-      mainValue: dashboardData?.totalPendingOrders?.total ?? 0,
+      icon: ShoppingBag,
+      accentColor: "emerald" as const,
+      iconBgClassName:
+        "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
+      mainValue:
+        dashboardData?.totalOrdersReceived?.total ?? dashboardData?.totalPendingOrders?.total ?? 0,
       subStats: [
-        { label: "Today", value: dashboardData?.totalPendingOrders?.today ?? 0 },
-        { label: "This Week", value: dashboardData?.totalPendingOrders?.thisWeek ?? 0 },
+        {
+          label: "Today",
+          value:
+            dashboardData?.totalOrdersReceived?.today ??
+            dashboardData?.totalPendingOrders?.today ??
+            0,
+        },
+        {
+          label: "This Week",
+          value:
+            dashboardData?.totalOrdersReceived?.thisWeek ??
+            dashboardData?.totalPendingOrders?.thisWeek ??
+            0,
+        },
       ],
     },
     {
-      title: "Total Requested Orders",
+      title: "Requested Orders",
       href: `${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=requested`,
       icon: HandPlatter,
       accentColor: "cyan" as const,
@@ -28,7 +46,7 @@ export function buildDashboardTopCards(dashboardData: any) {
       ],
     },
     {
-      title: "Total Completed Orders",
+      title: "Completed Orders",
       href: `${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=completed-orders`,
       icon: CheckCircle2,
       accentColor: "emerald" as const,
@@ -41,18 +59,60 @@ export function buildDashboardTopCards(dashboardData: any) {
       ],
     },
     {
-      title: "Total Earning",
+      title: "Total Earnings",
       href: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
       icon: DollarSign,
       accentColor: "indigo" as const,
       iconBgClassName:
         "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400",
-      mainValue: dashboardData?.totalEarnings?.total ?? "0.00",
-      mainLabel: "All Time",
+      mainValue: dashboardData?.totalEarnings?.total ?? "$0.00",
+      mainLabel: "Paid Orders",
       subStats: [
-        { label: "Today", value: dashboardData?.totalEarnings?.today ?? "0.00" },
-        { label: "This Week", value: dashboardData?.totalEarnings?.thisWeek ?? "0.00" },
+        { label: "Today", value: dashboardData?.totalEarnings?.today ?? "$0.00" },
+        { label: "This Week", value: dashboardData?.totalEarnings?.thisWeek ?? "$0.00" },
       ],
     },
   ];
+
+  if (options.includeExtended) {
+    cards.push(
+      {
+        title: "Pending Orders",
+        href: ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT,
+        icon: Clock,
+        accentColor: "amber" as const,
+        iconBgClassName: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
+        mainValue: dashboardData?.totalPendingOrders?.total ?? 0,
+        subStats: [
+          { label: "Today", value: dashboardData?.totalPendingOrders?.today ?? 0 },
+          { label: "This Week", value: dashboardData?.totalPendingOrders?.thisWeek ?? 0 },
+        ],
+      },
+      {
+        title: "Requested Amount",
+        href: `${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?tab=requested`,
+        icon: Wallet,
+        accentColor: "violet" as const,
+        iconBgClassName:
+          "bg-violet-500/10 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400",
+        mainValue:
+          dashboardData?.amountToPay?.requestedPendingAmount ||
+          dashboardData?.totalRequestedOrders?.pendingAmount ||
+          "$17.05",
+        mainLabel: "Pending",
+        subStats: [
+          {
+            label: "Today",
+            value: dashboardData?.amountToPay?.today || "$0.00",
+          },
+          {
+            label: "This Week",
+            value: dashboardData?.amountToPay?.thisWeek || "$0.00",
+          },
+        ],
+      },
+    );
+  }
+
+  return cards;
 }

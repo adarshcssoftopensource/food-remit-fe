@@ -155,10 +155,10 @@ export const STATUS_CONFIG_MAP: Record<
     label: "Ready for Pickup",
   },
   closed: {
-    bg: "bg-slate-100 dark:bg-slate-800/60",
-    text: "text-slate-600 dark:text-slate-400",
-    border: "border-slate-200 dark:border-slate-700",
-    dot: "bg-slate-400",
+    bg: "bg-emerald-50 dark:bg-emerald-950/40",
+    text: "text-emerald-700 dark:text-emerald-400",
+    border: "border-emerald-200/80 dark:border-emerald-800/60",
+    dot: "bg-emerald-500",
     label: "Closed",
   },
   abandoned: {

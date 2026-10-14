@@ -59,10 +59,10 @@ function TopBarProfileSummary({
         )}
       </div>
 
-      <div className="hidden flex-col items-start text-left sm:flex">
+      <div className="hidden flex-col items-start text-left lg:flex">
         <span
           className={cn(
-            "max-w-36 truncate text-sm leading-tight font-semibold",
+            "max-w-24 truncate text-xs leading-tight font-semibold sm:text-sm lg:max-w-36",
             isProfilePage ? "text-white" : "text-slate-900 dark:text-slate-100",
           )}
         >
@@ -226,7 +226,7 @@ export function AppTopBar() {
         const primaryStore = profile?.stores?.[0];
         if (!primaryStore) return null;
         return (
-          <div className="mr-2 hidden items-center md:flex">
+          <div className="mr-2 hidden items-center lg:flex">
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1.5 shadow-xs dark:border-slate-700/80 dark:bg-slate-900">
               <Globe2 className="h-3.5 w-3.5 shrink-0 text-slate-400" />
               <span

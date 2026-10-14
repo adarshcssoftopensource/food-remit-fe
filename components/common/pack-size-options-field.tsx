@@ -34,9 +34,9 @@ type PackSizeOptionsFieldProps = {
 
 const NO_UNIT = "__none__";
 const GRID =
-  "md:grid md:grid-cols-[2.25rem_minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,1.3fr)_4.75rem] md:items-start md:gap-3";
+  "xl:grid xl:grid-cols-[2.25rem_minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,1.3fr)_4.75rem] xl:items-start xl:gap-3";
 const fieldClass = "h-10 rounded-lg shadow-none";
-const mobileLabelClass = "mb-1.5 block text-[11px] font-semibold text-slate-500 md:hidden";
+const mobileLabelClass = "mb-1.5 block text-[11px] font-semibold text-slate-500 xl:hidden";
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -128,16 +128,16 @@ export function PackSizeOptionsField({
               <li
                 key={row.key}
                 className={cn(
-                  "grid grid-cols-2 gap-3 p-3 transition-colors",
+                  "grid grid-cols-2 gap-3 p-3.5 transition-colors sm:gap-4 sm:p-4 xl:p-3",
                   GRID,
                   isDefault && "bg-primary/3",
                 )}
               >
-                <div className="col-span-2 flex items-center justify-between md:col-span-1 md:block md:pt-2">
+                <div className="col-span-2 flex items-center justify-between xl:col-span-1 xl:block xl:pt-2">
                   <span
                     title={isDefault ? "Default option — sets the item's base price" : undefined}
                     className={cn(
-                      "flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold md:mx-auto",
+                      "flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold xl:mx-auto",
                       isDefault
                         ? "bg-primary text-white"
                         : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
@@ -145,12 +145,12 @@ export function PackSizeOptionsField({
                   >
                     {index + 1}
                   </span>
-                  <span className="text-[11px] font-semibold text-slate-500 md:hidden">
+                  <span className="text-[11px] font-semibold text-slate-500 xl:hidden">
                     {isDefault ? "Default option" : `Option ${index + 1}`}
                   </span>
                 </div>
 
-                <div className="col-span-2 md:col-span-1">
+                <div className="col-span-2 xl:col-span-1">
                   <label htmlFor={`${row.key}-option-name`} className={mobileLabelClass}>
                     Option name {allowMultiple && "*"}
                   </label>
@@ -259,7 +259,7 @@ export function PackSizeOptionsField({
                   <FieldError message={errors?.price} />
                 </div>
 
-                <div className="col-span-2 flex items-center justify-end gap-1 md:col-span-1 md:pt-0">
+                <div className="col-span-2 flex items-center justify-end gap-1 xl:col-span-1 xl:pt-0">
                   {!isDefault && (
                     <Button
                       type="button"
@@ -293,13 +293,16 @@ export function PackSizeOptionsField({
         </ul>
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="flex items-center gap-2 text-[11px] leading-4 text-slate-500">
-          <span className="bg-primary flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex items-start gap-2 text-[11px] leading-relaxed text-slate-500">
+          <span className="bg-primary mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white">
             1
           </span>
-          The first option is the default and sets the item&apos;s base price. Use
-          <Star className="h-3 w-3" /> to change it.
+          <span className="inline-flex flex-wrap items-center gap-1">
+            <span>The first option is the default and sets the item&apos;s base price. Use</span>
+            <Star className="inline h-3.5 w-3.5 fill-amber-500/20 text-amber-500" />
+            <span>to change it.</span>
+          </span>
         </p>
         {allowMultiple && (
           <Button

@@ -172,7 +172,7 @@ export function ItemsManagement() {
         }
       />
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3 sm:gap-4">
         {ITEM_STAT_CONFIG.map(({ key, label, Icon, color, bg }) => (
           <MetricStatCard
             key={key}

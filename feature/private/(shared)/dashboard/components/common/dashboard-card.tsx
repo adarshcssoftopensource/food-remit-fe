@@ -46,7 +46,7 @@ export function DashboardCard({
       {hasHeader && (
         <CardHeader
           className={cn(
-            "flex flex-row items-center justify-between gap-3 border-b border-slate-100/90 px-6 py-4.5 dark:border-slate-800/80",
+            "flex flex-col gap-2.5 border-b border-slate-100/90 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4 dark:border-slate-800/80",
             headerClassName,
           )}
         >
@@ -55,20 +55,20 @@ export function DashboardCard({
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 {title && (
-                  <CardTitle className="truncate text-sm font-bold tracking-wider text-slate-800 uppercase dark:text-slate-200">
+                  <CardTitle className="text-xs font-bold tracking-wider text-slate-800 uppercase sm:text-sm dark:text-slate-200">
                     {title}
                   </CardTitle>
                 )}
                 {badge && <div className="shrink-0">{badge}</div>}
               </div>
               {subtitle && (
-                <p className="mt-0.5 truncate text-xs font-medium text-slate-500 dark:text-slate-400">
+                <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-slate-500 sm:text-xs dark:text-slate-400">
                   {subtitle}
                 </p>
               )}
             </div>
           </div>
-          {action && <div className="shrink-0">{action}</div>}
+          {action && <div className="shrink-0 self-start sm:self-auto">{action}</div>}
         </CardHeader>
       )}
       <CardContent className={cn("p-6", contentClassName)}>{children}</CardContent>

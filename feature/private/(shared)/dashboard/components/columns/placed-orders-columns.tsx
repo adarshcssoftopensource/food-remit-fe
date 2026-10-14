@@ -8,6 +8,10 @@ import type { DashboardRecentlyPlacedOrder } from "../../types/dashboard.types";
 import { DashboardStatusBadge } from "../common/dashboard-status-badge";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 
+import Link from "next/link";
+import { ROUTES } from "@/config/routes";
+import { CopyButton } from "@/components/common/copy-button";
+
 export const placedOrdersColumns: ColumnDef<DashboardRecentlyPlacedOrder>[] = [
   {
     accessorKey: "referenceNumber",
@@ -19,10 +23,21 @@ export const placedOrdersColumns: ColumnDef<DashboardRecentlyPlacedOrder>[] = [
         ? `#${String(row.original.id).replace(/^#/, "").slice(0, 8).toUpperCase()}`
         : "—";
       const displayRef = ref ? (ref.startsWith("#") ? ref : `#${ref}`) : fallback;
+      const targetQuery = ref ? ref.replace(/^#/, "") : row.original.id;
+      const copyVal = ref || (row.original.id ? String(row.original.id) : "");
       return (
-        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold whitespace-nowrap text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-          {displayRef}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <Link
+            href={`${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?search=${encodeURIComponent(targetQuery)}`}
+            className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold whitespace-nowrap text-emerald-700 transition hover:bg-emerald-50 hover:underline dark:bg-slate-800 dark:text-emerald-400"
+            title="View in Order Management"
+          >
+            {displayRef}
+          </Link>
+          {copyVal && (
+            <CopyButton value={copyVal} label="Order ID" size="icon" className="h-6 w-6" />
+          )}
+        </div>
       );
     },
   },
@@ -52,11 +67,18 @@ export const placedOrdersColumns: ColumnDef<DashboardRecentlyPlacedOrder>[] = [
     header: "Location",
     enableSorting: false,
     cell: ({ row }) => {
-      const location = row.getValue("location") as string;
+      const location = (row.getValue("location") as string) || "—";
+      const hasLocation = location && location !== "—";
       return (
-        <div className="flex max-w-30 items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
-          <MapPin className="h-3 w-3 shrink-0 text-slate-400" />
-          <TruncatedTextCell text={location || "—"} maxChars={16} />
+        <div
+          className="inline-flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300"
+          title={hasLocation ? location : undefined}
+        >
+          <MapPin className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <span className="leading-relaxed font-medium break-words">{location}</span>
+          {hasLocation && (
+            <CopyButton value={location} label="Address" size="icon" className="h-5 w-5 shrink-0" />
+          )}
         </div>
       );
     },

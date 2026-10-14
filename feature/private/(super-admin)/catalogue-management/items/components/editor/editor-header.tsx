@@ -20,7 +20,7 @@ export function EditorHeader({
   const categoryName = category?.categoryName ?? "—";
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900/70">
+    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:p-5 lg:flex-row lg:items-center lg:justify-between dark:border-slate-800 dark:bg-slate-900/70">
       <div className="flex min-w-0 items-center gap-4">
         <div className="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
           {isEditing ? <Package2 className="h-6 w-6" /> : <PackagePlus className="h-6 w-6" />}

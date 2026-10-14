@@ -59,6 +59,8 @@ interface DataTableProps<TData, TValue> {
   getRowClassName?: (row: Row<TData>) => string | undefined;
   emptyMessage?: string;
   searchPlaceholder?: string;
+  showRowsPerPage?: boolean;
+  showJumpTo?: boolean;
 }
 
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
@@ -87,6 +89,8 @@ export function DataTable<TData, TValue>({
   getRowClassName,
   emptyMessage = "No Data Found",
   searchPlaceholder = "Search...",
+  showRowsPerPage = true,
+  showJumpTo = true,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -242,6 +246,8 @@ export function DataTable<TData, TValue>({
           rowsPerPage={onRowsPerPageChange ? rowsPerPage : undefined}
           onPageChange={onPageChange}
           onRowsPerPageChange={onRowsPerPageChange}
+          showRowsPerPage={showRowsPerPage}
+          showJumpTo={showJumpTo}
         />
       )}
     </div>

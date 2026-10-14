@@ -19,6 +19,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { cn } from "@/lib";
 
 interface DataTablePaginationProps<TData> {
   table?: Table<TData>;
@@ -27,6 +28,8 @@ interface DataTablePaginationProps<TData> {
   rowsPerPage?: number;
   onPageChange?: (page: number) => void;
   onRowsPerPageChange?: (limit: number) => void;
+  showRowsPerPage?: boolean;
+  showJumpTo?: boolean;
 }
 
 export function DataTablePagination<TData>({
@@ -36,6 +39,8 @@ export function DataTablePagination<TData>({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
+  showRowsPerPage = true,
+  showJumpTo = true,
 }: DataTablePaginationProps<TData>) {
   const isBackendMode = currentPage !== undefined && totalPages !== undefined && onPageChange;
 
@@ -82,32 +87,69 @@ export function DataTablePagination<TData>({
   const canNext = activePage < maxPages;
 
   return (
-    <div className="flex flex-col gap-3 border-t px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-2.5 whitespace-nowrap">
-        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-          Rows per page
-        </span>
+    <div
+      className={cn(
+        "flex flex-col gap-3 border-t px-3 py-3 sm:gap-3.5 lg:flex-row lg:items-center",
+        showRowsPerPage || showJumpTo ? "lg:justify-between" : "justify-center",
+      )}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-start">
+        {showRowsPerPage && (
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <span className="text-xs font-medium text-slate-700 sm:text-sm dark:text-slate-300">
+              Rows per page
+            </span>
 
-        <Select
-          value={`${pageSize}`}
-          onValueChange={(value) => handleRowsPerPageChange(Number(value))}
-        >
-          <SelectTrigger className="h-9 w-auto min-w-18 px-3 text-xs font-semibold">
-            <SelectValue />
-          </SelectTrigger>
+            <Select
+              value={`${pageSize}`}
+              onValueChange={(value) => handleRowsPerPageChange(Number(value))}
+            >
+              <SelectTrigger className="h-8.5 w-auto min-w-16 px-2.5 text-xs font-semibold sm:h-9 sm:min-w-18 sm:px-3">
+                <SelectValue />
+              </SelectTrigger>
 
-          <SelectContent>
-            {[10, 20, 30, 40, 50].map((size) => (
-              <SelectItem key={size} value={`${size}`}>
-                {size}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+              <SelectContent>
+                {[10, 20, 30, 40, 50].map((size) => (
+                  <SelectItem key={size} value={`${size}`}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {showJumpTo && (
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <span className="text-xs font-medium text-slate-700 sm:text-sm dark:text-slate-300">
+              Jump to:
+            </span>
+
+            <Input
+              type="number"
+              min={1}
+              max={maxPages}
+              placeholder="No."
+              className="h-8.5 w-16 rounded-xl px-2 text-xs font-semibold sm:h-9 sm:w-20 sm:px-2.5"
+              defaultValue={activePage}
+              onKeyDown={(e) => {
+                if (["-", "+", "e", "E", "."].includes(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              onChange={(e) => {
+                const page = Number(e.target.value);
+                if (page >= 1 && page <= maxPages) {
+                  handlePageChange(page);
+                }
+              }}
+            />
+          </div>
+        )}
       </div>
 
-      <Pagination className="mx-0 w-auto justify-start sm:justify-center">
-        <PaginationContent className="flex-wrap">
+      <Pagination className="mx-0 w-auto justify-center">
+        <PaginationContent className="flex-nowrap items-center gap-1">
           <PaginationItem>
             <PaginationPrevious
               href="#"
@@ -152,30 +194,6 @@ export function DataTablePagination<TData>({
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-
-      <div className="hidden items-center gap-2 whitespace-nowrap sm:flex">
-        <span className="text-sm text-slate-700 dark:text-slate-300">Jump to:</span>
-
-        <Input
-          type="number"
-          min={1}
-          max={maxPages}
-          placeholder="No."
-          className="h-9 w-20 rounded-xl px-2.5 text-xs font-semibold"
-          defaultValue={activePage}
-          onKeyDown={(e) => {
-            if (["-", "+", "e", "E", "."].includes(e.key)) {
-              e.preventDefault();
-            }
-          }}
-          onChange={(e) => {
-            const page = Number(e.target.value);
-            if (page >= 1 && page <= maxPages) {
-              handlePageChange(page);
-            }
-          }}
-        />
-      </div>
     </div>
   );
 }

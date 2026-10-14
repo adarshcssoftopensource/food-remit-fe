@@ -46,7 +46,7 @@ export function DashboardStatCard({
   const content = (
     <Card
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-white/60 bg-white/75 p-4.5 shadow-xs backdrop-blur-xl transition-colors transition-shadow transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800/80 dark:bg-slate-900/80",
+        "group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-xs backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md sm:p-3.5 dark:border-slate-800 dark:bg-slate-900/95",
         accentColor && `border-t-2 ${ACCENT_GLOW_MAP[accentColor]}`,
         href && "cursor-pointer",
         className,
@@ -55,83 +55,85 @@ export function DashboardStatCard({
       {accentColor && (
         <div
           className={cn(
-            "pointer-events-none absolute -top-10 -right-10 h-28 w-28 rounded-full bg-linear-to-br opacity-40 blur-2xl transition-opacity duration-300 group-hover:opacity-70",
+            "pointer-events-none absolute -top-8 -right-8 h-20 w-20 rounded-full bg-linear-to-br opacity-30 blur-xl transition-opacity duration-300 group-hover:opacity-60",
             ACCENT_GLOW_MAP[accentColor],
           )}
         />
       )}
 
-      <div className="relative flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
-              {title}
-            </span>
-            {href && (
-              <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-3.5 w-3.5 text-slate-300 transition-colors transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
-            )}
-          </div>
+      <div>
+        <div className="relative flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start gap-1">
+              <span className="line-clamp-2 text-[10px] leading-snug font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                {title}
+              </span>
+              {href && (
+                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary mt-0.5 h-3 w-3 shrink-0 text-slate-300 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
+              )}
+            </div>
 
-          <div className="mt-2 flex items-baseline gap-2">
-            {isLoading ? (
-              <Skeleton className="h-8 w-24 rounded-xl" />
-            ) : (
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-                  {typeof mainValue === "number" ? mainValue.toLocaleString() : mainValue}
-                </span>
-                {mainLabel && (
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    {mainLabel}
+            <div className="mt-1.5 flex flex-wrap items-baseline gap-1.5">
+              {isLoading ? (
+                <Skeleton className="h-7 w-20 rounded-lg sm:h-8 sm:w-24" />
+              ) : (
+                <div className="flex flex-wrap items-baseline gap-1.5">
+                  <span className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                    {typeof mainValue === "number" ? mainValue.toLocaleString() : mainValue}
                   </span>
+                  {mainLabel && (
+                    <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-[9.5px] font-semibold whitespace-nowrap text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      {mainLabel}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {trend && !isLoading && (
+              <div className="mt-1 flex items-center gap-1 text-[10.5px] font-medium">
+                <span
+                  className={cn(
+                    "font-bold",
+                    trend.isPositive
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-rose-600 dark:text-rose-400",
+                  )}
+                >
+                  {trend.value}
+                </span>
+                {trend.label && (
+                  <span className="text-slate-400 dark:text-slate-500">{trend.label}</span>
                 )}
               </div>
             )}
           </div>
 
-          {trend && !isLoading && (
-            <div className="mt-1.5 flex items-center gap-1.5 text-xs font-medium">
-              <span
-                className={cn(
-                  "font-bold",
-                  trend.isPositive
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-rose-600 dark:text-rose-400",
-                )}
-              >
-                {trend.value}
-              </span>
-              {trend.label && (
-                <span className="text-slate-400 dark:text-slate-500">{trend.label}</span>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div
-          className={cn(
-            "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-xs transition-transform duration-300 group-hover:scale-105",
-            iconBgClassName,
-          )}
-        >
-          <Icon className="h-5 w-5" />
+          <div
+            className={cn(
+              "flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-xl shadow-xs transition-transform duration-300 group-hover:scale-105 sm:h-9 sm:w-9",
+              iconBgClassName,
+            )}
+          >
+            <Icon className="h-4 w-4" />
+          </div>
         </div>
       </div>
 
       {subStats.length > 0 && (
-        <div className="relative mt-4 grid grid-cols-2 gap-2 border-t border-slate-100/90 pt-3 sm:grid-cols-4 dark:border-slate-800/80">
+        <div className="relative mt-2.5 grid grid-cols-2 gap-1.5 border-t border-slate-100/90 pt-2 dark:border-slate-800/80">
           {subStats.map((sub) => (
             <div
               key={sub.label}
-              className="flex flex-col rounded-xl bg-slate-50/70 p-2 transition-colors group-hover:bg-slate-100/60 dark:bg-slate-800/50 dark:group-hover:bg-slate-800/70"
+              className="flex flex-col justify-center rounded-lg bg-slate-50/90 px-2 py-1 transition-colors group-hover:bg-slate-100/90 dark:bg-slate-800/60 dark:group-hover:bg-slate-800/90"
             >
-              <span className="truncate text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-400">
+              <span className="text-[9px] font-bold tracking-wider whitespace-nowrap text-slate-400 uppercase dark:text-slate-500">
                 {sub.label}
               </span>
               {isLoading ? (
-                <Skeleton className="mt-1 h-3.5 w-10 rounded" />
+                <Skeleton className="mt-1 h-3 w-10 rounded sm:h-3.5 sm:w-12" />
               ) : (
-                <span className="mt-0.5 truncate text-xs font-bold text-slate-800 dark:text-slate-100">
+                <span className="mt-0.5 text-[11px] font-bold whitespace-nowrap text-slate-900 sm:text-xs dark:text-slate-100">
                   {typeof sub.value === "number" ? sub.value.toLocaleString() : sub.value}
                 </span>
               )}
@@ -144,7 +146,7 @@ export function DashboardStatCard({
 
   if (href) {
     return (
-      <Link href={href} className="block focus:outline-hidden">
+      <Link href={href} className="block h-full focus:outline-hidden">
         {content}
       </Link>
     );

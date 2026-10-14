@@ -25,11 +25,11 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 md:flex-row md:items-center md:justify-between",
+        "flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between",
         className,
       )}
     >
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {welcomeMessage && (
           <div className="bg-primary/10 inline-flex items-center gap-2 rounded-full px-4 py-1.5">
             <span className="text-lg">👋</span>
@@ -41,14 +41,18 @@ export function PageHeader({
         )}
         {title && (
           <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-foreground text-3xl font-bold tracking-tight">{title}</h1>
+            <h1 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
+              {title}
+            </h1>
             {badge}
           </div>
         )}
-        {description && <p className="text-muted-foreground max-w-2xl text-sm">{description}</p>}
+        {description && (
+          <p className="text-muted-foreground max-w-2xl text-xs sm:text-sm">{description}</p>
+        )}
       </div>
 
-      {action && <div className="shrink-0">{action}</div>}
+      {action && <div className="flex shrink-0 flex-wrap items-center gap-2">{action}</div>}
     </div>
   );
 }

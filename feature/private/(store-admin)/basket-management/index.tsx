@@ -160,7 +160,7 @@ export function BasketManagement() {
         title="Basket Management"
         description="Create, publish and manage ready-to-buy baskets for your store. Baskets make it easy for families to get essentials in one order."
         action={
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex flex-wrap items-center gap-2">
             <BasketStoreSwitcher
               stores={stores}
               activeStore={activeStore}
@@ -175,7 +175,7 @@ export function BasketManagement() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
         <MetricStatCard
           label="Total Baskets"
           value={stats.total}
