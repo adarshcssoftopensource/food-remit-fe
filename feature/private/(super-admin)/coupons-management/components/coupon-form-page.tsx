@@ -61,10 +61,10 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
     defaultValues: {
       couponName: "",
       couponCode: "",
-      discount: 10,
+      discount: 0,
       description: "",
       minOrderValue: 0,
-      maxUsers: 100,
+      maxUsers: 0,
       scope: isStoreManager ? "store" : "global",
       storeId: isStoreManager ? managerAssignedStore?.id : undefined,
       startDate: todayStr,
@@ -72,7 +72,7 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
       endDate: nextMonthStr,
       endTime: "23:59",
     },
-    mode: "onChange",
+    mode: "onBlur",
   });
 
   const syncFormWithCoupon = useEffectEvent(() => {
@@ -185,7 +185,6 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Page Header */}
       <CouponPageHeader
         isEdit={isEdit}
         status={existingCoupon?.status}
@@ -193,11 +192,8 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
         onPublish={handleSubmit(onSubmit)}
       />
 
-      {/* Main Grid: Left Form + Right Live Preview */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Form Column */}
+      <div className="gap-6">
         <div className="space-y-6 lg:col-span-8">
-          {/* Card 1: Applicability Scope */}
           <CouponPageScopeCard
             isStoreManager={isStoreManager}
             assignedStoreName={getAssignedStoreName(
@@ -211,7 +207,6 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
             initialStoreName={existingCoupon?.storeName || undefined}
           />
 
-          {/* Card 2: Promotion Identification */}
           <CouponPageDetailsCard
             control={control}
             errors={errors}
@@ -220,7 +215,6 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
             onGenerateCode={handleGenerateCode}
           />
 
-          {/* Card 3: Discount & Redemption Limits */}
           <CouponPageLimitsCard control={control} errors={errors} />
 
           <CouponPageScheduleCard control={control} errors={errors} durationText={durationText} />

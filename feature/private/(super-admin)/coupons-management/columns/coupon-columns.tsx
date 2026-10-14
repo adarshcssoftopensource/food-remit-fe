@@ -146,7 +146,7 @@ export const couponColumns: ColumnDef<CouponItem>[] = [
           </span>
           <CopyButton value={row.original.couponCode} label="Coupon Code" />
         </div>
-        <p className="max-w-[180px] truncate text-xs font-medium text-slate-600 dark:text-slate-400">
+        <p className="max-w-45 truncate text-xs font-medium text-slate-600 dark:text-slate-400">
           {row.original.couponName}
         </p>
       </div>
@@ -178,7 +178,7 @@ export const couponColumns: ColumnDef<CouponItem>[] = [
           ) : (
             <Badge className="flex items-center gap-1 rounded-lg border border-blue-200/80 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300">
               <Store className="size-3" />
-              <span className="max-w-[140px] truncate">{row.original.storeName}</span>
+              <span className="max-w-35 truncate">{row.original.storeName}</span>
             </Badge>
           )}
         </div>
@@ -235,10 +235,7 @@ export const couponColumns: ColumnDef<CouponItem>[] = [
     enableSorting: false,
     cell: ({ row }) => (
       <div className="space-y-0.5 text-xs">
-        <p className="font-semibold text-slate-800 dark:text-slate-200">
-          {row.original.createdName || "Admin"}
-        </p>
-        <Badge variant="outline" className="text-[10px] text-slate-500">
+        <Badge variant="outline" className="text-[10px]">
           {row.original.createdBy}
         </Badge>
       </div>

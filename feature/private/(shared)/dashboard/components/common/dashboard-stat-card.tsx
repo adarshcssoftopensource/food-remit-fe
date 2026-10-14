@@ -61,24 +61,32 @@ export function DashboardStatCard({
         />
       )}
 
-      <div>
-        <div className="relative flex items-start justify-between gap-2">
+      <div className="flex flex-1 flex-col justify-between">
+        <div className="relative flex items-start justify-between gap-2.5">
           <div className="min-w-0 flex-1">
             <div className="flex items-start gap-1">
-              <span className="line-clamp-2 text-[10px] leading-snug font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+              <span
+                className="line-clamp-2 min-h-9 text-[11px] leading-snug font-bold tracking-wider wrap-break-word text-slate-500 uppercase dark:text-slate-400"
+                title={title}
+              >
                 {title}
               </span>
               {href && (
-                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary mt-0.5 h-3 w-3 shrink-0 text-slate-300 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
+                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-300 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
               )}
             </div>
 
-            <div className="mt-1.5 flex flex-wrap items-baseline gap-1.5">
+            <div className="mt-1 flex flex-wrap items-baseline gap-1.5">
               {isLoading ? (
                 <Skeleton className="h-7 w-20 rounded-lg sm:h-8 sm:w-24" />
               ) : (
-                <div className="flex flex-wrap items-baseline gap-1.5">
-                  <span className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                <div className="flex min-w-0 flex-wrap items-baseline gap-1.5">
+                  <span
+                    className="truncate text-xl font-black tracking-tight text-slate-900 sm:text-2xl dark:text-white"
+                    title={
+                      typeof mainValue === "number" ? mainValue.toLocaleString() : String(mainValue)
+                    }
+                  >
                     {typeof mainValue === "number" ? mainValue.toLocaleString() : mainValue}
                   </span>
                   {mainLabel && (
@@ -121,19 +129,35 @@ export function DashboardStatCard({
       </div>
 
       {subStats.length > 0 && (
-        <div className="relative mt-2.5 grid grid-cols-2 gap-1.5 border-t border-slate-100/90 pt-2 dark:border-slate-800/80">
+        <div
+          className={cn(
+            "relative mt-2.5 grid gap-1.5 border-t border-slate-100/90 pt-2 dark:border-slate-800/80",
+            subStats.length === 1 && "grid-cols-1",
+            subStats.length === 2 && "grid-cols-2",
+            subStats.length === 3 && "grid-cols-3",
+            subStats.length >= 4 && "grid-cols-2",
+          )}
+        >
           {subStats.map((sub) => (
             <div
               key={sub.label}
-              className="flex flex-col justify-center rounded-lg bg-slate-50/90 px-2 py-1 transition-colors group-hover:bg-slate-100/90 dark:bg-slate-800/60 dark:group-hover:bg-slate-800/90"
+              className="flex min-w-0 flex-col justify-center rounded-lg bg-slate-50/90 px-2 py-1 transition-colors group-hover:bg-slate-100/90 dark:bg-slate-800/60 dark:group-hover:bg-slate-800/90"
             >
-              <span className="text-[9px] font-bold tracking-wider whitespace-nowrap text-slate-400 uppercase dark:text-slate-500">
+              <span
+                className="truncate text-[9.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-500"
+                title={sub.label}
+              >
                 {sub.label}
               </span>
               {isLoading ? (
                 <Skeleton className="mt-1 h-3 w-10 rounded sm:h-3.5 sm:w-12" />
               ) : (
-                <span className="mt-0.5 text-[11px] font-bold whitespace-nowrap text-slate-900 sm:text-xs dark:text-slate-100">
+                <span
+                  className="mt-0.5 truncate text-[11px] font-bold text-slate-900 sm:text-xs dark:text-slate-100"
+                  title={
+                    typeof sub.value === "number" ? sub.value.toLocaleString() : String(sub.value)
+                  }
+                >
                   {typeof sub.value === "number" ? sub.value.toLocaleString() : sub.value}
                 </span>
               )}

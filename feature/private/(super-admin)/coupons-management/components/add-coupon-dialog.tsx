@@ -81,10 +81,10 @@ export function AddCouponDialog({
     return {
       couponName: "",
       couponCode: "",
-      discount: 10,
+      discount: 0,
       description: "",
       minOrderValue: 0,
-      maxUsers: 100,
+      maxUsers: 0,
       scope: isStoreManager ? "store" : "global",
       storeId: isStoreManager ? managerAssignedStore?.id : undefined,
       startDate: todayStr,
@@ -103,7 +103,7 @@ export function AddCouponDialog({
   } = useForm<CouponFormValues>({
     resolver: zodResolver(couponSchema) as any,
     defaultValues: getInitialValues(),
-    mode: "onChange",
+    mode: "onBlur",
   });
 
   const selectedScope = useWatch({ control, name: "scope" });

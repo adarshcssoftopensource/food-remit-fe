@@ -162,7 +162,7 @@ export function CouponsManagement() {
         action={
           <Button
             asChild
-            className="h-10 cursor-pointer rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 text-xs font-semibold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-700 hover:to-teal-700"
+            className="h-10 cursor-pointer rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 text-xs font-semibold text-white hover:from-emerald-700 hover:to-teal-700"
           >
             <Link
               href={ROUTES.ADMIN.COUPONS_MANAGEMENT.CREATE}
@@ -209,7 +209,7 @@ export function CouponsManagement() {
           onCancelFilters={cancel}
           activeFilterCount={activeFilterCount}
         >
-          <div className="min-w-[280px] flex-1 sm:min-w-[320px]">
+          <div className="min-w-70 flex-1 sm:min-w-[320px]">
             <DateRangeFilter
               fromDate={draft.fromDate}
               toDate={draft.toDate}
@@ -258,7 +258,6 @@ export function CouponsManagement() {
         </ModuleFilters>
       </div>
 
-      {/* Coupons DataTable Card */}
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
         <CardHeader className="flex flex-col gap-4 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
           <div className="flex items-center gap-3">
@@ -275,7 +274,6 @@ export function CouponsManagement() {
             </div>
           </div>
 
-          {/* Search box */}
           <div className="relative w-full sm:w-72">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
             <Input

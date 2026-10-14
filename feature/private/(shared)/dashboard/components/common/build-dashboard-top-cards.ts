@@ -98,7 +98,7 @@ export function buildDashboardTopCards(
         mainValue:
           dashboardData?.amountToPay?.requestedPendingAmount ||
           dashboardData?.totalRequestedOrders?.pendingAmount ||
-          "$17.05",
+          "$0.00",
         mainLabel: "Pending",
         subStats: [
           {
