@@ -245,14 +245,27 @@ export function AppTopBar() {
             />
           </div>
         ) : (
-          <SidebarTrigger
-            className={cn(
-              "h-10 w-10 rounded-xl",
-              "text-slate-600 dark:text-slate-400",
-              "hover:bg-slate-100/80 hover:text-slate-900 dark:hover:bg-slate-800/80 dark:hover:text-slate-100",
-              "transition-all duration-200",
-            )}
-          />
+          <div className="flex items-center gap-2">
+            <SidebarTrigger
+              className={cn(
+                "h-10 w-10 rounded-xl",
+                "text-slate-600 dark:text-slate-400",
+                "hover:bg-slate-100/80 hover:text-slate-900 dark:hover:bg-slate-800/80 dark:hover:text-slate-100",
+                "transition-all duration-200",
+              )}
+            />
+            <div className="flex items-center pl-0.5 xl:hidden">
+              <Image
+                src={APP_ASSETS.LOGO.PATH}
+                alt={APP_ASSETS.LOGO.ALT}
+                width={85}
+                height={26}
+                className="h-auto max-h-7 w-auto object-contain drop-shadow-xs"
+                style={{ width: "auto", height: "auto" }}
+                priority
+              />
+            </div>
+          </div>
         )}
         <div className="h-6 w-px bg-slate-200/80 dark:bg-slate-800" />
       </div>
