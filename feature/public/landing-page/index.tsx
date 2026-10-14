@@ -19,9 +19,10 @@ import { SuccessSection, TrustSection } from "./components/success-section";
 import { RevenueSection, WhyJoinSection } from "./components/why-join-section";
 import { mergeLandingContent } from "./lib/merge-landing-content";
 import { ProfileLoadingScreen } from "@/components/feedback";
+import { LandingErrorScreen } from "./components/landing-error-screen";
 
 export function VendorLandingPage() {
-  const { data, isLoading, isError } = useGetLandingPage(false);
+  const { data, isLoading, isError, refetch, isFetching, error } = useGetLandingPage(false);
   const content = mergeLandingContent(data?.data?.content);
 
   if (isLoading) {
@@ -34,9 +35,11 @@ export function VendorLandingPage() {
 
   if (isError && !data?.data?.content) {
     return (
-      <div className="flex min-h-svh items-center justify-center bg-white text-sm text-red-600">
-        Unable to load landing page.
-      </div>
+      <LandingErrorScreen
+        onRetry={() => refetch()}
+        isRetrying={isFetching}
+        errorMessage={error instanceof Error ? error.message : undefined}
+      />
     );
   }
 
