@@ -55,7 +55,7 @@ const selectColumn: ColumnDef<OrderData> = {
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
-        className="translate-y-[2px]"
+        className="translate-y-0.5"
       />
     );
   },
@@ -71,12 +71,14 @@ export const orderColumns: ColumnDef<OrderData>[] = [
     cell: ({ row }) => {
       const orderRef = row.original.refrenceNumber || row.original.id.substring(0, 8).toUpperCase();
       return (
-        <div className="flex items-center gap-1.5">
-          <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
-            #{orderRef}
-          </span>
-          <CopyButton value={orderRef} label="Order ID" />
-        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-semibold text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
+          <span>#{orderRef}</span>
+          <CopyButton
+            value={orderRef}
+            label="Order ID"
+            className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          />
+        </span>
       );
     },
   },
@@ -85,7 +87,7 @@ export const orderColumns: ColumnDef<OrderData>[] = [
     id: "customer",
     header: "Customer",
     cell: ({ row }) => (
-      <div className="min-w-[140px]">
+      <div className="min-w-35">
         <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
           {row.original.recieverName || row.original.userName || "N/A"}
         </p>
@@ -154,11 +156,19 @@ export const historyOrderColumns: ColumnDef<OrderData>[] = [
   {
     accessorKey: "refrenceNumber",
     header: "Order ID",
-    cell: ({ row }) => (
-      <span className="font-mono text-xs font-semibold">
-        #{row.original.refrenceNumber || row.original.id.substring(0, 8).toUpperCase()}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const orderRef = row.original.refrenceNumber || row.original.id.substring(0, 8).toUpperCase();
+      return (
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-semibold text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
+          <span>#{orderRef}</span>
+          <CopyButton
+            value={orderRef}
+            label="Order ID"
+            className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          />
+        </span>
+      );
+    },
   },
   {
     id: "customer",

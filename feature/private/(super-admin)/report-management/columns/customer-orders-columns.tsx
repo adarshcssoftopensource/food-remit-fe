@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Store, User, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/common/copy-button";
 import { OrderStatusBadge } from "../components/order-report/order-status-badge";
 import type { CustomerOrderRow } from "../hooks/use-get-customer-orders";
 
@@ -35,11 +36,21 @@ export function getCustomerOrdersColumns({
       id: "refrenceNumber",
       header: "Reference Number",
       enableSorting: true,
-      cell: ({ row }) => (
-        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-semibold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-          {row.original.refrenceNumber || "—"}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const ref = row.original.refrenceNumber;
+        return (
+          <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-semibold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+            <span>{ref || "—"}</span>
+            {ref ? (
+              <CopyButton
+                value={ref}
+                label="Reference Number"
+                className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              />
+            ) : null}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "senderName",

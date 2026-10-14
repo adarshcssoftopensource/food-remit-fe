@@ -1,5 +1,6 @@
 "use client";
 
+import { CopyButton } from "@/components/common/copy-button";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,7 @@ import { formatDateTime } from "@/lib/date";
 import { getInitials } from "@/lib/get-initials";
 import { getOrderActorRole } from "./utils/order-roles";
 import { StartOrderConfirmDialog } from "./components/dialogs/start-order-confirm-dialog";
+import Image from "next/image";
 
 export function OrderDetailPage({ id }: { id: string }) {
   const router = useRouter();
@@ -97,9 +99,14 @@ export function OrderDetailPage({ id }: { id: string }) {
     <div className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 space-y-2">
-          <p className="text-xs text-slate-500">
-            Orders #{order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}
-          </p>
+          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+            <span>Orders #{order.refrenceNumber || order.id.substring(0, 8).toUpperCase()}</span>
+            <CopyButton
+              value={order.refrenceNumber || order.id}
+              label="Order ID"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          </div>
           <PageHeader title="Order Details" description={pageDescription} />
           <div className="flex flex-wrap items-center gap-2">
             <OrderStatusBadge
@@ -174,9 +181,11 @@ export function OrderDetailPage({ id }: { id: string }) {
             {handlerName ? (
               <div className="mt-3 flex items-center gap-3">
                 {order.startedByImage || order.assignedEmployeeImage ? (
-                  <img
+                  <Image
                     src={order.startedByImage || order.assignedEmployeeImage || ""}
                     alt=""
+                    height={40}
+                    width={40}
                     className="size-10 rounded-full object-cover"
                   />
                 ) : (
