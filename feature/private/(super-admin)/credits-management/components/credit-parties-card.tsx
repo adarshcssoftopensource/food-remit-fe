@@ -1,7 +1,9 @@
 "use client";
 
 import { Building2, MapPin, Phone, Mail, User } from "lucide-react";
+import { CopyButton } from "@/components/common/copy-button";
 import { Card } from "@/components/ui/card";
+import { formatAddress } from "@/lib/utils";
 import type { CreditPartiesCardProps, CreditsStore } from "../types/credits.types";
 import { CreditPartyAvatar, CreditPartyCardHeader } from "./credit-party-card-parts";
 
@@ -13,10 +15,18 @@ const isUuid = (str?: string | null) =>
 function getStoreDisplayAddress(store: CreditsStore) {
   const validCity = !isUuid(store.city) ? store.city : "";
   const validCountry = !isUuid(store.country) ? store.country : "";
-  const cityCountry = [validCity, validCountry].filter(Boolean).join(", ");
-  const cleanAddress = store.address && !isUuid(store.address) ? store.address : "";
-  const cleanFullAddress = store.fullAddress && !isUuid(store.fullAddress) ? store.fullAddress : "";
-  return cleanAddress || cleanFullAddress || cityCountry || "Location N/A";
+  const rawParts = [
+    store.streetAddress || (!isUuid(store.address) ? store.address : ""),
+    store.address2,
+    validCity,
+    store.state,
+    store.zipCode,
+    validCountry,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  return formatAddress(rawParts) || store.fullAddress || "Location N/A";
 }
 
 export function CreditPartiesCard({ customer, store, onImageClick }: CreditPartiesCardProps) {
@@ -57,24 +67,39 @@ export function CreditPartiesCard({ customer, store, onImageClick }: CreditParti
             </h3>
 
             {customer.email && (
-              <p className="flex items-center gap-1.5 truncate text-xs text-slate-500">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500">
                 <Mail className="size-3 shrink-0 text-slate-400" />
                 <span className="truncate">{customer.email}</span>
-              </p>
+                <CopyButton
+                  value={customer.email}
+                  label="Customer Email"
+                  className="h-3.5 w-3.5 shrink-0 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                />
+              </div>
             )}
 
             {customer.phoneNumber && (
-              <p className="flex items-center gap-1.5 text-xs text-slate-500">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500">
                 <Phone className="size-3 shrink-0 text-slate-400" />
                 <span>{customer.phoneNumber}</span>
-              </p>
+                <CopyButton
+                  value={customer.phoneNumber}
+                  label="Customer Phone"
+                  className="h-3.5 w-3.5 shrink-0 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                />
+              </div>
             )}
 
             {customer.address && (
-              <p className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-400">
+              <div className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-400">
                 <MapPin className="size-3 shrink-0 text-slate-400" />
                 <span className="truncate">{customer.address}</span>
-              </p>
+                <CopyButton
+                  value={customer.address}
+                  label="Customer Address"
+                  className="h-3.5 w-3.5 shrink-0 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                />
+              </div>
             )}
           </div>
         </div>
@@ -109,12 +134,19 @@ export function CreditPartiesCard({ customer, store, onImageClick }: CreditParti
               {store.name}
             </h3>
 
-            <p className="flex items-start gap-1.5 text-xs text-slate-500">
+            <div className="flex items-start gap-1.5 text-xs text-slate-500">
               <MapPin className="mt-0.5 size-3.5 shrink-0 text-slate-400" />
               <span className="line-clamp-2 leading-relaxed" title={storeDisplayAddress}>
                 {storeDisplayAddress}
               </span>
-            </p>
+              {storeDisplayAddress && storeDisplayAddress !== "Location N/A" && (
+                <CopyButton
+                  value={storeDisplayAddress}
+                  label="Store Address"
+                  className="h-3.5 w-3.5 shrink-0 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                />
+              )}
+            </div>
 
             <div className="flex items-center gap-4 pt-1 text-[11px] text-slate-500">
               <span className="rounded-md bg-slate-100 px-2 py-0.5 font-medium dark:bg-slate-800">

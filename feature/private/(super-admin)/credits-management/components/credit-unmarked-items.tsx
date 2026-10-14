@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Barcode, PackageX, ZoomIn } from "lucide-react";
+import { CopyButton } from "@/components/common/copy-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -113,7 +114,6 @@ export function CreditUnmarkedItems({
                         )}
                       </button>
 
-                      {/* Product Name & Barcode */}
                       <div className="min-w-0">
                         <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
                           {item.itemName}
@@ -122,11 +122,21 @@ export function CreditUnmarkedItems({
                           {item.barcode ? (
                             <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[10px] font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
                               <Barcode className="size-3" />
-                              {item.barcode}
+                              <span>{item.barcode}</span>
+                              <CopyButton
+                                value={item.barcode}
+                                label="Barcode"
+                                className="h-3 w-3 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                              />
                             </span>
                           ) : (
-                            <span className="text-[10px] text-slate-400">
-                              ID: {item.itemId.slice(0, 8)}
+                            <span className="inline-flex items-center gap-1 text-[10px] text-slate-400">
+                              <span>ID: {item.itemId.slice(0, 8)}</span>
+                              <CopyButton
+                                value={item.itemId}
+                                label="Item ID"
+                                className="h-3 w-3 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                              />
                             </span>
                           )}
                           <span

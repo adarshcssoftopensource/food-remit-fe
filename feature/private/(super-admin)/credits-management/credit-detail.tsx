@@ -6,14 +6,13 @@ import {
   AlertCircle,
   ArrowLeft,
   Calendar,
-  Check,
   CheckCircle2,
-  Copy,
   CreditCard,
   Loader2,
   Receipt,
   ShieldAlert,
 } from "lucide-react";
+import { CopyButton } from "@/components/common/copy-button";
 import { ImageLightbox } from "@/components/common/image-lightbox";
 import { useProfile } from "@/providers/profile-provider";
 import { Badge } from "@/components/ui/badge";
@@ -42,8 +41,6 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
 
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [showConfirmPay, setShowConfirmPay] = useState(false);
-  const [copiedRef, setCopiedRef] = useState(false);
-  const [copiedOrderId, setCopiedOrderId] = useState(false);
 
   const handlePayRefund = async () => {
     if (!id) return;
@@ -52,22 +49,6 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
       setShowConfirmPay(false);
     } catch {
       // Handled by toast
-    }
-  };
-
-  const handleCopyRef = () => {
-    if (detail?.referenceNumber) {
-      navigator.clipboard.writeText(detail.referenceNumber);
-      setCopiedRef(true);
-      setTimeout(() => setCopiedRef(false), 2000);
-    }
-  };
-
-  const handleCopyOrderId = () => {
-    if (detail?.orderId) {
-      navigator.clipboard.writeText(detail.orderId);
-      setCopiedOrderId(true);
-      setTimeout(() => setCopiedOrderId(false), 2000);
     }
   };
 
@@ -154,19 +135,14 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
                   </h1>
 
                   {/* Reference Pill with interactive copy */}
-                  <button
-                    type="button"
-                    onClick={handleCopyRef}
-                    className="group inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100 active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-                    title="Click to copy Reference Number"
-                  >
+                  <span className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 shadow-2xs dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
                     <span>#{detail.referenceNumber}</span>
-                    {copiedRef ? (
-                      <Check className="size-3.5 text-emerald-600" />
-                    ) : (
-                      <Copy className="size-3.5 text-slate-400 transition-colors group-hover:text-slate-600 dark:group-hover:text-slate-300" />
-                    )}
-                  </button>
+                    <CopyButton
+                      value={detail.referenceNumber}
+                      label="Reference Number"
+                      className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                    />
+                  </span>
 
                   {/* Status Badge */}
                   {isPending ? (
@@ -198,19 +174,14 @@ export function CreditDetailPage({ id }: CreditDetailPageProps) {
               </span>
 
               {/* Order ID Pill with Copy */}
-              <button
-                type="button"
-                onClick={handleCopyOrderId}
-                className="group inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200/80 bg-white px-2 py-1 font-mono text-[11px] text-slate-500 shadow-2xs transition hover:border-slate-300 hover:text-slate-800 active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:hover:text-slate-200"
-                title="Click to copy full Order ID"
-              >
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2 py-1 font-mono text-[11px] text-slate-500 shadow-2xs dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
                 <span>ID: {detail.orderId.slice(0, 8)}...</span>
-                {copiedOrderId ? (
-                  <Check className="size-3 text-emerald-600" />
-                ) : (
-                  <Copy className="size-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300" />
-                )}
-              </button>
+                <CopyButton
+                  value={detail.orderId}
+                  label="Order ID"
+                  className="h-3 w-3 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                />
+              </span>
             </div>
           </div>
 

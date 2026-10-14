@@ -25,6 +25,10 @@ export interface CreditsStore {
   name: string;
   country: string;
   city: string;
+  state?: string;
+  zipCode?: string;
+  streetAddress?: string;
+  address2?: string;
   address: string;
   fullAddress?: string;
   image?: string | null;
