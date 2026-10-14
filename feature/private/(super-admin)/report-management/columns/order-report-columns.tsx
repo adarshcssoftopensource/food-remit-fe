@@ -23,6 +23,8 @@ export interface OrderReportRow {
   storeAddress?: string | null;
   orderStatus: number;
   statusLabel: string;
+  finalStatus?: number | null;
+  closedAt?: string | null;
   orderType: number;
   totalAmount: string;
   totalAmountVal?: number;

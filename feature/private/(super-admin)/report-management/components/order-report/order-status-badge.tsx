@@ -73,7 +73,13 @@ function getOrderStatusAppearance(status: number, orderType?: number, customLabe
     tone("emerald");
   } else if (status === 11) {
     label = customLabel || "Closed";
-    tone(label === "Abandoned" ? "red" : "slate");
+    tone(
+      label === "Abandoned"
+        ? "red"
+        : label === "Picked Up" || label.includes("Picked Up")
+          ? "emerald"
+          : "slate",
+    );
   }
 
   return { label, colorClass, dotClass };
