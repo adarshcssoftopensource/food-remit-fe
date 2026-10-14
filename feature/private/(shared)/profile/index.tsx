@@ -58,24 +58,25 @@ export function ProfilePage() {
         >
           <TabsTrigger
             value="general"
-            className="h-10 rounded-xl px-3 text-xs font-semibold sm:px-4 sm:text-sm"
+            className="h-10 min-w-0 truncate rounded-xl px-2 text-[11px] font-semibold sm:px-4 sm:text-sm"
           >
             General Details
           </TabsTrigger>
           {isStoreManager && (
             <TabsTrigger
               value="store"
-              className="h-10 rounded-xl px-3 text-xs font-semibold sm:px-4 sm:text-sm"
+              className="h-10 min-w-0 rounded-xl px-2 text-[11px] font-semibold sm:px-4 sm:text-sm"
             >
-              Store Information
+              <span className="truncate">Store </span>
+              <span className="hidden sm:ml-1 sm:inline">Information</span>
               {needsBankVerification && (
-                <span className="ml-1.5 inline-flex size-2 rounded-full bg-amber-500" />
+                <span className="ml-1.5 inline-flex size-2 shrink-0 rounded-full bg-amber-500" />
               )}
             </TabsTrigger>
           )}
           <TabsTrigger
             value="security"
-            className="h-10 rounded-xl px-3 text-xs font-semibold sm:px-4 sm:text-sm"
+            className="h-10 min-w-0 truncate rounded-xl px-2 text-[11px] font-semibold sm:px-4 sm:text-sm"
           >
             Security
           </TabsTrigger>

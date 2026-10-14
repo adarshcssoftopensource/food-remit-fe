@@ -7,6 +7,7 @@ import { type Control, Controller, type FieldErrors, type UseFormSetValue } from
 import { StoreSelect } from "@/components/common/store-select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
+import type { StoreData } from "@/feature/private/(super-admin)/store-management/types/store-management";
 import type { CouponFormValues } from "../../schema/coupon.schema";
 
 type ScopeCardProps = {
@@ -17,6 +18,7 @@ type ScopeCardProps = {
   watchedScope: CouponFormValues["scope"];
   setValue: UseFormSetValue<CouponFormValues>;
   initialStoreName?: string;
+  onStoreSelect?: (store?: StoreData | null) => void;
 };
 
 export function CouponPageScopeCard({
@@ -27,6 +29,7 @@ export function CouponPageScopeCard({
   control,
   errors,
   initialStoreName,
+  onStoreSelect,
 }: ScopeCardProps) {
   return (
     <Card className="rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
@@ -83,7 +86,10 @@ export function CouponPageScopeCard({
                   render={({ field }) => (
                     <StoreSelect
                       value={field.value ?? ""}
-                      onValueChange={(val) => field.onChange(val)}
+                      onValueChange={(val, store) => {
+                        field.onChange(val);
+                        onStoreSelect?.(store);
+                      }}
                       placeholder="Search and choose store from database (100K+ stores)..."
                       initialStoreName={initialStoreName}
                     />

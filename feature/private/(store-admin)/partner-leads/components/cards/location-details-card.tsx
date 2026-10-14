@@ -55,15 +55,15 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
   }, [lead.locations]);
 
   return (
-    <Card className="@container overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+    <Card className="@container col-span-1 overflow-hidden rounded-2xl border-slate-200 shadow-sm md:col-span-2">
       <CardHeader className="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
         <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900">
           <MapPin className="h-5 w-5 text-emerald-600" />
           Location Details
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-6">
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-5 @md:grid-cols-3">
+      <CardContent className="p-4 sm:p-6">
+        <dl className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2 @md:grid-cols-3">
           <div>
             <dt className="mb-1 text-xs font-bold tracking-wider text-slate-500 uppercase">
               Country
@@ -153,7 +153,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                 return (
                   <div
                     key={loc.address}
-                    className="flex flex-col gap-4 rounded-2xl border border-slate-200/90 bg-white p-4.5 shadow-2xs transition hover:border-slate-300 sm:p-5"
+                    className="flex flex-col gap-4 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs transition hover:border-slate-300 sm:p-5"
                   >
                     {/* Location Header */}
                     <div className="flex flex-col gap-2.5 @md:flex-row @md:items-start @md:justify-between">
@@ -182,14 +182,14 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                     {(scheduleItems || loc.daysOpen?.length > 0 || loc.hoursOfOperation) && (
                       <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-3.5 @md:p-4">
                         {/* Subheader */}
-                        <div className="mb-3 flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 pb-2.5">
                           <div className="flex items-center gap-1.5">
                             <Calendar className="h-3.5 w-3.5 text-emerald-600" />
                             <span className="text-xs font-bold tracking-wider text-slate-700 uppercase">
                               Weekly Operating Hours
                             </span>
                           </div>
-                          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200/80 bg-emerald-100/70 px-2 py-0.5 text-[11px] font-bold text-emerald-800">
+                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-200/80 bg-emerald-100/70 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
                             <CheckCircle2 className="h-3 w-3 text-emerald-600" />
                             {openDaysCount} of 7 Days Active
                           </span>
@@ -203,7 +203,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                               <span
                                 key={day}
                                 className={cn(
-                                  "flex h-7 min-w-10 items-center justify-center rounded-lg px-2 text-xs font-bold tracking-wider uppercase transition-all",
+                                  "flex h-7 min-w-8 items-center justify-center rounded-lg px-1.5 text-[11px] font-bold tracking-wider uppercase transition-all sm:min-w-10 sm:px-2 sm:text-xs",
                                   isOpen
                                     ? "border border-emerald-300 bg-emerald-600 text-white shadow-2xs"
                                     : "line-through/none border border-slate-200/80 bg-white text-slate-400 opacity-60",
@@ -236,7 +236,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
                                 <div
                                   key={ds.day}
                                   className={cn(
-                                    "flex items-center justify-between rounded-lg border px-3 py-2 text-xs transition-all",
+                                    "flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-xs transition-all",
                                     isOpen
                                       ? "border-emerald-200/60 bg-white text-slate-900 shadow-2xs"
                                       : "border-slate-200/50 bg-slate-100/60 text-slate-400",
@@ -261,7 +261,7 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
 
                                   <div>
                                     {isOpen ? (
-                                      <span className="inline-flex min-w-0 items-center gap-1 rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 font-semibold whitespace-nowrap text-slate-800">
+                                      <span className="inline-flex max-w-full shrink-0 items-center gap-1 rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 font-semibold text-slate-800">
                                         <Clock className="h-3 w-3 shrink-0 text-emerald-600" />
                                         <span className="truncate">{formattedTime}</span>
                                       </span>

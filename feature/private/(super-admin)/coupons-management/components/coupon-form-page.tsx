@@ -3,11 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { useEffect, useEffectEvent } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import { useProfile } from "@/providers/profile-provider";
 import { ROUTES } from "@/config/routes";
+import type { StoreData } from "@/feature/private/(super-admin)/store-management/types/store-management";
+import { useCouponCurrency } from "../hooks/use-coupon-currency";
 import { useCouponDurationText } from "../hooks/use-coupon-duration-text";
 import { useCreateCoupon } from "../hooks/use-create-coupon";
 import { useGenerateCouponCode } from "../hooks/use-generate-coupon-code";
@@ -33,6 +35,7 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
   const router = useRouter();
   const isEdit = Boolean(couponId);
   const { profile, isSuperAdmin } = useProfile();
+  const [selectedStoreData, setSelectedStoreData] = useState<StoreData | null>(null);
 
   const { data: existingCoupon, isLoading: isDetailsLoading } = useGetCouponDetails(
     couponId,
@@ -83,18 +86,24 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
       reset({
         couponName: existingCoupon.couponName || "",
         couponCode: existingCoupon.couponCode || "",
-        discount: Number(existingCoupon.discount) || 10,
+        discount: Number(existingCoupon.discount) || 0,
         description: existingCoupon.description || "",
         minOrderValue: Number(existingCoupon.minOrderValue || 0),
-        maxUsers: existingCoupon.maxUsers ? Number(existingCoupon.maxUsers) : 100,
-        scope: existingCoupon.storeId ? "store" : "global",
+        maxUsers: existingCoupon.maxUsers ? Number(existingCoupon.maxUsers) : 0,
+        scope: existingCoupon.isGlobal ? "global" : "store",
         storeId: existingCoupon.storeId || undefined,
         startDate: format(sDate, "yyyy-MM-dd"),
         startTime: format(sDate, "HH:mm"),
         endDate: format(eDate, "yyyy-MM-dd"),
         endTime: format(eDate, "HH:mm"),
       });
-    } else if (!isEdit) {
+    } else {
+      // Create mode initial unique code
+      const prefixes = ["SAVE", "OFF", "PROMO", "DEAL", "FOOD", "MEGA", "SPECIAL", "EXTRA"];
+      const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      setValue("couponCode", `${prefix}${randomNum}`);
+
       if (isStoreManager && managerAssignedStore?.id) {
         setValue("scope", "store");
         setValue("storeId", managerAssignedStore.id);
@@ -105,7 +114,6 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
     }
   });
 
-  // Pre-fill form when editing
   useEffect(() => {
     syncFormWithCoupon();
   }, [existingCoupon, isEdit, isStoreManager, isSuperAdmin, managerAssignedStore, reset, setValue]);
@@ -113,8 +121,19 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
   // Live form watchers for scope & duration calculations
   const watchedName = useWatch({ control, name: "couponName" });
   const watchedScope = useWatch({ control, name: "scope" });
+  const watchedStoreId = useWatch({ control, name: "storeId" });
   const watchedStartDate = useWatch({ control, name: "startDate" });
   const watchedEndDate = useWatch({ control, name: "endDate" });
+
+  // Dynamic currency resolution based on store's country
+  const { symbol: currencySymbol, code: currencyCode } = useCouponCurrency({
+    scope: watchedScope,
+    storeId: watchedStoreId,
+    isStoreManager,
+    managerAssignedStore,
+    selectedStore: selectedStoreData,
+    initialStore: existingCoupon?.store,
+  });
 
   // Duration in days calculation
   const durationText = useCouponDurationText(watchedStartDate, watchedEndDate);
@@ -205,6 +224,7 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
             control={control}
             errors={errors}
             initialStoreName={existingCoupon?.storeName || undefined}
+            onStoreSelect={(store) => setSelectedStoreData(store ?? null)}
           />
 
           <CouponPageDetailsCard
@@ -215,7 +235,12 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
             onGenerateCode={handleGenerateCode}
           />
 
-          <CouponPageLimitsCard control={control} errors={errors} />
+          <CouponPageLimitsCard
+            control={control}
+            errors={errors}
+            currencySymbol={currencySymbol}
+            currencyCode={currencyCode}
+          />
 
           <CouponPageScheduleCard control={control} errors={errors} durationText={durationText} />
 

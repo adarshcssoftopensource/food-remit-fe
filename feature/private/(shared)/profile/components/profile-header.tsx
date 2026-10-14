@@ -155,65 +155,69 @@ export function ProfileHeader() {
         <div className="h-24 w-full bg-linear-to-r from-emerald-600/30 via-teal-600/20 to-emerald-500/10 sm:h-32" />
       )}
 
-      <div className="flex flex-col items-start gap-4 px-4 pb-4 sm:flex-row sm:items-end sm:gap-5 sm:px-6 sm:pb-6">
-        <div className="group relative -mt-10 h-20 w-20 shrink-0 overflow-hidden rounded-2xl shadow-md ring-4 ring-white sm:-mt-12 sm:h-24 sm:w-24 dark:ring-slate-900">
-          <Avatar className="h-full w-full rounded-2xl shadow-sm">
-            <AvatarImage
-              src={profile?.image || ""}
-              alt={displayName}
-              className="rounded-2xl object-cover"
-            />
-            <AvatarFallback className="rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-xl font-black text-white sm:text-2xl">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-
-          {canEditImages && (
-            <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-              {updateProfileMutation.isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin text-white sm:h-6 sm:w-6" />
-              ) : (
-                <Camera className="h-5 w-5 text-white sm:h-6 sm:w-6" />
-              )}
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/png,image/jpeg,image/webp"
-                className="hidden"
-                onChange={handleImageChange}
-                disabled={updateProfileMutation.isPending}
+      <div className="flex flex-col gap-4 px-4 pb-4 sm:px-6 sm:pb-6 md:flex-row md:items-end md:justify-between md:gap-5">
+        <div className="flex min-w-0 flex-1 items-start gap-4 sm:gap-5">
+          <div className="group relative -mt-10 h-20 w-20 shrink-0 overflow-hidden rounded-2xl shadow-md ring-4 ring-white sm:-mt-12 sm:h-24 sm:w-24 dark:ring-slate-900">
+            <Avatar className="h-full w-full rounded-2xl shadow-sm">
+              <AvatarImage
+                src={profile?.image || ""}
+                alt={displayName}
+                className="rounded-2xl object-cover"
               />
-            </label>
-          )}
-        </div>
+              <AvatarFallback className="rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-xl font-black text-white sm:text-2xl">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
 
-        <div className="flex-1 space-y-1 sm:mb-2">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-slate-800 sm:text-2xl">{displayName}</h2>
-            <div className="flex items-center justify-center rounded-full bg-emerald-100 p-1 text-emerald-600">
-              <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-muted-foreground text-xs font-medium sm:text-sm">{displayRole}</p>
-            {displayStores && (
-              <div className="flex w-fit items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 sm:px-2.5 sm:text-sm">
-                <Store className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                <span className="truncate">{displayStores}</span>
-                {currentStore?.storeId && (
-                  <span className="font-mono text-xs font-semibold text-emerald-800">
-                    • {currentStore.storeId}
-                  </span>
+            {canEditImages && (
+              <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                {updateProfileMutation.isPending ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-white sm:h-6 sm:w-6" />
+                ) : (
+                  <Camera className="h-5 w-5 text-white sm:h-6 sm:w-6" />
                 )}
-              </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={handleImageChange}
+                  disabled={updateProfileMutation.isPending}
+                />
+              </label>
             )}
           </div>
+
+          <div className="min-w-0 flex-1 space-y-1 sm:mb-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="truncate text-lg font-bold text-slate-800 sm:text-2xl">
+                {displayName}
+              </h2>
+              <div className="flex shrink-0 items-center justify-center rounded-full bg-emerald-100 p-1 text-emerald-600">
+                <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <p className="text-muted-foreground text-xs font-medium sm:text-sm">{displayRole}</p>
+              {displayStores && (
+                <div className="flex max-w-full flex-wrap items-center gap-1.5 rounded-xl border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 sm:w-fit sm:rounded-full sm:px-3 sm:text-sm">
+                  <Store className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
+                  <span className="max-w-[180px] truncate sm:max-w-[280px]">{displayStores}</span>
+                  {currentStore?.storeId && (
+                    <span className="font-mono text-xs font-semibold text-emerald-800">
+                      • {currentStore.storeId}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-2 sm:mb-2 sm:items-end">
-          <div className="text-muted-foreground flex items-center gap-2 text-xs sm:text-sm">
-            <Mail className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
-            <span className="truncate">{displayEmail}</span>
+        <div className="flex shrink-0 flex-col gap-2 md:mb-1 md:items-end">
+          <div className="flex max-w-full items-center gap-2 rounded-xl bg-slate-50/80 px-3 py-1.5 text-xs text-slate-600 sm:text-sm md:bg-transparent md:p-0 dark:bg-slate-800/60 dark:text-slate-300">
+            <Mail className="h-3.5 w-3.5 shrink-0 text-emerald-600 sm:h-4 sm:w-4" />
+            <span className="break-all sm:truncate">{displayEmail}</span>
           </div>
         </div>
       </div>

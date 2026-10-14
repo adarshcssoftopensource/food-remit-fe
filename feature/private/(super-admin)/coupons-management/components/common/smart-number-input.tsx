@@ -49,7 +49,7 @@ export function SmartNumberInput({
     }
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
+  const handleClick = () => {
     if (displayValue === "0" || value === 0 || value === undefined || value === null) {
       setEditingText("");
       onChange(undefined);

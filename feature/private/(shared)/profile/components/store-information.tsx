@@ -253,7 +253,7 @@ export function StoreInformation() {
             <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
               <Building2 className="size-5" />
             </div>
-            <div className="flex flex-1 items-center justify-between">
+            <div className="flex flex-1 flex-wrap items-center justify-between gap-2">
               <div>
                 <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
                   Store Details
@@ -263,7 +263,7 @@ export function StoreInformation() {
                 </CardDescription>
               </div>
               {storeData?.storeId && (
-                <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white/80 px-2.5 py-1 font-mono text-xs font-semibold text-slate-700 shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                <div className="flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white/80 px-2.5 py-1 font-mono text-xs font-semibold text-slate-700 shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                   <span className="text-slate-400">Store ID:</span>
                   <span className="text-primary font-bold">{storeData.storeId}</span>
                 </div>

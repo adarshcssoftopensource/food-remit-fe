@@ -9,7 +9,12 @@ const preprocessNumber = (val: unknown, fallback?: number) => {
 export const couponSchema = z
   .object({
     couponName: z.string().min(3, "Coupon name is required (min 3 chars)"),
-    couponCode: z.string().optional(),
+    couponCode: z
+      .string({ message: "Coupon code is required" })
+      .min(3, "Coupon code is required (min 3 characters)")
+      .max(20, "Coupon code cannot exceed 20 characters")
+      .regex(/^[A-Z0-9_-]+$/i, "Coupon code can only contain letters, numbers, and hyphens")
+      .transform((val) => val.toUpperCase().trim()),
     discount: z.preprocess(
       (val) => preprocessNumber(val),
       z

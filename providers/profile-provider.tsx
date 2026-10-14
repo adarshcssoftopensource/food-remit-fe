@@ -62,7 +62,6 @@ export interface AdminProfile {
   isReadOnly?: boolean;
   mustChangePassword?: boolean;
   changePasswordStatus?: boolean | null;
-  /** View-only sessions: the manager still uses the system-generated password. */
   passwordSetupPending?: boolean;
 }
 
@@ -71,7 +70,6 @@ interface ProfileContextType {
   isLoading: boolean;
   isError: boolean;
   isSuperAdmin: boolean;
-  /** Super / Sub / Co Admin — markup + processing fee visibility */
   canViewPlatformFees: boolean;
   hasPermission: (permissionKey: keyof ProfilePermissions | string) => boolean;
   isReadOnly: boolean;

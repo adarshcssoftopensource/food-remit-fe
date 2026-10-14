@@ -1,6 +1,6 @@
 "use client";
 
-import { Coins, Percent, Users } from "lucide-react";
+import { Percent, Users } from "lucide-react";
 import { type Control, Controller, type FieldErrors } from "react-hook-form";
 
 import { FieldLabel } from "@/components/ui/field";
@@ -10,9 +10,16 @@ import { SmartNumberInput } from "../common/smart-number-input";
 type LimitsSectionProps = {
   control: Control<CouponFormValues>;
   errors: FieldErrors<CouponFormValues>;
+  currencySymbol?: string;
+  currencyCode?: string;
 };
 
-export function CouponDialogLimitsSection({ control, errors }: LimitsSectionProps) {
+export function CouponDialogLimitsSection({
+  control,
+  errors,
+  currencySymbol = "$",
+  currencyCode,
+}: LimitsSectionProps) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       {/* Discount */}
@@ -45,15 +52,22 @@ export function CouponDialogLimitsSection({ control, errors }: LimitsSectionProp
         )}
       />
 
-      {/* Min Order */}
+      {/* Min Order Dynamic Symbol */}
       <Controller
         name="minOrderValue"
         control={control}
         render={({ field }) => (
           <div className="space-y-1.5">
-            <FieldLabel className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Min Order ($) <span className="text-rose-500">*</span>
-            </FieldLabel>
+            <div className="flex items-center justify-between">
+              <FieldLabel className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                Min Order ({currencySymbol}) <span className="text-rose-500">*</span>
+              </FieldLabel>
+              {currencyCode && (
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  {currencyCode}
+                </span>
+              )}
+            </div>
             <div className="relative flex items-center">
               <SmartNumberInput
                 id="dialog-minOrderValue"
@@ -67,7 +81,9 @@ export function CouponDialogLimitsSection({ control, errors }: LimitsSectionProp
                 className="pl-10"
               />
               <div className="pointer-events-none absolute top-1/2 left-3.5 z-10 flex -translate-y-1/2 items-center">
-                <Coins className="size-4 text-amber-600 dark:text-amber-400" />
+                <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                  {currencySymbol}
+                </span>
               </div>
             </div>
             {errors.minOrderValue && (
