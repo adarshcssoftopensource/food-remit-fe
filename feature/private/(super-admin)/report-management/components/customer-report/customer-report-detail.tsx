@@ -12,7 +12,6 @@ import {
   Building2,
   Calendar,
   CheckCircle2,
-  CreditCard,
   Globe,
   Hash,
   Mail,

@@ -54,7 +54,7 @@ export function getCurrencySymbol(currencyCode: string) {
       currency: currencyCode,
     }).formatToParts(0);
     symbol = parts.find((p) => p.type === "currency")?.value || currencyCode;
-  } catch (e) {}
+  } catch {}
   return symbol;
 }
 

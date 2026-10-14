@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Info, Percent, TrendingUp } from "lucide-react";
+import { Info, TrendingUp } from "lucide-react";
 import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
@@ -17,18 +17,14 @@ import { useGetMarkup } from "../hooks/use-get-markup";
 import { useUpdateMarkup } from "../hooks/use-update-markup";
 import { MarkupFormValues, markupSchema } from "../schema/markup.schema";
 
+import { isStoreManagerRole } from "@/config/roles";
 import { useProfile } from "@/providers/profile-provider";
 import { Switch } from "@/components/ui/switch";
 
 type Profile = ReturnType<typeof useProfile>["profile"];
 
 function isMarkupReadOnly(readOnlyProp: boolean, profile: Profile, isSuperAdmin: boolean) {
-  return (
-    readOnlyProp ||
-    profile?.roleCode === "STORE_MANAGER" ||
-    profile?.role === "store_manager" ||
-    !isSuperAdmin
-  );
+  return readOnlyProp || isStoreManagerRole(profile?.roleCode, profile?.role) || !isSuperAdmin;
 }
 
 function getCurrentMarkupSettings(markupData: ReturnType<typeof useGetMarkup>["data"]) {

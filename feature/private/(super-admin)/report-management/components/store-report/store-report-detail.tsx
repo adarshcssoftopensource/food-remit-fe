@@ -9,7 +9,6 @@ import {
   Hash,
   Mail,
   Map,
-  MapPin,
   Phone,
   Receipt,
   RotateCcw,

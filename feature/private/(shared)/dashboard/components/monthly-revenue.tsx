@@ -12,7 +12,7 @@ interface MonthlyRevenueProps {
 
 export function MonthlyRevenue({
   revenueBreakdown = DEFAULT_MONTHLY_REVENUE,
-  isLoading = false,
+  isLoading: _isLoading = false,
 }: MonthlyRevenueProps) {
   const avgPercentage = Math.round(
     revenueBreakdown.reduce((acc, curr) => acc + curr.percentage, 0) /

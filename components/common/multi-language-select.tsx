@@ -69,7 +69,7 @@ export function MultiLanguageSelect({
               codes = filteredCodes;
             }
           }
-        } catch (e) {
+        } catch {
           // If country not found or API fails, fallback to all codes
         }
       }

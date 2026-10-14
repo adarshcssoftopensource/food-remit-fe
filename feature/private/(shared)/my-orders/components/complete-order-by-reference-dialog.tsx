@@ -18,7 +18,6 @@ import {
 import { useMarkOrderPickedUp } from "@/feature/private/(store-admin)/order-management/hooks/use-order-lifecycle";
 import { CheckCircle2, Loader2, PackageCheck, ShieldCheck } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 
 interface CompleteOrderByReferenceDialogProps {
   orderId: string;

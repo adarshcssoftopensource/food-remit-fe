@@ -11,8 +11,8 @@ import { OrderAbandonSettings } from "./components/order-abandon-settings";
 import { ProcessingFee } from "./components/processing-fee";
 import { FoodRemitCommission } from "./components/food-remit-commission";
 
+import { isStoreManagerRole } from "@/config/roles";
 import { useProfile } from "@/providers/profile-provider";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { Clock3, Globe, Mail, MapPin, Percent, Receipt, ShieldCheck } from "lucide-react";
@@ -20,8 +20,7 @@ import { Clock3, Globe, Mail, MapPin, Percent, Receipt, ShieldCheck } from "luci
 export function SettingsPage() {
   const { hasPermission, profile, canViewPlatformFees } = useProfile();
   const searchParams = useSearchParams();
-  const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
-  const isMobile = useIsMobile();
+  const isStoreManager = isStoreManagerRole(profile?.roleCode, profile?.role);
 
   const roleCode = String(profile?.roleCode || "").toUpperCase();
   const role = String(profile?.role || "").toLowerCase();

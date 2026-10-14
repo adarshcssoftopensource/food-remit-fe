@@ -1,4 +1,4 @@
-import { City, Country, State, type ICity, type ICountry, type IState } from "country-state-city";
+import { City, Country, State, type ICity, type ICountry } from "country-state-city";
 
 export function countryFlag(isoCode?: string | null): string | null {
   if (!isoCode || isoCode.length !== 2) return null;

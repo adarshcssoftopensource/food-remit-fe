@@ -1,4 +1,5 @@
 import { ROUTES } from "./routes";
+import { isStoreManagerRole } from "./roles";
 
 export const ALWAYS_ALLOWED_ROUTES = [
   ROUTES.ADMIN.PROFILE,
@@ -42,6 +43,9 @@ const PERMISSION_KEY_ALIASES: Record<string, string> = {
   basketManagement: "productBoxesManagement",
 };
 
+// Pre-sort route prefixes once at module level to eliminate runtime array allocations and sorting overhead.
+const SORTED_ROUTE_PREFIXES = Object.keys(ROUTE_PERMISSION_MAP).sort((a, b) => b.length - a.length);
+
 function isAlwaysAllowedRoute(pathname: string): boolean {
   return ALWAYS_ALLOWED_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
@@ -67,7 +71,7 @@ export function hasPathPermission(
 
   if (isAlwaysAllowedRoute(pathname)) return true;
 
-  const isStoreManager = roleCode === "STORE_MANAGER" || roleCode === "store_manager";
+  const isStoreManager = isStoreManagerRole(roleCode);
 
   if (
     isStoreManager &&
@@ -81,9 +85,9 @@ export function hasPathPermission(
   const hasAnyPermission = Object.values(permissions).some((val) => val === 1);
   if (!hasAnyPermission) return false;
 
-  const matchedKey = Object.keys(ROUTE_PERMISSION_MAP)
-    .sort((a, b) => b.length - a.length)
-    .find((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+  const matchedKey = SORTED_ROUTE_PREFIXES.find(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 
   // Deny by default — only SUPER_ADMIN (above) or an explicit mapped permission can pass.
   if (!matchedKey) return false;

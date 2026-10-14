@@ -54,7 +54,7 @@ interface DataTableProps<TData, TValue> {
     updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
   ) => void;
   hidePagination?: boolean;
-  getRowId?: (originalRow: TData, index: number, parent?: any) => string;
+  getRowId?: (originalRow: TData, index: number, parent?: Row<TData>) => string;
   enableRowSelection?: boolean | ((row: Row<TData>) => boolean);
   getRowClassName?: (row: Row<TData>) => string | undefined;
   emptyMessage?: string;
@@ -186,7 +186,7 @@ export function DataTable<TData, TValue>({
         ))}
       </TableRow>
     ));
-  }, [loading, rows, columns, table, rowSelection, getRowClassName, emptyMessage]);
+  }, [loading, rows, columns, table, getRowClassName, emptyMessage]);
 
   return (
     <div className="space-y-4">

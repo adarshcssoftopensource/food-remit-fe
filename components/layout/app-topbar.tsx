@@ -1,27 +1,27 @@
 "use client";
-import { ArrowLeftRight, ChevronDown, Globe2, MapPin, User, Store } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
-import { APP_ASSETS } from "@/config/assets";
 
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ArrowLeftRight, ChevronDown, Globe2, LogOut, MapPin, Store, User } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { NotificationBell } from "@/components/common/notification-bell";
-import { useProfile, type AdminProfile } from "@/providers/profile-provider";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { APP_ASSETS } from "@/config/assets";
 import { hasPathPermission } from "@/config/permissions";
+import { isEmployeeRole } from "@/config/roles";
 import { ROUTES } from "@/config/routes";
 import { useLogout } from "@/hooks/use-logout";
 import { getInitials } from "@/lib/get-initials";
 import { cn } from "@/lib/utils";
-import { LogOut } from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useProfile, type AdminProfile } from "@/providers/profile-provider";
 
-function isEmployeeProfile(profile: AdminProfile | null) {
-  return profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+function isEmployeeProfile(profile: AdminProfile | null): boolean {
+  return isEmployeeRole(profile?.roleCode, profile?.role);
 }
 
 function TopBarProfileSummary({
@@ -85,6 +85,44 @@ function TopBarProfileSummary({
         )}
       </div>
     </>
+  );
+}
+
+function TopBarStoreLocation({ profile }: { profile: AdminProfile | null }) {
+  const primaryStore = profile?.stores?.[0];
+  if (!primaryStore) return null;
+
+  return (
+    <div className="mr-2 hidden items-center lg:flex">
+      <div className="flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1.5 shadow-xs dark:border-slate-700/80 dark:bg-slate-900">
+        <Globe2 className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+        <span
+          className="max-w-20 truncate text-xs font-semibold text-slate-700 dark:text-slate-300"
+          title={primaryStore.countryName || primaryStore.country || "—"}
+        >
+          {primaryStore.countryName || primaryStore.country || "—"}
+        </span>
+        <span className="text-slate-300 dark:text-slate-600">·</span>
+        <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+        <span
+          className="max-w-20 truncate text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+          title={primaryStore.cityName || primaryStore.city || "—"}
+        >
+          {primaryStore.cityName || primaryStore.city || "—"}
+        </span>
+        {isEmployeeProfile(profile) && primaryStore.storeName && (
+          <>
+            <span className="text-slate-300 dark:text-slate-600">·</span>
+            <div
+              className="max-w-30 truncate rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+              title={primaryStore.storeName}
+            >
+              {primaryStore.storeName}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -221,43 +259,7 @@ export function AppTopBar() {
 
       <div className="flex-1" />
 
-      {/* Store Manager: show store location context in topbar */}
-      {(() => {
-        const primaryStore = profile?.stores?.[0];
-        if (!primaryStore) return null;
-        return (
-          <div className="mr-2 hidden items-center lg:flex">
-            <div className="flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1.5 shadow-xs dark:border-slate-700/80 dark:bg-slate-900">
-              <Globe2 className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-              <span
-                className="max-w-20 truncate text-xs font-semibold text-slate-700 dark:text-slate-300"
-                title={primaryStore.countryName || primaryStore.country || "—"}
-              >
-                {primaryStore.countryName || primaryStore.country || "—"}
-              </span>
-              <span className="text-slate-300 dark:text-slate-600">·</span>
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-              <span
-                className="max-w-20 truncate text-xs font-semibold text-emerald-700 dark:text-emerald-400"
-                title={primaryStore.cityName || primaryStore.city || "—"}
-              >
-                {primaryStore.cityName || primaryStore.city || "—"}
-              </span>
-              {isEmployeeProfile(profile) && primaryStore.storeName && (
-                <>
-                  <span className="text-slate-300 dark:text-slate-600">·</span>
-                  <div
-                    className="max-w-30 truncate rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
-                    title={primaryStore.storeName}
-                  >
-                    {primaryStore.storeName}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        );
-      })()}
+      <TopBarStoreLocation profile={profile} />
 
       <div className="flex items-center gap-2">
         <NotificationBell />

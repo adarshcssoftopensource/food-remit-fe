@@ -110,17 +110,11 @@ export function CouponFormPage({ couponId }: CouponFormPageProps) {
     syncFormWithCoupon();
   }, [existingCoupon, isEdit, isStoreManager, isSuperAdmin, managerAssignedStore, reset, setValue]);
 
-  // Live form watchers for preview card
+  // Live form watchers for scope & duration calculations
   const watchedName = useWatch({ control, name: "couponName" });
-  const watchedCode = useWatch({ control, name: "couponCode" });
-  const watchedDiscount = useWatch({ control, name: "discount" });
-  const watchedMinOrder = useWatch({ control, name: "minOrderValue" });
-  const watchedMaxUsers = useWatch({ control, name: "maxUsers" });
   const watchedScope = useWatch({ control, name: "scope" });
-  const watchedStoreId = useWatch({ control, name: "storeId" });
   const watchedStartDate = useWatch({ control, name: "startDate" });
   const watchedEndDate = useWatch({ control, name: "endDate" });
-  const watchedDescription = useWatch({ control, name: "description" });
 
   // Duration in days calculation
   const durationText = useCouponDurationText(watchedStartDate, watchedEndDate);

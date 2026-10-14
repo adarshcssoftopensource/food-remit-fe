@@ -11,7 +11,6 @@ import {
   Store,
   Users,
   Smartphone,
-  Search,
 } from "lucide-react";
 import * as React from "react";
 

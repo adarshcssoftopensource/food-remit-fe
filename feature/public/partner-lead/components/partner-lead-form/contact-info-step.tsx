@@ -143,7 +143,7 @@ export function ContactInfoStep({
               </FieldLabel>
               <PhoneInputComponent
                 value={field.value}
-                onChange={(value, data) => {
+                onChange={(value) => {
                   field.onChange(value);
                 }}
                 onBlur={field.onBlur}

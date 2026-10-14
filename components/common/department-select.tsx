@@ -19,6 +19,7 @@ interface DepartmentSelectProps {
   countryId?: string;
 }
 
+import { isStoreManagerRole } from "@/config/roles";
 import { useProfile } from "@/providers/profile-provider";
 
 function formatDepartmentLabel(raw?: string | null) {
@@ -54,10 +55,12 @@ export function DepartmentSelect({
   const [searchQuery, setSearchQuery] = useState("");
 
   const { profile } = useProfile();
-  const isStoreScoped = profile?.role === "store_manager" || profile?.roleCode === "STORE_MANAGER";
+  const isStoreScoped = isStoreManagerRole(profile?.roleCode, profile?.role);
 
   const { data, isLoading } = useGetDepartmentsDropdown(countryId);
-  const departments: DepartmentDropdownItem[] = Array.isArray(data?.data) ? data.data : [];
+  const departments = useMemo<DepartmentDropdownItem[]>(() => {
+    return Array.isArray(data?.data) ? data.data : [];
+  }, [data]);
 
   const sortedDepartments = useMemo(() => {
     return [...departments].sort((a, b) =>

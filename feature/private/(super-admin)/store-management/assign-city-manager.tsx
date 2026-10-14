@@ -98,17 +98,6 @@ export function AssignCityManagerToStore() {
     }
   }, [selectedManager]);
 
-  const managerAssignedCityIds = useMemo(() => {
-    if (!selectedManager?.assignCities) return [];
-    try {
-      const parsed = JSON.parse(selectedManager.assignCities);
-      if (Array.isArray(parsed)) return parsed.map((s: string) => s.trim().toLowerCase());
-      return [selectedManager.assignCities.trim().toLowerCase()];
-    } catch {
-      return selectedManager.assignCities.split(",").map((s) => s.trim().toLowerCase());
-    }
-  }, [selectedManager]);
-
   const managerAssignedStores = useMemo(() => {
     if (!rawStores?.data || !selectedCityManagerId) return [];
     return rawStores.data.filter(

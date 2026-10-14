@@ -79,7 +79,6 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
 
   const currencySymbol = pricing?.currencySymbol || "-";
   const countryLabel = pricing?.countryName || item.pricingCountry?.name || "your location";
-  const currency = pricing?.currency || "—";
 
   const lines: ReceiptLine[] = pricing
     ? [

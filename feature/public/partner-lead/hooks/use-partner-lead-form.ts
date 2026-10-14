@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useEffectEvent, useState, useRef, useMemo, useId } from "react";
+import { useEffect, useEffectEvent, useState, useRef, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Country } from "country-state-city";
 import { getWorldStatesByCountryIso } from "@/lib/world-locations";
@@ -23,8 +23,6 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
   const [currentStep, setCurrentStep] = useState(1);
   const [draftRestored, setDraftRestored] = useState(false);
 
-  const reactId = useId();
-
   const { mutateAsync, isPending } = useCreatePartnerLead();
 
   const {
@@ -37,7 +35,7 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
     clearErrors,
     reset,
     watch,
-    formState: { errors, isDirty, isSubmitSuccessful },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<PartnerLeadFormValues>({
     resolver: zodResolver(partnerLeadSchema),
     defaultValues: {
@@ -130,7 +128,7 @@ export function usePartnerLeadForm(onSuccess: (referenceNumber: string) => void)
             message: "This email is already registered. Please use a different one.",
           });
         }
-      } catch (err) {
+      } catch {
         // Ignore API checking errors gracefully
       } finally {
         isCheckingEmail.current = false;

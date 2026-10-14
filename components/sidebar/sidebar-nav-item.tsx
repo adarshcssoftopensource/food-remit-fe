@@ -12,7 +12,7 @@ import Link from "next/link";
 interface NavItem {
   title: string;
   url: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   items?: { title: string; url: string }[];
   isComingSoon?: boolean;
   isNewFeature?: boolean;

@@ -1,18 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { DataTable } from "@/components/common/data-table/data-table";
 import { DateRangeFilter } from "@/components/common/filters/date-range-filter";
 import { format } from "date-fns";
 import { ModuleFilters } from "@/components/common/filters/module-filters";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { MessageSquare } from "lucide-react";
 import { useDebounce } from "@/lib/debounce";
 import { SortingState } from "@tanstack/react-table";

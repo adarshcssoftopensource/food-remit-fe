@@ -2,7 +2,7 @@
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDate, formatTime } from "@/lib/date";
-import { AlertCircle, Clock, Eye, Landmark, ShieldAlert, ShieldCheck } from "lucide-react";
+import { AlertCircle, Clock, Landmark, ShieldAlert, ShieldCheck } from "lucide-react";
 
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { CopyButton } from "@/components/common/copy-button";

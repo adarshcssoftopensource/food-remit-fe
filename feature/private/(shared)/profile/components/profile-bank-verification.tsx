@@ -49,9 +49,9 @@ export function ProfileBankVerification() {
             country: partnerLead.country,
           }}
           currentBankStatus={bankStatus === "SKIPPED" ? "NOT_STARTED" : bankStatus}
-          institutionName={bankData.institutionName}
-          accountName={bankData.accountName}
-          accountMask={bankData.accountMask}
+          institutionName={bankData.institutionName || undefined}
+          accountName={bankData.accountName || undefined}
+          accountMask={bankData.accountMask || undefined}
           partnerLeadId={partnerLead.id}
           allowSkip={false}
           onBankUpdated={() => {

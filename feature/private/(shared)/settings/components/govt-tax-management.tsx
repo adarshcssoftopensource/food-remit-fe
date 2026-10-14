@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, Info, Landmark, Lock, Percent, Receipt, RotateCcw, Save } from "lucide-react";
+import { Building2, Info, Landmark, Lock, Receipt, RotateCcw, Save } from "lucide-react";
 import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -107,7 +107,7 @@ export function GovtTaxManagement() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50/50 via-white to-white p-4 shadow-xs dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/80">
+        <div className="rounded-2xl border border-slate-200/70 bg-linear-to-br from-slate-50/50 via-white to-white p-4 shadow-xs dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/80">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
               Tax Application Scope
@@ -240,7 +240,7 @@ export function GovtTaxManagement() {
                 <Button
                   type="submit"
                   disabled={isPending || !isDirty || isReadOnly}
-                  className="h-10 min-w-[140px] gap-2 rounded-xl bg-amber-500 font-semibold text-white shadow-md shadow-amber-500/20 transition hover:bg-amber-600 disabled:opacity-60 dark:bg-amber-600 dark:hover:bg-amber-700"
+                  className="h-10 min-w-35 gap-2 rounded-xl bg-amber-500 font-semibold text-white shadow-md shadow-amber-500/20 transition hover:bg-amber-600 disabled:opacity-60 dark:bg-amber-600 dark:hover:bg-amber-700"
                 >
                   {isPending ? (
                     <span className="flex items-center gap-2">

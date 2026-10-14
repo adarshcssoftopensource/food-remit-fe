@@ -14,7 +14,7 @@ import {
   UpdateEmailNotificationPayload,
 } from "../hooks/use-email-notifications";
 
-const CATEGORY_META: Record<
+const _CATEGORY_META: Record<
   string,
   {
     icon: React.ReactNode;
@@ -174,9 +174,6 @@ export function EmailNotificationsSettings() {
   }
 
   const masterEnabled = formState.emailNotifications;
-  const availableOptions = Array.isArray(prefData.availableOptions)
-    ? prefData.availableOptions
-    : [];
 
   return (
     <div className="max-w-4xl space-y-6">
