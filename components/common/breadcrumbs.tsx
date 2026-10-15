@@ -21,7 +21,10 @@ export function Breadcrumbs({ items, className, showHome = true }: BreadcrumbsPr
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn("scrollbar-hide block w-full overflow-x-auto py-0.5", className)}
+      className={cn(
+        "scrollbar-hide block w-full max-w-full min-w-0 overflow-x-auto py-0.5",
+        className,
+      )}
     >
       <ol className="inline-flex min-w-max items-center gap-1.5 rounded-2xl border border-white/80 bg-white/80 p-1.5 shadow-xs backdrop-blur-xl transition-colors dark:border-slate-800/80 dark:bg-slate-900/70">
         {showHome && (

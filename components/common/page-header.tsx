@@ -25,11 +25,11 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between",
+        "flex w-full max-w-full min-w-0 flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between",
         className,
       )}
     >
-      <div className="space-y-2 sm:space-y-3">
+      <div className="w-full max-w-full min-w-0 space-y-2 sm:space-y-3">
         {welcomeMessage && (
           <div className="bg-primary/10 inline-flex items-center gap-2 rounded-full px-4 py-1.5">
             <span className="text-lg">👋</span>
