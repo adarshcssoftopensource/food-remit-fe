@@ -17,10 +17,54 @@ interface StoreListingsProps {
   isLoading?: boolean;
 }
 
+const DEFAULT_FALLBACK_STORE_IMAGE = "/images/default-stores/supermarket.jpg";
+
+function resolveStoreImageUrl(store: DashboardStoreListing): string {
+  const storeImg = store.storeImage?.trim();
+  const storeUrl = store.storeImageUrl?.trim();
+
+  // 1. If storeImage is already a local asset path
+  if (storeImg && (storeImg.startsWith("/") || storeImg.includes("default-stores"))) {
+    return storeImg.startsWith("/") ? storeImg : `/${storeImg}`;
+  }
+
+  // 2. If storeImageUrl incorrectly has an S3 prefix in front of a default store asset
+  if (storeUrl && storeUrl.includes("default-stores")) {
+    const idx = storeUrl.indexOf("/images/default-stores");
+    if (idx !== -1) return storeUrl.substring(idx);
+    const idx2 = storeUrl.indexOf("images/default-stores");
+    if (idx2 !== -1) return `/${storeUrl.substring(idx2)}`;
+  }
+
+  // 3. If valid storeImageUrl
+  if (
+    storeUrl &&
+    (storeUrl.startsWith("http://") || storeUrl.startsWith("https://") || storeUrl.startsWith("/"))
+  ) {
+    return storeUrl;
+  }
+
+  // 4. If valid storeImage
+  if (storeImg) {
+    return storeImg.startsWith("http") || storeImg.startsWith("/") ? storeImg : `/${storeImg}`;
+  }
+
+  // 5. Default store fallback image
+  return DEFAULT_FALLBACK_STORE_IMAGE;
+}
+
 function StoreCard({ store }: { store: DashboardStoreListing }) {
-  const [imgError, setImgError] = useState(false);
-  const imageSrc = store.storeImageUrl || store.storeImage || "";
-  const hasImage = Boolean(imageSrc) && !imgError;
+  const resolved = resolveStoreImageUrl(store);
+  const [currentSrc, setCurrentSrc] = useState(resolved);
+  const [hasFailed, setHasFailed] = useState(false);
+
+  const handleError = () => {
+    if (currentSrc !== DEFAULT_FALLBACK_STORE_IMAGE) {
+      setCurrentSrc(DEFAULT_FALLBACK_STORE_IMAGE);
+    } else {
+      setHasFailed(true);
+    }
+  };
 
   return (
     <Link
@@ -29,14 +73,14 @@ function StoreCard({ store }: { store: DashboardStoreListing }) {
     >
       <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-colors transition-shadow transition-transform duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg dark:border-slate-800/80 dark:bg-slate-900/90">
         <div className="relative flex h-40 w-full items-center justify-center overflow-hidden bg-slate-100 dark:bg-slate-800">
-          {hasImage ? (
+          {!hasFailed ? (
             <Image
-              src={imageSrc}
+              src={currentSrc}
               alt={store.name}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              onError={() => setImgError(true)}
+              onError={handleError}
             />
           ) : (
             <div className="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-600">

@@ -57,9 +57,9 @@ export function PartnerLeadNotificationCard({
             Vendor Registration
           </span>
           {parsedLead.business && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <Building2 className="size-3.5 text-slate-400" />
-              {parsedLead.business}
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold [overflow-wrap:anywhere] break-words text-slate-700 dark:text-slate-300">
+              <Building2 className="size-3.5 shrink-0 text-slate-400" />
+              <span>{parsedLead.business}</span>
             </span>
           )}
         </div>
@@ -74,7 +74,7 @@ export function PartnerLeadNotificationCard({
               <User className="size-3.5 text-emerald-600" />
               <span>Contact Person</span>
             </div>
-            <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+            <div className="text-xs font-bold [overflow-wrap:anywhere] break-words text-slate-900 dark:text-slate-100">
               {parsedLead.contact || "N/A"}
             </div>
             {parsedLead.country && (
@@ -95,7 +95,7 @@ export function PartnerLeadNotificationCard({
               {parsedLead.email && (
                 <div className="flex min-w-0 items-center gap-1.5">
                   <Mail className="size-3 shrink-0 text-slate-400" />
-                  <span className="truncate" title={parsedLead.email}>
+                  <span className="break-all" title={parsedLead.email}>
                     {parsedLead.email}
                   </span>
                 </div>
@@ -103,7 +103,7 @@ export function PartnerLeadNotificationCard({
               {parsedLead.phone && (
                 <div className="flex min-w-0 items-center gap-1.5">
                   <Phone className="size-3 shrink-0 text-slate-400" />
-                  <span className="truncate" title={parsedLead.phone}>
+                  <span className="break-all" title={parsedLead.phone}>
                     {parsedLead.phone}
                   </span>
                 </div>

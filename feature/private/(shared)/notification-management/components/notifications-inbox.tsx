@@ -188,14 +188,14 @@ export function NotificationsInbox() {
                 <li
                   key={item.id}
                   className={cn(
-                    "group relative px-5 py-4 transition-colors",
+                    "group relative px-3.5 py-4 transition-colors sm:px-5",
                     item.isRead ? "bg-white" : "bg-emerald-50/40",
                   )}
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3 sm:gap-4">
                     <div
                       className={cn(
-                        "mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl ring-1 transition-all duration-200",
+                        "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl ring-1 transition-all duration-200 sm:size-10",
                         item.isRead
                           ? "bg-slate-100 text-slate-500 ring-slate-200/80"
                           : "bg-emerald-100 text-emerald-700 shadow-xs ring-emerald-300",
@@ -213,18 +213,18 @@ export function NotificationsInbox() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+                          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                             {item.title}
                           </h3>
                           {!item.isRead ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase shadow-xs">
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase shadow-xs">
                               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
                               New
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100/90 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-800/80">
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-slate-200 bg-slate-100/90 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-800/80">
                               <Check className="size-2.5 text-slate-400" />
                               Read
                             </span>

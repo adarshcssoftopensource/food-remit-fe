@@ -73,10 +73,10 @@ export function NotificationToastCard({ toastId, title, message }: NotificationT
           </div>
 
           <div className="min-w-0 flex-1">
-            <h4 className="line-clamp-1 text-[13px] leading-snug font-bold text-slate-900 transition-colors group-hover/content:text-emerald-600 dark:text-slate-100">
+            <h4 className="text-[13px] leading-snug font-bold [overflow-wrap:anywhere] break-words text-slate-900 transition-colors group-hover/content:text-emerald-600 dark:text-slate-100">
               {title || "New Notification"}
             </h4>
-            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+            <p className="mt-1 line-clamp-3 text-xs leading-relaxed [overflow-wrap:anywhere] break-words text-slate-600 dark:text-slate-300">
               {message || "You have received a new notification."}
             </p>
           </div>
