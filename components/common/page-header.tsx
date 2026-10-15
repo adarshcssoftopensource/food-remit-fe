@@ -10,6 +10,7 @@ type PageHeaderProps = {
   action?: ReactNode;
   className?: string;
   breadcrumbs?: BreadcrumbItem[];
+  showHomeBreadcrumb?: boolean;
   welcomeMessage?: string;
 };
 
@@ -20,6 +21,7 @@ export function PageHeader({
   action,
   className,
   breadcrumbs,
+  showHomeBreadcrumb,
   welcomeMessage,
 }: PageHeaderProps) {
   return (
@@ -37,7 +39,7 @@ export function PageHeader({
           </div>
         )}
         {breadcrumbs && breadcrumbs.length > 0 && (
-          <Breadcrumbs items={breadcrumbs} className="mb-2" />
+          <Breadcrumbs items={breadcrumbs} showHome={showHomeBreadcrumb ?? true} className="mb-2" />
         )}
         {title && (
           <div className="flex flex-wrap items-center gap-2.5">

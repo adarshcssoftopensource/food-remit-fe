@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { PageHeader } from "@/components/common/page-header";
 import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
@@ -30,11 +31,38 @@ export function ProfilePage() {
           ? "security"
           : "general";
 
+  const [prevDefaultTab, setPrevDefaultTab] = useState(defaultTab);
+  const [selectedTab, setSelectedTab] = useState<string | null>(null);
+
+  if (prevDefaultTab !== defaultTab) {
+    setPrevDefaultTab(defaultTab);
+    setSelectedTab(null);
+  }
+
+  const activeTab = selectedTab ?? defaultTab;
+
+  const activeTabLabel =
+    activeTab === "store"
+      ? "Store Information"
+      : activeTab === "security"
+        ? "Security"
+        : "General Details";
+
+  const handleViewStoreDetails = () => {
+    setSelectedTab("store");
+    const tabsElement = document.getElementById("profile-tabs-content");
+    if (tabsElement) {
+      tabsElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <div className="w-full space-y-6">
       <PageHeader
         title="My Profile"
         description="Manage your account settings, personal details, and security preferences."
+        breadcrumbs={[{ label: "My Profile" }, { label: activeTabLabel }]}
+        showHomeBreadcrumb={false}
         action={
           isEmployee && (
             <Link href={ROUTES.ADMIN.MY_ORDERS}>
@@ -50,9 +78,14 @@ export function ProfilePage() {
         }
       />
 
-      <ProfileHeader />
+      <ProfileHeader onViewStoreDetails={isStoreManager ? handleViewStoreDetails : undefined} />
 
-      <Tabs defaultValue={defaultTab} key={defaultTab} className="w-full">
+      <Tabs
+        id="profile-tabs-content"
+        value={activeTab}
+        onValueChange={setSelectedTab}
+        className="w-full"
+      >
         <TabsList
           className={`mb-4 grid h-auto w-full gap-1.5 rounded-2xl border border-white/80 bg-white/70 p-1.5 shadow-xs backdrop-blur-xl sm:mb-6 dark:border-slate-800/80 dark:bg-slate-900/60 ${isStoreManager ? "max-w-2xl grid-cols-3" : "max-w-md grid-cols-2"}`}
         >
