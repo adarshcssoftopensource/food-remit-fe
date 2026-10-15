@@ -106,19 +106,19 @@ export function OrdersManagementPage() {
       <OrderInfoBanner variant="employee-start" />
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as OrderSectionKey)}>
-        <div className="overflow-x-auto">
-          <TabsList className="inline-flex h-11 gap-1 rounded-full bg-slate-100/90 p-1 shadow-inner">
+        <div className="no-scrollbar w-full overflow-x-auto pt-0.5 pb-1.5">
+          <TabsList className="inline-flex h-11 w-max min-w-full items-center justify-start gap-1 rounded-full bg-slate-100/90 p-1 px-1.5 shadow-inner sm:min-w-0">
             {EMPLOYEE_TABS.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="inline-flex h-8 items-center gap-1.5 rounded-full px-4 text-sm font-medium text-slate-600 data-active:bg-emerald-600 data-active:text-white data-active:shadow-md"
+                className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 text-xs font-medium whitespace-nowrap text-slate-600 transition data-active:bg-emerald-600 data-active:text-white data-active:shadow-md sm:px-4 sm:text-sm"
               >
-                {tab.label}
+                <span>{tab.label}</span>
                 {typeof tabCounts[tab.value] === "number" && (
                   <span
                     className={cn(
-                      "rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                      "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold",
                       activeTab === tab.value
                         ? "bg-white/25 text-white"
                         : "bg-slate-200 text-slate-600",

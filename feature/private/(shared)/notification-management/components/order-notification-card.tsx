@@ -4,6 +4,8 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { ROUTES } from "@/config/routes";
+import { isEmployeeRole } from "@/config/roles";
+import { useProfile } from "@/providers/profile-provider";
 import { cn } from "@/lib/utils";
 import { parseOrderNotification, parsePartnerLeadNotification } from "../utils/parse-notification";
 import {
@@ -20,8 +22,12 @@ interface OrderNotificationCardProps {
 }
 
 export function OrderNotificationCard({ message, isRead }: OrderNotificationCardProps) {
+  const { profile } = useProfile();
   const parsed = useMemo(() => parseOrderNotification(message), [message]);
   const parsedLead = useMemo(() => parsePartnerLeadNotification(message), [message]);
+
+  const isEmployee = isEmployeeRole(profile?.roleCode, profile?.role);
+  const baseRoute = isEmployee ? ROUTES.ADMIN.MY_ORDERS : ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT;
 
   if (parsedLead.isLead) {
     return <PartnerLeadNotificationCard parsedLead={parsedLead} isRead={isRead} />;
@@ -37,8 +43,8 @@ export function OrderNotificationCard({ message, isRead }: OrderNotificationCard
 
   const cleanOrderRef = parsed.orderRef.replace(/^#/, "");
   const orderSearchLink = cleanOrderRef
-    ? `${ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT}?search=${encodeURIComponent(cleanOrderRef)}`
-    : ROUTES.ADMIN.ORDER_MANAGEMENT.ROOT;
+    ? `${baseRoute}?search=${encodeURIComponent(cleanOrderRef)}`
+    : baseRoute;
 
   return (
     <div

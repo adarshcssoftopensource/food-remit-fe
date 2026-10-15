@@ -78,18 +78,18 @@ function OrderTabsList({
   activeTab: OrderSectionKey;
 }) {
   return (
-    <TabsList className="inline-flex h-11 w-auto items-center justify-start gap-1 rounded-full bg-slate-100/80 p-1 px-1.5 shadow-inner dark:bg-slate-800/50">
+    <TabsList className="inline-flex h-11 w-max min-w-full items-center justify-start gap-1 rounded-full bg-slate-100/80 p-1 px-1.5 shadow-inner sm:min-w-0 dark:bg-slate-800/50">
       {ORDER_TABS.map((tab) => (
         <TabsTrigger
           key={tab.value}
           value={tab.value}
-          className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-5 text-sm font-medium whitespace-nowrap text-slate-600 transition hover:text-slate-900 data-active:shadow-md dark:text-slate-400 dark:hover:text-slate-100"
+          className="data-active:bg-primary data-active:text-primary-foreground hover:data-active:text-primary-foreground inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 text-xs font-medium whitespace-nowrap text-slate-600 transition hover:text-slate-900 data-active:shadow-md sm:px-5 sm:text-sm dark:text-slate-400 dark:hover:text-slate-100"
         >
-          {tab.label}
+          <span>{tab.label}</span>
           {typeof tabCounts[tab.value] === "number" && (
             <span
               className={cn(
-                "rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold",
                 activeTab === tab.value
                   ? "bg-white/20 text-inherit"
                   : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
@@ -263,7 +263,7 @@ export function OrdersManagementPage() {
           if (v !== "history") setHistoryFilter("all");
         }}
       >
-        <div className="overflow-x-auto pb-1">
+        <div className="no-scrollbar w-full overflow-x-auto pt-0.5 pb-1.5">
           <OrderTabsList tabCounts={tabCounts} activeTab={activeTab} />
         </div>
 

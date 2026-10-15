@@ -26,7 +26,7 @@ export function InfoCard({ icon, label, value, href, mono, className }: InfoCard
         <span
           title={typeof value === "string" ? value : undefined}
           className={cn(
-            "line-clamp-2 text-xs leading-snug font-semibold break-words text-slate-800 sm:text-sm dark:text-slate-100",
+            "line-clamp-3 text-xs leading-snug font-semibold [overflow-wrap:anywhere] text-slate-800 sm:text-sm dark:text-slate-100",
             mono ? "font-mono" : "capitalize",
             href && "group-hover:text-primary",
           )}
