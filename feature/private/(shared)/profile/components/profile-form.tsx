@@ -51,16 +51,18 @@ export function ProfileForm() {
     if (needsBankVerification) return;
     try {
       const formData = new FormData();
-      formData.append("firstName", data.firstName);
-      formData.append("lastName", data.lastName);
-      formData.append("name", `${data.firstName} ${data.lastName}`.trim());
+      const firstName = data.firstName.trim();
+      const lastName = data.lastName.trim();
+      formData.append("firstName", firstName);
+      formData.append("lastName", lastName);
+      formData.append("name", `${firstName} ${lastName}`.trim());
 
       if (!isStoreManager) {
-        if (data.address !== undefined) formData.append("address", data.address);
-        if (data.country !== undefined) formData.append("country", data.country);
-        if (data.state !== undefined) formData.append("state", data.state);
-        if (data.city !== undefined) formData.append("city", data.city);
-        if (data.zipCode !== undefined) formData.append("zipCode", data.zipCode);
+        if (data.address?.trim()) formData.append("address", data.address.trim());
+        if (data.country?.trim()) formData.append("country", data.country.trim());
+        if (data.state?.trim()) formData.append("state", data.state.trim());
+        if (data.city?.trim()) formData.append("city", data.city.trim());
+        if (data.zipCode?.trim()) formData.append("zipCode", data.zipCode.trim());
       }
 
       await updateProfileMutation.mutateAsync(formData);

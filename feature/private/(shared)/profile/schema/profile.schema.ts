@@ -15,9 +15,9 @@ export const getProfileDetailsSchema = () =>
     contactNumber: z.string().optional(),
 
     address: z.string().max(200, "Maximum 200 characters are allowed").optional(),
-    country: z.string().min(1, "Country is required"),
+    country: z.string().optional(),
     state: z.string().optional(),
-    city: z.string().min(1, "City is required"),
+    city: z.string().optional(),
     zipCode: z.string().optional(),
     image: z.any().optional(),
   });
