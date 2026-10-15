@@ -138,15 +138,15 @@ interface OrderPeopleAndStoreProps {
 
 export function OrderPeopleAndStore({ order }: OrderPeopleAndStoreProps) {
   return (
-    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <div className="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
-        <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+        <CardHeader className="border-b border-slate-100 px-4 py-3.5 sm:px-6 sm:py-4 dark:border-slate-800">
           <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">
             <User className="mr-2.5 size-5 text-blue-500" />
             Sender &amp; Receiver Details
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-4 p-6 lg:grid-cols-2">
+        <CardContent className="grid grid-cols-1 gap-4 p-4 sm:p-6 lg:grid-cols-2">
           <PersonCard
             role="Sender"
             name={order.userName || ""}
@@ -171,13 +171,13 @@ export function OrderPeopleAndStore({ order }: OrderPeopleAndStoreProps) {
       </Card>
 
       <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
-        <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+        <CardHeader className="border-b border-slate-100 px-4 py-3.5 sm:px-6 sm:py-4 dark:border-slate-800">
           <CardTitle className="flex items-center text-base font-bold tracking-tight text-slate-900 dark:text-white">
             <Store className="mr-2.5 size-5 text-emerald-500" />
             Fulfilling Store Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="rounded-xl border border-emerald-100/60 bg-emerald-50/40 p-4 dark:border-emerald-900/30 dark:bg-emerald-950/20">
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-xs">

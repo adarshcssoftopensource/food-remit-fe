@@ -55,8 +55,8 @@ export function LocationDetailsCard({ lead }: { lead: PartnerLeadData }) {
   }, [lead.locations]);
 
   return (
-    <Card className="@container col-span-1 overflow-hidden rounded-2xl border-slate-200 shadow-sm md:col-span-2">
-      <CardHeader className="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+    <Card className="@container col-span-1 max-w-full min-w-0 overflow-hidden rounded-2xl border-slate-200 shadow-sm md:col-span-2">
+      <CardHeader className="border-b border-slate-100 bg-slate-50/50 px-4 py-3.5 sm:px-6 sm:py-4">
         <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900">
           <MapPin className="h-5 w-5 text-emerald-600" />
           Location Details

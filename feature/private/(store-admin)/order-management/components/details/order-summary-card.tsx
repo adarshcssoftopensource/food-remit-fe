@@ -22,12 +22,14 @@ function InfoField({
   value: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="flex items-center text-[10px] font-bold tracking-wider text-slate-400 uppercase">
         {icon}
         {label}
       </p>
-      <p className="mt-1 text-sm font-bold text-slate-800 dark:text-slate-200">{value}</p>
+      <p className="mt-1 text-sm font-bold break-words text-slate-800 dark:text-slate-200">
+        {value}
+      </p>
     </div>
   );
 }
@@ -131,8 +133,8 @@ export function OrderSummaryCard({ order, hideQrCode }: OrderSummaryCardProps) {
 
   return (
     <Card className="rounded-2xl border border-white/70 bg-white/85 shadow-sm backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/85">
-      <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
-        <CardTitle className="flex items-center justify-between text-base font-bold tracking-tight text-slate-900 dark:text-white">
+      <CardHeader className="border-b border-slate-100 px-4 py-3.5 sm:px-6 sm:py-4 dark:border-slate-800">
+        <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base font-bold tracking-tight text-slate-900 dark:text-white">
           <span className="flex items-center">
             <Package className="mr-2.5 size-5 text-emerald-500" />
             Order Summary
@@ -143,8 +145,8 @@ export function OrderSummaryCard({ order, hideQrCode }: OrderSummaryCardProps) {
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row">
           {/* Left: Details */}
-          <div className="flex-1 p-6">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="min-w-0 flex-1 p-4 sm:p-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
               <InfoField
                 label="Date & Time"
                 icon={<Calendar className="mr-1 size-3" />}

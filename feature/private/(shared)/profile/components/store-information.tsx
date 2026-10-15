@@ -361,10 +361,10 @@ export function StoreInformation() {
         </CardContent>
       </Card>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="mt-6 grid max-w-full min-w-0 grid-cols-1 gap-6 md:grid-cols-2">
         <ProfileBankVerification />
         {partnerLead && <KycVerificationCard lead={partnerLead} />}
-        <div className="md:col-span-2">
+        <div className="min-w-0 md:col-span-2">
           <OperationalPreferencesCard lead={partnerLead} hideFulfillmentAndScreening />
         </div>
         {partnerLead && <AdditionalDocumentsCard lead={partnerLead} />}

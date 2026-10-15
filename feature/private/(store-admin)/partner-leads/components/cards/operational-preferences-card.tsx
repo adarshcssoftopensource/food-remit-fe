@@ -44,14 +44,14 @@ export function OperationalPreferencesCard({
       : lead?.frozenProducts === true;
 
   return (
-    <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+    <Card className="max-w-full min-w-0 overflow-hidden rounded-2xl border-slate-200 shadow-sm">
       <CardHeader className="border-b border-slate-100 bg-slate-50/50 px-4 py-3.5 sm:px-6 sm:py-4">
         <CardTitle className="flex items-center gap-2 text-base">
           <Store className="h-5 w-5 text-emerald-600" />
           Operational Preferences
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 sm:p-6">
+      <CardContent className="min-w-0 p-4 sm:p-6">
         <div className="space-y-6">
           {!hideFulfillmentAndScreening && (
             <>
@@ -142,17 +142,17 @@ export function OperationalPreferencesCard({
           {lead && (
             <>
               {!hideFulfillmentAndScreening && <Separator className="bg-slate-100" />}
-              <div>
+              <div className="min-w-0">
                 <h4 className="mb-3 text-xs font-bold tracking-wider text-slate-500 uppercase">
                   Work Preferences
                 </h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex min-w-0 flex-wrap gap-2">
                   {lead.workPreferences && lead.workPreferences.length > 0 ? (
                     lead.workPreferences.map((pref) => (
                       <Badge
                         key={pref}
                         variant="secondary"
-                        className="border-emerald-200/60 bg-emerald-50 px-3 py-1 font-bold text-emerald-700 hover:bg-emerald-100"
+                        className="h-auto max-w-full border-emerald-200/60 bg-emerald-50 px-3 py-1.5 text-left font-bold break-words whitespace-normal text-emerald-700 hover:bg-emerald-100"
                       >
                         {pref}
                       </Badge>
