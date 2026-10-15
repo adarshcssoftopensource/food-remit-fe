@@ -77,17 +77,21 @@ export function BasketStepper({
       aria-label="Create basket steps"
       className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm sm:px-6 sm:py-5 dark:border-slate-800 dark:bg-slate-950"
     >
-      <div className="mb-3 flex items-center justify-between gap-3 md:hidden">
-        <div className="min-w-0">
-          <p className="text-primary text-[11px] font-bold tracking-wide uppercase">
+      <div className="mb-3 flex items-start justify-between gap-3 md:hidden">
+        <div className="min-w-0 flex-1">
+          <p className="text-primary text-[11px] font-bold tracking-wider uppercase">
             Step {current + 1} of {BASKET_STEPS.length}
           </p>
-          <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
-            {activeStep?.label} ·{" "}
-            <span className="font-medium text-slate-500">{activeStep?.hint}</span>
-          </p>
+          <div className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+            <span className="text-sm font-bold text-slate-900 dark:text-white">
+              {activeStep?.label}
+            </span>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              · {activeStep?.hint}
+            </span>
+          </div>
         </div>
-        <span className="text-primary shrink-0 text-xs font-bold tabular-nums">
+        <span className="text-primary bg-primary/10 shrink-0 rounded-full px-2 py-0.5 text-xs font-bold tabular-nums">
           {Math.round(progress)}%
         </span>
       </div>

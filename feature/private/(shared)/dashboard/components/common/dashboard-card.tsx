@@ -62,7 +62,7 @@ export function DashboardCard({
                 {badge && <div className="shrink-0">{badge}</div>}
               </div>
               {subtitle && (
-                <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-slate-500 sm:text-xs dark:text-slate-400">
+                <p className="mt-0.5 text-[11px] leading-relaxed font-medium text-slate-500 sm:text-xs dark:text-slate-400">
                   {subtitle}
                 </p>
               )}

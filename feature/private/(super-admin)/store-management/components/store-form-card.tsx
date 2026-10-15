@@ -24,8 +24,8 @@ export function StoreFormCard({
           <Icon className={iconClassName} />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-bold text-slate-800 sm:text-base">{title}</h3>
-          <p className="truncate text-xs text-slate-500">{subtitle}</p>
+          <h3 className="text-sm font-bold text-slate-800 sm:text-base">{title}</h3>
+          <p className="mt-0.5 text-xs leading-relaxed text-slate-500">{subtitle}</p>
         </div>
       </div>
 
