@@ -76,7 +76,7 @@ export function AppSidebar() {
   const { state, isMobile, toggleSidebar } = useSidebar();
   const { profile, isSuperAdmin } = useProfile();
 
-  const isCollapsed = state === "collapsed";
+  const isCollapsed = isMobile ? false : state === "collapsed";
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});

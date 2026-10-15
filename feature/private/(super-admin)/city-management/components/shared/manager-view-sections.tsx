@@ -16,7 +16,7 @@ type ManagerViewDetails = {
 
 export function ManagerContactSection({ manager }: { manager: ManagerViewDetails }) {
   return (
-    <section className="rounded-2xl border bg-white p-6 shadow-sm">
+    <section className="rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
       <h3 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-slate-500 uppercase">
         <UserCircle className="h-4 w-4 text-emerald-600" />
         Contact Information
@@ -46,7 +46,7 @@ export function ManagerPersonalSection({
   fullAddress: string;
 }) {
   return (
-    <section className="rounded-2xl border bg-white p-6 shadow-sm">
+    <section className="rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
       <h3 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-slate-500 uppercase">
         <UserCircle className="h-4 w-4 text-emerald-600" />
         Personal Details

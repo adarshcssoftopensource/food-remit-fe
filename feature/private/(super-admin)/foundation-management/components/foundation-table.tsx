@@ -13,7 +13,7 @@ export function FoundationTable({ data }: FoundationTableProps) {
   return (
     <Card className="overflow-hidden rounded-xl">
       <CardContent className="p-4">
-        <DataTable columns={foundationColumns} data={[]} searchKey="foundationName" />
+        <DataTable columns={foundationColumns} data={data} searchKey="foundationName" />
       </CardContent>
     </Card>
   );

@@ -114,7 +114,7 @@ export function ItemDetailsCard({ item }: ItemDetailsCardProps) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
           <InfoCard
             icon={<FolderOpen className="h-4 w-4 text-purple-500" />}
             label="Category"

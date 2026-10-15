@@ -527,7 +527,7 @@ export function StoreProductScreeningFields<TFieldValues extends FieldValues = a
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-3.5 pt-1 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3.5 pt-1 md:grid-cols-2 xl:grid-cols-3">
         {PRODUCT_SCREENING_ITEMS.map((item) => {
           const IconComponent = item.icon;
           return (
@@ -547,7 +547,7 @@ export function StoreProductScreeningFields<TFieldValues extends FieldValues = a
                     )}
                   >
                     <div>
-                      <div className="mb-3 flex items-center justify-between gap-2">
+                      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                         <div
                           className={cn(
                             "flex size-8.5 items-center justify-center rounded-xl ring-2 ring-black/5 dark:ring-white/5",
@@ -576,11 +576,11 @@ export function StoreProductScreeningFields<TFieldValues extends FieldValues = a
                       </p>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800/80">
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-slate-800/80">
                       <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
                         Handling
                       </span>
-                      <div className="inline-flex rounded-lg border border-slate-200/70 bg-slate-100/90 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+                      <div className="inline-flex shrink-0 rounded-lg border border-slate-200/70 bg-slate-100/90 p-0.5 dark:border-slate-700 dark:bg-slate-800">
                         <button
                           type="button"
                           disabled={disabled}
@@ -595,7 +595,7 @@ export function StoreProductScreeningFields<TFieldValues extends FieldValues = a
                             }
                           }}
                           className={cn(
-                            "flex cursor-pointer items-center gap-1 rounded-md px-2.5 py-1 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-60",
+                            "flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-60 sm:px-2.5",
                             isSelected
                               ? "bg-emerald-600 text-white shadow-xs"
                               : "text-slate-600 hover:text-emerald-700 dark:text-slate-400 dark:hover:text-emerald-300",
@@ -617,7 +617,7 @@ export function StoreProductScreeningFields<TFieldValues extends FieldValues = a
                             }
                           }}
                           className={cn(
-                            "flex cursor-pointer items-center gap-1 rounded-md px-2.5 py-1 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-60",
+                            "flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-60 sm:px-2.5",
                             field.value === false
                               ? "bg-rose-600 text-white shadow-xs dark:bg-rose-600"
                               : "text-slate-600 hover:text-rose-700 dark:text-slate-400 dark:hover:text-rose-300",

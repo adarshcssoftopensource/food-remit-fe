@@ -3,13 +3,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Pencil, Plus } from "lucide-react";
-import React, { useEffect, useEffectEvent } from "react";
+import React, { useEffect, useEffectEvent, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import { useProfile } from "@/providers/profile-provider";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import type { StoreData } from "@/feature/private/(super-admin)/store-management/types/store-management";
 import { useControllableOpen } from "../hooks/use-controllable-open";
+import { useCouponCurrency } from "../hooks/use-coupon-currency";
 import { useCouponDurationText } from "../hooks/use-coupon-duration-text";
 import { useCreateCoupon } from "../hooks/use-create-coupon";
 import { useGenerateCouponCode } from "../hooks/use-generate-coupon-code";
@@ -46,6 +48,8 @@ export function AddCouponDialog({
 
   const isEdit = Boolean(coupon);
   const { profile, isSuperAdmin } = useProfile();
+  const [selectedStoreData, setSelectedStoreData] = useState<StoreData | null>(null);
+
   const createMutation = useCreateCoupon();
   const updateMutation = useUpdateCoupon();
   const generateCodeMutation = useGenerateCouponCode();
@@ -65,10 +69,10 @@ export function AddCouponDialog({
       return {
         couponName: coupon.couponName || "",
         couponCode: coupon.couponCode || "",
-        discount: Number(coupon.discount) || 10,
+        discount: Number(coupon.discount) || 0,
         description: coupon.description || "",
         minOrderValue: Number(coupon.minOrderValue || 0),
-        maxUsers: coupon.maxUsers ? Number(coupon.maxUsers) : 100,
+        maxUsers: coupon.maxUsers ? Number(coupon.maxUsers) : 0,
         scope: coupon.isGlobal ? "global" : "store",
         storeId: coupon.storeId || undefined,
         startDate: format(sDate, "yyyy-MM-dd"),
@@ -81,10 +85,10 @@ export function AddCouponDialog({
     return {
       couponName: "",
       couponCode: "",
-      discount: 10,
+      discount: 0,
       description: "",
       minOrderValue: 0,
-      maxUsers: 100,
+      maxUsers: 0,
       scope: isStoreManager ? "store" : "global",
       storeId: isStoreManager ? managerAssignedStore?.id : undefined,
       startDate: todayStr,
@@ -103,13 +107,24 @@ export function AddCouponDialog({
   } = useForm<CouponFormValues>({
     resolver: zodResolver(couponSchema) as any,
     defaultValues: getInitialValues(),
-    mode: "onChange",
+    mode: "onBlur",
   });
 
   const selectedScope = useWatch({ control, name: "scope" });
+  const selectedStoreId = useWatch({ control, name: "storeId" });
   const currentCouponName = useWatch({ control, name: "couponName" });
   const startDateValue = useWatch({ control, name: "startDate" });
   const endDateValue = useWatch({ control, name: "endDate" });
+
+  // Dynamic currency resolution based on store's country
+  const { symbol: currencySymbol, code: currencyCode } = useCouponCurrency({
+    scope: selectedScope,
+    storeId: selectedStoreId,
+    isStoreManager,
+    managerAssignedStore,
+    selectedStore: selectedStoreData,
+    initialStore: coupon?.store,
+  });
 
   // Duration in days indicator
   const durationText = useCouponDurationText(startDateValue, endDateValue);
@@ -143,6 +158,11 @@ export function AddCouponDialog({
   const resetFormForOpen = useEffectEvent(() => {
     reset(getInitialValues());
     if (!coupon) {
+      const prefixes = ["SAVE", "OFF", "PROMO", "DEAL", "FOOD", "MEGA", "SPECIAL", "EXTRA"];
+      const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      setValue("couponCode", `${prefix}${randomNum}`);
+
       if (isStoreManager && managerAssignedStore?.id) {
         setValue("scope", "store");
         setValue("storeId", managerAssignedStore.id);
@@ -158,7 +178,7 @@ export function AddCouponDialog({
     if (isOpen) {
       resetFormForOpen();
     }
-  }, [isOpen, coupon, isStoreManager, isSuperAdmin, managerAssignedStore]);
+  }, [isOpen]);
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
@@ -188,29 +208,39 @@ export function AddCouponDialog({
         await createMutation.mutateAsync(payload);
       }
 
-      reset();
       setIsOpen(false);
       onSuccess?.();
     } catch {
-      // Handled by mutation toast error
+      // Handled by toast error
     }
   };
 
-  const defaultTrigger = renderDefaultCouponTrigger(isEdit);
+  const defaultTrigger = isEdit ? (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="size-8 cursor-pointer rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+    >
+      <Pencil className="size-4" />
+      <span className="sr-only">Edit coupon</span>
+    </Button>
+  ) : (
+    <Button className="h-10 cursor-pointer gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 px-4 text-xs font-semibold text-white shadow-md shadow-emerald-500/20 hover:from-emerald-700 hover:to-teal-700">
+      <Plus className="size-4" />
+      <span>Create Coupon</span>
+    </Button>
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger render={trigger ? (trigger as React.ReactElement) : defaultTrigger} />
       <DialogContent className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
-        {/* Header */}
         <CouponDialogHeader isEdit={isEdit} />
 
-        {/* Form Body */}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex-1 space-y-5 overflow-x-hidden overflow-y-auto p-6"
         >
-          {/* Section 1: Scope Selection */}
           <CouponDialogScopeSection
             isStoreManager={isStoreManager}
             assignedStoreName={getAssignedStoreName(
@@ -222,9 +252,9 @@ export function AddCouponDialog({
             control={control}
             errors={errors}
             initialStoreName={coupon?.storeName || undefined}
+            onStoreSelect={(store) => setSelectedStoreData(store ?? null)}
           />
 
-          {/* Section 2: Name & Promo Code */}
           <CouponDialogIdentitySection
             control={control}
             errors={errors}
@@ -233,20 +263,21 @@ export function AddCouponDialog({
             onGenerateCode={handleGenerateCode}
           />
 
-          {/* Section 3: Discount & Limits with High-Contrast Clear Icons */}
-          <CouponDialogLimitsSection control={control} errors={errors} />
+          <CouponDialogLimitsSection
+            control={control}
+            errors={errors}
+            currencySymbol={currencySymbol}
+            currencyCode={currencyCode}
+          />
 
-          {/* Section 4: Shadcn Date & Time Picker Scheduling Window */}
           <CouponDialogScheduleSection
             control={control}
             errors={errors}
             durationText={durationText}
           />
 
-          {/* Section 5: Description & Terms */}
           <CouponDialogDescriptionField control={control} />
 
-          {/* Pinned Footer */}
           <CouponDialogFooter
             isEdit={isEdit}
             isSubmitting={isSubmitting}
@@ -257,23 +288,3 @@ export function AddCouponDialog({
     </Dialog>
   );
 }
-
-function renderDefaultCouponTrigger(isEdit: boolean) {
-  return isEdit ? (
-    <Button
-      variant="outline"
-      size="icon"
-      className="size-8 rounded-lg text-slate-500 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/30"
-      title="Edit coupon"
-    >
-      <Pencil className="size-3.5" />
-    </Button>
-  ) : (
-    <Button>
-      <Plus className="mr-1.5 size-4" />
-      Add Coupon
-    </Button>
-  );
-}
-
-export const CouponFormDialog = AddCouponDialog;

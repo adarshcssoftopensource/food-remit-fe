@@ -79,7 +79,6 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
 
   const currencySymbol = pricing?.currencySymbol || "-";
   const countryLabel = pricing?.countryName || item.pricingCountry?.name || "your location";
-  const currency = pricing?.currency || "—";
 
   const lines: ReceiptLine[] = pricing
     ? [
@@ -136,26 +135,26 @@ export function ItemProductPricingCard({ item }: ItemProductPricingCardProps) {
 
   return (
     <Card className="w-full overflow-hidden rounded-2xl border-0 bg-white shadow-xl shadow-slate-200/40 dark:bg-slate-950 dark:shadow-none">
-      <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100/80 px-5 py-4 sm:px-8 dark:border-slate-800/80">
-        <div>
-          <CardTitle className="flex items-center gap-3 text-base font-bold text-slate-900 sm:text-lg dark:text-white">
-            <div className="bg-primary h-4 w-1.5 rounded-full" />
+      <CardHeader className="flex flex-col gap-3.5 border-b border-slate-100/80 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8 dark:border-slate-800/80">
+        <div className="min-w-0">
+          <CardTitle className="flex items-center gap-2.5 text-base font-bold text-slate-900 sm:gap-3 sm:text-lg dark:text-white">
+            <div className="bg-primary h-4 w-1.5 shrink-0 rounded-full" />
             Product Information
           </CardTitle>
           <p className="mt-1 text-xs text-slate-500 sm:text-sm">Item pricing and tax details.</p>
         </div>
 
         {hasOptions && (
-          <div className="flex items-center gap-3">
-            <span className="hidden text-xs font-medium tracking-wider text-slate-500 uppercase sm:inline-block">
-              Select Variant
+          <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
+            <span className="shrink-0 text-xs font-medium tracking-wider text-slate-500 uppercase">
+              Variant:
             </span>
-            <div className="w-[200px]">
+            <div className="w-full sm:w-[200px]">
               <Select
                 value={selectedOptionId}
                 onValueChange={(val) => val && setSelectedOptionId(val)}
               >
-                <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
+                <SelectTrigger className="h-9 w-full rounded-lg border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
                   <SelectValue placeholder="Select Variant">
                     {selectedOption?.optionName || "Select Variant"}
                   </SelectValue>

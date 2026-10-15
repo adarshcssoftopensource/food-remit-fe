@@ -1,10 +1,13 @@
 /**
  * Utility to export an array of objects to Excel-compatible CSV with UTF-8 BOM
  */
-export function exportToExcel<T extends Record<string, any>>(
+export function exportToExcel<T = Record<string, unknown>>(
   filename: string,
   data: T[],
-  headers: { label: string; key: keyof T | ((item: T, index: number) => any) }[],
+  headers: {
+    label: string;
+    key: keyof T | (string & {}) | ((item: T, index: number) => unknown);
+  }[],
 ) {
   if (!data || data.length === 0) return;
 
@@ -13,7 +16,10 @@ export function exportToExcel<T extends Record<string, any>>(
   const rows = data.map((item, index) => {
     return headers
       .map((h) => {
-        let val = typeof h.key === "function" ? h.key(item, index) : item[h.key];
+        let val =
+          typeof h.key === "function"
+            ? h.key(item, index)
+            : (item as Record<string | number | symbol, unknown>)[h.key];
         if (val === null || val === undefined) val = "";
         const strVal = String(val).replace(/"/g, '""');
         return `"${strVal}"`;

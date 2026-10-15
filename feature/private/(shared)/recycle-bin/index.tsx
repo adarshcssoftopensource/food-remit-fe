@@ -6,7 +6,6 @@ import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useDebounce } from "@/lib/debounce";
 import { RowSelectionState, SortingState } from "@tanstack/react-table";
 import {
-  Building2,
   FolderTree,
   Globe,
   Handshake,
@@ -28,6 +27,7 @@ import {
   useBulkPermanentDeleteEntities,
   useBulkRestoreEntities,
 } from "./hooks/use-recycle-bin-actions";
+import { isStoreManagerRole } from "@/config/roles";
 import { useProfile } from "@/providers/profile-provider";
 
 const ALL_ENTITY_TABS: {
@@ -49,7 +49,7 @@ const ALL_ENTITY_TABS: {
 
 export function RecycledUsersManagement() {
   const { profile } = useProfile();
-  const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
+  const isStoreManager = isStoreManagerRole(profile?.roleCode, profile?.role);
 
   const ENTITY_TABS = useMemo(() => {
     if (isStoreManager) {

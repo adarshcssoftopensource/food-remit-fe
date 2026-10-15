@@ -6,6 +6,7 @@ import { type Control, Controller, type FieldErrors, type UseFormSetValue } from
 
 import { StoreSelect } from "@/components/common/store-select";
 import { FieldLabel } from "@/components/ui/field";
+import type { StoreData } from "@/feature/private/(super-admin)/store-management/types/store-management";
 import type { CouponFormValues } from "../../schema/coupon.schema";
 
 type ScopeSectionProps = {
@@ -16,6 +17,7 @@ type ScopeSectionProps = {
   selectedScope: CouponFormValues["scope"];
   setValue: UseFormSetValue<CouponFormValues>;
   initialStoreName?: string;
+  onStoreSelect?: (store?: StoreData | null) => void;
 };
 
 export function CouponDialogScopeSection({
@@ -26,6 +28,7 @@ export function CouponDialogScopeSection({
   control,
   errors,
   initialStoreName,
+  onStoreSelect,
 }: ScopeSectionProps) {
   return (
     <div className="space-y-2.5">
@@ -87,7 +90,10 @@ export function CouponDialogScopeSection({
                 render={({ field }) => (
                   <StoreSelect
                     value={field.value ?? ""}
-                    onValueChange={(val) => field.onChange(val)}
+                    onValueChange={(val, store) => {
+                      field.onChange(val);
+                      onStoreSelect?.(store);
+                    }}
                     placeholder="Search and choose target store..."
                     initialStoreName={initialStoreName}
                   />

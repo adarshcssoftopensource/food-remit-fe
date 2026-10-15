@@ -10,15 +10,27 @@ import { useGetCountriesDropdown } from "@/feature/private/(shared)/settings/hoo
 import type { CountryDropdownItem } from "@/feature/private/(shared)/settings/types/settings.types";
 import { cn } from "@/lib/utils";
 
-function countryFlag(code?: string | null) {
-  if (!code || code.length !== 2) return null;
-  try {
-    return String.fromCodePoint(
-      ...[...code.toUpperCase()].map((letter) => 127397 + letter.charCodeAt(0)),
-    );
-  } catch {
-    return null;
+import { findWorldCountryByName, countryFlag as worldCountryFlag } from "@/lib/world-locations";
+
+function countryFlag(code?: string | null, name?: string | null) {
+  const cleanCode = code ? code.replace(/^\+/, "").trim() : null;
+  if (cleanCode && cleanCode.length === 2 && /^[a-zA-Z]{2}$/.test(cleanCode)) {
+    try {
+      return String.fromCodePoint(
+        ...[...cleanCode.toUpperCase()].map((letter) => 127397 + letter.charCodeAt(0)),
+      );
+    } catch {
+      // ignore
+    }
   }
+
+  if (name) {
+    const matched = findWorldCountryByName(name);
+    if (matched?.flag) return matched.flag;
+    if (matched?.isoCode) return worldCountryFlag(matched.isoCode);
+  }
+
+  return null;
 }
 
 export type CountryOption = {
@@ -50,10 +62,14 @@ function SelectedCountryIcon({
   selectedCountry: CountryOption | null | undefined;
   includeAll: boolean;
 }) {
+  const flag = selectedCountry
+    ? countryFlag(selectedCountry.code || selectedCountry.countryCode, selectedCountry.name)
+    : null;
+
   return selectedCountry ? (
-    countryFlag(selectedCountry.code || selectedCountry.countryCode) ? (
+    flag ? (
       <span aria-hidden="true" className="text-base leading-none">
-        {countryFlag(selectedCountry.code || selectedCountry.countryCode)}
+        {flag}
       </span>
     ) : (
       <Flag className="size-4 shrink-0 text-slate-400" />
@@ -91,7 +107,7 @@ function CountryOptionsList({
             (valueKey === "id" && value === country.id) ||
             (valueKey === "name" && value === country.name);
 
-          const flag = countryFlag(country.code || country.countryCode);
+          const flag = countryFlag(country.code || country.countryCode, country.name);
 
           return (
             <Button

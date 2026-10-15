@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Check, Copy, CreditCard, ShieldCheck } from "lucide-react";
+import { useMemo } from "react";
+import { CreditCard, ShieldCheck } from "lucide-react";
+import { CopyButton } from "@/components/common/copy-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,8 +17,6 @@ export function CreditPaymentCard({
   customerName,
   currency = "INR",
 }: CreditPaymentCardProps) {
-  const [copied, setCopied] = useState(false);
-
   const cardLast4 = transaction.cardLast4 || "4242";
   const fundingType = (transaction.cardFunding || "credit").toUpperCase();
 
@@ -30,14 +29,6 @@ export function CreditPaymentCard({
   }, [transaction.cardBrand, transaction.paymentMethod, transaction.cardLast4]);
 
   const networkName = NETWORK_STYLE_MAP[activeNetwork]?.displayName || "Card";
-
-  const handleCopyChargeId = () => {
-    if (transaction.stripeChargeId) {
-      navigator.clipboard.writeText(transaction.stripeChargeId);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
 
   return (
     <Card className="flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white/85 shadow-xs backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/85">
@@ -94,19 +85,14 @@ export function CreditPaymentCard({
           {transaction.stripeChargeId && (
             <div className="flex items-center justify-between border-t border-slate-200/60 pt-1 dark:border-slate-700/60">
               <span className="text-slate-500 dark:text-slate-400">Charge ID</span>
-              <button
-                type="button"
-                onClick={handleCopyChargeId}
-                className="group inline-flex cursor-pointer items-center gap-1 font-mono text-[11px] font-medium text-slate-700 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400"
-                title="Copy Charge ID"
-              >
+              <div className="inline-flex items-center gap-1 font-mono text-[11px] font-medium text-slate-700 dark:text-slate-300">
                 <span>{transaction.stripeChargeId.slice(0, 16)}...</span>
-                {copied ? (
-                  <Check className="size-3 text-emerald-600" />
-                ) : (
-                  <Copy className="size-3 text-slate-400 group-hover:text-indigo-600" />
-                )}
-              </button>
+                <CopyButton
+                  value={transaction.stripeChargeId}
+                  label="Charge ID"
+                  className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                />
+              </div>
             </div>
           )}
 

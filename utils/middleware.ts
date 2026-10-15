@@ -10,9 +10,11 @@ const PUBLIC_PATHS = [
   ROUTES.AUTH.BECOME_A_PARTNER,
 ] as const;
 
-function getRoutes(obj: Record<string, any>): string[] {
+import { isEmployeeRole } from "@/config/roles";
+
+function getRoutes(obj: Record<string, unknown>): string[] {
   return Object.values(obj).flatMap((value) =>
-    typeof value === "string" ? [value] : getRoutes(value),
+    typeof value === "string" ? [value] : getRoutes(value as Record<string, unknown>),
   );
 }
 
@@ -56,10 +58,10 @@ export default function middleware(request: NextRequest) {
     if (token) {
       try {
         const payload = jwtDecode<{ roleCode?: string; role?: string }>(token);
-        if (payload?.roleCode === "EMPLOYEE" || payload?.role === "employee") {
+        if (isEmployeeRole(payload?.roleCode, payload?.role)) {
           target = ROUTES.ADMIN.MY_ORDERS;
         }
-      } catch (e) {
+      } catch {
         // Fallback to dashboard if decoding fails
       }
     }

@@ -301,7 +301,7 @@ export function KycVerificationCard({ lead }: { lead: PartnerLeadData }) {
 
   return (
     <>
-      <Card className="col-span-1 overflow-hidden rounded-2xl border-slate-200/80 shadow-xs md:col-span-2 dark:border-slate-800">
+      <Card className="col-span-1 max-w-full min-w-0 overflow-hidden rounded-2xl border-slate-200/80 shadow-xs md:col-span-2 dark:border-slate-800">
         <CardHeader className="border-b border-slate-100 bg-slate-50/60 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/60">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <CardTitle className="flex items-center gap-2.5 text-base font-bold text-slate-900 dark:text-white">

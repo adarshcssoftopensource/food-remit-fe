@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Building2, FileSignature, MapPin, Phone, User, UserCheck, ZoomIn } from "lucide-react";
+import { Building2, MapPin, Phone, User, UserCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +26,11 @@ interface OrderPartyCardProps {
   onPreviewSignature?: (url: string) => void;
 }
 
-export function OrderPartyCard({ type, details, onPreviewSignature }: OrderPartyCardProps) {
+export function OrderPartyCard({
+  type,
+  details,
+  onPreviewSignature: _onPreviewSignature,
+}: OrderPartyCardProps) {
   const isSender = type === "sender";
   const title = isSender ? "Sender Information" : "Receiver Information";
   const badgeLabel = isSender ? "Purchaser / Sender" : "Beneficiary";
@@ -44,7 +48,6 @@ export function OrderPartyCard({ type, details, onPreviewSignature }: OrderParty
           .filter(Boolean)
           .join(", ");
   const resolvedAddress = formatAddress(rawAddress) || "N/A";
-  const customerSignature = details?.customerSignature;
 
   return (
     <Card className="rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">

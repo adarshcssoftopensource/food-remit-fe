@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Enterprise Application Logger
  * Suppresses debug logs in production to prevent console noise and leaks,

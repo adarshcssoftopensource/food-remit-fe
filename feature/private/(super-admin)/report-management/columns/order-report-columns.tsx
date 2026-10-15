@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, User, ZoomIn } from "lucide-react";
 
+import { CopyButton } from "@/components/common/copy-button";
 import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/date";
@@ -23,6 +24,8 @@ export interface OrderReportRow {
   storeAddress?: string | null;
   orderStatus: number;
   statusLabel: string;
+  finalStatus?: number | null;
+  closedAt?: string | null;
   orderType: number;
   totalAmount: string;
   totalAmountVal?: number;
@@ -67,11 +70,19 @@ export function getOrderReportColumns(
     {
       accessorKey: "refrenceNumber",
       header: "Reference No",
-      cell: ({ row }) => (
-        <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-          {row.original.refrenceNumber || row.original.id.substring(0, 8)}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const ref = row.original.refrenceNumber || row.original.id.substring(0, 8);
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-xs font-bold text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white">
+            <span>#{ref.replace(/^#/, "")}</span>
+            <CopyButton
+              value={ref.replace(/^#/, "")}
+              label="Reference No"
+              className="h-3.5 w-3.5 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            />
+          </span>
+        );
+      },
     },
 
     {

@@ -23,6 +23,7 @@ import {
   type CustomerReportRow,
   type OrderReportRow,
   type ReportSectionKey,
+  type StoreReportRow,
 } from "@/constants/report-management";
 import { exportToExcel } from "@/lib/export-excel";
 import apiClient from "@/lib/api/client";
@@ -212,9 +213,9 @@ function StoreReportsPage() {
         },
       });
 
-      const exportList = data?.data || filteredData || [];
+      const exportList: StoreReportRow[] = data?.data || filteredData || [];
 
-      exportToExcel("Store_Reports", exportList, [
+      exportToExcel<StoreReportRow>("Store_Reports", exportList, [
         { label: "S.No", key: (_, index) => index + 1 },
         { label: "Store Name", key: "storeName" },
         { label: "Country", key: "country" },

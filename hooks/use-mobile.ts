@@ -1,6 +1,7 @@
 import * as React from "react";
 
-const MOBILE_BREAKPOINT = 768;
+// Treats tablets (< 1280px / xl) and mobiles with overlay drawer sidebar closed by default
+const MOBILE_BREAKPOINT = 1280;
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined);

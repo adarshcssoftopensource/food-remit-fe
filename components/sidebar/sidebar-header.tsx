@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { Search, X } from "lucide-react";
 import Image from "next/image";
 
+import { useSidebar } from "@/components/ui/sidebar";
+
 interface SidebarHeaderProps {
   isCollapsed: boolean;
   searchQuery: string;
@@ -13,12 +15,14 @@ interface SidebarHeaderProps {
 }
 
 export function SidebarHeader({ isCollapsed, searchQuery, onSearchChange }: SidebarHeaderProps) {
+  const { isMobile } = useSidebar();
+
   return (
     <>
       <div
         className={cn(
-          "flex items-center justify-center transition-colors duration-200",
-          isCollapsed ? "h-14 px-1" : "h-18 px-4",
+          "flex items-center justify-center transition-all duration-200",
+          isCollapsed ? "h-14 px-1" : isMobile ? "h-22 px-4 pt-5 pb-1" : "h-18 px-4",
         )}
       >
         {isCollapsed ? (

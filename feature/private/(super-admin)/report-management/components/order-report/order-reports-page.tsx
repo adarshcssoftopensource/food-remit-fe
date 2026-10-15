@@ -14,6 +14,8 @@ import { exportToExcel } from "@/lib/export-excel";
 import apiClient from "@/lib/api/client";
 import { REPORT_ENDPOINTS } from "@/lib/api/endpoints/reports.endpoints";
 import { useDebounce } from "@/lib/debounce";
+import { useWorkflowCounts } from "@/feature/private/(store-admin)/order-management/hooks/use-workflow-counts";
+import { cn } from "@/lib/utils";
 import { OrderReportDetailPage } from "./order-report-detail-page";
 import { OrderReportFilterFields, OrderReportsTableHeader } from "./order-reports-sections";
 import { ReportDateFilters } from "../shared/report-date-filters";
@@ -83,6 +85,9 @@ export function OrderReportsPage() {
   const [appliedToDate, setAppliedToDate] = useState<Date | undefined>(undefined);
   const [appliedStoreId, setAppliedStoreId] = useState<string>("all");
 
+  const [historyFilter, setHistoryFilter] = useState<"all" | "picked-up" | "abandoned">("all");
+  const { data: workflowCounts } = useWorkflowCounts();
+
   const [isExporting, setIsExporting] = useState(false);
 
   const { data: storesList } = useGetStores({ limit: 100 });
@@ -93,6 +98,7 @@ export function OrderReportsPage() {
     queryKey: [
       "order-reports",
       effectiveStoreId ?? "all",
+      historyFilter,
       page,
       pageSize,
       sortBy,
@@ -104,6 +110,8 @@ export function OrderReportsPage() {
     ],
     queryFn: async () => {
       const typeParam = appliedFoodType !== "All" ? Number(appliedFoodType) : undefined;
+      const finalStatusParam =
+        historyFilter === "picked-up" ? 1 : historyFilter === "abandoned" ? 2 : undefined;
       const endpoint = effectiveStoreId
         ? REPORT_ENDPOINTS.GET_STORE_ORDERS(effectiveStoreId)
         : REPORT_ENDPOINTS.GET_ORDER_REPORTS;
@@ -114,7 +122,8 @@ export function OrderReportsPage() {
           limit: pageSize,
           search: debouncedSearch.trim() || undefined,
           type: typeParam,
-          status: "6,9",
+          status: "11",
+          finalStatus: finalStatusParam,
           fromDate: appliedFromDate ? appliedFromDate.toISOString() : undefined,
           toDate: appliedToDate ? appliedToDate.toISOString() : undefined,
           sortBy,
@@ -179,6 +188,8 @@ export function OrderReportsPage() {
     setIsExporting(true);
     try {
       const typeParam = appliedFoodType !== "All" ? Number(appliedFoodType) : undefined;
+      const finalStatusParam =
+        historyFilter === "picked-up" ? 1 : historyFilter === "abandoned" ? 2 : undefined;
       const exportEndpoint = effectiveStoreId
         ? REPORT_ENDPOINTS.EXPORT_STORE_ORDERS(effectiveStoreId)
         : REPORT_ENDPOINTS.EXPORT_ORDER_REPORTS;
@@ -189,7 +200,8 @@ export function OrderReportsPage() {
           limit: pageSize,
           search: debouncedSearch.trim() || undefined,
           type: typeParam,
-          status: "6,9",
+          status: "11",
+          finalStatus: finalStatusParam,
           fromDate: appliedFromDate ? appliedFromDate.toISOString() : undefined,
           toDate: appliedToDate ? appliedToDate.toISOString() : undefined,
           sortBy,
@@ -300,6 +312,49 @@ export function OrderReportsPage() {
         </CardHeader>
 
         <CardContent className="p-4">
+          {/* Sub-filter bar for Closed orders according to new workflow */}
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            {(
+              [
+                { key: "all", label: "All Closed", count: workflowCounts?.history },
+                { key: "picked-up", label: "Picked Up", count: workflowCounts?.pickedUp },
+                { key: "abandoned", label: "Abandoned", count: workflowCounts?.abandoned },
+              ] as const
+            ).map((f) => {
+              const active = historyFilter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  type="button"
+                  onClick={() => {
+                    setHistoryFilter(f.key);
+                    setPage(1);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold transition-all sm:text-sm",
+                    active
+                      ? "border-emerald-600 bg-emerald-50 text-emerald-800 shadow-xs ring-1 ring-emerald-600/30 dark:border-emerald-500/50 dark:bg-emerald-950/40 dark:text-emerald-300"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:bg-slate-800",
+                  )}
+                >
+                  <span>{f.label}</span>
+                  {typeof f.count === "number" && (
+                    <span
+                      className={cn(
+                        "rounded-full px-2 py-0.5 text-[10px] font-bold",
+                        active
+                          ? "bg-emerald-600 text-white"
+                          : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+                      )}
+                    >
+                      {f.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
           <DataTable
             columns={columns}
             data={orders}

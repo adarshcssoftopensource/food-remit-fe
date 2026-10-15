@@ -16,14 +16,14 @@ export function EmployeeOrderFinancials({ order }: EmployeeOrderFinancialsProps)
 
   return (
     <Card className="rounded-2xl border border-blue-100 bg-white shadow-sm dark:border-blue-900/30 dark:bg-slate-900">
-      <div className="flex items-center gap-2 border-b border-blue-50/50 bg-blue-50/30 px-6 py-4 dark:border-blue-900/20 dark:bg-blue-950/20">
+      <div className="flex items-center gap-2 border-b border-blue-50/50 bg-blue-50/30 px-4 py-3.5 sm:px-6 sm:py-4 dark:border-blue-900/20 dark:bg-blue-950/20">
         <CreditCard className="size-5 text-blue-500" />
         <h3 className="text-base font-bold text-slate-900 dark:text-white">
           Order Payment Summary
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 p-6">
+      <div className="grid grid-cols-1 gap-4 p-4 sm:gap-6 sm:p-6">
         <div>
           <p className="text-[10px] font-bold tracking-wider text-blue-500 uppercase">
             Order Total

@@ -123,10 +123,29 @@ export interface DashboardData {
   recentOrdersRequested: DashboardOrderRequested[];
   recentlyPlacedOrders: DashboardRecentlyPlacedOrder[];
   trendingOrders: DashboardTrendingOrder[];
+  totalOrdersReceived?: { today: number; thisWeek: number; total: number };
   totalPendingOrders?: { today: number; thisWeek: number; total: number };
-  totalRequestedOrders?: { today: number; thisWeek: number; total: number };
+  totalRequestedOrders?: {
+    today: number;
+    thisWeek: number;
+    total: number;
+    pendingTotal?: number;
+    amount?: string;
+    pendingAmount?: string;
+  };
   totalOrdersCompleted?: { today: number; thisWeek: number; total: number };
-  totalEarnings?: { today: string; thisWeek: string; total: string };
+  totalEarnings?: {
+    today: string;
+    thisWeek: string;
+    total: string;
+    todayRaw?: number;
+    thisWeekRaw?: number;
+    totalRaw?: number;
+  };
+  amountToPay?: {
+    requestedPendingAmount: string;
+    totalRequestedAmount: string;
+  };
   sales?: any[];
   revenueBreakdown?: { label: string; percentage: number }[];
   totalOpenTickets?: number;

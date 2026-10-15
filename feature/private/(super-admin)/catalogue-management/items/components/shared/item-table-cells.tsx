@@ -5,7 +5,7 @@ import { CopyButton } from "@/components/common/copy-button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
-import { Barcode, ChevronDown, FolderOpen, Hash, Leaf, Maximize2, Star } from "lucide-react";
+import { ChevronDown, FolderOpen, Hash, Leaf, Maximize2, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -142,7 +142,7 @@ export function ItemCategoryCell({
   const storeName = item.storeName || item.store?.storeName;
 
   return (
-    <div className="max-w-[220px] min-w-[140px] space-y-1">
+    <div className="max-w-55 min-w-35 space-y-1">
       {categoryName && categoryId ? (
         <Link
           href={ROUTES.ADMIN.CATALOGUE_MANAGEMENT.CATEGORY_WORKSPACE(categoryId)}
@@ -175,7 +175,7 @@ export function ItemPacksPriceCell({ item }: { item: ItemData }) {
   const firstSize = first ? formatPackSize(first) : "";
 
   const content = (
-    <div className="min-w-[130px] space-y-1 text-left">
+    <div className="min-w-32.5 space-y-1 text-left">
       <p className="text-sm font-semibold text-slate-900 tabular-nums dark:text-white">
         {summary.label}
       </p>

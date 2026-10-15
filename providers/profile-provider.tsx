@@ -8,6 +8,7 @@ import {
 } from "@/components/feedback";
 
 import { hasPathPermission } from "@/config/permissions";
+import { isStoreManagerRole, isSuperAdminRole } from "@/config/roles";
 import { ROUTES } from "@/config/routes";
 import { fetcher } from "@/hooks/useApi";
 import { AUTH_ENDPOINTS } from "@/lib/api/endpoints/auth.endpoints";
@@ -19,6 +20,7 @@ import {
   setNeedsBankVerification,
 } from "@/lib/bank-verification-gate";
 import { useQuery } from "@tanstack/react-query";
+import type { PartnerLeadData } from "@/feature/private/(store-admin)/partner-leads/types/partner-lead.types";
 import { usePathname } from "next/navigation";
 import React, { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 
@@ -56,11 +58,10 @@ export interface AdminProfile {
     createdAt?: string | null;
     foodRemitCommission?: number | null;
   }[];
-  partnerLead?: any;
+  partnerLead?: PartnerLeadData | null;
   isReadOnly?: boolean;
   mustChangePassword?: boolean;
   changePasswordStatus?: boolean | null;
-  /** View-only sessions: the manager still uses the system-generated password. */
   passwordSetupPending?: boolean;
 }
 
@@ -69,7 +70,6 @@ interface ProfileContextType {
   isLoading: boolean;
   isError: boolean;
   isSuperAdmin: boolean;
-  /** Super / Sub / Co Admin — markup + processing fee visibility */
   canViewPlatformFees: boolean;
   hasPermission: (permissionKey: keyof ProfilePermissions | string) => boolean;
   isReadOnly: boolean;
@@ -108,16 +108,11 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     retry: false,
   });
 
-  const isSuperAdmin =
-    profileData?.roleCode === "SUPER_ADMIN" ||
-    profileData?.roleCode === "CO_ADMIN" ||
-    profileData?.role === "super_admin" ||
-    profileData?.role === "co_admin";
+  const isSuperAdmin = isSuperAdminRole(profileData?.roleCode, profileData?.role);
 
   const canViewPlatformFees = isPlatformFeeAdmin(profileData);
 
-  const isStoreManager =
-    profileData?.roleCode === "STORE_MANAGER" || profileData?.role === "store_manager";
+  const isStoreManager = isStoreManagerRole(profileData?.roleCode, profileData?.role);
 
   const bankStatus = resolvePartnerBankStatus(profileData?.partnerLead);
   const needsBankVerification =

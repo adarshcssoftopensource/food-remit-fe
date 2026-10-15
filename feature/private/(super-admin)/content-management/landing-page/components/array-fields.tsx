@@ -2,7 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { useRef } from "react";
-import { useFieldArray, useWatch, type Control, type UseFormSetValue } from "react-hook-form";
+import { useFieldArray, type Control, type UseFormSetValue } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { FieldLabel } from "@/components/ui/field";

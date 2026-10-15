@@ -25,6 +25,10 @@ export interface CreditsStore {
   name: string;
   country: string;
   city: string;
+  state?: string;
+  zipCode?: string;
+  streetAddress?: string;
+  address2?: string;
   address: string;
   fullAddress?: string;
   image?: string | null;
@@ -59,6 +63,10 @@ export interface CreditsData {
   receiverName?: string;
   storeName?: string;
   country?: string;
+  isAbandoned?: boolean;
+  abandonRemark?: string | null;
+  abandonedAt?: string | null;
+  creditType?: "abandoned" | "out_of_stock";
 }
 
 export interface CreditsSummary {
@@ -114,6 +122,10 @@ export interface CreditDetailData {
   status: "Pending" | "Completed";
   unmarkedItems: CreditsItem[];
   allItems: CreditsItem[];
+  isAbandoned?: boolean;
+  abandonRemark?: string | null;
+  abandonedAt?: string | null;
+  creditType?: "abandoned" | "out_of_stock";
 }
 
 export interface CreditsPagination {
@@ -187,6 +199,8 @@ export interface CreditUnmarkedItemsProps {
   items: CreditsItem[];
   currency: string;
   onImageClick: (url: string) => void;
+  isAbandoned?: boolean;
+  title?: string;
 }
 
 export interface CreditColumnsOptions {

@@ -1,5 +1,6 @@
 "use client";
 
+import { CopyButton } from "@/components/common/copy-button";
 import { formatDate } from "@/lib/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeOrderActionsCell } from "../components/employee-order-actions-cell";
@@ -36,13 +37,17 @@ export function getEmployeeOrderColumns({
       cell: ({ row }) => {
         const orderId =
           (row.original.refrenceNumber as string) || (row.original.id as string).substring(0, 8);
+        const cleanRef = orderId.replace(/^#/, "");
         return (
-          <div className="flex items-center">
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 font-mono text-xs font-semibold text-emerald-700 shadow-sm dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
-              <span className="text-emerald-500/70">#</span>
-              {orderId.replace(/^#/, "")}
-            </span>
-          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 font-mono text-xs font-semibold text-emerald-700 shadow-sm dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+            <span className="text-emerald-500/70">#</span>
+            <span>{cleanRef}</span>
+            <CopyButton
+              value={cleanRef}
+              label="Reference No"
+              className="h-3.5 w-3.5 p-0 text-emerald-600/70 hover:text-emerald-700 dark:hover:text-emerald-300"
+            />
+          </span>
         );
       },
     },

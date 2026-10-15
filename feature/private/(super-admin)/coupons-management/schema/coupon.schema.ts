@@ -1,16 +1,42 @@
 import { z } from "zod";
 
+const preprocessNumber = (val: unknown, fallback?: number) => {
+  if (val === "" || val === null || val === undefined) return fallback;
+  const num = Number(val);
+  return Number.isNaN(num) ? undefined : num;
+};
+
 export const couponSchema = z
   .object({
     couponName: z.string().min(3, "Coupon name is required (min 3 chars)"),
-    couponCode: z.string().optional(),
-    discount: z
-      .number()
-      .min(1, "Discount must be at least 1%")
-      .max(100, "Discount can be at most 100%"),
+    couponCode: z
+      .string({ message: "Coupon code is required" })
+      .min(3, "Coupon code is required (min 3 characters)")
+      .max(20, "Coupon code cannot exceed 20 characters")
+      .regex(/^[A-Z0-9_-]+$/i, "Coupon code can only contain letters, numbers, and hyphens")
+      .transform((val) => val.toUpperCase().trim()),
+    discount: z.preprocess(
+      (val) => preprocessNumber(val),
+      z
+        .number({ message: "Discount rate is required" })
+        .min(1, "Discount must be at least 1%")
+        .max(100, "Discount cannot exceed 100%"),
+    ),
     description: z.string().optional(),
-    minOrderValue: z.number().min(0, "Minimum order value must be 0 or more"),
-    maxUsers: z.number().min(1, "Maximum number of users must be at least 1"),
+    minOrderValue: z.preprocess(
+      (val) => preprocessNumber(val),
+      z
+        .number({ message: "Minimum order amount is required" })
+        .min(1, "Minimum order amount must be at least $1")
+        .max(100000, "Minimum order amount cannot exceed $100,000"),
+    ),
+    maxUsers: z.preprocess(
+      (val) => preprocessNumber(val),
+      z
+        .number({ message: "Maximum number of users must be at least 1" })
+        .min(1, "Maximum number of users must be at least 1")
+        .max(1000000, "Maximum number of users cannot exceed 1,000,000"),
+    ),
     scope: z.enum(["global", "store"]),
     storeId: z.string().optional(),
     startDate: z.string().min(1, "Start date is required"),

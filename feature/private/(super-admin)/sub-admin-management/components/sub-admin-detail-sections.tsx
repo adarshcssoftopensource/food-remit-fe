@@ -70,41 +70,39 @@ export function SubAdminProfileCard({ admin, initials, isActive }: SubAdminProfi
       <div className="bg-primary/8 pointer-events-none absolute -top-24 -right-16 h-80 w-80 rounded-full blur-3xl" />
       <div className="bg-primary/5 pointer-events-none absolute -bottom-20 left-1/3 h-64 w-64 rounded-full blur-3xl" />
 
-      <CardContent className="relative p-6 sm:p-8">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-5">
+      <CardContent className="relative p-4 sm:p-6 md:p-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-1 items-center gap-3.5 sm:gap-5">
             <div className="relative shrink-0">
-              <div className="from-primary/20 via-primary/10 to-primary/5 text-primary ring-primary/15 flex h-20 w-20 items-center justify-center rounded-[22px] bg-linear-to-br text-2xl font-black shadow-sm ring-1 sm:h-24 sm:w-24 sm:text-3xl">
+              <div className="from-primary/20 via-primary/10 to-primary/5 text-primary ring-primary/15 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br text-xl font-black shadow-sm ring-1 sm:h-20 sm:w-20 sm:rounded-[22px] sm:text-2xl md:h-24 md:w-24 md:text-3xl">
                 {initials}
               </div>
               <span
                 className={cn(
-                  "absolute -right-1.5 -bottom-1.5 flex h-6 w-6 items-center justify-center rounded-full border-[3px] border-white shadow-sm dark:border-slate-950",
+                  "absolute -right-1 -bottom-1 flex h-4.5 w-4.5 items-center justify-center rounded-full border-2 border-white shadow-sm sm:-right-1.5 sm:-bottom-1.5 sm:h-6 sm:w-6 sm:border-[3px] dark:border-slate-950",
                   isActive ? "bg-emerald-500" : "bg-rose-500",
                 )}
               >
-                <span className="h-2 w-2 rounded-full bg-white" />
+                <span className="h-1.5 w-1.5 rounded-full bg-white sm:h-2 sm:w-2" />
               </span>
             </div>
 
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="truncate text-2xl font-black tracking-tight text-slate-900 capitalize sm:text-3xl dark:text-white">
-                  {admin.userName}
-                </h1>
-              </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg font-black tracking-tight break-words text-slate-900 capitalize sm:text-2xl md:text-3xl dark:text-white">
+                {admin.userName}
+              </h1>
 
-              <p className="mt-1 text-sm font-medium text-slate-400 dark:text-slate-500">
+              <p className="mt-0.5 text-xs font-medium break-all text-slate-400 sm:text-sm dark:text-slate-500">
                 {admin.email}
               </p>
 
-              <div className="mt-3 flex flex-wrap items-center gap-2">
+              <div className="mt-2.5 flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <StatusBadge
                   status={isActive ? "Active" : "Inactive"}
-                  className="flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold"
+                  className="flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold sm:gap-1.5 sm:px-3 sm:py-1 sm:text-xs"
                 />
 
-                <div className="border-primary/20 bg-primary/10 text-primary dark:border-primary/20 dark:bg-primary/15 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold">
+                <div className="border-primary/20 bg-primary/10 text-primary dark:border-primary/20 dark:bg-primary/15 flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold sm:gap-1.5 sm:px-3 sm:py-1 sm:text-xs">
                   <ShieldCheck className="h-3 w-3" />
                   {admin.permissions?.length || 0} Permissions
                 </div>
@@ -112,21 +110,23 @@ export function SubAdminProfileCard({ admin, initials, isActive }: SubAdminProfi
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-col items-end gap-2">
+          <div className="flex shrink-0 items-center self-start sm:self-center">
             <div
               className={cn(
-                "flex items-center gap-2.5 rounded-2xl border border-emerald-200/60 bg-emerald-50/80 px-5 py-3.5 dark:border-emerald-500/20 dark:bg-emerald-500/5",
+                "flex items-center gap-2 rounded-xl border border-emerald-200/60 bg-emerald-50/80 px-3 py-1.5 sm:rounded-2xl sm:px-5 sm:py-3.5 dark:border-emerald-500/20 dark:bg-emerald-500/5",
               )}
             >
-              <span className={cn("relative flex h-2.5 w-2.5")}>
+              <span className={cn("relative flex h-2 w-2 sm:h-2.5 sm:w-2.5")}>
                 {isActive && (
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                 )}
                 <span
-                  className={cn("relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500")}
+                  className={cn(
+                    "relative inline-flex h-2 w-2 rounded-full bg-emerald-500 sm:h-2.5 sm:w-2.5",
+                  )}
                 />
               </span>
-              <span className="text-primary px-2.5 py-1 text-[12px] font-bold tracking-wider uppercase">
+              <span className="text-primary px-1 py-0.5 text-[11px] font-bold tracking-wider uppercase sm:px-2.5 sm:py-1 sm:text-[12px]">
                 {admin.role}
               </span>
             </div>
@@ -147,10 +147,10 @@ export type SubAdminDetailItem = {
 export function PersonalInfoCard({ details }: { details: SubAdminDetailItem[] }) {
   return (
     <Card className="overflow-hidden rounded-3xl border border-slate-200/80 shadow-sm dark:border-slate-800">
-      <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+      <CardHeader className="border-b border-slate-100 px-4 py-3.5 sm:px-6 sm:py-4 dark:border-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 sm:h-10 sm:w-10 dark:bg-emerald-500/10 dark:text-emerald-400">
               <Users className="h-4.5 w-4.5" />
             </div>
             <div>
@@ -163,12 +163,12 @@ export function PersonalInfoCard({ details }: { details: SubAdminDetailItem[] })
         </div>
       </CardHeader>
 
-      <CardContent className="p-5">
+      <CardContent className="p-4 sm:p-5">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {details.map((item) => (
             <div
               key={item.label}
-              className="group flex items-start gap-3.5 rounded-2xl border border-slate-100 bg-slate-50/60 p-4 transition-colors hover:border-slate-200 hover:bg-slate-100/60 dark:border-slate-800 dark:bg-slate-900/40 dark:hover:border-slate-700"
+              className="group flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3.5 transition-colors hover:border-slate-200 hover:bg-slate-100/60 sm:p-4 dark:border-slate-800 dark:bg-slate-900/40 dark:hover:border-slate-700"
             >
               <div
                 className={cn(
@@ -178,11 +178,11 @@ export function PersonalInfoCard({ details }: { details: SubAdminDetailItem[] })
               >
                 {item.icon}
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
                   {item.label}
                 </p>
-                <p className="mt-1 truncate text-sm font-semibold text-slate-800 dark:text-slate-200">
+                <p className="mt-1 text-xs font-semibold [overflow-wrap:anywhere] break-words text-slate-800 sm:text-sm dark:text-slate-200">
                   {item.value}
                 </p>
               </div>
@@ -215,10 +215,10 @@ export function ModulePermissionsCard({
 
   return (
     <Card className="overflow-hidden rounded-3xl border border-slate-200/80 shadow-sm dark:border-slate-800">
-      <CardHeader className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
-        <div className="flex items-center justify-between">
+      <CardHeader className="border-b border-slate-100 px-4 py-3.5 sm:px-6 sm:py-4 dark:border-slate-800">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-primary/10 text-primary dark:bg-primary/15 flex h-10 w-10 items-center justify-center rounded-xl">
+            <div className="bg-primary/10 text-primary dark:bg-primary/15 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10">
               <ShieldCheck className="h-4.5 w-4.5" />
             </div>
             <div>
@@ -228,16 +228,14 @@ export function ModulePermissionsCard({
               <p className="text-xs text-slate-400">All page permissions</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                {grantedCount} Granted
-              </div>
-              <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                <span className="h-2 w-2 rounded-full bg-slate-400" />
-                {allPermissions.length - grantedCount} Not Granted
-              </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 sm:text-xs dark:bg-emerald-500/10 dark:text-emerald-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 sm:h-2 sm:w-2" />
+              {grantedCount} Granted
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600 sm:text-xs dark:bg-slate-800 dark:text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-400 sm:h-2 sm:w-2" />
+              {allPermissions.length - grantedCount} Not Granted
             </div>
           </div>
         </div>

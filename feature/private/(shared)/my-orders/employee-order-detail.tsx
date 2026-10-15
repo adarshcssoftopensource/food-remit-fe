@@ -50,9 +50,9 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
   const { assigned, pickedUp, closed, handlerName, itemCount, orderRef, customerName } = state;
 
   return (
-    <div className="space-y-5">
+    <div className="w-full max-w-full min-w-0 space-y-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-2">
+        <div className="min-w-0 space-y-2">
           <PageHeader
             title={`Order #${maskOrderReference(orderRef)}`}
             description={getEmployeeOrderDescription(state)}
@@ -84,15 +84,15 @@ export function EmployeeOrderDetailPage({ id }: { id: string }) {
       <OrderAbandonRemarkCard order={order} />
       <OrderProgressTimeline order={order} />
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
-        <div className="space-y-5">
+      <div className="grid max-w-full min-w-0 gap-5 lg:grid-cols-[1fr_300px]">
+        <div className="max-w-full min-w-0 space-y-5">
           <OrderSummaryCard order={order} hideQrCode maskReference />
           <EmployeeOrderFinancials order={order} />
           <OrderPeopleAndStore order={order} />
           <OrderItemsTable items={order.items ?? []} onImageClick={setLightboxImage} hideQrCode />
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+        <aside className="min-w-0 space-y-4 lg:sticky lg:top-4 lg:self-start">
           <EmployeeOrderOwnershipCard
             order={order}
             handlerName={handlerName}

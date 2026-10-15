@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  ArrowLeft,
   Bell,
   CheckCheck,
   Inbox,
@@ -11,6 +12,7 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { OrderNotificationCard } from "./order-notification-card";
 
@@ -20,6 +22,9 @@ import { PageHeader } from "@/components/common/page-header";
 import { successToast } from "@/components/toaster";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { isEmployeeRole } from "@/config/roles";
+import { ROUTES } from "@/config/routes";
+import { useProfile } from "@/providers/profile-provider";
 import {
   Select,
   SelectContent,
@@ -50,6 +55,9 @@ const DEFAULT_PAGINATION = {
 
 export function NotificationsInbox() {
   const queryClient = useQueryClient();
+  const { profile } = useProfile();
+  const isEmployee = isEmployeeRole(profile?.roleCode, profile?.role);
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
   const [status, setStatus] = useState<"all" | "unread" | "read">("all");
@@ -111,8 +119,25 @@ export function NotificationsInbox() {
       <PageHeader
         title="Notifications"
         description="Your admin inbox — every announcement sent to your account."
+        breadcrumbs={
+          isEmployee
+            ? [{ label: "My Orders", href: ROUTES.ADMIN.MY_ORDERS }, { label: "Notifications" }]
+            : undefined
+        }
         action={
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            {isEmployee && (
+              <Link href={ROUTES.ADMIN.MY_ORDERS}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10 rounded-xl border-slate-200 bg-white px-3.5 font-semibold text-slate-700 shadow-2xs transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50/60 hover:text-emerald-700 active:scale-98 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                >
+                  <ArrowLeft className="mr-1.5 size-4 text-emerald-600" />
+                  Back to Orders
+                </Button>
+              </Link>
+            )}
             {unreadCount > 0 && (
               <Badge className="rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white shadow-xs">
                 {unreadCount} unread
@@ -188,14 +213,14 @@ export function NotificationsInbox() {
                 <li
                   key={item.id}
                   className={cn(
-                    "group relative px-5 py-4 transition-colors",
+                    "group relative px-3.5 py-4 transition-colors sm:px-5",
                     item.isRead ? "bg-white" : "bg-emerald-50/40",
                   )}
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3 sm:gap-4">
                     <div
                       className={cn(
-                        "mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl ring-1 transition-all duration-200",
+                        "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl ring-1 transition-all duration-200 sm:size-10",
                         item.isRead
                           ? "bg-slate-100 text-slate-500 ring-slate-200/80"
                           : "bg-emerald-100 text-emerald-700 shadow-xs ring-emerald-300",
@@ -213,18 +238,18 @@ export function NotificationsInbox() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+                          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                             {item.title}
                           </h3>
                           {!item.isRead ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase shadow-xs">
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase shadow-xs">
                               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
                               New
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100/90 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-800/80">
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-slate-200 bg-slate-100/90 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-800/80">
                               <Check className="size-2.5 text-slate-400" />
                               Read
                             </span>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Barcode, PackageX, ZoomIn } from "lucide-react";
+import { CopyButton } from "@/components/common/copy-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -15,26 +16,45 @@ import {
 import { cleanCurrencyDisplay } from "@/lib/utils/currency";
 import type { CreditUnmarkedItemsProps } from "../types/credits.types";
 
-export function CreditUnmarkedItems({ items, currency, onImageClick }: CreditUnmarkedItemsProps) {
+export function CreditUnmarkedItems({
+  items,
+  currency,
+  onImageClick,
+  isAbandoned = false,
+  title,
+}: CreditUnmarkedItemsProps) {
   return (
     <Card className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 shadow-xs backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/80">
       <CardHeader className="border-b border-slate-100 px-5 py-3.5 dark:border-slate-800">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
+            <div
+              className={`flex size-7 items-center justify-center rounded-lg ${
+                isAbandoned
+                  ? "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400"
+                  : "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+              }`}
+            >
               <PackageX className="size-3.5" />
             </div>
             <div>
               <CardTitle className="text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300">
-                Unmarked Items Requiring Refund ({items.length})
+                {title ||
+                  (isAbandoned
+                    ? `Prepared Order Items (${items.length})`
+                    : `Unmarked Items Requiring Refund (${items.length})`)}
               </CardTitle>
             </div>
           </div>
           <Badge
-            variant="destructive"
-            className="rounded-full bg-rose-500/15 px-3 py-0.5 text-xs font-semibold text-rose-600 shadow-none hover:bg-rose-500/20 dark:bg-rose-950/40 dark:text-rose-400"
+            variant={isAbandoned ? "outline" : "destructive"}
+            className={
+              isAbandoned
+                ? "rounded-full border-amber-300 bg-amber-50 px-3 py-0.5 text-xs font-semibold text-amber-800 shadow-none dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-300"
+                : "rounded-full bg-rose-500/15 px-3 py-0.5 text-xs font-semibold text-rose-600 shadow-none hover:bg-rose-500/20 dark:bg-rose-950/40 dark:text-rose-400"
+            }
           >
-            Out of Stock
+            {isAbandoned ? "Abandoned Order" : "Out of Stock"}
           </Badge>
         </div>
       </CardHeader>
@@ -94,7 +114,6 @@ export function CreditUnmarkedItems({ items, currency, onImageClick }: CreditUnm
                         )}
                       </button>
 
-                      {/* Product Name & Barcode */}
                       <div className="min-w-0">
                         <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
                           {item.itemName}
@@ -103,15 +122,29 @@ export function CreditUnmarkedItems({ items, currency, onImageClick }: CreditUnm
                           {item.barcode ? (
                             <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[10px] font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
                               <Barcode className="size-3" />
-                              {item.barcode}
+                              <span>{item.barcode}</span>
+                              <CopyButton
+                                value={item.barcode}
+                                label="Barcode"
+                                className="h-3 w-3 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                              />
                             </span>
                           ) : (
-                            <span className="text-[10px] text-slate-400">
-                              ID: {item.itemId.slice(0, 8)}
+                            <span className="inline-flex items-center gap-1 text-[10px] text-slate-400">
+                              <span>ID: {item.itemId.slice(0, 8)}</span>
+                              <CopyButton
+                                value={item.itemId}
+                                label="Item ID"
+                                className="h-3 w-3 p-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                              />
                             </span>
                           )}
-                          <span className="text-[10px] font-medium text-rose-500">
-                            • Out of Stock
+                          <span
+                            className={`text-[10px] font-medium ${
+                              isAbandoned ? "text-amber-600 dark:text-amber-400" : "text-rose-500"
+                            }`}
+                          >
+                            {isAbandoned ? "• Abandoned" : "• Out of Stock"}
                           </span>
                         </div>
                       </div>

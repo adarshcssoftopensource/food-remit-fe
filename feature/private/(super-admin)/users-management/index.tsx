@@ -62,7 +62,7 @@ export function UserManagement() {
   };
 
   const selectedUserIds = useMemo(() => {
-    return Object.keys(rowSelection).filter(Boolean);
+    return Object.keys(rowSelection).filter((id) => Boolean(rowSelection[id]));
   }, [rowSelection]);
 
   const handleBulkDelete = () => {

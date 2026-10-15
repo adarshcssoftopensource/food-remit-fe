@@ -23,6 +23,7 @@ import {
   DataTableRowActionItem,
   DataTableRowActions,
 } from "@/components/common/data-table/data-table-row-actions";
+import { CopyButton } from "@/components/common/copy-button";
 import { maskOrderReference } from "../utils/mask-order-reference";
 
 function MyOrderActionsCell({ order }: { order: OrderData }) {
@@ -93,7 +94,7 @@ function MyOrderActionsCell({ order }: { order: OrderData }) {
         <>
           <Button
             size="sm"
-            className="h-9 min-w-[8.5rem] rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white shadow-sm shadow-emerald-600/20 hover:bg-emerald-700"
+            className="h-9 min-w-34 rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white shadow-sm shadow-emerald-600/20 hover:bg-emerald-700"
             onClick={() => setPickupOpen(true)}
           >
             <PackageCheck className="mr-1.5 size-3.5" />
@@ -132,14 +133,20 @@ export const myOrderColumns: ColumnDef<OrderData>[] = [
   {
     accessorKey: "refrenceNumber",
     header: "Order ID",
-    cell: ({ row }) => (
-      <div className="flex items-center">
+    cell: ({ row }) => {
+      const orderRef = row.original.refrenceNumber || row.original.id;
+      return (
         <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 font-mono text-xs font-semibold text-emerald-700 shadow-sm dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
           <span className="text-emerald-500/70">#</span>
-          {maskOrderReference(row.original.refrenceNumber || row.original.id)}
+          <span>{maskOrderReference(orderRef)}</span>
+          <CopyButton
+            value={orderRef}
+            label="Order ID"
+            className="h-3.5 w-3.5 p-0 text-emerald-600/70 hover:text-emerald-700 dark:hover:text-emerald-300"
+          />
         </span>
-      </div>
-    ),
+      );
+    },
   },
   {
     id: "customer",

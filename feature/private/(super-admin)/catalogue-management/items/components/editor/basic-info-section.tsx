@@ -66,7 +66,7 @@ export function BasicInfoSection({ autoFocus }: { autoFocus: boolean }) {
           )}
         />
 
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:gap-5 xl:grid-cols-2">
           <FormField
             control={form.control}
             name="itemNumber"
@@ -103,7 +103,7 @@ export function BasicInfoSection({ autoFocus }: { autoFocus: boolean }) {
                   UPC / barcode
                   <Optional />
                 </FormLabel>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
                   <FormControl>
                     <NumericInput
                       placeholder="8 to 14 digits"
@@ -112,6 +112,7 @@ export function BasicInfoSection({ autoFocus }: { autoFocus: boolean }) {
                       onValueChange={field.onChange}
                       onBlur={field.onBlur}
                       name={field.name}
+                      className="min-w-[130px] flex-1"
                     />
                   </FormControl>
                   <Button
@@ -123,10 +124,10 @@ export function BasicInfoSection({ autoFocus }: { autoFocus: boolean }) {
                         shouldValidate: true,
                       })
                     }
-                    className="h-10 shrink-0 gap-1.5 rounded-xl"
+                    className="h-10 shrink-0 gap-1.5 rounded-xl px-3 text-xs sm:px-4 sm:text-sm"
                   >
                     <Wand2 className="h-4 w-4" />
-                    Generate
+                    <span>Generate</span>
                   </Button>
                 </div>
                 <FormMessage />

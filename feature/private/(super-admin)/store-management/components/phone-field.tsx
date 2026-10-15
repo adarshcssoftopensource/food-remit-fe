@@ -6,7 +6,7 @@ import PhoneInputComponent from "@/components/ui/phone-input";
 import { toPhoneDigits } from "@/lib/phone";
 
 export function PhoneField({
-  codeValue,
+  codeValue: _codeValue,
   onCodeChange,
   numberValue,
   onNumberChange,

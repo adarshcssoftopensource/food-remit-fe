@@ -110,8 +110,8 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
         variant="destructive"
       />
 
-      <Card className="col-span-1 overflow-hidden rounded-2xl border-slate-200/80 shadow-xs md:col-span-2 dark:border-slate-800">
-        <CardHeader className="border-b border-slate-100 bg-slate-50/60 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/60">
+      <Card className="col-span-1 max-w-full min-w-0 overflow-hidden rounded-2xl border-slate-200/80 shadow-xs md:col-span-2 dark:border-slate-800">
+        <CardHeader className="border-b border-slate-100 bg-slate-50/60 px-4 py-3.5 sm:px-6 sm:py-4 dark:border-slate-800 dark:bg-slate-900/60">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <CardTitle className="flex items-center gap-2.5 text-base font-bold text-slate-900 dark:text-white">
               <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
@@ -164,7 +164,7 @@ export function AdditionalDocumentsCard({ lead }: AdditionalDocumentsCardProps) 
           </div>
         </CardHeader>
 
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           {!hasDocs ? (
             <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center dark:border-slate-800 dark:bg-slate-900/30">
               <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 dark:bg-slate-800">

@@ -4,26 +4,42 @@ import { type Control, Controller, type FieldErrors } from "react-hook-form";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import type { CouponFormValues } from "../../schema/coupon.schema";
+import { SmartNumberInput } from "../common/smart-number-input";
 
 type LimitsCardProps = {
   control: Control<CouponFormValues>;
   errors: FieldErrors<CouponFormValues>;
+  currencySymbol?: string;
+  currencyCode?: string;
 };
 
-export function CouponPageLimitsCard({ control, errors }: LimitsCardProps) {
+export function CouponPageLimitsCard({
+  control,
+  errors,
+  currencySymbol = "$",
+  currencyCode,
+}: LimitsCardProps) {
   return (
     <Card className="rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
       <CardHeader className="border-b border-slate-100 px-6 py-4.5 dark:border-slate-800">
-        <CardTitle className="text-sm font-bold text-slate-900 dark:text-white">
-          Discount Values & Redemption Thresholds
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-bold text-slate-900 dark:text-white">
+            Discount Values &amp; Redemption Thresholds
+          </CardTitle>
+          {currencyCode && (
+            <span className="text-xs font-medium text-slate-400">
+              Country Currency:{" "}
+              <strong className="text-slate-700 dark:text-slate-200">
+                {currencyCode} ({currencySymbol})
+              </strong>
+            </span>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent className="p-6">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {/* Discount % */}
           <Controller
             name="discount"
             control={control}
@@ -33,17 +49,15 @@ export function CouponPageLimitsCard({ control, errors }: LimitsCardProps) {
                   Discount Rate (%) <span className="text-rose-500">*</span>
                 </FieldLabel>
                 <div className="relative flex items-center">
-                  <Input
-                    {...field}
-                    type="number"
+                  <SmartNumberInput
+                    id="discount"
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
                     min={1}
                     max={100}
-                    placeholder="10"
-                    value={field.value ?? ""}
-                    onChange={(e) =>
-                      field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                    }
-                    className="h-11 w-full rounded-xl text-xs font-bold"
+                    placeholder="0"
                   />
                 </div>
                 {errors.discount && (
@@ -53,24 +67,35 @@ export function CouponPageLimitsCard({ control, errors }: LimitsCardProps) {
             )}
           />
 
-          {/* Min Order $ */}
           <Controller
             name="minOrderValue"
             control={control}
             render={({ field }) => (
               <div className="space-y-1.5">
-                <FieldLabel className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Min Order Amount ($) <span className="text-rose-500">*</span>
-                </FieldLabel>
+                <div className="flex items-center justify-between">
+                  <FieldLabel className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Min Order Amount ({currencySymbol}) <span className="text-rose-500">*</span>
+                  </FieldLabel>
+                  {currencyCode && (
+                    <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                      {currencyCode}
+                    </span>
+                  )}
+                </div>
                 <div className="relative flex items-center">
-                  <Input
-                    {...field}
-                    type="number"
-                    min={0}
+                  <span className="pointer-events-none absolute left-3.5 z-10 text-xs font-bold text-slate-400">
+                    {currencySymbol}
+                  </span>
+                  <SmartNumberInput
+                    id="minOrderValue"
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    min={1}
+                    max={100000}
                     placeholder="0"
-                    value={field.value ?? ""}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : 0)}
-                    className="h-11 w-full rounded-xl text-xs font-bold"
+                    className="pl-8"
                   />
                 </div>
                 {errors.minOrderValue && (
@@ -90,16 +115,15 @@ export function CouponPageLimitsCard({ control, errors }: LimitsCardProps) {
                   Max Redemptions <span className="text-rose-500">*</span>
                 </FieldLabel>
                 <div className="relative flex items-center">
-                  <Input
-                    {...field}
-                    type="number"
+                  <SmartNumberInput
+                    id="maxUsers"
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
                     min={1}
-                    placeholder="100"
-                    value={field.value ?? ""}
-                    onChange={(e) =>
-                      field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                    }
-                    className="h-11 w-full rounded-xl text-xs font-bold"
+                    max={1000000}
+                    placeholder="0"
                   />
                 </div>
                 {errors.maxUsers && (

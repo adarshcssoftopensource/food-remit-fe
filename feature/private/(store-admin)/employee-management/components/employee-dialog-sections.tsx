@@ -30,19 +30,19 @@ function getInitialImages(value: EmployeeFormValues["image"]) {
 
 export function EmployeeDialogHeader({ isEdit }: { isEdit: boolean }) {
   return (
-    <DialogHeader className="shrink-0 border-b bg-linear-to-r from-slate-50 via-slate-100 to-slate-50 px-6 py-6">
+    <DialogHeader className="shrink-0 border-b bg-linear-to-r from-slate-50 via-slate-100 to-slate-50 px-4 py-3.5 sm:px-6 sm:py-5">
       <div className="flex flex-col items-center text-center">
-        <DialogTitle className="flex gap-6 text-2xl font-bold tracking-tight text-slate-800">
+        <DialogTitle className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-slate-800 sm:gap-3 sm:text-2xl">
           {isEdit ? (
-            <UserPen className="h-7 w-7" strokeWidth={2.2} />
+            <UserPen className="h-5 w-5 text-emerald-600 sm:h-7 sm:w-7" strokeWidth={2.2} />
           ) : (
-            <UserPlus className="h-7 w-7" strokeWidth={2.2} />
+            <UserPlus className="h-5 w-5 text-emerald-600 sm:h-7 sm:w-7" strokeWidth={2.2} />
           )}
 
-          {isEdit ? "Edit Employee" : "Add New Employee"}
+          <span>{isEdit ? "Edit Employee" : "Add New Employee"}</span>
         </DialogTitle>
 
-        <p className="mt-1 max-w-md text-sm leading-6 text-slate-500">
+        <p className="mt-1 max-w-md text-xs leading-relaxed text-slate-500 sm:text-sm">
           {isEdit
             ? "Update the employee's profile, contact details, and permissions."
             : "Create a new employee profile and provide them access to your organization."}
@@ -380,11 +380,12 @@ interface EmployeeDialogFooterProps {
 
 export function EmployeeDialogFooter({ isPending, isEdit, onCancel }: EmployeeDialogFooterProps) {
   return (
-    <div className="sticky bottom-0 z-10 flex justify-center border-t bg-white px-6 py-4 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
-      <div className="flex gap-4">
+    <div className="shrink-0 border-t border-slate-100 bg-white px-4 py-3 shadow-xs sm:px-6 sm:py-4">
+      <div className="mx-auto flex max-w-3xl items-center gap-2.5 sm:justify-end sm:gap-3">
         <Button
-          variant="destructive"
-          className="h-12 rounded-xl px-8 text-base font-medium transition-transform hover:scale-[1.02]"
+          type="button"
+          variant="outline"
+          className="h-11 flex-1 rounded-xl border-slate-200 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 sm:min-w-28 sm:flex-initial sm:px-5"
           onClick={onCancel}
         >
           <X size={16} /> Cancel
@@ -392,7 +393,8 @@ export function EmployeeDialogFooter({ isPending, isEdit, onCancel }: EmployeeDi
         <Button
           type="submit"
           disabled={isPending}
-          className="h-12 rounded-xl px-12 text-base font-semibold shadow-md transition hover:scale-[1.02]"
+          isLoading={isPending}
+          className="shadow-primary/20 h-11 flex-1 rounded-xl px-3 text-sm font-semibold shadow-md sm:min-w-36 sm:flex-initial sm:px-6"
         >
           <Save size={16} />
           {getSubmitLabel(isPending, isEdit)}

@@ -164,7 +164,7 @@ export function ItemEditor(props: ItemEditorProps) {
         >
           <div
             key={formKey}
-            className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)]"
+            className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(300px,380px)]"
           >
             <div className="min-w-0 space-y-6">
               <BasicInfoSection autoFocus={!isEditing} />
@@ -193,7 +193,7 @@ export function ItemEditor(props: ItemEditorProps) {
               </div>
             </div>
 
-            <aside className="min-w-0 space-y-6 lg:sticky lg:top-4">
+            <aside className="min-w-0 space-y-6 xl:sticky xl:top-4">
               <ProductImagesSection initialImages={initialProductImages} />
               <InventorySection />
             </aside>

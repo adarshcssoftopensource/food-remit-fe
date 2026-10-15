@@ -19,13 +19,14 @@ export function InfoCard({ icon, label, value, href, mono, className }: InfoCard
           {icon}
         </div>
       </div>
-      <div className="flex min-w-0 flex-col justify-center">
+      <div className="flex min-w-0 flex-1 flex-col justify-center">
         <span className="text-[10px] font-medium tracking-wider text-slate-400 uppercase dark:text-slate-500">
           {label}
         </span>
         <span
+          title={typeof value === "string" ? value : undefined}
           className={cn(
-            "truncate text-sm font-semibold text-slate-800 dark:text-slate-100",
+            "line-clamp-3 text-xs leading-snug font-semibold [overflow-wrap:anywhere] text-slate-800 sm:text-sm dark:text-slate-100",
             mono ? "font-mono" : "capitalize",
             href && "group-hover:text-primary",
           )}
@@ -37,7 +38,7 @@ export function InfoCard({ icon, label, value, href, mono, className }: InfoCard
   );
 
   const cardClass = cn(
-    "group hover:border-primary/20 hover:shadow-primary/5 relative flex h-full items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/50 px-4 py-4 transition-shadow duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg dark:border-slate-800/80 dark:bg-slate-900/30 dark:hover:bg-slate-900",
+    "group hover:border-primary/20 hover:shadow-primary/5 relative flex h-full items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3 sm:p-4 transition-shadow duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg dark:border-slate-800/80 dark:bg-slate-900/30 dark:hover:bg-slate-900",
     className,
   );
 

@@ -4,25 +4,44 @@ import { ImageLightbox } from "@/components/common/image-lightbox";
 import { useProfile } from "@/providers/profile-provider";
 import { errorToast, successToast } from "@/components/toaster";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { formatRole } from "@/lib/format-role";
-
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Camera, Loader2, Mail, Maximize2, ShieldCheck, Store } from "lucide-react";
+import {
+  ArrowRight,
+  Camera,
+  Check,
+  Loader2,
+  Mail,
+  MapPin,
+  Maximize2,
+  Phone,
+  ShieldCheck,
+  ShoppingBag,
+  Store,
+} from "lucide-react";
+import Image from "next/image";
 import { useRef, useState } from "react";
+import { getDefaultStoreImageForBusinessType } from "@/constants/default-store-images";
 import { fetcher } from "@/hooks/useApi";
 import { useUpdateStore } from "@/feature/private/(super-admin)/store-management/hooks/use-update-store";
 import { useUpdateProfile } from "../hooks/use-update-profile";
 
-export function ProfileHeader() {
+interface ProfileHeaderProps {
+  onViewStoreDetails?: () => void;
+}
+
+export function ProfileHeader({ onViewStoreDetails }: ProfileHeaderProps) {
   const { profile, needsBankVerification, refetchProfile } = useProfile();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const storeFileInputRef = useRef<HTMLInputElement>(null);
   const updateProfileMutation = useUpdateProfile();
   const queryClient = useQueryClient();
 
-  const storeFileInputRef = useRef<HTMLInputElement>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
+  const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
   const canEditImages = !needsBankVerification;
   const canEditStoreImage = !needsBankVerification && !isEmployee;
 
@@ -42,10 +61,92 @@ export function ProfileHeader() {
     enabled: !!storeId,
   });
 
+  const businessType =
+    storeData?.partnerLead?.businessType ||
+    profile?.partnerLead?.businessType ||
+    storeData?.businessType ||
+    "";
+  const defaultImage =
+    getDefaultStoreImageForBusinessType(businessType)?.imageUrl ||
+    "/images/default-stores/convenience-store.jpg";
+
   const currentStore = storeData || profile?.stores?.[0];
   const currentStoreImage =
-    storeData?.storeImage !== undefined ? storeData.storeImage : profile?.stores?.[0]?.storeImage;
-  const currentStoreName = currentStore?.storeName || profile?.stores?.[0]?.storeName || "";
+    storeData?.storeImage !== undefined &&
+    storeData?.storeImage !== null &&
+    storeData?.storeImage !== ""
+      ? storeData.storeImage
+      : profile?.stores?.[0]?.storeImage || defaultImage;
+
+  const currentStoreName =
+    currentStore?.storeName || profile?.stores?.[0]?.storeName || "Assigned Store";
+  const storeCode =
+    currentStore?.storeId ||
+    storeData?.storeId ||
+    currentStore?.code ||
+    (currentStore?.id ? `STR-${currentStore.id.slice(0, 6).toUpperCase()}` : "");
+
+  const storeCity =
+    currentStore?.storeCity ||
+    currentStore?.cityName ||
+    currentStore?.city ||
+    storeData?.storeCity ||
+    storeData?.cityName ||
+    storeData?.city ||
+    "";
+  const storeCountry =
+    currentStore?.storeCountry ||
+    currentStore?.countryName ||
+    currentStore?.country ||
+    storeData?.storeCountry ||
+    storeData?.countryName ||
+    storeData?.country ||
+    "";
+  const storeLocation =
+    [storeCity, storeCountry].filter(Boolean).join(", ") ||
+    currentStore?.storeAddress ||
+    storeData?.storeAddress ||
+    "Burgess Hill, England";
+
+  const hasAssignedStore = Boolean(profile?.stores?.[0] || storeData || isStoreManager);
+
+  const partnerLead = profile?.partnerLead || storeData?.partnerLead;
+  const kycRecord = partnerLead?.kycVerifications?.[0] || partnerLead?.kycData;
+  const kycStatus = (
+    partnerLead?.kycStatus ||
+    kycRecord?.status ||
+    (profile as any)?.kycStatus ||
+    (storeData as any)?.kycStatus ||
+    ""
+  ).toUpperCase();
+
+  const isKycVerified =
+    kycStatus === "APPROVED" ||
+    Boolean(partnerLead?.kycVerifiedAt) ||
+    Boolean((profile as any)?.kycVerifiedAt) ||
+    (profile as any)?.isKycVerified === true ||
+    (profile as any)?.kycVerified === true;
+
+  const displayName = profile?.name || "Admin User";
+  const displayRole = formatRole(profile?.role || "Store Manager");
+
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !canEditImages) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      await updateProfileMutation.mutateAsync(formData);
+      successToast({ title: "Profile image updated successfully!" });
+      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE });
+      refetchProfile();
+    } catch {}
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleStoreImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -71,34 +172,6 @@ export function ProfileHeader() {
     }
   };
 
-  const displayName = profile?.name || "Admin User";
-  const displayRole = formatRole(profile?.role || "");
-  const displayEmail = profile?.email || "admin@foodremit.com";
-  const displayStores =
-    storeData?.storeName ||
-    (profile?.stores ? profile.stores.map((s) => s.storeName).join(", ") : null);
-
-  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !canEditImages) return;
-
-    try {
-      const formData = new FormData();
-      formData.append("image", file);
-      await updateProfileMutation.mutateAsync(formData);
-      successToast({ title: "Profile image updated successfully!" });
-      queryClient.invalidateQueries({ queryKey: API_CACHE_KEYS.ADMIN_PROFILE });
-      refetchProfile();
-    } catch {
-      errorToast({ title: "Failed to update profile image." });
-    }
-
-    // Clear input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
   const initials = displayName
     .split(" ")
     .map((n) => n[0])
@@ -107,115 +180,206 @@ export function ProfileHeader() {
     .slice(0, 2);
 
   return (
-    <div className="brand-glass-card relative mb-6 overflow-hidden rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
-      {(profile?.roleCode === "STORE_MANAGER" ||
-        profile?.roleCode === "EMPLOYEE" ||
-        profile?.role === "employee" ||
-        profile?.role === "store_manager") &&
-      (profile?.stores?.[0] || storeData) ? (
-        <div
-          className="group/banner relative flex h-24 w-full items-center justify-center bg-cover bg-center bg-no-repeat transition-all sm:h-32"
-          style={{
-            backgroundImage: currentStoreImage ? `url(${currentStoreImage})` : undefined,
-          }}
-        >
-          <div
-            className={`absolute inset-0 transition-all ${currentStoreImage ? "bg-emerald-950/40 backdrop-blur-[1px] group-hover/banner:bg-emerald-950/60 group-hover/banner:backdrop-blur-sm" : "bg-linear-to-r from-emerald-600/30 via-teal-600/20 to-emerald-500/10 group-hover/banner:bg-emerald-600/40"}`}
-          />
+    <div className="relative mb-6 overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.04)] sm:p-7 dark:border-slate-800 dark:bg-slate-900/90">
+      <div className="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-emerald-500/5 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 size-96 rounded-full bg-teal-500/5 blur-3xl" />
 
-          <div className="absolute z-10 flex items-center gap-4 opacity-0 transition-opacity group-hover/banner:opacity-100">
-            {currentStoreImage && (
-              <button
-                onClick={() => setLightboxOpen(true)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-white/30"
-              >
-                <Maximize2 className="h-5 w-5" />
-              </button>
-            )}
-            {canEditStoreImage && (
-              <label className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-white/30">
-                {updateStoreMutation.isPending ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Camera className="h-5 w-5" />
-                )}
-                <input
-                  type="file"
-                  ref={storeFileInputRef}
-                  accept="image/png,image/jpeg,image/webp"
-                  className="hidden"
-                  onChange={handleStoreImageChange}
-                  disabled={updateStoreMutation.isPending}
+      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 flex-1 flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6">
+          <div className="flex shrink-0 flex-col items-center gap-2.5">
+            <div className="relative">
+              <Avatar className="size-22 rounded-full object-cover shadow-sm ring-4 ring-emerald-500/10 sm:size-26 dark:ring-emerald-500/20">
+                <AvatarImage
+                  src={profile?.image || ""}
+                  alt={displayName}
+                  className="rounded-full object-cover"
                 />
-              </label>
+                <AvatarFallback className="rounded-full bg-linear-to-br from-emerald-600 via-teal-600 to-emerald-700 text-2xl font-extrabold text-white sm:text-3xl">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+
+              {canEditImages && (
+                <label
+                  className="absolute right-0.5 bottom-0.5 flex size-7.5 cursor-pointer items-center justify-center rounded-full bg-emerald-600 text-white shadow-md ring-2 ring-white transition-transform hover:scale-110 hover:bg-emerald-700 dark:ring-slate-900"
+                  title="Change profile photo"
+                >
+                  {updateProfileMutation.isPending ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <Camera className="size-3.5" />
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={handleImageChange}
+                    disabled={updateProfileMutation.isPending}
+                  />
+                </label>
+              )}
+            </div>
+
+            {canEditImages && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={updateProfileMutation.isPending}
+                className="h-7.5 rounded-xl border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              >
+                Change Photo
+              </Button>
             )}
           </div>
-        </div>
-      ) : (
-        <div className="h-24 w-full bg-linear-to-r from-emerald-600/30 via-teal-600/20 to-emerald-500/10 sm:h-32" />
-      )}
 
-      <div className="flex flex-col items-start gap-4 px-4 pb-4 sm:flex-row sm:items-end sm:gap-5 sm:px-6 sm:pb-6">
-        <div className="group relative -mt-10 h-20 w-20 shrink-0 overflow-hidden rounded-2xl shadow-md ring-4 ring-white sm:-mt-12 sm:h-24 sm:w-24 dark:ring-slate-900">
-          <Avatar className="h-full w-full rounded-2xl shadow-sm">
-            <AvatarImage
-              src={profile?.image || ""}
-              alt={displayName}
-              className="rounded-2xl object-cover"
-            />
-            <AvatarFallback className="rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-xl font-black text-white sm:text-2xl">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <div className="min-w-0 flex-1 space-y-2 text-center sm:text-left">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+              <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+                {displayName}
+              </h2>
+              <span
+                className="inline-flex size-5.5 items-center justify-center rounded-full bg-emerald-500 text-white shadow-xs"
+                title="Verified Account"
+              >
+                <Check className="size-3.5 stroke-3" />
+              </span>
+            </div>
 
-          {canEditImages && (
-            <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-              {updateProfileMutation.isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin text-white sm:h-6 sm:w-6" />
-              ) : (
-                <Camera className="h-5 w-5 text-white sm:h-6 sm:w-6" />
+            <p className="text-xs font-semibold text-slate-500 sm:text-sm dark:text-slate-400">
+              {displayRole}
+            </p>
+
+            {currentStoreName && (
+              <p className="text-xs font-medium text-slate-600 sm:text-sm dark:text-slate-300">
+                {currentStoreName} {storeCode ? `• ${storeCode}` : ""}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1 sm:justify-start">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs shadow-emerald-600/25">
+                <ShoppingBag className="size-3.5" />
+                Active Account
+              </span>
+
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/90 bg-emerald-50 px-3.5 py-1.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-300">
+                <Mail className="size-3.5" />
+                Email Verified
+              </span>
+
+              {isKycVerified && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/90 bg-emerald-50 px-3.5 py-1.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-300">
+                  <ShieldCheck className="size-3.5" />
+                  Identity Verified
+                </span>
               )}
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/png,image/jpeg,image/webp"
-                className="hidden"
-                onChange={handleImageChange}
-                disabled={updateProfileMutation.isPending}
-              />
-            </label>
-          )}
-        </div>
-
-        <div className="flex-1 space-y-1 sm:mb-2">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-slate-800 sm:text-2xl">{displayName}</h2>
-            <div className="flex items-center justify-center rounded-full bg-emerald-100 p-1 text-emerald-600">
-              <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-muted-foreground text-xs font-medium sm:text-sm">{displayRole}</p>
-            {displayStores && (
-              <div className="flex w-fit items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 sm:px-2.5 sm:text-sm">
-                <Store className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                <span className="truncate">{displayStores}</span>
-                {currentStore?.storeId && (
-                  <span className="font-mono text-xs font-semibold text-emerald-800">
-                    • {currentStore.storeId}
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
         </div>
 
-        <div className="flex flex-col gap-2 sm:mb-2 sm:items-end">
-          <div className="text-muted-foreground flex items-center gap-2 text-xs sm:text-sm">
-            <Mail className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
-            <span className="truncate">{displayEmail}</span>
+        {hasAssignedStore && (
+          <div className="flex w-full min-w-0 flex-col items-center gap-4 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3.5 shadow-2xs sm:flex-row sm:items-start lg:w-auto lg:min-w-90 xl:min-w-100 dark:border-slate-800 dark:bg-slate-800/40">
+            <div className="group/storeimg relative h-24 w-36 shrink-0 overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs sm:h-28 sm:w-44 dark:border-slate-700 dark:bg-slate-800">
+              {currentStoreImage ? (
+                <>
+                  <Image
+                    src={currentStoreImage}
+                    alt={currentStoreName}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover/storeimg:scale-105"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity duration-200 group-hover/storeimg:opacity-100">
+                    <button
+                      type="button"
+                      onClick={() => setLightboxOpen(true)}
+                      className="flex size-7 items-center justify-center rounded-full bg-white/30 text-white backdrop-blur-xs transition hover:scale-110 hover:bg-white/50"
+                      title="View store image"
+                    >
+                      <Maximize2 className="size-3.5" />
+                    </button>
+                    {canEditStoreImage && (
+                      <label
+                        className="flex size-7 cursor-pointer items-center justify-center rounded-full bg-white/30 text-white backdrop-blur-xs transition hover:scale-110 hover:bg-white/50"
+                        title="Change store image"
+                      >
+                        {updateStoreMutation.isPending ? (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        ) : (
+                          <Camera className="size-3.5" />
+                        )}
+                        <input
+                          type="file"
+                          ref={storeFileInputRef}
+                          accept="image/png,image/jpeg,image/webp"
+                          className="hidden"
+                          onChange={handleStoreImageChange}
+                          disabled={updateStoreMutation.isPending}
+                        />
+                      </label>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="flex h-full w-full flex-col items-center justify-center bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                  <Store className="size-8" />
+                  {canEditStoreImage && (
+                    <label
+                      className="mt-1 flex cursor-pointer items-center gap-1 text-[10px] font-semibold text-emerald-700 hover:underline dark:text-emerald-300"
+                      title="Upload store image"
+                    >
+                      <Camera className="size-3" /> Upload
+                      <input
+                        type="file"
+                        ref={storeFileInputRef}
+                        accept="image/png,image/jpeg,image/webp"
+                        className="hidden"
+                        onChange={handleStoreImageChange}
+                        disabled={updateStoreMutation.isPending}
+                      />
+                    </label>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="min-w-0 flex-1 space-y-1 text-center sm:text-left">
+              <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase dark:text-slate-500">
+                Assigned Store
+              </p>
+              <h4 className="truncate text-base font-bold tracking-tight text-slate-900 dark:text-white">
+                {currentStoreName}
+              </h4>
+              {storeCode && (
+                <p className="font-mono text-xs font-medium text-slate-500 dark:text-slate-400">
+                  {storeCode}
+                </p>
+              )}
+              {storeLocation && (
+                <p className="flex items-center justify-center text-xs font-medium text-slate-500 sm:justify-start dark:text-slate-400">
+                  <MapPin className="mr-1 size-3.5 shrink-0 text-slate-400" />
+                  <span className="truncate">{storeLocation}</span>
+                </p>
+              )}
+
+              {onViewStoreDetails && (
+                <div className="pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onViewStoreDetails}
+                    className="group h-8.5 gap-2 rounded-xl border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                  >
+                    View Store Details
+                    <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {lightboxOpen && currentStoreImage && (

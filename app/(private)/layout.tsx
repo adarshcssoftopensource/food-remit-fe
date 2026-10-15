@@ -16,13 +16,13 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
           <Suspense fallback={null}>
             <AppSidebar />
           </Suspense>
-          <SidebarInset className="relative bg-transparent">
+          <SidebarInset className="relative max-w-full min-w-0 overflow-x-hidden bg-transparent">
             <ImpersonationBanner />
             <BankVerificationBanner />
             <Suspense fallback={null}>
               <AppTopBar />
             </Suspense>
-            <div className="relative z-10 flex flex-1 flex-col gap-5 p-4 md:p-6 lg:p-7">
+            <div className="relative z-10 flex max-w-full min-w-0 flex-1 flex-col gap-5 overflow-x-hidden p-3.5 sm:p-5 md:p-6 lg:p-7">
               <ErrorBoundary>{children}</ErrorBoundary>
             </div>
           </SidebarInset>

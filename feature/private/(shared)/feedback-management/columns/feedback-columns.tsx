@@ -1,4 +1,3 @@
-import { FEEDBACK_STATUS_STYLES } from "@/constants/feedback";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "@/lib/date";
 import { FeedbackRowData } from "../hooks/use-get-feedback";

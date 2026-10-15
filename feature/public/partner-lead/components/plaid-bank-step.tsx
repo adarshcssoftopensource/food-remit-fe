@@ -298,10 +298,10 @@ export function PlaidBankStep({
           </div>
         </div>
       ) : (
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm sm:p-6">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0">
                 <span className="text-[11px] font-bold tracking-wider text-emerald-700 uppercase">
                   Official Plaid Link Integration
                 </span>
@@ -309,7 +309,7 @@ export function PlaidBankStep({
                   Connect Commercial Bank Account
                 </h3>
               </div>
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-800 sm:text-[11px]">
                 <Lock className="size-3" />
                 256-Bit Encrypted
               </span>
@@ -328,10 +328,12 @@ export function PlaidBankStep({
                 onClick={handleOpenPlaid}
                 disabled={isBusy}
                 isLoading={isBusy}
-                className="h-12 w-full rounded-xl bg-emerald-700 px-6 text-sm font-bold text-white shadow-md transition hover:bg-emerald-800"
+                className="h-12 w-full max-w-full min-w-0 rounded-xl bg-emerald-700 px-3 text-xs font-bold text-white shadow-md transition hover:bg-emerald-800 sm:px-6 sm:text-sm"
               >
-                <Landmark className="mr-2 size-4.5" />
-                Connect Bank Account with Plaid
+                <Landmark className="mr-2 size-4.5 shrink-0" />
+                <span className="truncate sm:whitespace-normal">
+                  Connect Bank Account with Plaid
+                </span>
               </Button>
 
               {allowSkip && (
