@@ -23,13 +23,18 @@ export const usersColumns = (onImageClick?: (image: string) => void): ColumnDef<
   },
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
+    header: ({ table }) => {
+      const isAll = table.getIsAllPageRowsSelected();
+      const isSome = table.getIsSomePageRowsSelected();
+      return (
+        <Checkbox
+          checked={isAll}
+          indeterminate={!isAll && isSome}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      );
+    },
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}

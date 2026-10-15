@@ -64,12 +64,12 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
       <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
         <ManagerViewHero manager={manager} onImageExpand={setLightboxSrc} />
 
-        <div className="space-y-6 p-8">
+        <div className="space-y-6 p-4 sm:p-6 md:p-8">
           <ManagerContactSection manager={manager} />
 
           <ManagerPersonalSection manager={manager} fullAddress={managerFullAddress} />
 
-          <section className="rounded-2xl border bg-white p-6 shadow-sm">
+          <section className="rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-bold tracking-wide text-slate-500 uppercase">
               <Globe2 className="h-4 w-4 text-emerald-600" />
               Assignment
@@ -80,33 +80,35 @@ export default function CountryManagerViewPage({ params }: CountryManagerViewPag
                 Assigned City Managers
               </p>
               {manager.cityManagers && manager.cityManagers.length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid min-w-0 gap-3 sm:grid-cols-2">
                   {manager.cityManagers.map((cm) => (
                     <div
                       key={cm.id}
-                      className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3 transition hover:bg-slate-100"
+                      className="flex min-w-0 items-center justify-between gap-2.5 rounded-xl border border-slate-100 bg-slate-50 p-2.5 transition hover:bg-slate-100 sm:gap-3 sm:p-3"
                     >
-                      <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold">
-                        {cm.image ? (
-                          <Image
-                            src={cm.image}
-                            alt={`${cm.firstName} ${cm.lastName}`}
-                            width={40}
-                            height={40}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          `${cm.firstName[0] ?? ""}${cm.lastName[0] ?? ""}`.toUpperCase()
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-slate-800">
-                          {cm.firstName} {cm.lastName}
-                        </p>
-                        <p className="truncate text-xs text-slate-500">{cm.email}</p>
+                      <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
+                        <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold">
+                          {cm.image ? (
+                            <Image
+                              src={cm.image}
+                              alt={`${cm.firstName} ${cm.lastName}`}
+                              width={40}
+                              height={40}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            `${cm.firstName[0] ?? ""}${cm.lastName[0] ?? ""}`.toUpperCase()
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold text-slate-800">
+                            {cm.firstName} {cm.lastName}
+                          </p>
+                          <p className="truncate text-xs text-slate-500">{cm.email}</p>
+                        </div>
                       </div>
                       <span
-                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold sm:text-xs ${
                           cm.managerStatus === "ACTIVE"
                             ? "bg-emerald-100 text-emerald-700"
                             : "bg-red-100 text-red-600"
