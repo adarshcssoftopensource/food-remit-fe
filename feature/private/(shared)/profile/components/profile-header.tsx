@@ -180,27 +180,28 @@ export function ProfileHeader({ onViewStoreDetails }: ProfileHeaderProps) {
     .slice(0, 2);
 
   return (
-    <div className="relative mb-6 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:p-6 dark:border-slate-800 dark:bg-slate-900">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-8 xl:gap-10">
-        {/* Left: User Avatar & Details */}
-        <div className="flex min-w-0 flex-1 flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-5">
-          {/* Avatar with Camera Icon and Change Photo Button */}
-          <div className="flex shrink-0 flex-col items-center gap-2">
+    <div className="relative mb-6 overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.04)] sm:p-7 dark:border-slate-800 dark:bg-slate-900/90">
+      <div className="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-emerald-500/5 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 size-96 rounded-full bg-teal-500/5 blur-3xl" />
+
+      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 flex-1 flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6">
+          <div className="flex shrink-0 flex-col items-center gap-2.5">
             <div className="relative">
-              <Avatar className="size-20 rounded-full object-cover ring-4 ring-emerald-50 sm:size-24 dark:ring-slate-800">
+              <Avatar className="size-22 rounded-full object-cover shadow-sm ring-4 ring-emerald-500/10 sm:size-26 dark:ring-emerald-500/20">
                 <AvatarImage
                   src={profile?.image || ""}
                   alt={displayName}
                   className="rounded-full object-cover"
                 />
-                <AvatarFallback className="rounded-full bg-linear-to-br from-emerald-600 to-teal-700 text-xl font-bold text-white sm:text-2xl">
+                <AvatarFallback className="rounded-full bg-linear-to-br from-emerald-600 via-teal-600 to-emerald-700 text-2xl font-extrabold text-white sm:text-3xl">
                   {initials}
                 </AvatarFallback>
               </Avatar>
 
               {canEditImages && (
                 <label
-                  className="absolute right-0 bottom-0 flex size-7 cursor-pointer items-center justify-center rounded-full bg-emerald-600 text-white shadow-md transition-transform hover:scale-105 hover:bg-emerald-700"
+                  className="absolute right-0.5 bottom-0.5 flex size-7.5 cursor-pointer items-center justify-center rounded-full bg-emerald-600 text-white shadow-md ring-2 ring-white transition-transform hover:scale-110 hover:bg-emerald-700 dark:ring-slate-900"
                   title="Change profile photo"
                 >
                   {updateProfileMutation.isPending ? (
@@ -227,24 +228,23 @@ export function ProfileHeader({ onViewStoreDetails }: ProfileHeaderProps) {
                 size="sm"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={updateProfileMutation.isPending}
-                className="h-7 rounded-lg border-slate-200 px-3 text-[11px] font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                className="h-7.5 rounded-xl border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
               >
                 Change Photo
               </Button>
             )}
           </div>
 
-          {/* User Name, Roles, Subtitle, and Badges */}
-          <div className="min-w-0 flex-1 space-y-1.5 text-center sm:text-left">
+          <div className="min-w-0 flex-1 space-y-2 text-center sm:text-left">
             <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-              <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+              <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
                 {displayName}
               </h2>
               <span
-                className="inline-flex size-5 items-center justify-center rounded-full bg-emerald-600 text-white shadow-xs"
+                className="inline-flex size-5.5 items-center justify-center rounded-full bg-emerald-500 text-white shadow-xs"
                 title="Verified Account"
               >
-                <Check className="size-3 stroke-3" />
+                <Check className="size-3.5 stroke-3" />
               </span>
             </div>
 
@@ -258,20 +258,19 @@ export function ProfileHeader({ onViewStoreDetails }: ProfileHeaderProps) {
               </p>
             )}
 
-            {/* Badges Row */}
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-1.5 sm:justify-start">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3.5 py-1 text-xs font-semibold text-white shadow-xs">
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1 sm:justify-start">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs shadow-emerald-600/25">
                 <ShoppingBag className="size-3.5" />
                 Active Account
               </span>
 
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/90 bg-emerald-50 px-3.5 py-1.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-300">
                 <Mail className="size-3.5" />
                 Email Verified
               </span>
 
               {isKycVerified && (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/90 bg-emerald-50 px-3.5 py-1.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-300">
                   <ShieldCheck className="size-3.5" />
                   Identity Verified
                 </span>
@@ -280,28 +279,18 @@ export function ProfileHeader({ onViewStoreDetails }: ProfileHeaderProps) {
           </div>
         </div>
 
-        {/* Divider between Profile and Store */}
         {hasAssignedStore && (
-          <>
-            <div className="hidden h-28 w-px shrink-0 bg-slate-200/80 lg:block dark:bg-slate-800" />
-            <div className="block h-px w-full bg-slate-100 lg:hidden dark:bg-slate-800" />
-          </>
-        )}
-
-        {/* Right: Assigned Store Section */}
-        {hasAssignedStore && (
-          <div className="flex w-full min-w-0 flex-col items-center gap-4 sm:flex-row sm:items-start lg:w-auto">
-            {/* Store Thumbnail */}
-            <div className="group/storeimg relative h-24 w-36 shrink-0 overflow-hidden rounded-xl border border-slate-200/80 bg-slate-100 shadow-2xs sm:h-26 sm:w-40 dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex w-full min-w-0 flex-col items-center gap-4 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3.5 shadow-2xs sm:flex-row sm:items-start lg:w-auto lg:min-w-90 xl:min-w-100 dark:border-slate-800 dark:bg-slate-800/40">
+            <div className="group/storeimg relative h-24 w-36 shrink-0 overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs sm:h-28 sm:w-44 dark:border-slate-700 dark:bg-slate-800">
               {currentStoreImage ? (
                 <>
                   <Image
                     src={currentStoreImage}
                     alt={currentStoreName}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 group-hover/storeimg:scale-105"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover/storeimg:opacity-100">
+                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity duration-200 group-hover/storeimg:opacity-100">
                     <button
                       type="button"
                       onClick={() => setLightboxOpen(true)}
@@ -355,35 +344,36 @@ export function ProfileHeader({ onViewStoreDetails }: ProfileHeaderProps) {
               )}
             </div>
 
-            {/* Store Text Info & Action */}
             <div className="min-w-0 flex-1 space-y-1 text-center sm:text-left">
-              <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+              <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase dark:text-slate-500">
                 Assigned Store
               </p>
-              <h4 className="truncate text-base font-bold text-slate-900 dark:text-white">
+              <h4 className="truncate text-base font-bold tracking-tight text-slate-900 dark:text-white">
                 {currentStoreName}
               </h4>
               {storeCode && (
-                <p className="font-mono text-xs text-slate-500 dark:text-slate-400">{storeCode}</p>
+                <p className="font-mono text-xs font-medium text-slate-500 dark:text-slate-400">
+                  {storeCode}
+                </p>
               )}
               {storeLocation && (
-                <p className="flex items-center justify-center text-xs text-slate-500 sm:justify-start dark:text-slate-400">
+                <p className="flex items-center justify-center text-xs font-medium text-slate-500 sm:justify-start dark:text-slate-400">
                   <MapPin className="mr-1 size-3.5 shrink-0 text-slate-400" />
                   <span className="truncate">{storeLocation}</span>
                 </p>
               )}
 
               {onViewStoreDetails && (
-                <div className="pt-1.5">
+                <div className="pt-2">
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={onViewStoreDetails}
-                    className="h-8 gap-1.5 rounded-xl border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                    className="group h-8.5 gap-2 rounded-xl border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     View Store Details
-                    <ArrowRight className="size-3.5" />
+                    <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" />
                   </Button>
                 </div>
               )}
