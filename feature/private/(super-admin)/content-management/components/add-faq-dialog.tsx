@@ -22,6 +22,7 @@ type AddFaqDialogProps = {
 export function AddFaqDialog({ onSubmit }: AddFaqDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formKey, setFormKey] = useState(0);
 
   const handleSubmit = async (values: FaqFormValues) => {
     setIsSubmitting(true);
@@ -29,6 +30,20 @@ export function AddFaqDialog({ onSubmit }: AddFaqDialogProps) {
       await onSubmit(values);
       successToast({ title: "FAQ added successfully" });
       setOpen(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveAndAddAnother = async (values: FaqFormValues) => {
+    setIsSubmitting(true);
+    try {
+      await onSubmit(values);
+      successToast({
+        title: "FAQ added successfully!",
+        description: "You can now enter the next FAQ.",
+      });
+      setFormKey((k) => k + 1);
     } finally {
       setIsSubmitting(false);
     }
@@ -58,7 +73,13 @@ export function AddFaqDialog({ onSubmit }: AddFaqDialogProps) {
             </DialogDescription>
           </DialogHeader>
           <div className="bg-white">
-            <FaqForm onSubmit={handleSubmit} submitLabel="Add" isSubmitting={isSubmitting} />
+            <FaqForm
+              key={formKey}
+              onSubmit={handleSubmit}
+              onSaveAndAddAnother={handleSaveAndAddAnother}
+              submitLabel="Add"
+              isSubmitting={isSubmitting}
+            />
           </div>
         </div>
       </DialogContent>

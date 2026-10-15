@@ -26,7 +26,19 @@ export function EditFaqDialog({ faq, open, onOpenChange, onSubmit }: EditFaqDial
 
   const initialValues = useMemo<Partial<FaqFormValues>>(() => {
     if (!faq) return {};
-    return { question: faq.question, answer: faq.answer };
+    return {
+      categoryKey: faq.categoryKey ?? "general",
+      question: faq.question,
+      answer: faq.answer,
+      questionTranslations: {
+        en: faq.question,
+        ...(faq.questionTranslations ?? {}),
+      },
+      answerTranslations: {
+        en: faq.answer,
+        ...(faq.answerTranslations ?? {}),
+      },
+    };
   }, [faq]);
 
   const handleSubmit = async (values: FaqFormValues) => {

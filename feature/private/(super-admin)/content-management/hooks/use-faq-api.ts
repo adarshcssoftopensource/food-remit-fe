@@ -29,6 +29,7 @@ export function useGetFaqs(
   sortOrder?: "asc" | "desc",
   page = 1,
   limit = 10,
+  categoryKey?: string,
 ) {
   return useApiQuery<FaqsResponse>(
     [
@@ -38,8 +39,9 @@ export function useGetFaqs(
       sortOrder ?? "",
       String(page),
       String(limit),
+      categoryKey ?? "all",
     ],
-    FAQ_ENDPOINTS.ADMIN_LIST(search, sortBy, sortOrder, page, limit),
+    FAQ_ENDPOINTS.ADMIN_LIST(search, sortBy, sortOrder, page, limit, categoryKey),
   );
 }
 

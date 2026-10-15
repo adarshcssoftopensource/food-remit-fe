@@ -5,6 +5,15 @@ export type ContentPageData = {
   label: string;
   title: string;
   description: string;
+  sections?: Array<{
+    id: string;
+    title: string;
+    description: string;
+    titleTranslations?: Record<string, string>;
+    descriptionTranslations?: Record<string, string>;
+  }>;
+  contactEmail?: string;
+  supportEmail?: string;
   updatedAt: string;
 };
 

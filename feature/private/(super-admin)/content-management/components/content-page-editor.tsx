@@ -1,17 +1,8 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { formatDateTime } from "@/lib/date";
-import { FileText, PencilLine, Save } from "lucide-react";
-import { useEffect, useState, useSyncExternalStore } from "react";
-import { Controller, useForm } from "react-hook-form";
-import dynamic from "next/dynamic";
-import "react-quill-new/dist/quill.snow.css";
-
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
-
+import { ConfirmationDialog } from "@/components/common/confirmation-dialog";
 import { PageHeader } from "@/components/common/page-header";
-import { successToast } from "@/components/toaster";
+import { errorToast, successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -23,136 +14,735 @@ import {
 } from "@/components/ui/dialog";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { formatDateTime } from "@/lib/date";
 import { cn } from "@/lib/utils";
+import {
+  ArrowDown,
+  ArrowUp,
+  Check,
+  FileText,
+  Mail,
+  PencilLine,
+  Plus,
+  Save,
+  Trash2,
+} from "lucide-react";
+import dynamic from "next/dynamic";
+import { useState, useSyncExternalStore } from "react";
+import "react-quill-new/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+
+import { getPlainText } from "@/components/ui/rich-text-editor";
+
 import { useGetContentPage } from "../hooks/use-get-content-page";
+import { useAddSection, useDeleteSection, useEditSection } from "../hooks/use-section-api";
 import { useUpdateContentPage } from "../hooks/use-update-content-page";
-import { contentPageSchema, type ContentPageFormValues } from "../schema/content.schema";
-import { CONTENT_PAGE_LABELS, type ContentPageData, type ContentPageKey } from "../types";
+import {
+  CONTENT_PAGE_LABELS,
+  FAQ_SUPPORTED_LANGUAGES,
+  type ContentPageData,
+  type ContentPageKey,
+  type ContentPageSection,
+  type FaqLanguageCode,
+} from "../types";
 import { ContentPageSkeleton } from "./content-page-skeleton";
+import { SectionDialog } from "./section-dialog";
 
 type ContentPageEditorProps = {
   pageKey: ContentPageKey;
 };
 
 const inputClass =
-  "h-12 rounded-xl border-gray-200/80 bg-gray-50/50 text-sm transition-colors hover:border-gray-300 hover:bg-gray-50 focus-visible:border-primary focus-visible:bg-white focus-visible:ring-primary/20";
+  "h-11 rounded-xl border-gray-200/80 bg-gray-50/50 text-sm transition-colors hover:border-gray-300 hover:bg-gray-50 focus-visible:border-primary focus-visible:bg-white focus-visible:ring-primary/20";
 
 export function ContentPageEditor({ pageKey }: ContentPageEditorProps) {
-  const label = CONTENT_PAGE_LABELS[pageKey];
+  const defaultLabel = CONTENT_PAGE_LABELS[pageKey];
   const { data, isLoading, isError } = useGetContentPage(pageKey);
-  const updateMutation = useUpdateContentPage(pageKey);
-  const [editOpen, setEditOpen] = useState(false);
 
   const page = data?.data;
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={label}
-        description={`Manage ${label.toLowerCase()} content shown across the platform.`}
-        action={
-          <Button
-            type="button"
-            className="h-11 rounded-xl font-semibold"
-            disabled={!page || isLoading}
-            onClick={() => setEditOpen(true)}
-          >
-            <PencilLine className="mr-2 size-4" />
-            {page?.title || page?.description ? `Edit ${label}` : `Add ${label}`}
-          </Button>
-        }
-      />
-
       {isLoading && <ContentPageSkeleton />}
 
-      {isError ? (
+      {isError && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-10 text-center text-sm font-medium text-red-600">
-          Failed to load {label}.
+          Failed to load {defaultLabel}.
         </div>
-      ) : null}
+      )}
 
-      {page ? <ContentPageCard page={page} label={label} /> : null}
-
-      <EditContentPageDialog
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        label={label}
-        defaultValues={{
-          title: page?.title ?? "",
-          description: page?.description ?? "",
-        }}
-        isSubmitting={updateMutation.isPending}
-        onSubmit={async (values) => {
-          await updateMutation.mutateAsync(values);
-          successToast({ title: `${label} updated successfully` });
-          setEditOpen(false);
-        }}
-      />
+      {page && (
+        <ContentPageManager
+          key={pageKey}
+          page={page}
+          pageKey={pageKey}
+          defaultLabel={defaultLabel}
+        />
+      )}
     </div>
   );
 }
 
-type ContentPageCardProps = {
+type ContentPageManagerProps = {
   page: ContentPageData;
-  label: string;
+  pageKey: ContentPageKey;
+  defaultLabel: string;
 };
 
-function ContentPageCard({ page, label }: ContentPageCardProps) {
+function ContentPageManager({ page, pageKey, defaultLabel }: ContentPageManagerProps) {
+  const updateMutation = useUpdateContentPage(pageKey);
+  const addSectionMutation = useAddSection(pageKey);
+  const editSectionMutation = useEditSection(pageKey);
+  const deleteSectionMutation = useDeleteSection(pageKey);
+
+  // Initialize state directly from props — no useEffect calling setState needed!
+  const [sections, setSections] = useState<ContentPageSection[]>(() =>
+    Array.isArray(page.sections) && page.sections.length > 0 ? page.sections : [],
+  );
+  const [contactEmail, setContactEmail] = useState<string>(
+    () => page.contactEmail || "compliance@foodremit.com",
+  );
+  const [title, setTitle] = useState<string>(() => page.title || defaultLabel);
+  const [description, setDescription] = useState<string>(() => page.description || "");
+  const [isEmailSaving, setIsEmailSaving] = useState<boolean>(false);
+
+  // Section modal state
+  const [sectionDialogOpen, setSectionDialogOpen] = useState<boolean>(false);
+  const [dialogKey, setDialogKey] = useState<number>(0);
+  const [editingSection, setEditingSection] = useState<ContentPageSection | null>(null);
+  const [editingIndex, setEditingIndex] = useState<number | undefined>(undefined);
+  const [isSectionSubmitting, setIsSectionSubmitting] = useState<boolean>(false);
+
+  // Delete section confirmation modal state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [sectionToDelete, setSectionToDelete] = useState<ContentPageSection | null>(null);
+  const [sectionToDeleteIndex, setSectionToDeleteIndex] = useState<number | null>(null);
+
+  // Title edit modal state
+  const [titleDialogOpen, setTitleDialogOpen] = useState<boolean>(false);
+  const [tempTitle, setTempTitle] = useState<string>("");
+
+  // Admin section preview language
+  const [adminViewLang, setAdminViewLang] = useState<FaqLanguageCode>("en");
+
+  const compileDescription = (secList: ContentPageSection[]) => {
+    return secList.length > 0
+      ? secList
+          .map((s) => {
+            const desc = (s.description || "").trim();
+            const formattedDesc = desc.startsWith("<") ? desc : `<p>${desc}</p>`;
+            return `<h3>${s.title}</h3>\n${formattedDesc}`;
+          })
+          .join("\n")
+      : description || "";
+  };
+
+  // Section actions
+  const handleOpenAddSection = () => {
+    setEditingSection(null);
+    setEditingIndex(undefined);
+    setDialogKey((prev) => prev + 1);
+    setSectionDialogOpen(true);
+  };
+
+  const handleOpenEditSection = (sec: ContentPageSection, idx: number) => {
+    setEditingSection(sec);
+    setEditingIndex(idx);
+    setDialogKey((prev) => prev + 1);
+    setSectionDialogOpen(true);
+  };
+
+  // Add / Edit Section via API
+  const handleSaveSection = async (
+    savedSection: ContentPageSection,
+    options?: { keepOpen?: boolean },
+  ) => {
+    setIsSectionSubmitting(true);
+    try {
+      if (editingIndex !== undefined && editingSection?.id) {
+        // Edit by API
+        const res = await editSectionMutation.mutateAsync({
+          sectionId: editingSection.id,
+          section: savedSection,
+        });
+
+        if (res?.data?.sections) {
+          setSections(res.data.sections);
+        } else {
+          setSections((prev) => {
+            const next = [...prev];
+            next[editingIndex] = savedSection;
+            return next;
+          });
+        }
+        successToast({ title: "Section updated successfully" });
+      } else {
+        // Add by API
+        const res = await addSectionMutation.mutateAsync(savedSection);
+        if (res?.data?.sections) {
+          setSections(res.data.sections);
+        } else {
+          setSections((prev) => [...prev, savedSection]);
+        }
+        successToast({ title: "Section added successfully" });
+      }
+
+      if (!options?.keepOpen) {
+        setSectionDialogOpen(false);
+        setEditingSection(null);
+        setEditingIndex(undefined);
+      }
+    } catch {
+      errorToast({
+        title: "Failed to save section",
+        description: "Please check your network connection and try again.",
+      });
+      throw new Error("Failed to save section");
+    } finally {
+      setIsSectionSubmitting(false);
+    }
+  };
+
+  // Prompt delete dialog
+  const handlePromptDeleteSection = (sec: ContentPageSection, idx: number) => {
+    setSectionToDelete(sec);
+    setSectionToDeleteIndex(idx);
+    setDeleteDialogOpen(true);
+  };
+
+  // Confirm delete via API
+  const handleConfirmDeleteSection = async () => {
+    if (sectionToDeleteIndex === null) return;
+    const target = sectionToDelete || sections[sectionToDeleteIndex];
+    if (!target) return;
+
+    try {
+      if (target.id) {
+        const res = await deleteSectionMutation.mutateAsync(target.id);
+        if (res?.data?.sections) {
+          setSections(res.data.sections);
+        } else {
+          setSections((prev) => prev.filter((_, i) => i !== sectionToDeleteIndex));
+        }
+      } else {
+        const remaining = sections.filter((_, i) => i !== sectionToDeleteIndex);
+        await updateMutation.mutateAsync({
+          title: title.trim() || defaultLabel,
+          description: compileDescription(remaining),
+          contactEmail: contactEmail.trim(),
+          supportEmail: contactEmail.trim(),
+          sections: remaining,
+        });
+        setSections(remaining);
+      }
+
+      setDeleteDialogOpen(false);
+      setSectionToDelete(null);
+      setSectionToDeleteIndex(null);
+      successToast({ title: "Section deleted successfully" });
+    } catch {
+      errorToast({
+        title: "Failed to delete section",
+        description: "Please check your network connection and try again.",
+      });
+    }
+  };
+
+  // Reordering sections via API
+  const handleMoveUp = async (index: number) => {
+    if (index === 0) return;
+    const current = sections[index];
+    const prevItem = sections[index - 1];
+    if (!current || !prevItem) return;
+
+    const next = [...sections];
+    next[index - 1] = current;
+    next[index] = prevItem;
+    setSections(next);
+
+    try {
+      await updateMutation.mutateAsync({
+        title: title.trim() || defaultLabel,
+        description: compileDescription(next),
+        contactEmail: contactEmail.trim(),
+        supportEmail: contactEmail.trim(),
+        sections: next,
+      });
+      successToast({ title: "Section order updated" });
+    } catch {
+      errorToast({ title: "Failed to update section order" });
+    }
+  };
+
+  const handleMoveDown = async (index: number) => {
+    if (index >= sections.length - 1) return;
+    const current = sections[index];
+    const nextItem = sections[index + 1];
+    if (!current || !nextItem) return;
+
+    const next = [...sections];
+    next[index + 1] = current;
+    next[index] = nextItem;
+    setSections(next);
+
+    try {
+      await updateMutation.mutateAsync({
+        title: title.trim() || defaultLabel,
+        description: compileDescription(next),
+        contactEmail: contactEmail.trim(),
+        supportEmail: contactEmail.trim(),
+        sections: next,
+      });
+      successToast({ title: "Section order updated" });
+    } catch {
+      errorToast({ title: "Failed to update section order" });
+    }
+  };
+
+  // Save Support Email via API
+  const handleSaveEmail = async () => {
+    setIsEmailSaving(true);
+    try {
+      await updateMutation.mutateAsync({
+        title: title.trim() || defaultLabel,
+        description: compileDescription(sections),
+        contactEmail: contactEmail.trim(),
+        supportEmail: contactEmail.trim(),
+        sections,
+      });
+      successToast({ title: "Customer support email updated" });
+    } catch {
+      errorToast({ title: "Failed to update customer support email" });
+    } finally {
+      setIsEmailSaving(false);
+    }
+  };
+
+  // Save All Changes (manual backup button)
+  const handleSaveAll = async () => {
+    try {
+      const compiledHtml = compileDescription(sections);
+
+      const payload = {
+        title: title.trim() || defaultLabel,
+        description: compiledHtml,
+        contactEmail: contactEmail.trim(),
+        supportEmail: contactEmail.trim(),
+        sections,
+      };
+
+      await updateMutation.mutateAsync(payload);
+      successToast({ title: `${title || defaultLabel} saved successfully` });
+    } catch {
+      errorToast({
+        title: "Failed to save content",
+        description: "Please check your network and try again.",
+      });
+    }
+  };
+
+  const isPolicyPage =
+    pageKey === "terms-of-use" || pageKey === "privacy-policy" || sections.length > 0;
+
   return (
-    <Card className="overflow-hidden rounded-2xl border-slate-200/80 pt-0 shadow-sm">
-      <CardHeader className="from-primary/8 border-b bg-linear-to-r via-emerald-50/40 to-transparent py-5">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/15 text-primary flex size-11 items-center justify-center rounded-xl">
-            <FileText className="size-5" />
-          </div>
-          <div>
-            <CardTitle className="text-xl font-bold text-slate-900">
-              {page.title || label}
-            </CardTitle>
-            <p className="text-muted-foreground mt-0.5 text-sm">
-              {page.title || page.description ? (
-                <LastUpdatedText updatedAt={page.updatedAt} />
-              ) : (
-                "No content yet - add it from the button above."
-              )}
-            </p>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="p-0">
-        <ScrollArea className="h-[min(52vh,520px)]">
-          <div className="space-y-4 p-6">
-            {page.title || page.description ? (
-              <>
-                <div>
-                  <p className="text-xs font-bold tracking-wide text-slate-400 uppercase">Title</p>
-                  <p className="mt-1 text-base font-semibold text-slate-900">{page.title || "—"}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-bold tracking-wide text-slate-400 uppercase">
-                    Description
-                  </p>
-                  <div className="mt-2 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] transition-colors hover:bg-slate-50 dark:border-slate-800/80 dark:bg-slate-900/40">
-                    <ReactQuill
-                      value={page.description || ""}
-                      readOnly={true}
-                      theme="snow"
-                      modules={{ toolbar: false }}
-                      className="[&_.ql-container]:bg-transparent [&_.ql-container.ql-snow]:border-0! [&_.ql-editor]:p-0!"
-                    />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <p className="py-10 text-center text-sm text-slate-500">
-                Nothing added yet. Click &quot;Add {label}&quot; to create content.
-              </p>
+    <>
+      <PageHeader
+        title={title || defaultLabel}
+        description={`Manage ${defaultLabel.toLowerCase()} content, multilingual translation and customer support email.`}
+        action={
+          <div className="flex items-center gap-2.5">
+            {isPolicyPage && (
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 rounded-xl border-slate-300 font-semibold"
+                onClick={handleOpenAddSection}
+              >
+                <Plus className="mr-2 size-4 text-emerald-600" />
+                Add Section
+              </Button>
             )}
+
+            <Button
+              type="button"
+              className="bg-primary hover:bg-primary/90 h-11 min-w-32 rounded-xl font-semibold text-white shadow-xs transition-all"
+              disabled={updateMutation.isPending}
+              isLoading={updateMutation.isPending}
+              onClick={handleSaveAll}
+            >
+              <Save className="mr-2 size-4" />
+              Save All
+            </Button>
           </div>
-        </ScrollArea>
-      </CardContent>
-    </Card>
+        }
+      />
+
+      {/* Support / Compliance Email Banner Card */}
+      <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+        <CardContent className="p-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shadow-xs">
+                <Mail className="size-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">
+                  Customer Support &amp; Compliance Email
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Displayed to mobile &amp; web users: &quot;Questions? {contactEmail}&quot;
+                </p>
+              </div>
+            </div>
+
+            <div className="flex w-full items-center gap-2 sm:max-w-md">
+              <Input
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
+                placeholder="e.g. compliance@foodremit.com"
+                className={cn(inputClass, "w-full")}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 shrink-0 rounded-xl border-slate-300 font-semibold"
+                disabled={isEmailSaving || updateMutation.isPending}
+                isLoading={isEmailSaving}
+                onClick={handleSaveEmail}
+              >
+                Save Email
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {isPolicyPage ? (
+        /* Full-width Multilingual Policy Sections Manager */
+        <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <CardHeader className="border-b border-slate-100 bg-linear-to-r from-emerald-50/40 to-transparent py-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex size-9 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-xs">
+                  <FileText className="size-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-bold text-slate-900">
+                    Policy Sections
+                  </CardTitle>
+                  <p className="text-xs text-slate-500">
+                    {sections.length} numbered {sections.length === 1 ? "section" : "sections"}{" "}
+                    configured
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Admin View Language Selector */}
+                <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white p-1 text-xs">
+                  <span className="pl-1 text-[11px] font-medium text-slate-400">Sorted by:</span>
+                  {FAQ_SUPPORTED_LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      type="button"
+                      onClick={() => setAdminViewLang(lang.code)}
+                      className={cn(
+                        "rounded px-2 py-0.5 text-xs font-bold transition-all",
+                        adminViewLang === lang.code
+                          ? "bg-emerald-600 text-white shadow-xs"
+                          : "text-slate-600 hover:bg-slate-100",
+                      )}
+                      title={lang.fullName}
+                    >
+                      {lang.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-4 sm:p-5">
+            {sections.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-200 p-8 text-center">
+                <p className="text-sm font-semibold text-slate-700">No sections added yet</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Click &quot;Add Section&quot; to configure your first multilingual clause.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-4 rounded-xl"
+                  onClick={handleOpenAddSection}
+                >
+                  <Plus className="mr-1.5 size-4" /> Add Section
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {sections.map((sec, idx) => {
+                  const titleTrans = sec.titleTranslations || {};
+                  const descTrans = sec.descriptionTranslations || {};
+
+                  const displayTitle =
+                    adminViewLang === "en"
+                      ? titleTrans.en || sec.title || `Section ${idx + 1}`
+                      : titleTrans[adminViewLang] ||
+                        titleTrans.en ||
+                        sec.title ||
+                        `Section ${idx + 1}`;
+
+                  const displayDesc =
+                    adminViewLang === "en"
+                      ? descTrans.en || sec.description || ""
+                      : descTrans[adminViewLang] || descTrans.en || sec.description || "";
+
+                  return (
+                    <div
+                      key={sec.id || idx}
+                      className="group relative rounded-xl border border-slate-200/90 bg-white p-4 transition-all hover:border-slate-300 hover:shadow-xs"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex min-w-0 flex-1 items-start gap-3">
+                          {/* Section Index Badge */}
+                          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-xs font-bold text-emerald-700">
+                            {idx + 1}
+                          </div>
+
+                          <div className="min-w-0 flex-1 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="line-clamp-1 text-sm font-bold text-slate-900">
+                                {getPlainText(displayTitle)}
+                              </h4>
+                            </div>
+                            <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
+                              {getPlainText(displayDesc) || "—"}
+                            </p>
+
+                            {/* 5-Language Translation Check Badges */}
+                            <div className="flex flex-wrap items-center gap-1 pt-1.5">
+                              {FAQ_SUPPORTED_LANGUAGES.map((lang) => {
+                                const hasT = Boolean(titleTrans[lang.code]?.trim());
+                                const hasD = Boolean(descTrans[lang.code]?.trim());
+                                const isOk = hasT && hasD;
+                                return (
+                                  <span
+                                    key={lang.code}
+                                    className={cn(
+                                      "inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-semibold",
+                                      isOk
+                                        ? "bg-emerald-50 text-emerald-700"
+                                        : "bg-red-50 text-red-600",
+                                    )}
+                                    title={`${lang.fullName}: ${isOk ? "Complete" : "Incomplete"}`}
+                                  >
+                                    {isOk ? <Check className="size-2.5" /> : "!"}
+                                    {lang.label}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Reorder & Action Buttons */}
+                        <div className="flex shrink-0 items-center gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-7 rounded-lg text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            disabled={idx === 0 || updateMutation.isPending}
+                            onClick={() => handleMoveUp(idx)}
+                            title="Move section up"
+                          >
+                            <ArrowUp className="size-3.5" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-7 rounded-lg text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            disabled={idx === sections.length - 1 || updateMutation.isPending}
+                            onClick={() => handleMoveDown(idx)}
+                            title="Move section down"
+                          >
+                            <ArrowDown className="size-3.5" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-7 rounded-lg text-slate-400 hover:text-emerald-700"
+                            onClick={() => handleOpenEditSection(sec, idx)}
+                            title="Edit section"
+                          >
+                            <PencilLine className="size-3.5" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-7 rounded-lg text-slate-400 hover:text-red-600"
+                            onClick={() => handlePromptDeleteSection(sec, idx)}
+                            title="Delete section"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        /* Fallback Standard Quill Editor for non-section pages (like About Us) */
+        <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-xs">
+          <CardHeader className="border-b border-slate-100 bg-linear-to-r from-emerald-50/40 to-transparent py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex size-9 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-xs">
+                  <FileText className="size-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-bold text-slate-900">
+                    {title || defaultLabel} Content
+                  </CardTitle>
+                  <p className="text-xs text-slate-500">
+                    <LastUpdatedText updatedAt={page.updatedAt} />
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-xl text-xs font-semibold"
+                onClick={() => {
+                  setTitleDialogOpen(true);
+                  setTempTitle(title);
+                }}
+              >
+                <PencilLine className="mr-1.5 size-3.5" /> Edit Title
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4 p-6">
+            <div className="space-y-1.5">
+              <FieldLabel className="text-xs font-semibold text-slate-800">
+                Page Description
+              </FieldLabel>
+              <ReactQuill
+                theme="snow"
+                value={description}
+                onChange={(val) => {
+                  setDescription(val);
+                }}
+                className="rounded-xl bg-white [&_.ql-container]:rounded-b-xl [&_.ql-editor]:min-h-65 [&_.ql-toolbar]:rounded-t-xl"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Multilingual Section Add/Edit Dialog */}
+      {sectionDialogOpen && (
+        <SectionDialog
+          key={dialogKey}
+          open={sectionDialogOpen}
+          onOpenChange={(open) => {
+            setSectionDialogOpen(open);
+            if (!open) {
+              setEditingSection(null);
+              setEditingIndex(undefined);
+            }
+          }}
+          section={editingSection}
+          sectionIndex={editingIndex}
+          onSave={handleSaveSection}
+          isSubmitting={isSectionSubmitting}
+        />
+      )}
+
+      {/* Proper Alert Modal for Deleting Section */}
+      <ConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Delete Section"
+        description={`Are you sure you want to delete Section ${(sectionToDeleteIndex ?? 0) + 1}${
+          getPlainText(sectionToDelete?.titleTranslations?.en || sectionToDelete?.title)
+            ? `: "${getPlainText(sectionToDelete?.titleTranslations?.en || sectionToDelete?.title)}"`
+            : ""
+        }? This will permanently remove this clause from ${defaultLabel}.`}
+        confirmLabel="Delete Section"
+        cancelLabel="Cancel"
+        variant="destructive"
+        isLoading={deleteSectionMutation.isPending || updateMutation.isPending}
+        onConfirm={handleConfirmDeleteSection}
+      />
+
+      {/* Edit Title Dialog */}
+      <Dialog open={titleDialogOpen} onOpenChange={setTitleDialogOpen}>
+        <DialogContent className="max-w-md rounded-2xl p-6">
+          <DialogHeader>
+            <DialogTitle>Edit Page Title</DialogTitle>
+            <DialogDescription>
+              Update the title displayed at the top of this content page.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <FieldLabel className="text-xs font-semibold">Title</FieldLabel>
+              <Input
+                value={tempTitle}
+                onChange={(e) => setTempTitle(e.target.value)}
+                placeholder="Enter page title"
+                className={inputClass}
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl"
+                onClick={() => setTitleDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="rounded-xl bg-emerald-600 text-white hover:bg-emerald-700"
+                onClick={async () => {
+                  const newTitle = tempTitle.trim() || defaultLabel;
+                  setTitle(newTitle);
+                  setTitleDialogOpen(false);
+                  try {
+                    await updateMutation.mutateAsync({
+                      title: newTitle,
+                      description: compileDescription(sections),
+                      contactEmail: contactEmail.trim(),
+                      supportEmail: contactEmail.trim(),
+                      sections,
+                    });
+                    successToast({ title: "Page title updated successfully" });
+                  } catch {
+                    errorToast({ title: "Failed to update page title" });
+                  }
+                }}
+              >
+                Apply
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -165,138 +755,4 @@ function LastUpdatedText({ updatedAt }: { updatedAt: string }) {
     () => "",
   );
   return <>{`Last updated: ${formatted}`}</>;
-}
-
-type EditDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  label: string;
-  defaultValues: ContentPageFormValues;
-  isSubmitting: boolean;
-  onSubmit: (values: ContentPageFormValues) => Promise<void>;
-};
-
-function EditContentPageDialog({
-  open,
-  onOpenChange,
-  label,
-  defaultValues,
-  isSubmitting,
-  onSubmit,
-}: EditDialogProps) {
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ContentPageFormValues>({
-    resolver: zodResolver(contentPageSchema),
-    defaultValues,
-    mode: "onChange",
-  });
-
-  useEffect(() => {
-    if (open) reset(defaultValues);
-  }, [open, defaultValues, reset]);
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl gap-0 overflow-hidden border-0 p-0 shadow-2xl sm:max-h-[90vh]">
-        <div className="max-h-[90vh] overflow-y-auto overscroll-contain">
-          <DialogHeader className="from-primary/10 border-b bg-linear-to-r via-emerald-50/60 to-transparent p-6 pb-5">
-            <DialogTitle className="flex items-center justify-center gap-3 text-2xl font-bold text-slate-900">
-              <div className="bg-primary/15 text-primary flex size-12 items-center justify-center rounded-2xl shadow-sm">
-                <PencilLine className="size-5" />
-              </div>
-              <span>Edit {label}</span>
-            </DialogTitle>
-            <DialogDescription className="mt-2 text-center text-sm text-slate-500">
-              Update title and description. Changes save to the database.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="bg-white">
-            <div className="space-y-5 p-6">
-              <Controller
-                name="title"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel className="text-sm font-semibold">
-                      Title <span className="text-red-500">*</span>
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      className={cn(inputClass, errors.title && "border-red-400 bg-red-50")}
-                      placeholder="Enter title"
-                    />
-                    {errors.title ? (
-                      <p className="text-xs font-medium text-red-500">{errors.title.message}</p>
-                    ) : null}
-                  </div>
-                )}
-              />
-              <Controller
-                name="description"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel className="text-sm font-semibold">
-                      Description <span className="text-red-500">*</span>
-                    </FieldLabel>
-                    <ReactQuill
-                      theme="snow"
-                      value={field.value}
-                      onChange={field.onChange}
-                      className={cn(
-                        "rounded-xl bg-white [&_.ql-container]:rounded-b-xl [&_.ql-editor]:max-h-[400px] [&_.ql-editor]:min-h-[200px] [&_.ql-editor]:overflow-y-auto [&_.ql-toolbar]:rounded-t-xl",
-                        errors.description &&
-                          "[&_.ql-container]:border-red-400 [&_.ql-toolbar]:border-red-400",
-                      )}
-                      modules={{
-                        toolbar: [
-                          [{ header: [1, 2, 3, false] }],
-                          ["bold", "italic", "underline", "strike", "blockquote"],
-                          [
-                            { list: "ordered" },
-                            { list: "bullet" },
-                            { indent: "-1" },
-                            { indent: "+1" },
-                          ],
-                          ["link", "clean"],
-                        ],
-                      }}
-                    />
-                    {errors.description ? (
-                      <p className="text-xs font-medium text-red-500">
-                        {errors.description.message}
-                      </p>
-                    ) : null}
-                  </div>
-                )}
-              />
-            </div>
-            <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/80 px-6 py-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="h-11 rounded-xl"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                isLoading={isSubmitting}
-                className="h-11 min-w-32 rounded-xl font-semibold"
-              >
-                <Save className="mr-2 size-4" />
-                Update
-              </Button>
-            </div>
-          </form>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
 }

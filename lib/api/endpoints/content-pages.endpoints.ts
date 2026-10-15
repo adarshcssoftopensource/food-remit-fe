@@ -1,6 +1,11 @@
 export const CONTENT_PAGES_ENDPOINTS = {
   ADMIN_GET: (key: string) => `/admin/content-pages/${key}`,
   ADMIN_UPDATE: (key: string) => `/admin/content-pages/${key}`,
+  ADMIN_ADD_SECTION: (key: string) => `/admin/content-pages/${key}/sections`,
+  ADMIN_UPDATE_SECTION: (key: string, sectionId: string) =>
+    `/admin/content-pages/${key}/sections/${sectionId}`,
+  ADMIN_DELETE_SECTION: (key: string, sectionId: string) =>
+    `/admin/content-pages/${key}/sections/${sectionId}`,
   PUBLIC_GET: (key: string) => `/app/api/content-pages/${key}`,
 } as const;
 
@@ -11,6 +16,7 @@ export const FAQ_ENDPOINTS = {
     sortOrder?: string,
     page?: number,
     limit?: number,
+    categoryKey?: string,
   ) => {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
@@ -18,6 +24,7 @@ export const FAQ_ENDPOINTS = {
     if (sortOrder) params.append("sortOrder", sortOrder);
     if (page) params.append("page", String(page));
     if (limit) params.append("limit", String(limit));
+    if (categoryKey && categoryKey !== "all") params.append("categoryKey", categoryKey);
     const qs = params.toString();
     return qs ? `/admin/faqs?${qs}` : "/admin/faqs";
   },
