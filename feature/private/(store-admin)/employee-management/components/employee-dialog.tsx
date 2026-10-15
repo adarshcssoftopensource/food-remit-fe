@@ -127,15 +127,15 @@ export function EmployeeDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger && <DialogTrigger>{trigger}</DialogTrigger>}
-      <DialogContent className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl p-0">
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-1.5rem)] max-w-4xl flex-col overflow-hidden rounded-2xl p-0 sm:max-h-[88vh] sm:w-full">
         <EmployeeDialogHeader isEdit={isEdit} />
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex min-h-0 flex-1 flex-col bg-slate-50/50"
           >
-            <div className="flex-1 overflow-y-auto p-4">
-              <div className="mx-auto max-w-3xl space-y-6">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-4">
+              <div className="mx-auto max-w-3xl space-y-4 sm:space-y-6">
                 <EmployeeImageField form={form} />
                 <EmployeePersonalDetailsSection form={form} />
                 <EmployeeContactSection

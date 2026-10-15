@@ -201,101 +201,106 @@ function EditContentPageDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl gap-0 overflow-hidden border-0 p-0 shadow-2xl sm:max-h-[90vh]">
-        <div className="max-h-[90vh] overflow-y-auto overscroll-contain">
-          <DialogHeader className="from-primary/10 border-b bg-linear-to-r via-emerald-50/60 to-transparent p-6 pb-5">
-            <DialogTitle className="flex items-center justify-center gap-3 text-2xl font-bold text-slate-900">
-              <div className="bg-primary/15 text-primary flex size-12 items-center justify-center rounded-2xl shadow-sm">
-                <PencilLine className="size-5" />
-              </div>
-              <span>Edit {label}</span>
-            </DialogTitle>
-            <DialogDescription className="mt-2 text-center text-sm text-slate-500">
-              Update title and description. Changes save to the database.
-            </DialogDescription>
-          </DialogHeader>
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-1.5rem)] max-w-2xl flex-col gap-0 overflow-hidden border-0 p-0 shadow-2xl sm:max-h-[88vh] sm:w-full">
+        <DialogHeader className="from-primary/10 shrink-0 border-b bg-linear-to-r via-emerald-50/60 to-transparent p-4 pb-3 sm:p-6 sm:pb-5">
+          <DialogTitle className="flex items-center justify-center gap-2.5 text-lg font-bold text-slate-900 sm:gap-3 sm:text-2xl">
+            <div className="bg-primary/15 text-primary flex size-9 items-center justify-center rounded-xl shadow-xs sm:size-12 sm:rounded-2xl">
+              <PencilLine className="size-4 sm:size-5" />
+            </div>
+            <span>Edit {label}</span>
+          </DialogTitle>
+          <DialogDescription className="mt-1 text-center text-xs text-slate-500 sm:text-sm">
+            Update title and description. Changes save to the database.
+          </DialogDescription>
+        </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="bg-white">
-            <div className="space-y-5 p-6">
-              <Controller
-                name="title"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel className="text-sm font-semibold">
-                      Title <span className="text-red-500">*</span>
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      className={cn(inputClass, errors.title && "border-red-400 bg-red-50")}
-                      placeholder="Enter title"
-                    />
-                    {errors.title ? (
-                      <p className="text-xs font-medium text-red-500">{errors.title.message}</p>
-                    ) : null}
-                  </div>
-                )}
-              />
-              <Controller
-                name="description"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel className="text-sm font-semibold">
-                      Description <span className="text-red-500">*</span>
-                    </FieldLabel>
-                    <ReactQuill
-                      theme="snow"
-                      value={field.value}
-                      onChange={field.onChange}
-                      className={cn(
-                        "rounded-xl bg-white [&_.ql-container]:rounded-b-xl [&_.ql-editor]:max-h-[400px] [&_.ql-editor]:min-h-[200px] [&_.ql-editor]:overflow-y-auto [&_.ql-toolbar]:rounded-t-xl",
-                        errors.description &&
-                          "[&_.ql-container]:border-red-400 [&_.ql-toolbar]:border-red-400",
-                      )}
-                      modules={{
-                        toolbar: [
-                          [{ header: [1, 2, 3, false] }],
-                          ["bold", "italic", "underline", "strike", "blockquote"],
-                          [
-                            { list: "ordered" },
-                            { list: "bullet" },
-                            { indent: "-1" },
-                            { indent: "+1" },
-                          ],
-                          ["link", "clean"],
+        <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col bg-white">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:space-y-5 sm:p-6">
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel className="text-sm font-semibold">
+                    Title <span className="text-red-500">*</span>
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    className={cn(inputClass, errors.title && "border-red-400 bg-red-50")}
+                    placeholder="Enter title"
+                  />
+                  {errors.title ? (
+                    <p className="text-xs font-medium text-red-500">{errors.title.message}</p>
+                  ) : null}
+                </div>
+              )}
+            />
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel className="text-sm font-semibold">
+                    Description <span className="text-red-500">*</span>
+                  </FieldLabel>
+                  <ReactQuill
+                    theme="snow"
+                    value={field.value}
+                    onChange={field.onChange}
+                    className={cn(
+                      "rounded-xl bg-white",
+                      "[&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-slate-200 [&_.ql-toolbar]:bg-slate-50/70",
+                      "[&_.ql-container]:rounded-b-xl [&_.ql-container]:border-slate-200 [&_.ql-container]:text-sm",
+                      "[&_.ql-editor]:max-h-[200px] [&_.ql-editor]:min-h-[140px] sm:[&_.ql-editor]:max-h-[260px]",
+                      "[&_.ql-editor]:overflow-y-auto",
+                      "[&_.ql-editor::-webkit-scrollbar]:w-2",
+                      "[&_.ql-editor::-webkit-scrollbar-track]:bg-slate-100",
+                      "[&_.ql-editor::-webkit-scrollbar-thumb]:bg-slate-300",
+                      "[&_.ql-editor::-webkit-scrollbar-thumb]:rounded-full",
+                      "[&_.ql-editor::-webkit-scrollbar-thumb:hover]:bg-slate-400",
+                      errors.description &&
+                        "[&_.ql-container]:border-red-400 [&_.ql-toolbar]:border-red-400",
+                    )}
+                    modules={{
+                      toolbar: [
+                        [{ header: [1, 2, 3, false] }],
+                        ["bold", "italic", "underline", "strike", "blockquote"],
+                        [
+                          { list: "ordered" },
+                          { list: "bullet" },
+                          { indent: "-1" },
+                          { indent: "+1" },
                         ],
-                      }}
-                    />
-                    {errors.description ? (
-                      <p className="text-xs font-medium text-red-500">
-                        {errors.description.message}
-                      </p>
-                    ) : null}
-                  </div>
-                )}
-              />
-            </div>
-            <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/80 px-6 py-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="h-11 rounded-xl"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                isLoading={isSubmitting}
-                className="h-11 min-w-32 rounded-xl font-semibold"
-              >
-                <Save className="mr-2 size-4" />
-                Update
-              </Button>
-            </div>
-          </form>
-        </div>
+                        ["link", "clean"],
+                      ],
+                    }}
+                  />
+                  {errors.description ? (
+                    <p className="text-xs font-medium text-red-500">{errors.description.message}</p>
+                  ) : null}
+                </div>
+              )}
+            />
+          </div>
+          <div className="flex shrink-0 items-center gap-2.5 border-t border-slate-100 bg-slate-50/80 px-4 py-3 sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 flex-1 rounded-xl px-3 font-semibold sm:min-w-24 sm:flex-initial sm:px-5"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              isLoading={isSubmitting}
+              className="shadow-primary/20 h-11 flex-1 rounded-xl px-3 font-semibold shadow-md sm:min-w-32 sm:flex-initial sm:px-6"
+            >
+              <Save className="mr-2 size-4" />
+              Update
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

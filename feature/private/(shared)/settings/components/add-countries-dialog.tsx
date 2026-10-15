@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -176,26 +175,26 @@ export function AddCountriesDialog({
             )}
           />
 
-          <DialogFooter className="gap-2 pt-2">
+          <div className="flex items-center gap-2.5 pt-2 sm:gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => handleDialogOpenChange(false)}
-              className="flex-1"
+              className="h-11 min-h-11 flex-1 rounded-xl px-3 text-sm font-semibold sm:px-4"
               disabled={isPending}
             >
-              <X size={20} />
+              <X size={18} />
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending} className="flex-1 gap-2">
-              {isPending ? (
+            <Button
+              type="submit"
+              disabled={isPending}
+              isLoading={isPending}
+              className="shadow-primary/20 h-11 min-h-11 flex-1 gap-2 rounded-xl px-3 text-sm font-semibold shadow-md sm:px-4"
+            >
+              {mode === "add" ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {mode === "add" ? "Adding..." : "Saving..."}
-                </>
-              ) : mode === "add" ? (
-                <>
-                  <Plus size={20} />
+                  <Plus size={18} />
                   Add Country
                 </>
               ) : (
@@ -205,7 +204,7 @@ export function AddCountriesDialog({
                 </>
               )}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
