@@ -399,7 +399,7 @@ export function SectionDialog({
                       <span className="text-red-500">*</span>
                     </FieldLabel>
                     <span className="text-[11px] text-slate-400">
-                      Rich text • {getHtmlTextLength(titleTranslations[activeLang])} characters
+                      {getHtmlTextLength(titleTranslations[activeLang])} characters
                     </span>
                   </div>
                   <RichTextEditor
@@ -424,7 +424,7 @@ export function SectionDialog({
                       <span className="text-red-500">*</span>
                     </FieldLabel>
                     <span className="text-[11px] text-slate-400">
-                      Rich text • {getHtmlTextLength(descTranslations[activeLang])} characters
+                      {getHtmlTextLength(descTranslations[activeLang])} characters
                     </span>
                   </div>
                   <RichTextEditor

@@ -16,24 +16,18 @@ import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { formatDateTime } from "@/lib/date";
 import { cn } from "@/lib/utils";
-import {
-  ArrowDown,
-  ArrowUp,
-  Check,
-  FileText,
-  Mail,
-  PencilLine,
-  Plus,
-  Save,
-  Trash2,
-} from "lucide-react";
+import { FileText, Globe, Mail, PencilLine, Plus, Save, Trash2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState, useSyncExternalStore } from "react";
 import "react-quill-new/dist/quill.snow.css";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
-import { getPlainText } from "@/components/ui/rich-text-editor";
+import { getPlainText, RichTextPreview } from "@/components/ui/rich-text-editor";
+import {
+  DataTableRowActions,
+  type DataTableRowActionItem,
+} from "@/components/common/data-table/data-table-row-actions";
 
 import { useGetContentPage } from "../hooks/use-get-content-page";
 import { useAddSection, useDeleteSection, useEditSection } from "../hooks/use-section-api";
@@ -249,57 +243,6 @@ function ContentPageManager({ page, pageKey, defaultLabel }: ContentPageManagerP
     }
   };
 
-  // Reordering sections via API
-  const handleMoveUp = async (index: number) => {
-    if (index === 0) return;
-    const current = sections[index];
-    const prevItem = sections[index - 1];
-    if (!current || !prevItem) return;
-
-    const next = [...sections];
-    next[index - 1] = current;
-    next[index] = prevItem;
-    setSections(next);
-
-    try {
-      await updateMutation.mutateAsync({
-        title: title.trim() || defaultLabel,
-        description: compileDescription(next),
-        contactEmail: contactEmail.trim(),
-        supportEmail: contactEmail.trim(),
-        sections: next,
-      });
-      successToast({ title: "Section order updated" });
-    } catch {
-      errorToast({ title: "Failed to update section order" });
-    }
-  };
-
-  const handleMoveDown = async (index: number) => {
-    if (index >= sections.length - 1) return;
-    const current = sections[index];
-    const nextItem = sections[index + 1];
-    if (!current || !nextItem) return;
-
-    const next = [...sections];
-    next[index + 1] = current;
-    next[index] = nextItem;
-    setSections(next);
-
-    try {
-      await updateMutation.mutateAsync({
-        title: title.trim() || defaultLabel,
-        description: compileDescription(next),
-        contactEmail: contactEmail.trim(),
-        supportEmail: contactEmail.trim(),
-        sections: next,
-      });
-      successToast({ title: "Section order updated" });
-    } catch {
-      errorToast({ title: "Failed to update section order" });
-    }
-  };
-
   // Save Support Email via API
   const handleSaveEmail = async () => {
     setIsEmailSaving(true);
@@ -432,32 +375,34 @@ function ContentPageManager({ page, pageKey, defaultLabel }: ContentPageManagerP
                     Policy Sections
                   </CardTitle>
                   <p className="text-xs text-slate-500">
-                    {sections.length} numbered {sections.length === 1 ? "section" : "sections"}{" "}
-                    configured
+                    {sections.length} {sections.length === 1 ? "section" : "sections"} configured
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 {/* Admin View Language Selector */}
-                <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white p-1 text-xs">
-                  <span className="pl-1 text-[11px] font-medium text-slate-400">Sorted by:</span>
-                  {FAQ_SUPPORTED_LANGUAGES.map((lang) => (
-                    <button
-                      key={lang.code}
-                      type="button"
-                      onClick={() => setAdminViewLang(lang.code)}
-                      className={cn(
-                        "rounded px-2 py-0.5 text-xs font-bold transition-all",
-                        adminViewLang === lang.code
-                          ? "bg-emerald-600 text-white shadow-xs"
-                          : "text-slate-600 hover:bg-slate-100",
-                      )}
-                      title={lang.fullName}
-                    >
-                      {lang.label}
-                    </button>
-                  ))}
+                <div className="flex items-center gap-1 rounded-xl border border-slate-200/90 bg-slate-50/80 p-1 text-xs">
+                  <span className="px-2 text-[11px] font-medium text-slate-400">Sorted by:</span>
+                  {FAQ_SUPPORTED_LANGUAGES.map((lang) => {
+                    const isActive = adminViewLang === lang.code;
+                    return (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        onClick={() => setAdminViewLang(lang.code)}
+                        className={cn(
+                          "cursor-pointer rounded-lg px-2.5 py-1 text-xs font-semibold transition-all duration-150",
+                          isActive
+                            ? "bg-emerald-600 text-white shadow-xs"
+                            : "text-slate-600 hover:bg-white hover:text-slate-900 hover:shadow-2xs",
+                        )}
+                        title={lang.fullName}
+                      >
+                        {lang.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -481,7 +426,7 @@ function ContentPageManager({ page, pageKey, defaultLabel }: ContentPageManagerP
                 </Button>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {sections.map((sec, idx) => {
                   const titleTrans = sec.titleTranslations || {};
                   const descTrans = sec.descriptionTranslations || {};
@@ -499,98 +444,103 @@ function ContentPageManager({ page, pageKey, defaultLabel }: ContentPageManagerP
                       ? descTrans.en || sec.description || ""
                       : descTrans[adminViewLang] || descTrans.en || sec.description || "";
 
+                  const actionItems: DataTableRowActionItem[] = [
+                    {
+                      label: "Edit Section",
+                      icon: <PencilLine className="size-4" />,
+                      onClick: () => handleOpenEditSection(sec, idx),
+                    },
+                    {
+                      label: "Delete Section",
+                      icon: <Trash2 className="size-4" />,
+                      onClick: () => handlePromptDeleteSection(sec, idx),
+                      variant: "destructive",
+                    },
+                  ];
+
+                  const completedCount = FAQ_SUPPORTED_LANGUAGES.filter((lang) => {
+                    const hasT = Boolean(titleTrans[lang.code]?.trim());
+                    const hasD = Boolean(descTrans[lang.code]?.trim());
+                    return hasT && hasD;
+                  }).length;
+
                   return (
                     <div
                       key={sec.id || idx}
-                      className="group relative rounded-xl border border-slate-200/90 bg-white p-4 transition-all hover:border-slate-300 hover:shadow-xs"
+                      className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-5 transition-all duration-200 hover:border-emerald-200/90 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex min-w-0 flex-1 items-start gap-3">
-                          {/* Section Index Badge */}
-                          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-xs font-bold text-emerald-700">
-                            {idx + 1}
+                      <div>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex min-w-0 flex-1 items-start gap-3">
+                            {/* Section Index Badge */}
+                            <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-xs font-bold text-emerald-700 shadow-2xs ring-1 ring-emerald-200/60 dark:bg-emerald-950/50 dark:text-emerald-400">
+                              {idx + 1}
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <RichTextPreview
+                                html={displayTitle || `Section ${idx + 1}`}
+                                lineClamp={1}
+                                className="text-sm font-semibold text-slate-900 transition-colors group-hover:text-emerald-950 dark:text-white"
+                              />
+                            </div>
                           </div>
 
-                          <div className="min-w-0 flex-1 space-y-1">
-                            <div className="flex items-center gap-2">
-                              <h4 className="line-clamp-1 text-sm font-bold text-slate-900">
-                                {getPlainText(displayTitle)}
-                              </h4>
-                            </div>
-                            <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
-                              {getPlainText(displayDesc) || "—"}
-                            </p>
-
-                            {/* 5-Language Translation Check Badges */}
-                            <div className="flex flex-wrap items-center gap-1 pt-1.5">
-                              {FAQ_SUPPORTED_LANGUAGES.map((lang) => {
-                                const hasT = Boolean(titleTrans[lang.code]?.trim());
-                                const hasD = Boolean(descTrans[lang.code]?.trim());
-                                const isOk = hasT && hasD;
-                                return (
-                                  <span
-                                    key={lang.code}
-                                    className={cn(
-                                      "inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-semibold",
-                                      isOk
-                                        ? "bg-emerald-50 text-emerald-700"
-                                        : "bg-red-50 text-red-600",
-                                    )}
-                                    title={`${lang.fullName}: ${isOk ? "Complete" : "Incomplete"}`}
-                                  >
-                                    {isOk ? <Check className="size-2.5" /> : "!"}
-                                    {lang.label}
-                                  </span>
-                                );
-                              })}
-                            </div>
+                          {/* Action Menu (Three Dots) */}
+                          <div className="shrink-0">
+                            <DataTableRowActions items={actionItems} />
                           </div>
                         </div>
 
-                        {/* Reorder & Action Buttons */}
-                        <div className="flex shrink-0 items-center gap-1">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="size-7 rounded-lg text-slate-400 hover:text-slate-700 disabled:opacity-30"
-                            disabled={idx === 0 || updateMutation.isPending}
-                            onClick={() => handleMoveUp(idx)}
-                            title="Move section up"
+                        {/* Description Preview */}
+                        <RichTextPreview
+                          html={displayDesc}
+                          fallback="—"
+                          lineClamp={3}
+                          className="mt-2.5 min-h-[3rem] text-xs leading-relaxed text-slate-500 dark:text-slate-400"
+                        />
+                      </div>
+
+                      {/* 5-Language Translation Status Badges */}
+                      <div className="mt-4 flex items-center justify-between gap-2 border-t border-slate-100 pt-3.5 dark:border-slate-800">
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Globe className="size-3.5 text-slate-400" />
+                          <span className="text-[11px] font-medium text-slate-500">
+                            Translations
+                          </span>
+                          <span
+                            className={cn(
+                              "rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                              completedCount === FAQ_SUPPORTED_LANGUAGES.length
+                                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                                : "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
+                            )}
                           >
-                            <ArrowUp className="size-3.5" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="size-7 rounded-lg text-slate-400 hover:text-slate-700 disabled:opacity-30"
-                            disabled={idx === sections.length - 1 || updateMutation.isPending}
-                            onClick={() => handleMoveDown(idx)}
-                            title="Move section down"
-                          >
-                            <ArrowDown className="size-3.5" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="size-7 rounded-lg text-slate-400 hover:text-emerald-700"
-                            onClick={() => handleOpenEditSection(sec, idx)}
-                            title="Edit section"
-                          >
-                            <PencilLine className="size-3.5" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="size-7 rounded-lg text-slate-400 hover:text-red-600"
-                            onClick={() => handlePromptDeleteSection(sec, idx)}
-                            title="Delete section"
-                          >
-                            <Trash2 className="size-3.5" />
-                          </Button>
+                            {completedCount}/{FAQ_SUPPORTED_LANGUAGES.length}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          {FAQ_SUPPORTED_LANGUAGES.map((lang) => {
+                            const hasT = Boolean(titleTrans[lang.code]?.trim());
+                            const hasD = Boolean(descTrans[lang.code]?.trim());
+                            const isOk = hasT && hasD;
+
+                            return (
+                              <span
+                                key={lang.code}
+                                title={`${lang.fullName}: ${isOk ? "Completed" : "Missing"}`}
+                                className={cn(
+                                  "inline-flex size-6 items-center justify-center rounded-md text-[10px] font-bold uppercase transition-colors",
+                                  isOk
+                                    ? "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-300"
+                                    : "bg-slate-100 text-slate-400 opacity-60",
+                                )}
+                              >
+                                {lang.code}
+                              </span>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>

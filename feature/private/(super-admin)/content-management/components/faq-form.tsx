@@ -476,7 +476,7 @@ export function FaqForm({
                   Question ({currentLangMeta.fullName}) <span className="text-red-500">*</span>
                 </FieldLabel>
                 <span className="text-[11px] text-slate-400">
-                  Rich text • {getHtmlTextLength(qTranslations[activeLang])} characters
+                  {getHtmlTextLength(qTranslations[activeLang])} characters
                 </span>
               </div>
               <RichTextEditor
@@ -500,7 +500,7 @@ export function FaqForm({
                   Answer ({currentLangMeta.fullName}) <span className="text-red-500">*</span>
                 </FieldLabel>
                 <span className="text-[11px] text-slate-400">
-                  Rich text • {getHtmlTextLength(aTranslations[activeLang])} characters
+                  {getHtmlTextLength(aTranslations[activeLang])} characters
                 </span>
               </div>
               <RichTextEditor
