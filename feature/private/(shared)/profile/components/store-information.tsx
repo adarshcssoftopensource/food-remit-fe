@@ -681,10 +681,10 @@ export function StoreInformation() {
               type="submit"
               disabled={!isDirty || updateStoreMutation.isPending}
               isLoading={updateStoreMutation.isPending}
-              className="h-11 rounded-xl bg-[#1B3A8C] px-8 text-sm font-bold text-white shadow-md transition hover:bg-[#1B3A8C]/90 hover:shadow-lg dark:bg-indigo-600 dark:hover:bg-indigo-700"
+              className="h-11 rounded-xl bg-[#1B3A8C] text-sm font-bold text-white hover:bg-[#1B3A8C]/90 hover:shadow-lg dark:bg-indigo-600 dark:hover:bg-indigo-700"
             >
-              <Check className="mr-2 h-4 w-4" />
-              {updateStoreMutation.isPending ? "Saving..." : "Save Store Changes"}
+              <Check className="h-4 w-4" />
+              {updateStoreMutation.isPending ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </div>
