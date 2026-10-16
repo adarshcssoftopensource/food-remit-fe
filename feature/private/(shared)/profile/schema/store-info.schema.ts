@@ -17,6 +17,7 @@ export const storeInfoSchema = z
     perishableProducts: z.boolean().optional(),
     refrigeratedProducts: z.boolean().optional(),
     frozenProducts: z.boolean().optional(),
+    businessType: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.sameDayDelivery && !data.orderProcessingTime?.trim()) {
