@@ -393,7 +393,7 @@ export function FaqForm({
                     onClick={() => setActiveLang(lang.code)}
                     title={`${lang.fullName} (${lang.nativeLabel}) - Required`}
                     className={cn(
-                      "relative flex shrink-0 items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-all outline-none sm:min-w-0 sm:shrink sm:px-1",
+                      "relative flex shrink-0 items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold whitespace-nowrap transition-all outline-none sm:min-w-0 sm:shrink sm:px-1",
                       isActive
                         ? "bg-white font-bold text-emerald-700 shadow-xs ring-1 ring-slate-200"
                         : "text-slate-600 hover:bg-white/60 hover:text-slate-900",
@@ -429,15 +429,18 @@ export function FaqForm({
 
           {/* Active Language Editor Card */}
           <div className="space-y-4 rounded-2xl border border-slate-200/90 bg-slate-50/50 p-4">
-            <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">{currentLangMeta.flag}</span>
-                <div>
+            <div className="flex flex-col gap-2.5 border-b border-slate-200/80 pb-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <span className="shrink-0 text-xl">{currentLangMeta.flag}</span>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-slate-900">
+                    <span className="truncate text-sm font-bold text-slate-900">
                       {currentLangMeta.fullName}
                     </span>
-                    <Badge variant="outline" className="text-[10px] font-semibold uppercase">
+                    <Badge
+                      variant="outline"
+                      className="shrink-0 text-[10px] font-semibold uppercase"
+                    >
                       {currentLangMeta.label}
                     </Badge>
                   </div>
@@ -453,20 +456,22 @@ export function FaqForm({
                   onClick={copyAndTranslateFromEnglish}
                   disabled={isTranslating}
                   isLoading={isTranslating}
-                  className="h-8 gap-1.5 rounded-lg border-emerald-300 bg-emerald-50 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 hover:text-emerald-950"
+                  className="h-8 w-full shrink-0 justify-center gap-1.5 rounded-lg border-emerald-300 bg-emerald-50 px-3 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 hover:text-emerald-950 sm:w-auto"
                   title={`Translate English question and answer to ${currentLangMeta.fullName}`}
                 >
-                  <Sparkles className="size-3.5 text-emerald-600" />
-                  {isTranslating
-                    ? `Translating to ${currentLangMeta.label}...`
-                    : `Copy & Translate from English`}
+                  <Sparkles className="size-3.5 shrink-0 text-emerald-600" />
+                  <span className="truncate">
+                    {isTranslating
+                      ? `Translating to ${currentLangMeta.label}...`
+                      : `Copy & Translate from English`}
+                  </span>
                 </Button>
               )}
             </div>
 
             {/* Question Rich Text Editor for Active Language */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-1">
                 <FieldLabel className="text-xs font-semibold text-slate-800">
                   Question ({currentLangMeta.fullName}) <span className="text-red-500">*</span>
                 </FieldLabel>
@@ -490,7 +495,7 @@ export function FaqForm({
 
             {/* Answer Rich Text Editor for Active Language */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-1">
                 <FieldLabel className="text-xs font-semibold text-slate-800">
                   Answer ({currentLangMeta.fullName}) <span className="text-red-500">*</span>
                 </FieldLabel>

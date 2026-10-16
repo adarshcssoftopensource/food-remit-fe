@@ -221,7 +221,7 @@ export function ProfileHeader({ onViewStoreDetails }: ProfileHeaderProps) {
               )}
             </div>
 
-            {canEditImages && (
+            {/* {canEditImages && (
               <Button
                 type="button"
                 variant="outline"
@@ -232,7 +232,7 @@ export function ProfileHeader({ onViewStoreDetails }: ProfileHeaderProps) {
               >
                 Change Photo
               </Button>
-            )}
+            )} */}
           </div>
 
           <div className="min-w-0 flex-1 space-y-2 text-center sm:text-left">

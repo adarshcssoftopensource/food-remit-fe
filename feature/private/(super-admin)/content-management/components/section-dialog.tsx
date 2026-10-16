@@ -378,13 +378,15 @@ export function SectionDialog({
                       onClick={copyFromEnglish}
                       disabled={isTranslating}
                       isLoading={isTranslating}
-                      className="h-8 gap-1.5 rounded-lg border-emerald-300 bg-emerald-50 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 hover:text-emerald-950"
+                      className="h-8 w-full shrink-0 justify-center gap-1.5 rounded-lg border-emerald-300 bg-emerald-50 px-3 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 hover:text-emerald-950 sm:w-auto"
                       title={`Translate English title and description to ${currentLangMeta.fullName}`}
                     >
-                      <Sparkles className="size-3.5 text-emerald-600" />
-                      {isTranslating
-                        ? `Translating to ${currentLangMeta.label}...`
-                        : `Copy & Translate from English`}
+                      <Sparkles className="size-3.5 shrink-0 text-emerald-600" />
+                      <span className="truncate">
+                        {isTranslating
+                          ? `Translating to ${currentLangMeta.label}...`
+                          : `Copy & Translate from English`}
+                      </span>
                     </Button>
                   </div>
                 )}

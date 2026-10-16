@@ -37,6 +37,7 @@ interface PhoneInputComponentProps {
    */
   valueMode?: "international" | "national";
   disableCountrySelect?: boolean;
+  className?: string;
 }
 
 function getDefaultCountryOverride(
@@ -131,6 +132,7 @@ export function PhoneInputComponent({
   defaultCountry = DEFAULT_ISO,
   valueMode = "international",
   disableCountrySelect = false,
+  className,
 }: PhoneInputComponentProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -237,6 +239,7 @@ export function PhoneInputComponent({
           : "border-gray-200/80 bg-white focus-within:border-[#1B3A8C] focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(27,58,140,0.1)] hover:border-slate-300",
         error &&
           "border-red-400 bg-red-50/40 focus-within:border-red-400 focus-within:shadow-[0_0_0_4px_rgba(248,113,113,0.12)]",
+        className,
       )}
     >
       <Popover
