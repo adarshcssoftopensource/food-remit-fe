@@ -82,6 +82,7 @@ export interface PartnerLeadData {
   referenceNumber: string;
   businessName: string;
   businessType: string;
+  otherBusinessType?: string | null;
   storeLogo?: string | null;
   profileImage?: string | null;
   locationsCount: string;

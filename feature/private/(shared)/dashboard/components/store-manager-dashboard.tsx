@@ -30,36 +30,41 @@ export function StoreManagerDashboard() {
 
   return (
     <div className="relative min-h-[calc(100vh-8rem)] space-y-4 antialiased sm:space-y-5">
-      <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <PageHeader
-          title="Store Overview"
-          description="Real-time performance analytics, live order feeds, and verified settlement metrics."
-          welcomeMessage={welcomeMessage}
-        />
+      <PageHeader
+        title="Store Overview"
+        description="Real-time performance analytics, live order feeds, and verified settlement metrics."
+        welcomeMessage={welcomeMessage}
+        action={
+          <div className="inline-flex shrink-0 items-center gap-1.5 rounded-2xl border border-slate-200/90 bg-white/95 p-1 shadow-2xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95">
+            <div className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50/80 px-2.5 py-1.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+              </span>
+              <span className="whitespace-nowrap">Live Sync</span>
+            </div>
 
-        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/80 bg-emerald-50/80 px-2.5 py-1 text-xs font-semibold text-emerald-800 shadow-2xs backdrop-blur-xs sm:px-3 sm:py-1.5 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-            </span>
-            <span>Live Sync</span>
+            <div className="h-4 w-px bg-slate-200/80 dark:bg-slate-700" />
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="h-8 gap-1.5 rounded-xl px-2.5 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-100/80 hover:text-slate-900 active:scale-95 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              <RefreshCw
+                className={`size-3.5 transition-transform duration-500 ${
+                  isFetching
+                    ? "animate-spin text-emerald-600"
+                    : "text-slate-400 group-hover:text-slate-700"
+                }`}
+              />
+              <span className="whitespace-nowrap">{isFetching ? "Syncing..." : "Refresh"}</span>
+            </Button>
           </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
-            className="flex h-8.5 items-center gap-1.5 rounded-xl border-slate-200 bg-white/80 text-xs font-semibold text-slate-700 shadow-2xs backdrop-blur-md hover:bg-slate-50 sm:h-9 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200"
-          >
-            <RefreshCw
-              className={`size-3.5 ${isFetching ? "animate-spin text-emerald-600" : ""}`}
-            />
-            <span>{isFetching ? "Syncing..." : "Refresh"}</span>
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {isError && (
         <DashboardErrorState

@@ -2,10 +2,10 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { DASHBOARD_ROUTES } from "@/constants/dashboard";
+import { cn } from "@/lib/utils";
 import { ArrowUpRight, Globe, MapPin, Store, UserCog, Users } from "lucide-react";
 import Link from "next/link";
 import type { DashboardManagementStats } from "../types/dashboard.types";
-import { DashboardCard } from "./common/dashboard-card";
 
 interface ManagementStatsProps {
   stats?: DashboardManagementStats;
@@ -16,89 +16,142 @@ export function ManagementStats({ stats, isLoading = false }: ManagementStatsPro
   const managementItems = [
     {
       title: "Country Manager",
-      roleCode: "CM",
+      shortLabel: "CM",
       href: DASHBOARD_ROUTES.COUNTRY_MANAGERS,
       value: stats?.countryManager ?? 0,
       icon: Globe,
-      iconBg: "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400",
-      accentBg: "group-hover:border-blue-500/30",
+      accentBorder: "from-blue-500/80 to-blue-600/30",
+      iconBox:
+        "bg-blue-50/80 text-blue-700 border-blue-200/70 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900/60",
+      tagBox: "bg-blue-50 text-blue-700 border-blue-200/60 dark:bg-blue-950/50 dark:text-blue-300",
     },
     {
       title: "City Manager",
-      roleCode: "CTM",
+      shortLabel: "CTM",
       href: DASHBOARD_ROUTES.CITY_MANAGERS,
       value: stats?.cityManager ?? 0,
       icon: MapPin,
-      iconBg: "bg-teal-500/10 text-teal-600 dark:bg-teal-500/20 dark:text-teal-400",
-      accentBg: "group-hover:border-teal-500/30",
+      accentBorder: "from-teal-500/80 to-teal-600/30",
+      iconBox:
+        "bg-teal-50/80 text-teal-700 border-teal-200/70 dark:bg-teal-950/40 dark:text-teal-400 dark:border-teal-900/60",
+      tagBox: "bg-teal-50 text-teal-700 border-teal-200/60 dark:bg-teal-950/50 dark:text-teal-300",
     },
     {
       title: "Store Manager",
-      roleCode: "SM",
+      shortLabel: "SM",
       href: DASHBOARD_ROUTES.STORE_MANAGERS,
       value: stats?.storeManager ?? 0,
       icon: Store,
-      iconBg: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
-      accentBg: "group-hover:border-amber-500/30",
+      accentBorder: "from-amber-500/80 to-amber-600/30",
+      iconBox:
+        "bg-amber-50/80 text-amber-700 border-amber-200/70 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900/60",
+      tagBox:
+        "bg-amber-50 text-amber-700 border-amber-200/60 dark:bg-amber-950/50 dark:text-amber-300",
     },
     {
       title: "Sub Admins",
-      roleCode: "SA",
+      shortLabel: "SA",
       href: DASHBOARD_ROUTES.SUB_ADMINS,
       value: stats?.subAdmins ?? 0,
       icon: UserCog,
-      iconBg: "bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400",
-      accentBg: "group-hover:border-purple-500/30",
+      accentBorder: "from-purple-500/80 to-purple-600/30",
+      iconBox:
+        "bg-purple-50/80 text-purple-700 border-purple-200/70 dark:bg-purple-950/40 dark:text-purple-400 dark:border-purple-900/60",
+      tagBox:
+        "bg-purple-50 text-purple-700 border-purple-200/60 dark:bg-purple-950/50 dark:text-purple-300",
     },
     {
       title: "Employees",
-      roleCode: "EMP",
+      shortLabel: "EMP",
       href: DASHBOARD_ROUTES.SUB_ADMINS,
       value: stats?.employees ?? 0,
       icon: Users,
-      iconBg: "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400",
-      accentBg: "group-hover:border-indigo-500/30",
+      accentBorder: "from-emerald-500/80 to-emerald-600/30",
+      iconBox:
+        "bg-emerald-50/80 text-emerald-700 border-emerald-200/70 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900/60",
+      tagBox:
+        "bg-emerald-50 text-emerald-700 border-emerald-200/60 dark:bg-emerald-950/50 dark:text-emerald-300",
     },
   ];
 
+  const totalStaff = managementItems.reduce((acc, curr) => acc + (curr.value || 0), 0);
+
   return (
-    <DashboardCard
-      title="Management Overview"
-      subtitle="Role-based administration and staff distribution"
-      icon={
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400">
-          <Users className="h-4.5 w-4.5" />
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-linear-to-b from-white via-white to-slate-50/50 p-4 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.04)] backdrop-blur-xl sm:p-5 dark:border-slate-800 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900/70">
+      {/* Background ambient lighting */}
+      <div className="pointer-events-none absolute -top-16 left-1/4 h-32 w-64 rounded-full bg-emerald-500/5 blur-3xl" />
+
+      {/* Header Row */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 dark:border-slate-800">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary flex size-9 shrink-0 items-center justify-center rounded-xl text-white shadow-xs dark:bg-white dark:text-slate-900">
+            <Users className="size-4.5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
+              Management Overview
+            </h3>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              Role-based administration and staff distribution
+            </p>
+          </div>
         </div>
-      }
-      contentClassName="p-5 sm:p-6"
-    >
-      <div className="grid min-w-0 grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-5">
+
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-slate-50/90 px-3 py-1 text-xs font-semibold text-slate-700 shadow-2xs dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+            </span>
+            <span>{isLoading ? "..." : totalStaff.toLocaleString()} Total Personnel</span>
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
         {managementItems.map((item) => {
           const Icon = item.icon;
           return (
             <Link
               key={item.title}
               href={item.href}
-              className={`group relative flex min-w-0 flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 transition-colors transition-shadow transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 ${item.accentBg}`}
+              className="group dark:bg-slate-850 relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs hover:border-slate-300 dark:border-slate-800 dark:hover:border-slate-700"
             >
-              <div className="flex items-center justify-between">
+              <div
+                className={cn("absolute inset-x-0 top-0 h-0.5 bg-linear-to-r", item.accentBorder)}
+              />
+
+              <div className="relative flex items-center justify-between">
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg shadow-2xs transition-transform group-hover:scale-105 ${item.iconBg}`}
+                  className={cn(
+                    "flex size-8 items-center justify-center rounded-lg border shadow-2xs transition-transform duration-300 group-hover:scale-105",
+                    item.iconBox,
+                  )}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="size-4" />
                 </div>
-                <ArrowUpRight className="group-hover:text-primary dark:group-hover:text-primary h-4 w-4 text-slate-300 transition-colors transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 dark:text-slate-600" />
+                <div className="flex items-center gap-1">
+                  <span
+                    className={cn(
+                      "rounded-md border px-1.5 py-0.5 text-[9.5px] font-bold tracking-wider uppercase shadow-2xs",
+                      item.tagBox,
+                    )}
+                  >
+                    {item.shortLabel}
+                  </span>
+                  <ArrowUpRight className="size-3 text-slate-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-slate-800 dark:text-slate-600 dark:group-hover:text-slate-200" />
+                </div>
               </div>
 
-              <div className="mt-4">
-                <p className="truncate text-[11px] font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+              <div className="relative mt-3.5">
+                <p className="truncate text-[10.5px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
                   {item.title}
                 </p>
-                <div className="mt-1">
+                <div className="mt-0.5">
                   {isLoading ? (
-                    <Skeleton className="h-8 w-14 rounded-lg" />
+                    <Skeleton className="h-7 w-12 rounded" />
                   ) : (
-                    <span className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                    <span className="text-2xl font-black tracking-tight text-slate-900 tabular-nums sm:text-3xl dark:text-white">
                       {item.value.toLocaleString()}
                     </span>
                   )}
@@ -108,6 +161,6 @@ export function ManagementStats({ stats, isLoading = false }: ManagementStatsPro
           );
         })}
       </div>
-    </DashboardCard>
+    </div>
   );
 }

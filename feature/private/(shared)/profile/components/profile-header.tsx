@@ -16,7 +16,6 @@ import {
   Mail,
   MapPin,
   Maximize2,
-  Phone,
   ShieldCheck,
   ShoppingBag,
   Store,
@@ -220,19 +219,6 @@ export function ProfileHeader({ onViewStoreDetails }: ProfileHeaderProps) {
                 </label>
               )}
             </div>
-
-            {/* {canEditImages && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={updateProfileMutation.isPending}
-                className="h-7.5 rounded-xl border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-              >
-                Change Photo
-              </Button>
-            )} */}
           </div>
 
           <div className="min-w-0 flex-1 space-y-2 text-center sm:text-left">

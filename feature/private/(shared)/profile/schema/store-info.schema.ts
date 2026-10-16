@@ -17,6 +17,8 @@ export const storeInfoSchema = z
     perishableProducts: z.boolean().optional(),
     refrigeratedProducts: z.boolean().optional(),
     frozenProducts: z.boolean().optional(),
+    businessType: z.string().optional(),
+    otherBusinessType: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.sameDayDelivery && !data.orderProcessingTime?.trim()) {
@@ -24,6 +26,13 @@ export const storeInfoSchema = z
         code: z.ZodIssueCode.custom,
         path: ["orderProcessingTime"],
         message: "Please select an estimated processing time.",
+      });
+    }
+    if (data.businessType === "Other" && !data.otherBusinessType?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["otherBusinessType"],
+        message: "Please specify your business type.",
       });
     }
   });
