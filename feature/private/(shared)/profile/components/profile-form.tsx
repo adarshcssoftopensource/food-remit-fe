@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check } from "lucide-react";
+import { Check, Lock, MapPin, User } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -73,22 +73,34 @@ export function ProfileForm() {
   };
 
   return (
-    <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
-      <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-4 py-4 sm:px-8 sm:py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
-        <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
-          Personal Information
-        </CardTitle>
-        <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm dark:text-slate-400">
-          Update your personal details and contact information.
-        </CardDescription>
-      </CardHeader>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      suppressHydrationWarning
+      className="space-y-6"
+    >
+      <fieldset
+        disabled={needsBankVerification}
+        className="min-w-0 space-y-6 border-0 p-0 disabled:opacity-90"
+      >
+        <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
+          <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-4 py-4 sm:px-8 sm:py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+                <User className="size-5" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
+                  Personal Information
+                </CardTitle>
+                <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm dark:text-slate-400">
+                  Update your personal details and contact information.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
 
-      <CardContent className="p-4 sm:p-8">
-        <form onSubmit={handleSubmit(onSubmit)} noValidate suppressHydrationWarning>
-          <fieldset
-            disabled={needsBankVerification}
-            className="min-w-0 border-0 p-0 disabled:opacity-90"
-          >
+          <CardContent className="p-4 sm:p-8">
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
               <ProfileNameField
                 control={control}
@@ -116,40 +128,71 @@ export function ProfileForm() {
                 fallbackCountry={phoneFallbackCountry}
               />
 
-              {isEmployee ? (
+              {isEmployee && (
                 <EmployeeLocationSection
                   control={control}
                   errors={errors}
                   setValue={setValue}
                   fallbackCountry={phoneFallbackCountry}
                 />
-              ) : isStoreManager ? (
+              )}
+
+              {!isStoreManager && !isEmployee && null}
+            </div>
+          </CardContent>
+        </Card>
+
+        {isStoreManager && (
+          <Card className="brand-glass-card rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(14,42,75,0.04)] backdrop-blur-xl dark:border-slate-800/60">
+            <CardHeader className="border-b border-slate-200/60 bg-slate-50/50 px-4 py-4 sm:px-8 sm:py-6 dark:border-slate-800/60 dark:bg-slate-900/40">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                    <MapPin className="size-5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl dark:text-slate-100">
+                      Residential Address
+                    </CardTitle>
+                    <CardDescription className="text-xs font-medium text-slate-500 sm:text-sm dark:text-slate-400">
+                      Your registered residential address and location details.
+                    </CardDescription>
+                  </div>
+                </div>
+                <div className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white/80 px-2.5 py-1 text-xs font-semibold text-slate-600 shadow-2xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  <Lock className="size-3 text-slate-400" />
+                  <span>Permanent Address</span>
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-4 sm:p-8">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
                 <ProfileAddressField
                   control={control}
                   errors={errors}
                   isStoreManager={isStoreManager}
                 />
-              ) : null}
-
-              {isStoreManager && <StoreManagerLocationFields control={control} errors={errors} />}
-            </div>
-
-            {!needsBankVerification && (
-              <div className="mt-8 flex justify-end">
-                <Button
-                  type="submit"
-                  disabled={!isDirty || isSubmitting}
-                  isLoading={isSubmitting}
-                  className="h-14 w-full rounded-xl text-base font-bold shadow-sm transition-colors sm:w-auto sm:px-10"
-                >
-                  <Check className="mr-2 h-5 w-5" />
-                  Save Changes
-                </Button>
+                <StoreManagerLocationFields control={control} errors={errors} />
               </div>
-            )}
-          </fieldset>
-        </form>
-      </CardContent>
-    </Card>
+            </CardContent>
+          </Card>
+        )}
+
+        {!needsBankVerification && (
+          <div className="flex justify-end pt-2">
+            <Button
+              type="submit"
+              disabled={!isDirty || isSubmitting}
+              isLoading={isSubmitting}
+              className="h-12 w-full rounded-xl text-sm font-bold shadow-sm transition-colors sm:w-auto sm:px-8"
+            >
+              <Check className="mr-2 h-4 w-4" />
+              Save Changes
+            </Button>
+          </div>
+        )}
+      </fieldset>
+    </form>
   );
 }
