@@ -63,6 +63,5 @@ export const CATALOGUE_STATUS_OPTIONS = [
   { label: "Inactive", value: "Inactive" },
 ] as const;
 
-export { DEPARTMENT_STAT_CONFIG } from "@/feature/private/(super-admin)/catalogue-management/departments/constants/department.constants";
 export { CATEGORY_STAT_CONFIG } from "@/feature/private/(super-admin)/catalogue-management/categories/constants/category.constants";
 export { ITEM_STAT_CONFIG } from "@/feature/private/(super-admin)/catalogue-management/items/constants/item.constants";

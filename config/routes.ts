@@ -25,7 +25,6 @@ export const ROUTES = {
     DONATION_LOGS: "/donation-logs",
     CATALOGUE_MANAGEMENT: {
       ROOT: "/catalogue-management",
-      DEPARTMENTS: "/catalogue-management/departments",
       CATEGORIES: "/catalogue-management/categories",
       CATEGORY_WORKSPACE: (id: string) => `/catalogue-management/categories/${id}`,
       NEW_ITEM: (categoryId: string) => `/catalogue-management/categories/${categoryId}/items/new`,

@@ -32,7 +32,6 @@ export { QuantityStepper } from "./quantity-stepper";
 export { CategorySelect } from "./category-select";
 export { CitySelect } from "./city-select";
 export { CountrySelect } from "./country-select";
-export { DepartmentSelect } from "./department-select";
 export { StoreSelect } from "./store-select";
 export { RoleSelect } from "./role-select";
 export { MultiLanguageSelect } from "./multi-language-select";
