@@ -192,7 +192,7 @@ export function ProfileForm() {
             }}
             className="pointer-events-none fixed bottom-5 z-40 flex justify-center px-4 transition-all duration-200"
           >
-            <div className="pointer-events-auto flex w-full max-w-lg items-center justify-between gap-4 rounded-2xl border border-white/80 bg-white/95 p-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:w-auto sm:min-w-[420px] dark:border-slate-800/90 dark:bg-slate-900/95 dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+            <div className="pointer-events-auto flex w-full max-w-2xl items-center justify-between gap-4 rounded-2xl border border-white/80 bg-white/95 px-6 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:min-w-[560px] dark:border-slate-800/90 dark:bg-slate-900/95 dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
               <div className="flex items-center gap-2 pl-2">
                 {isDirty ? (
                   <span className="inline-flex items-center gap-2 text-xs font-semibold text-amber-600 dark:text-amber-400">
