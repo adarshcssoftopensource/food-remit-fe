@@ -9,6 +9,7 @@ import { useProfile } from "@/providers/profile-provider";
 import { successToast } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSidebar } from "@/components/ui/sidebar";
 import { API_CACHE_KEYS } from "@/lib/api/cache-keys";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateProfile } from "../hooks/use-update-profile";
@@ -27,6 +28,8 @@ export function ProfileForm() {
   const { profile, needsBankVerification } = useProfile();
   const queryClient = useQueryClient();
   const updateProfileMutation = useUpdateProfile();
+  const { state: sidebarState, isMobile } = useSidebar();
+  const sidebarOffset = isMobile ? 0 : sidebarState === "collapsed" ? 48 : 256;
   const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
   const isStoreManager = profile?.roleCode === "STORE_MANAGER" || profile?.role === "store_manager";
   const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
@@ -74,10 +77,11 @@ export function ProfileForm() {
 
   return (
     <form
+      id="profile-details-form"
       onSubmit={handleSubmit(onSubmit)}
       noValidate
       suppressHydrationWarning
-      className="space-y-6"
+      className="space-y-6 pb-28"
     >
       <fieldset
         disabled={needsBankVerification}
@@ -179,17 +183,40 @@ export function ProfileForm() {
           </Card>
         )}
 
+        {/* Fixed Floating Save Action Bar - Centered and compact */}
         {!needsBankVerification && (
-          <div className="flex justify-end pt-2">
-            <Button
-              type="submit"
-              disabled={!isDirty || isSubmitting}
-              isLoading={isSubmitting}
-              className="h-12 w-full rounded-xl text-sm font-bold shadow-sm transition-colors sm:w-auto sm:px-8"
-            >
-              <Check className="mr-2 h-4 w-4" />
-              Save Changes
-            </Button>
+          <div
+            style={{
+              left: isMobile ? 0 : sidebarOffset,
+              right: 0,
+            }}
+            className="pointer-events-none fixed bottom-5 z-40 flex justify-center px-4 transition-all duration-200"
+          >
+            <div className="pointer-events-auto flex w-full max-w-lg items-center justify-between gap-4 rounded-2xl border border-white/80 bg-white/95 p-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:w-auto sm:min-w-[420px] dark:border-slate-800/90 dark:bg-slate-900/95 dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+              <div className="flex items-center gap-2 pl-2">
+                {isDirty ? (
+                  <span className="inline-flex items-center gap-2 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                    <span className="size-2 animate-pulse rounded-full bg-amber-500" />
+                    Unsaved changes
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <span className="size-2 rounded-full bg-emerald-500" />
+                    All details saved
+                  </span>
+                )}
+              </div>
+              <Button
+                form="profile-details-form"
+                type="submit"
+                disabled={!isDirty || isSubmitting}
+                isLoading={isSubmitting}
+                className="h-11 rounded-xl bg-[#1B3A8C] px-8 text-sm font-bold text-white shadow-md transition hover:bg-[#1B3A8C]/90 hover:shadow-lg dark:bg-indigo-600 dark:hover:bg-indigo-700"
+              >
+                <Check className="mr-2 h-4 w-4" />
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
           </div>
         )}
       </fieldset>

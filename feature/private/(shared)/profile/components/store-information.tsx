@@ -19,6 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { findPhoneCountry, resolveFromValue } from "@/components/ui/phone-input-utils";
+import { useSidebar } from "@/components/ui/sidebar";
 
 import { AdditionalDocumentsCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/additional-documents-card";
 import { KycVerificationCard } from "@/feature/private/(store-admin)/partner-leads/components/cards/kyc-verification-card";
@@ -46,6 +47,8 @@ import {
 export function StoreInformation() {
   const { profile, needsBankVerification, refetchProfile } = useProfile();
   const queryClient = useQueryClient();
+  const { state: sidebarState, isMobile } = useSidebar();
+  const sidebarOffset = isMobile ? 0 : sidebarState === "collapsed" ? 48 : 256;
   const storeId = profile?.stores?.[0]?.id;
   const [phoneIso, setPhoneIso] = useState<string | undefined>(undefined);
   const isEmployee = profile?.roleCode === "EMPLOYEE" || profile?.role === "employee";
@@ -467,9 +470,16 @@ export function StoreInformation() {
         {partnerLead && <LocationDetailsCard lead={partnerLead} />}
       </div>
 
+      {/* Fixed Floating Save Action Bar - Centered and compact */}
       {!needsBankVerification && (
-        <div className="fixed right-4 bottom-5 left-4 z-50 sm:right-8 sm:left-auto">
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/80 bg-white/95 p-3 shadow-[0_12px_40px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:justify-end dark:border-slate-800/80 dark:bg-slate-900/95 dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+        <div
+          style={{
+            left: isMobile ? 0 : sidebarOffset,
+            right: 0,
+          }}
+          className="pointer-events-none fixed bottom-5 z-40 flex justify-center px-4 transition-all duration-200"
+        >
+          <div className="pointer-events-auto flex w-full max-w-lg items-center justify-between gap-4 rounded-2xl border border-white/80 bg-white/95 p-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:w-auto sm:min-w-[420px] dark:border-slate-800/90 dark:bg-slate-900/95 dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
             <div className="flex items-center gap-2 pl-2">
               {isDirty ? (
                 <span className="inline-flex items-center gap-2 text-xs font-semibold text-amber-600 dark:text-amber-400">
@@ -488,7 +498,7 @@ export function StoreInformation() {
               type="submit"
               disabled={!isDirty || updateStoreMutation.isPending}
               isLoading={updateStoreMutation.isPending}
-              className="h-11 rounded-xl bg-[#1B3A8C] px-6 text-sm font-bold text-white shadow-md transition hover:bg-[#1B3A8C]/90 hover:shadow-lg dark:bg-indigo-600 dark:hover:bg-indigo-700"
+              className="h-11 rounded-xl bg-[#1B3A8C] px-8 text-sm font-bold text-white shadow-md transition hover:bg-[#1B3A8C]/90 hover:shadow-lg dark:bg-indigo-600 dark:hover:bg-indigo-700"
             >
               <Check className="mr-2 h-4 w-4" />
               {updateStoreMutation.isPending ? "Saving..." : "Save Store Changes"}
