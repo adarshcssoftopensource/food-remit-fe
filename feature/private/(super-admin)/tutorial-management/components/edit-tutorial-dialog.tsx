@@ -99,18 +99,18 @@ export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDia
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full max-w-2xl">
-        <DialogHeader className="rounded-t-3xl border-b px-6 py-6">
+        <DialogHeader className="border-border/60 rounded-t-3xl border-b px-6 py-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border">
+            <div className="border-primary/20 bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-2xl border">
               <BookOpen className="h-6 w-6" />
             </div>
 
             <div className="flex-1">
-              <DialogTitle className="text-xl font-bold tracking-tight text-slate-900">
+              <DialogTitle className="text-foreground text-xl font-bold tracking-tight">
                 {tutorial ? "Edit Flash Image" : "Add Flash Image"}
               </DialogTitle>
 
-              <DialogDescription className="mt-1 text-sm text-slate-600">
+              <DialogDescription className="text-muted-foreground mt-1 text-sm">
                 {tutorial
                   ? "Update flash image and description for the app onboarding experience."
                   : "Add a new flash image for the app onboarding experience."}
@@ -121,8 +121,8 @@ export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDia
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
           <div className="space-y-2">
-            <FieldLabel className="text-sm font-semibold text-gray-700">
-              Tutorial Image <span className="text-red-500">*</span>
+            <FieldLabel className="text-foreground text-sm font-semibold">
+              Tutorial Image <span className="text-destructive">*</span>
             </FieldLabel>
 
             <ImageUpload
@@ -135,7 +135,7 @@ export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDia
               label="Upload flash image"
               hint="PNG, JPG or WEBP"
             />
-            {errors.image && <p className="text-xs text-red-500">{errors.image.message}</p>}
+            {errors.image && <p className="text-destructive text-xs">{errors.image.message}</p>}
           </div>
 
           <Controller
@@ -143,19 +143,19 @@ export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDia
             control={control}
             render={({ field }) => (
               <div className="space-y-2">
-                <FieldLabel className="text-sm font-semibold text-gray-700">
-                  Title <span className="text-red-500">*</span>
+                <FieldLabel className="text-foreground text-sm font-semibold">
+                  Title <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Input
                   {...field}
                   placeholder="Enter tutorial title"
                   className={cn(
-                    "h-12 rounded-xl border-gray-200 bg-gray-50",
-                    "focus:bg-white focus-visible:border-[#1B3A8C]",
-                    errors.title && "border-red-400",
+                    "border-border/80 bg-background/80 h-11 rounded-xl",
+                    "focus-visible:border-primary focus-visible:ring-primary/20",
+                    errors.title && "border-destructive",
                   )}
                 />
-                {errors.title && <p className="text-xs text-red-500">{errors.title.message}</p>}
+                {errors.title && <p className="text-destructive text-xs">{errors.title.message}</p>}
               </div>
             )}
           />
@@ -165,21 +165,21 @@ export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDia
             control={control}
             render={({ field }) => (
               <div className="space-y-2">
-                <FieldLabel className="text-sm font-semibold text-gray-700">
-                  Description <span className="text-red-500">*</span>
+                <FieldLabel className="text-foreground text-sm font-semibold">
+                  Description <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Textarea
                   {...field}
                   placeholder="Enter tutorial description"
                   rows={4}
                   className={cn(
-                    "resize-none rounded-xl border-gray-200 bg-gray-50",
-                    "focus:bg-white focus-visible:border-[#1B3A8C]",
-                    errors.description && "border-red-400",
+                    "border-border/80 bg-background/80 resize-none rounded-xl",
+                    "focus-visible:border-primary focus-visible:ring-primary/20",
+                    errors.description && "border-destructive",
                   )}
                 />
                 {errors.description && (
-                  <p className="text-xs text-red-500">{errors.description.message}</p>
+                  <p className="text-destructive text-xs">{errors.description.message}</p>
                 )}
               </div>
             )}
@@ -189,10 +189,10 @@ export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDia
             name="isActive"
             control={control}
             render={({ field }) => (
-              <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="border-border/80 bg-muted/30 flex items-center justify-between rounded-xl border p-4">
                 <div className="space-y-0.5">
-                  <FieldLabel className="text-sm font-semibold text-gray-700">Status</FieldLabel>
-                  <p className="text-xs text-slate-500">
+                  <FieldLabel className="text-foreground text-sm font-semibold">Status</FieldLabel>
+                  <p className="text-muted-foreground text-xs">
                     Make this flash image visible on the mobile app.
                   </p>
                 </div>
@@ -206,11 +206,15 @@ export function FlashImageDialog({ open, onOpenChange, tutorial }: FlashImageDia
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="h-12 rounded-xl"
+              className="h-11 rounded-xl"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="h-12 rounded-xl">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-xl"
+            >
               <Upload className="mr-2 h-4 w-4" />
               {tutorial ? "Update Tutorial" : "Add Tutorial"}
             </Button>

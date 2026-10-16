@@ -70,6 +70,64 @@ export function getHtmlTextLength(html?: string): number {
   return getPlainText(html).length;
 }
 
+/**
+ * Strips dangerous tags and attributes (script, iframe, on* handlers) while preserving rich text formatting.
+ */
+export function sanitizeHtml(html?: string): string {
+  if (!html) return "";
+  let clean = html;
+  clean = clean.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+  clean = clean.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "");
+  clean = clean.replace(/\s+on\w+\s*=\s*(['"]).*?\1/gi, "");
+  clean = clean.replace(/\s+on\w+\s*=\s*[^>\s]+/gi, "");
+  clean = clean.replace(/href\s*=\s*(['"])javascript:.*?\1/gi, 'href="#"');
+  clean = clean.replace(/<\/p>\s*<p[^>]*>/gi, "</p> <p>");
+  clean = clean.replace(/<br\s*\/?>/gi, " ");
+  return clean.trim();
+}
+
+export type RichTextPreviewProps = {
+  html?: string;
+  fallback?: string;
+  className?: string;
+  lineClamp?: 1 | 2 | 3 | 4 | 5 | 6;
+};
+
+export function RichTextPreview({
+  html,
+  fallback = "—",
+  className,
+  lineClamp,
+}: RichTextPreviewProps) {
+  const plainText = getPlainText(html);
+  if (!plainText) {
+    return <span className={cn("text-slate-400", className)}>{fallback}</span>;
+  }
+
+  const clean = sanitizeHtml(html);
+
+  return (
+    <div
+      className={cn(
+        "rich-text-preview",
+        "[&_b]:font-bold [&_em]:italic [&_i]:italic [&_strong]:font-bold [&_u]:underline",
+        "[&_del]:line-through [&_s]:line-through [&_strike]:line-through",
+        "[&_p]:m-0 [&_p]:inline [&_p]:p-0",
+        "[&_li]:inline [&_li:after]:content-[',_'] [&_li:last-child:after]:content-[''] [&_ol]:inline [&_ul]:inline",
+        lineClamp === 1 && "line-clamp-1",
+        lineClamp === 2 && "line-clamp-2",
+        lineClamp === 3 && "line-clamp-3",
+        lineClamp === 4 && "line-clamp-4",
+        lineClamp === 5 && "line-clamp-5",
+        lineClamp === 6 && "line-clamp-6",
+        className,
+      )}
+      dangerouslySetInnerHTML={{ __html: clean }}
+      title={plainText}
+    />
+  );
+}
+
 export function RichTextEditor({
   value,
   onChange,

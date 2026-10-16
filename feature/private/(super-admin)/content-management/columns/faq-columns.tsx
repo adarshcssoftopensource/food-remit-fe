@@ -2,9 +2,7 @@ import {
   DataTableRowActionItem,
   DataTableRowActions,
 } from "@/components/common/data-table/data-table-row-actions";
-import { TruncatedTextCell } from "@/components/common/data-table/truncated-text-cell";
-import { Badge } from "@/components/ui/badge";
-import { getPlainText } from "@/components/ui/rich-text-editor";
+import { RichTextPreview } from "@/components/ui/rich-text-editor";
 import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { CreditCard, HelpCircle, Pencil, ShoppingBag, Store, Trash2, User } from "lucide-react";
@@ -102,9 +100,11 @@ export function getFaqColumns({ onEdit, onDelete }: FaqColumnsConfig): ColumnDef
       header: "Question",
       cell: ({ row }) => (
         <div className="space-y-1">
-          <span className="line-clamp-2 max-w-md text-sm font-semibold text-slate-800">
-            {getPlainText(row.original.question)}
-          </span>
+          <RichTextPreview
+            html={row.original.question}
+            lineClamp={2}
+            className="max-w-md text-sm font-semibold text-slate-800"
+          />
         </div>
       ),
     },
@@ -112,11 +112,13 @@ export function getFaqColumns({ onEdit, onDelete }: FaqColumnsConfig): ColumnDef
       accessorKey: "answer",
       header: "Answer",
       cell: ({ row }) => (
-        <TruncatedTextCell
-          text={getPlainText(row.original.answer)}
-          maxWords={22}
-          className="line-clamp-2 max-w-md text-sm text-slate-600"
-        />
+        <div className="space-y-1">
+          <RichTextPreview
+            html={row.original.answer}
+            lineClamp={2}
+            className="max-w-md text-sm text-slate-600"
+          />
+        </div>
       ),
     },
     {
